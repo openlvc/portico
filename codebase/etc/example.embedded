@@ -1,0 +1,30 @@
+#############################################
+# This is an example configuration file for #
+# an embedded federation. You can specify a #
+# set of command line arguments to use when #
+# starting a given federate as shown below. #
+#############################################
+
+# Lines like this are ignored
+// as well as lines like this
+
+// start the MyFederate class with two arguments
+com.example.MyFederate argumentOne argumentTwo ...
+
+// start the MyOtherFederate class with no arguments
+com.example.MyOtherFederate
+
+# Invoking the embedded executor requires executing
+# the embedded jar file located in [RTI_HOME]/lib/portico-embedded.jar
+# For example:
+# java -jar lib/portico-embedded.jar -file:etc/embedded.example
+#
+# OR you could use the special execution script
+#
+# bin/portico-embedded -file:etc/example.embedded
+#
+# NOTE: The script will make use of your RTI_HOME variable so you can keep
+#       all the configuration/plugins/etc... in the one spot but invoke it
+#       from anywhere.
+
+# REMEMBER TO PUT YOUR CODE IN THE PLUGINS DIRECTORY SO THAT Portico CAN FIND IT!

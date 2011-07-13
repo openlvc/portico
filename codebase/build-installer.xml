@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<!--
+                 Welcome to the Portico Installers Build File
+
+       Contained in this file are all the properties and build targets
+       relating to the creation of the various platform-native installers.
+       When creating an installer, the build process will automatically 
+       build both Portico and the C++ interface. Thus, to successfully
+       create an installer, you will need to be able to successfully build
+       Portico. Further, you will also need to have the various tools required
+       to build that installer available on your system. For more information,
+       see the wiki:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+
+<project name="portico-installer" default="">
+
+	<!-- ================================================================================= -->
+	<!--                              Properties Declarations                              -->
+	<!-- ================================================================================= -->
+	<property name="installer.build.dir"      location="${build.dir}/installer"/>
+
+	<!-- NSIS Installer Properties -->
+	<property name="nsis.build.dir"           location="${installer.build.dir}/nsis"/>
+	<property name="nsis.resources.dir"       location="${resources.dir}/installers/nsis"/>
+	<property name="nsis.script.installer"    location="${nsis.resources.dir}/portico-installer.nsi"/>
+	<property name="nsis.script.nojre"        location="${nsis.resources.dir}/portico-installer-nojre.nsi"/>
+
+	<!-- Mac OS DMG Installer Properties -->
+	<property name="dmg.resources.dir"        location="${resources.dir}/installers/dmg"/>
+	
+	<!-- Linux Installer Properties -->
+	<property name="linux.jrehome"            location="${env.JAVA_HOME}/jre"/>
+	
+	<!-- ================================================================================= -->
+	<!--                                Target Declarations                                -->
+	<!-- ================================================================================= -->
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: installer.clean                                -->
+	<!-- =========================================================== -->
+	<target name="installer.clean">
+		<delete dir="${installer.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                      (Target Group) Setup and Initialization                      -->
+	<!-- ================================================================================= -->
+	<target name="installer.init"
+	        depends="installer.init.all,installer.init.win32,installer.init.linux,installer.init.macos"/>
+
+	<!-- === Initialization for all platforms === -->
+	<target name="installer.init.all" depends="">
+		<mkdir dir="${installer.build.dir}"/>
+	</target>
+
+	<!-- === Windows Specific Property Setup === -->
+	<target name="installer.init.win32" depends="installer.init.all" if="platform.win32">
+		<echo>System is Windows, performing Windows-specific setup</echo>
+
+		<!-- location to the jre -->
+		<property name="platform.jre.local" value="jre"/> <!-- local dir name used in intaller -->
+		<property name="platform.jre.dir"   location="${env.JAVA_HOME}/${platform.jre.local}"/>
+	</target>
+
+	<!-- === Linux Specific Property Setup === -->
+	<target name="installer.init.linux" depends="installer.init.all" if="platform.linux">
+		<echo>System is Linux, performing Linux-specific setup</echo>
+	</target>
+
+	<!-- === Mac OS X Specific Property Setup === -->
+	<target name="installer.init.macos" depends="installer.init.all" if="platform.macos">
+		<echo>System is Mac OS X, performing Mac OS X-specific setup</echo>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                  (Target Group) Win32 NSIS Installer Generation                   -->
+	<!-- ================================================================================= -->
+	<!-- ============================== -->
+	<!-- (macro): nsis macro definition -->
+	<!-- ============================== -->
+	<macrodef name="nsis-exe" description="Generate Portico installers">
+		<!-- This macro will run the nsis installer tasks, generating executable wrappers for
+		     portico and then generating an installer using the identified script. -->
+
+		<!-- ===== Attributes ===== -->
+		<attribute name="script"  description="Name of the installer script to run"/>
+
+		<!-- ===== Actions ===== -->
+		<sequential>
+			<!-- Run the installer generation -->
+			<echo>Creating Installer using @{script}</echo>
+			<nsis script="@{script}"
+				  verbosity="1"
+				  path="${nsis.home}">
+				<define name="OUTPUT_DIR"     value="${dist.dir}"/>
+				<define name="VERSION"        value="${app.version}"/>
+				<define name="SHORTNAME"      value="${app.shortname}"/>
+				<define name="LICENSE"        value="${app.license}"/>
+				<define name="SANDBOX"        value="${dist.sandbox.dir}"/>
+				<define name="OTHER_FILES"    value="${nsis.build.dir}/${dist.name}"/>
+				<!-- name of jre folder as in install -->
+				<define name="JREDIR"         value="${platform.jre.local}"/>
+				<define name="JREPATH"        value="${platform.jre.dir}"/>
+			</nsis>
+		</sequential>
+	</macrodef>
+
+	<!-- ********************************* -->
+	<!-- **** TARGET: installer.win32 **** -->
+	<!-- ********************************* -->
+	<target name="installer.win32" depends="installer.init"  if="platform.win32" unless="build.devel">
+		<echo>Running NSIS Installer Generation, must have NSIS installed on system</echo>
+		<echo>The NSIS_HOME environment variable must point to your NSIS install</echo>
+
+		<!-- validate that the NSIS_HOME env var exists -->
+		<if>
+			<not><isset property="env.NSIS_HOME"/></not>
+			<then><echo>***WARNING*** NSIS_HOME env.var not set, assuming C:\Program Files\NSIS</echo>
+			      <property name="nsis.home" value="C:\Program Files\NSIS"/></then>
+			<else><property name="nsis.home" value="${env.NSIS_HOME}"/></else>
+		</if>
+
+		<!-- declare the nsis ant task -->
+		<taskdef name="nsis" classname="net.sf.nsisant.Task"/>
+		<echo>Loaded NSIS Task</echo>
+
+		<!-- create the directory to store the executable files -->
+		<mkdir dir="${nsis.build.dir}/${dist.name}"/>
+
+		<!-- copy in the executables and URL shortcut files -->
+		<copy todir="${nsis.build.dir}/${dist.name}">
+			<fileset dir="${nsis.resources.dir}" includes="*.url"/>
+			<!--<fileset dir="${nsis.resources.dir}" includes="*.exe"/>-->
+		</copy>
+		
+		<!-- run the NSIS script for the standalone installer -->
+		<nsis-exe script="${nsis.script.installer}"/>
+
+		<!-- run the NSIS script for the no-jre installer -->
+	    <echo>Win32 No JRE Version no longer generated</echo>
+		<!-- <nsis-exe script="${nsis.script.nojre}"/> -->
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                   (Target Group) MacOS DMG Installer Generation                   -->
+	<!-- ================================================================================= -->
+
+	<!-- ********************************* -->
+	<!-- **** TARGET: installer.macos **** -->
+	<!-- ********************************* -->
+	<target name="installer.macos" depends="installer.init" if="platform.macos">
+		<echo>Running MacOS DMG Generation, must be on Mac OS X</echo>
+		
+		<!-- Copy across the OS X Portico.app wrapper -->
+		<!-- we have to use exec to we can get a permission-preserving copy -->
+		<echo>Copying Portico.app into distribution</echo>
+		<exec executable="cp" failonerror="true">
+			<arg line="-R ${dmg.resources.dir}/Portico.app ${dist.sandbox.dir}/"/>
+		</exec>
+
+		<!-- Run the Disk Image Generation Tool -->
+		<echo>Generating the DMG File</echo>
+		<exec executable="hdiutil">
+			<arg value="create"/>
+			<arg value="-srcfolder"/>
+			<arg value="${dist.sandbox.dir}"/>
+			<arg value="-ov"/>
+			<arg value="${dist.dir}/${dist.name}.dmg"/>
+		</exec>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                     (Target Group) Linux Installer Generation                     -->
+	<!-- ================================================================================= -->
+
+	<!-- ********************************* -->
+	<!-- **** TARGET: installer.linux **** -->
+	<!-- ********************************* -->
+	<target name="installer.linux" depends="installer.init" if="platform.linux">
+		<echo>Running Linux installer generator</echo>
+		
+		<!-- check to make sure the jre dir exists -->
+		<available file="${linux.jrehome}" property="linux.jrefound"/>
+		<fail unless="linux.jrefound"
+		      message="Could not locate JRE dir. Set JAVA_HOME env var to point to JDK install"/>
+		
+		<!-- take the existing tarball and add the jre directory to it -->
+		<mkdir dir="${installer.build.dir}/linux"/>
+		
+		<!-- generate the tarball with the sandbox and the JRE in it -->
+		<tar destfile="${dist.tgz.file}"
+		     compression="gzip"
+		     longfile="gnu">
+			<tarfileset dir="${dist.sandbox.dir}" includes="**/*"/>
+			<tarfileset dir="${linux.jrehome}" includes="**/*" prefix="/jre"/>
+		</tar>
+	</target>
+
+</project>

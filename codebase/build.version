@@ -1,0 +1,6 @@
+# The Portico Version
+app.version=1.0.3-dev
+
+# The name used in zip/tar artefacts etc...
+app.shortname=portico
+

@@ -1,0 +1,21 @@
+
+# /
+/MacOSX
+/eclipse-build
+
+# /.settings/
+/.settings/org.eclipse.mylyn.tasks.ui.prefs
+/.settings/org.eclipse.wst.validation.prefs
+
+# /codebase/
+/codebase/build
+/codebase/logs
+/codebase/dist
+/codebase/build.properties
+/codebase/savedata
+
+# /codebase/documentation/
+/codebase/documentation/javadoc
+
+# /codebase/lib/clover/
+/codebase/lib/clover/clover.license

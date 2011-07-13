@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<project name="portico" default="compile">
+
+	<!-- =========================================================== -->
+	<!--                      General Settings                       -->
+	<!-- =========================================================== -->
+	<description>
+		Open source, extensible HLA Run Time Infrastructure implementation
+	</description>
+
+	<!-- =========================================================== -->
+	<!--                       Master Targets                        -->
+	<!-- =========================================================== -->
+	<!--
+	     These are the "master" targets which will complete each task for BOTH
+	     the java and cpp code. If you want a language specific task only, use
+	     the .java or .cpp targets (e.g. compile.java, sandbox.cpp)
+	-->
+	
+	<target name="clean" depends="all.clean"
+		description="Removes all generated build artefacts"/>
+
+	<target name="compile" depends="all.compile"
+		description="Compile all the production code, test code and c++ code"/>
+	
+	<target name="test" depends="all.test"
+	    description="Run all the unit tests (both the java and cpp - requires CPPUnit installed)"/>
+	
+	<target name="sandbox" depends="all.sandbox"
+		description="Create a sandbox environment to test and validate in"/>
+	
+	<target name="release" depends="all.release"
+		description="Create a complete release ready to make public"/>
+
+	<target name="clover" depends="java.clover.run"
+		description="Run all *java* unit tests with Clover enabled. This will call clean first"/>
+	
+	<target name="installers" depends="all.installers"
+		description="Generate installer files (only relevant to platform being built on)"/>
+	
+	<target name="installers-only" depends="all.installers-only"
+		description="Run the installer targets only (must have already run release)"/>
+
+	<!-- =========================================================== -->
+	<!--              Import Other Files/General Setup               -->
+	<!-- =========================================================== -->
+	<!-- bring in the ant-contrib tasks -->
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	
+	<!-- load the environment variables -->
+	<property environment="env"/>
+	<!-- make sure we have JAVA_HOME -->
+	<if>
+		<not><isset property="env.JAVA_HOME"/></not>
+		<then><fail message="The JAVA_HOME environment variable must be set"/></then>
+	</if>
+
+	<!-- load the users properties file -->
+	<property file="${user.home}/.build.properties"/>
+	<property file="build.properties"/>
+
+	<!-- bring in the build version information -->
+	<property file="build.version"/>
+
+	<!-- get the year value -->
+	<tstamp><format property="YEAR" pattern="yyyy"/></tstamp>
+
+	<!-- =========================================================== -->
+	<!--                   Project Wide Properties                   -->
+	<!-- =========================================================== -->
+	<property name="app.mainpackage"        value="org/portico"/>
+	<property name="app.version"            value="unknown"/> <!-- set in build.version -->
+	<property name="app.shortname"          value="portico"/> <!-- set in build.version -->
+	<property name="app.license"            location="LICENSE.portico"/>
+
+	<!-- Platform Determination Properties -->
+	<condition property="platform" value="macos"><os family="mac"/></condition>
+	<condition property="platform" value="win32"><os family="windows"/></condition>
+	<condition property="platform" value="linux"><os name="Linux"/></condition>
+	<condition property="platform.macos" value="true"><os family="mac"/></condition>
+	<condition property="platform.win32" value="true"><os family="windows"/></condition>
+	<condition property="platform.linux" value="true"><os name="Linux"/></condition>
+
+	<!-- Location Properties -->
+	<property name="lib.dir"                location="lib"/>
+	<property name="etc.dir"                location="etc"/>
+	<property name="scripts.dir"            location="scripts"/>
+	<property name="documentation.dir"      location="documentation"/>
+	<property name="resources.dir"          location="resources"/>
+	<property name="resources.dist.dir"     location="${resources.dir}/dist"/>
+
+	<!-- Generated Build and Distribution Properties -->
+	<property name="build.dir"              location="build"/>
+	<property name="dist.name"              value="${app.shortname}-${app.version}"/>
+	<property name="dist.dir"               location="dist"/>
+	<property name="dist.sandbox.dir"       location="${dist.dir}/${dist.name}"/>
+	<property name="dist.lib.dir"           location="${dist.sandbox.dir}/lib"/>
+	<property name="dist.etc.dir"           location="${dist.sandbox.dir}/etc"/>
+	<property name="dist.bin.dir"           location="${dist.sandbox.dir}/bin"/>
+	<property name="dist.inc.dir"           location="${dist.sandbox.dir}/include"/>
+	<property name="dist.examples.dir"      location="${dist.sandbox.dir}/examples"/>
+	<property name="dist.documentation.dir" location="${dist.sandbox.dir}/documentation"/>
+	<property name="dist.javadoc.dir"       location="${dist.documentation.dir}/javadoc"/>
+	<property name="dist.plugins.dir"       location="${dist.sandbox.dir}/plugins"/>
+	<property name="dist.zip.file"          location="${dist.dir}/${dist.name}-${platform}.zip"/>
+	<property name="dist.tgz.file"          location="${dist.dir}/${dist.name}-${platform}.tar.gz"/>
+
+	<!-- =========================================================== -->
+	<!--                  Load Java/C++ Build Files                  -->
+	<!-- =========================================================== -->
+	<!-- NOTE: These must be loaded AFTER the property declarations above
+	           so that those files will have access to them -->
+	<import file="build-java.xml"/>
+	<import file="build-cpp.xml"/>
+	<import file="build-installer.xml"/>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: all.clean                                      -->
+	<!-- =========================================================== -->
+	<target name="all.clean" depends="java.clean,cpp.clean,installer.clean">
+		<delete dir="${dist.dir}"/>
+		<delete dir="${build.dir}"/>
+		<delete dir="logs"/>
+
+		<!-- get rid of some common backup files -->
+		<delete>
+			<fileset dir="." includes="**/*.java~"/>
+		</delete>
+		<delete>
+			<fileset dir="." includes="**/*.bak"/>
+		</delete>
+	</target>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: init                                           -->
+	<!-- =========================================================== -->
+	<target name="init">
+		<echo message="Building ${ant.project.name}"/>
+	</target>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: all.compile                                    -->
+	<!-- =========================================================== -->
+	<target name="all.compile" depends="java.compile,cpp.compile"/>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: all.sandbox                                    -->
+	<!-- =========================================================== -->
+	<target name="all.sandbox" depends="java.sandbox,cpp.sandbox"/>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: all.test                                       -->
+	<!-- =========================================================== -->
+	<target name="all.test" depends="java.test,cpp.test"/>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: all.release                                    -->
+	<!-- =========================================================== -->
+	<target name="all.release" depends="clean,java.release,cpp.release">
+		<!--<echo>Console Executable Jar</echo>
+		<copy todir="${dist.dir}" file="${java.console.jar}"/>-->
+
+		<!-- =================================== -->
+		<!-- Windows Release Zip File Generation -->
+		<!-- =================================== -->
+		<if><isset property="platform.win32"/><then>
+		
+		<echo>creating ${dist.zip.file}</echo>
+		<zip destfile="${dist.zip.file}"
+		     basedir="${dist.dir}"
+		     includes="${dist.name}/**/*"/>
+
+		</then></if>
+
+		<!-- ==================================== -->
+		<!-- Unix Release Tar-Zip File Generation -->
+		<!-- ==================================== -->
+		<if><not><isset property="platform.win32"/></not><then>
+		
+		<echo>creating ${dist.tgz.file}</echo>
+		<exec executable="tar" dir="${dist.dir}" failonerror="true">
+			<arg line="-czf ${dist.tgz.file} ./${dist.name}"/>
+		</exec>
+
+		</then></if>
+	</target>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: all.installers                                 -->
+	<!-- =========================================================== -->
+	<target name="all.installers" depends="release,installer.win32,installer.linux,installer.macos"/>
+	
+	<!-- this target will run ONLY the installers (assumes that you have already run "release" -->
+	<target name="all.installers-only" depends="installer.win32,installer.linux,installer.macos"/>
+</project>

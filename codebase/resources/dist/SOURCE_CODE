@@ -1,0 +1,23 @@
+If you are reading this, you are most likely looking around for the Portico
+source code. Well, you can stop looking because it isn't in here!
+
+The Portico build environment is quite large, and to ship it to you would
+mean the size of the download would at least triple.
+
+As such, if you are one of the few people who want the source code, you can
+check it out of the public Sourceforge Subversion repository. For instructions
+on how to do this, see the following:
+
+http://porticoproject.org/index.php?title=Source_Code
+
+For information on how to build Portico, see:
+
+http://porticoproject.org/index.php?title=Building_Portico
+
+If you have any more questions, be sure to ask them!! Just jump on the forums
+and we'll do our best to get everything sorted out:
+
+http://forums.porticoproject.org
+
+Cheers,
+The Portico development team

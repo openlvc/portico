@@ -1,0 +1,93 @@
+Welcome to Portico!!
+
+If you haven't signed up to the mailing list yet, do so now! It's very low traffic and helps us
+gauge the level of community interest in the project. You can sign up from the URL below:
+
+https://lists.sourceforge.net/lists/listinfo/portico-announce
+
+=================================== SPECIAL NOTE ===================================
+As of v0.9, Portico no longer uses a central RTI to run. All federates operate in a
+peer-to-peer manner so there is NO NEED TO START AN RTI.
+====================================================================================
+
+1. Getting Started
+-------------------
+   You should have the following environment variables set before running Portico federates:
+
+   RTI_HOME       : Points to the same directory this file is in
+   JAVA_HOME      : Points to your java install**
+   PATH           : (win32-only) Add %RTI_HOME%\bin and JVM libraries** to your existing path
+   LD_LIBRARY_PATH: (linux-only) Add $RTI_HOME/lib to your LD_LIBRARY_PATH
+
+   ** If you installed the windows standalone version of Portico, a JRE came with it. In this
+      case you can point JAVA_HOME at %RTI_HOME%\jre. To run federates, the JVM dlls must be
+	  on your PATH. Add %RTI_HOME%\jre\bin\client to the PATH or sub in your JAVA_HOME (just
+	  look for the directory with jvm.dll in it)
+
+
+2. Writing Federates for Portico
+--------------------------------
+   Portico ships with some example federates if you don't have much HLA experience. For
+   complete instructions on writing federates for Portico, see the website:
+
+   http://porticoproject.org/index.php?title=Writing_Federates_for_Portico
+
+   -Writing Java Federates-
+    All the code necessary to write/run a Java federate is in the RTI_HOME\lib\portico.jar
+    file. Just throw it on your classpath.
+
+   -Writing C++ Federates-
+    Portico uses JNI to provide a C++ interface wrapper around the main Java library.
+    The Portico C++ interface is binary drop-in compatible with RTI-NG6 on windows.
+
+      The header files are located in RTI_HOME\include\ng6
+      The .lib and .so files are located in RTI_HOME\lib
+	  The dlls are located in RTI_HOME\bin
+
+
+3. Example Federates
+--------------------
+   Portico ships with some example federates for both Java and C++. Code and helper scripts
+   are located in the RTI_HOME/examples directory.
+
+   Each example federate has helper scripts/batch files to aid in building and running the
+   federate. The scripts are either "linux.sh" or "win32.bat". The arguments they take are
+   identical for both (linux used in these examples):
+
+   ./linux.sh compile  => compile the code for the federate
+   ./linux.sh execute  => run the federate. You can pass an optional argument specifying the
+                          name for the federate (so you can run multiple instances if you wish)
+   ./linux.sh clean    => remove all the code/jars that were created
+
+   **NOTE** If you want to compile the Java federates, you'll need to have the JDK installed.
+            The JRE that ships with the standalone version of Portico on windows is not sufficient
+
+   **NOTE** If you want to build the C++ example federates, you will need to have a supported
+            compiler installed (vc6, vc7, gcc4) and have your environment set up for it. On
+			windows you can run the win32.bat file from a "Visual Studio Command Prompt", or,
+			if you have vc6/7 installed in the default locations, there are batch files to
+			set up the environment in RTI_HOME\bin\win32. If you just run one of these batch
+			files in the prompt before trying to build, you'll be fine.
+
+
+4. Documentation and Help
+-------------------------
+   There are three main resources for documentation and help:
+
+     http://porticoproject.org
+     Documentation about using and developing for Portico, in addition to
+	 architectural documentation
+	 
+	 http://forums.porticoproject.org
+     Get your questions answered here. I prefer this to a mailing list as it is easier
+	 to search and navigate than the list archives. If you have a question, check the website
+	 or forums first to see if someone else has had the same problem previously!
+	 
+	 https://lists.sourceforge.net/lists/listinfo/portico-user
+     The user mailing list you can join to ask questions about portico and let us know about
+	 problems, bugs or patches that you have!
+
+
+So there you go, we hope you enjoy using Portico :)
+
+--The Portico Development Team

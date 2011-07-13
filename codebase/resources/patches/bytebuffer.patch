@@ -1,0 +1,319 @@
+Index: src-java/portico/org/portico/kernel/PorticoMessage.java
+===================================================================
+--- src-java/portico/org/portico/kernel/PorticoMessage.java	(revision 1889)
++++ src-java/portico/org/portico/kernel/PorticoMessage.java	(working copy)
+@@ -19,6 +19,7 @@
+ import java.io.ObjectInputStream;
+ import java.io.ObjectOutput;
+ import java.io.ObjectOutputStream;
++import java.nio.ByteBuffer;
+ 
+ import org.portico.shared.MessageHelpers;
+ import org.portico.shared.PorticoConstants;
+@@ -306,6 +307,11 @@
+ 		return false;
+ 	}
+ 	
++	public int getMarshaledSize()
++	{
++		return 0;
++	}
++
+ 	/**
+ 	 * <i><b>NOTE</b>: These methods are provided to bypass the typical serialization process used
+ 	 * to convert messages into byte[]'s for sending. Unless absolute, extreme, total performance
+@@ -317,7 +323,7 @@
+ 	 * <p/>
+ 	 * This method will marshal our local values into the given buffer.
+ 	 */
+-	public void marshal( ObjectOutput buffer ) throws IOException
++	public void marshal( ByteBuffer buffer ) throws IOException
+ 	{
+ 	}
+ 	
+@@ -332,7 +338,7 @@
+ 	 * <p/>
+ 	 * This method will unmarshal our local values from given buffer.
+ 	 */
+-	public void unmarshal( ObjectInput buffer ) throws IOException, ClassNotFoundException
++	public void unmarshal( ByteBuffer buffer ) throws IOException, ClassNotFoundException
+ 	{
+ 	}
+ 	
+Index: src-java/portico/org/portico/shared/msg/object/SendInteraction.java
+===================================================================
+--- src-java/portico/org/portico/shared/msg/object/SendInteraction.java	(revision 1889)
++++ src-java/portico/org/portico/shared/msg/object/SendInteraction.java	(working copy)
+@@ -18,6 +18,7 @@
+ import java.io.IOException;
+ import java.io.ObjectInput;
+ import java.io.ObjectOutput;
++import java.nio.ByteBuffer;
+ import java.util.HashMap;
+ 
+ import org.portico.kernel.PorticoMessage;
+@@ -161,8 +162,9 @@
+ 	}
+ 
+ 	@Override
+-	public void marshal( ObjectOutput buffer ) throws IOException
++	public void marshal( ByteBuffer buffer ) throws IOException
+ 	{
++/*
+ 		// write the object ID first (we put this first so we can snoop it easily in MessageHelpers)
+ 		buffer.writeInt( this.interactionId );
+ 
+@@ -189,11 +191,13 @@
+ 		}
+ 		
+ 		buffer.flush();
++*/
+ 	}
+ 
+ 	@Override
+-	public void unmarshal( ObjectInput buffer ) throws IOException, ClassNotFoundException
++	public void unmarshal( ByteBuffer buffer ) throws IOException, ClassNotFoundException
+ 	{
++/*
+ 		// read the interaction handle first (we put this first so we can snoop it easily in MessageHelpers)
+ 		//this.interactionId = buffer.readInt();
+ 
+@@ -222,6 +226,7 @@
+ 			buffer.read( parameterValue, 0, valueSize );
+ 			this.parameters.put( parmaterHandle, parameterValue );
+ 		}
++*/
+ 	}
+ 
+ 	//----------------------------------------------------------
+Index: src-java/portico/org/portico/shared/msg/object/UpdateAttributes.java
+===================================================================
+--- src-java/portico/org/portico/shared/msg/object/UpdateAttributes.java	(revision 1889)
++++ src-java/portico/org/portico/shared/msg/object/UpdateAttributes.java	(working copy)
+@@ -18,6 +18,7 @@
+ import java.io.IOException;
+ import java.io.ObjectInput;
+ import java.io.ObjectOutput;
++import java.nio.ByteBuffer;
+ import java.util.HashMap;
+ 
+ import org.portico.kernel.PorticoMessage;
+@@ -130,65 +131,74 @@
+ 	{
+ 		return true;
+ 	}
++	
++	@Override
++	public int getMarshaledSize()
++	{
++		int size = Integer.SIZE * 3; // objectId, sourceFederate, attributeCount
++		size += Double.SIZE; // timestamp
++		for( byte[] value : attributes.values() )
++			size += value.length + (Integer.SIZE*2); // length + attributeHandle, attributeLength
++		
++		return size;
++	}
+ 
+ 	@Override
+-	public void marshal( ObjectOutput buffer ) throws IOException
++	public void marshal( ByteBuffer buffer ) throws IOException
+ 	{
+ 		// write the object ID first (we put this first so we can snoop it easily in MessageHelpers)
+-		buffer.writeInt( this.objectId );
++		buffer.putInt( this.objectId );
+ 
+ 		// marshal the relevant super-class information first
+-		buffer.writeInt( sourceFederate );
++		buffer.putInt( sourceFederate );
+ 		//buffer.writeInt( targetFederate ); -- not needed, always -1 (all federates)
+ 		//buffer.writeInt( serial );         -- not needed, always -1 (async)
+-		buffer.writeDouble( timestamp );
++		buffer.putDouble( timestamp );
+ 		//buffer.writeBoolean( immediate );  -- not needed, always false
+ 		
+ 		// now marshal up our stuff
+-		buffer.writeUTF( bytesToString(this.tag) ); // conver it for a string for simple read/write
++		//FIXME buffer.writeUTF( bytesToString(this.tag) ); // conver it for a string for simple read/write
+ 
+ 		// write the number of attributes we are pushing out
+-		buffer.writeInt( attributes.size() );
++		buffer.putInt( attributes.size() );
+ 		// write each of the attribute values
+ 		for( Integer attributeHandle : attributes.keySet() )
+ 		{
+-			buffer.writeInt( attributeHandle );
++			buffer.putInt( attributeHandle );
+ 			byte[] value = attributes.get( attributeHandle );
+-			buffer.writeInt( value.length );
+-			buffer.write( value );
++			buffer.putInt( value.length );
++			buffer.put( value );
+ 		}
+-
+-		buffer.flush();
+ 	}
+ 
+ 	@Override
+-	public void unmarshal( ObjectInput buffer ) throws IOException, ClassNotFoundException
++	public void unmarshal( ByteBuffer buffer ) throws IOException, ClassNotFoundException
+ 	{
+ 		// read the object ID first (we put this first so we can snoop it easily in MessageHelpers)
+ 		//this.objectId = buffer.readInt(); -- this will be done in MessageHelpers
+ 		
+ 		// read the super-class information first
+-		super.sourceFederate = buffer.readInt();
++		super.sourceFederate = buffer.getInt();
+ 		//super.targetFederate = buffer.readInt(); -- not needed, always -1 (all federates)
+ 		//super.serial = buffer.readInt();         -- not needed, always -1 (async)
+-		super.timestamp = buffer.readDouble();
++		super.timestamp = buffer.getDouble();
+ 		//super.immediate = buffer.readBoolean();  -- not needed, always false
+ 		
+ 		// now read our stuff
+-		this.tag = buffer.readUTF().getBytes();
++		//FIXME this.tag = buffer.readUTF().getBytes();
+ 		
+ 		// read the attribute data in, formatted as int,[int,byte[]]...
+ 		// first int is number of attributes, next are pairs of attributeHandle/values
+ 		if( this.attributes == null )
+ 			this.attributes = new HashMap<Integer,byte[]>();
+ 
+-		int attributeCount = buffer.readInt();
++		int attributeCount = buffer.getInt();
+ 		for( int i = 0; i < attributeCount; i++ )
+ 		{
+-			int attributeHandle = buffer.readInt();
+-			int valueSize = buffer.readInt();
++			int attributeHandle = buffer.getInt();
++			int valueSize = buffer.getInt();
+ 			byte[] attributeValue = new byte[valueSize];
+-			buffer.read( attributeValue, 0, valueSize );
++			buffer.get( attributeValue, 0, valueSize );
+ 			this.attributes.put( attributeHandle, attributeValue );
+ 		}
+ 	}
+Index: src-java/portico/org/portico/shared/MessageHelpers.java
+===================================================================
+--- src-java/portico/org/portico/shared/MessageHelpers.java	(revision 1889)
++++ src-java/portico/org/portico/shared/MessageHelpers.java	(working copy)
+@@ -19,6 +19,7 @@
+ import java.io.IOException;
+ import java.io.ObjectInputStream;
+ import java.io.ObjectOutputStream;
++import java.nio.ByteBuffer;
+ 
+ import org.portico.kernel.PorticoMessage;
+ import org.portico.lrc.LRC;
+@@ -130,30 +131,28 @@
+ 	 */
+ 	public static byte[] deflate( PorticoMessage message )
+ 	{
+-		// create the output stream with the given size (or resizable if -1 is provided)
+-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+-		
+-		// do the deflation
+ 		try
+ 		{
+-			ObjectOutputStream oos = new ObjectOutputStream( baos );
+ 			if( message.supportsManualMarshal() )
+ 			{
+ 				// Use the manual marshalling method. First, write the signal that we are doing
+ 				// do, then write the id of the message we are serializing (hashcode of its name),
+ 				// then let the message write itself
+-				oos.writeBoolean( true );
+-				oos.writeInt( message.getClass().getSimpleName().hashCode() );
+-				message.marshal( oos );
++				int size = message.getMarshaledSize() + Byte.SIZE + Integer.SIZE;
++				byte[] array = new byte[size];
++				ByteBuffer buffer = ByteBuffer.wrap( array );
++				buffer.put( (byte)0 );
++				buffer.putInt( message.getClass().getSimpleName().hashCode() );
++				message.marshal( buffer );
++				return array;
+ 			}
+ 			else
+ 			{
+-				// use the simple way of doing things, just write the message itself to the stream
+-				oos.writeBoolean( false );
++				ByteArrayOutputStream baos = new ByteArrayOutputStream();
++				ObjectOutputStream oos = new ObjectOutputStream( baos );
+ 				oos.writeObject( message );
++				return baos.toByteArray();
+ 			}
+-			
+-			return baos.toByteArray();
+ 		}
+ 		catch( IOException ioex )
+ 		{
+@@ -196,23 +195,19 @@
+ 	{
+ 		try
+ 		{
+-			ByteArrayInputStream bais = new ByteArrayInputStream( data );
+-			ObjectInputStream ois = new ObjectInputStream( bais );
+-			// find out whether of not manual marshaling was used
+-			boolean manuallyMarshaled = ois.readBoolean();
+-			if( manuallyMarshaled )
++			ByteBuffer buffer = ByteBuffer.wrap( data );
++			int signal = buffer.get();
++			if( signal == 0 )
+ 			{
+-				// create a new message from the specified id and let it unmarshal itself
+-				PorticoMessage message = manuallyUnmarshal( ois, lrc );
+-				return expectedType.cast( message ); // this is null safe
+-				
+-				//PorticoMessage message = newMessageForId( ois.readInt() );
+-				//message.unmarshal( ois );
+-				//return expectedType.cast( message );
++				// this is a MANUALLY marshalled message
++				PorticoMessage message = manuallyUnmarshal( buffer.getInt(), buffer, lrc );
++				return expectedType.cast( message );
+ 			}
+ 			else
+ 			{
+-				// phew, a sane person wrote this! use the default unmarhal
++				// this is a NORMALLY marshalled message
++				ByteArrayInputStream bais = new ByteArrayInputStream( data );
++				ObjectInputStream ois = new ObjectInputStream( bais );
+ 				Object theObject = ois.readObject();
+ 				return expectedType.cast( theObject );
+ 			}
+@@ -230,24 +225,24 @@
+ 	 * the update relates to hasn't been discovered by the local federate (if we were interested,
+ 	 * we would have discovered it).
+ 	 */
+-	private static PorticoMessage manuallyUnmarshal( ObjectInputStream ois, LRC lrc ) throws Exception
++	private static PorticoMessage manuallyUnmarshal( int messageType, ByteBuffer buffer, LRC lrc )
++		throws Exception
+ 	{
+-		int messageType = ois.readInt();
+ 		if( messageType == -1720820960 ) // "UpdateAttributes".hashCode()
+ 		{
+-			int objectId = ois.readInt();
++			int objectId = buffer.getInt();
+ 			// are we interested in this object at all? if we are we will have discovered it
+ 			if( lrc.getState().getRepository().getInstance(objectId) == null )
+ 				return null;
+ 			
+ 			UpdateAttributes update = new UpdateAttributes();
+ 			update.setObjectId( objectId );
+-			update.unmarshal( ois );
++			update.unmarshal( buffer );
+ 			return update;
+ 		}
+ 		else if( messageType == -1918248630 ) // "SendInteraction".hashCode()
+ 		{
+-			int interactionId = ois.readInt();
++			int interactionId = buffer.getInt();
+ 			// are we interested in this interaction type?
+ 			if( lrc.getState().getInterestManager().isInteractionClassSubscribed(
+ 			        lrc.getState().getFederateHandle(), interactionId) == false )
+@@ -257,7 +252,7 @@
+ 			
+ 			SendInteraction interaction = new SendInteraction();
+ 			interaction.setInteractionId( interactionId );
+-			interaction.unmarshal( ois );
++			interaction.unmarshal( buffer );
+ 			return interaction;
+ 		}
+ 		else

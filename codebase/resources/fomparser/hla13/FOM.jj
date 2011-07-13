@@ -1,0 +1,448 @@
+options
+{
+	LOOKAHEAD=1;
+	STATIC=false;
+	JDK_VERSION="1.5";
+}
+
+/**********************************************/
+/***************** Parser Def *****************/
+/**********************************************/
+
+PARSER_BEGIN(FOM)
+
+package org.portico.impl.hla13.fomparser;
+
+import org.portico.shared.HLAVersion;
+import org.portico.shared.model.ObjectModel;
+import org.portico.shared.model.OCMetadata;
+import org.portico.shared.model.ACMetadata;
+import org.portico.shared.model.ICMetadata;
+//import org.portico.shared.model.PCMetadata;
+import org.portico.shared.model.Space;
+import org.portico.shared.model.Dimension;
+import org.portico.shared.model.Transport;
+import org.portico.shared.model.Order;
+
+import org.portico.shared.compat.JCouldNotOpenFED;
+import org.portico.shared.compat.JErrorReadingFED;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
+
+public class FOM
+{
+	public static ObjectModel parseFOM( URL fom ) throws JCouldNotOpenFED, JErrorReadingFED
+	{
+		if( fom == null )
+		{
+			throw new JCouldNotOpenFED( "Null FOM given to Parser" );
+		}
+		
+		// open the stream
+		InputStream istream = null;
+		try
+		{
+			istream = fom.openStream();
+		}
+		catch( Exception e )
+		{
+			throw new JCouldNotOpenFED( "Error opening [" + fom + "]: " + e.getMessage() );
+		}
+
+		return parseFOM( istream );
+	}
+
+	public static ObjectModel parseFOM( InputStream istream ) throws JCouldNotOpenFED, JErrorReadingFED
+	{
+		// check for a valid URL
+		if( istream == null )
+		{
+			throw new JCouldNotOpenFED( "Null FOM given to Parser" );
+		}
+
+		// parse the FOM
+		try
+		{
+			// create the parser
+			FOM parser = new FOM( istream );
+			// create the model to populate
+			ObjectModel theModel = new ObjectModel( HLAVersion.HLA13 );
+			// run the parser
+			parser.parse( theModel );
+			// lock the model
+			theModel.lock();
+			// mommify the thing
+			ObjectModel.mommify( theModel );
+			// return the model
+			return theModel;
+		}
+		catch( Throwable e )
+		{
+			throw new JErrorReadingFED( "Error reading FED file [" + istream + "]: " + e.getMessage(), e );
+		}
+		finally
+		{
+			try
+			{
+				istream.close();
+			}
+			catch( Exception e )
+			{ /* do nothing */
+			}
+		}
+	}
+}
+
+PARSER_END(FOM)
+
+/**********************************************/
+/******************** Skips *******************/
+/**********************************************/
+
+MORE :
+{
+	";;": IN_SINGLE_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN :
+{
+	<SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n"> : DEFAULT
+}
+      
+<IN_SINGLE_LINE_COMMENT> MORE :
+{
+	<  ~[] >
+}
+
+SKIP :
+{
+	" "
+	| "\t"
+	| "\r"
+	| "\n"
+}
+
+/**********************************************/
+/***************** Tokens Def *****************/
+/**********************************************/
+/* parenthesis token */
+TOKEN :
+{
+	< P_OPEN: "(" >
+	| < P_CLOSE: ")" >
+}
+
+/* main FOM elements */
+TOKEN :
+{
+	< FED:            <P_OPEN> "FED" >
+	| < FEDERATION:   <P_OPEN> "Federation" >
+	| < FEDVERSION:   <P_OPEN> "FEDversion" >
+	| < SPACES:       <P_OPEN> "spaces" >     /* not currently supported */
+	| < SPACE:        <P_OPEN> "space" >      /* not currently supported */
+	| < DIMENSION:    <P_OPEN> "dimension" >  /* not currently supported */
+	| < OBJECTS:      <P_OPEN> "objects" >
+	| < CLASS:        <P_OPEN> "class" >
+	| < ATTRIBUTE:    <P_OPEN> "attribute" >
+	| < INTERACTIONS: <P_OPEN> "interactions" >
+	| < PARAMETER:    <P_OPEN> "parameter" >
+}
+
+/* attribute/parameter elements
+TOKEN :
+{
+	< TRANSPORT: "reliable" | "best_effort" >
+	| < ORDER: "timestamp" | "receive" >
+}
+*/
+/**********************************************/
+/************** Main Productions **************/
+/**********************************************/
+void parse( ObjectModel theModel ) :
+{}
+{
+	<FED>
+	federation()
+	fedVersion()
+	(spaces(theModel) | objects(theModel) | interactions(theModel))*
+	<P_CLOSE>
+	<EOF>
+}
+
+/*****************************/
+/*** Element: "Federation" ***/
+/*****************************/
+void federation() :
+{}
+{
+	<FEDERATION> <STRING> <P_CLOSE>
+}
+
+/*****************************/
+/*** Element: "FEDversion" ***/
+/*****************************/
+/* Must be "1.3" */
+void fedVersion() :
+{}
+{
+	<FEDVERSION> ("v1.3"|"v1_3") <P_CLOSE>
+}
+
+/*************************** ROUTING SPACE PRODUCTIONS ***************************/
+void spaces( ObjectModel theModel ) :
+{}
+{
+	<SPACES> ( space(theModel) )* <P_CLOSE>
+}
+
+void space( ObjectModel theModel ) :
+{
+	Space theSpace = null;
+}
+{
+	/* <SPACE> <STRING> ( dimension() )* <P_CLOSE> */
+	<SPACE>
+	
+	/* space name */ { theSpace = theModel.newSpace( stringValue() ); }
+	
+	/* dimensions */ ( dimension(theModel,theSpace) )*
+	
+	<P_CLOSE>
+	
+	// finish things off
+	{
+		theModel.addSpace( theSpace );
+	}
+}
+
+void dimension( ObjectModel theModel, Space theSpace ) :
+{}
+{
+	/* <DIMENSION> <STRING> <P_CLOSE> */
+	<DIMENSION>
+	
+	/* dimension name */ { theSpace.addDimension( theModel.newDimension(stringValue()) ); }
+	
+	<P_CLOSE>
+}
+
+/*************************** OBJECT CLASS PRODUCTIONS ***************************/
+void objects( ObjectModel theModel ) :
+{}
+{
+	<OBJECTS>
+	( objectClass(theModel, null) )*
+	<P_CLOSE>
+}
+
+void objectClass( ObjectModel theModel, OCMetadata parent ) :
+{
+	OCMetadata theObject = null;
+}
+{
+	<CLASS>
+	
+	/*class name */ { theObject = theModel.newObject( stringValue() ); }
+	
+	( objectAttribute(theObject, theModel) | objectClass(theModel, theObject) )*
+	
+	<P_CLOSE>
+	
+	/* some finishing off code */
+	{
+		// check to see if we have a parent
+		if( parent == null )
+		{
+			// no parent, make sure we are ObjectRoot
+			if( theObject.getLocalName().equals("ObjectRoot") == false )
+			{
+				// NO PARENT AND NOT OBJECT ROOT! EXCEPTION!!!!
+				throw new ParseException( "First object class must be ObjectRoot" );
+			}
+			else
+			{
+				// we are object root, add us and set us as the root
+				theModel.addObjectClass( theObject );
+				theModel.setObjectRoot( theObject );
+			}
+		}
+		else
+		{
+			// we do have a parent, set it up and add us to the model
+			theObject.setParent( parent );
+			theModel.addObjectClass( theObject );
+		}
+	}
+}
+
+void objectAttribute( OCMetadata theClass, ObjectModel theModel ) throws ParseException:
+{
+	ACMetadata attribute = null;
+	Transport transport = null;
+	Order order = null;
+	String spaceName = null;
+}
+{
+	/* <ATTRIBUTE> <STRING> transport() order() attributeSpace() <P_CLOSE> */
+	<ATTRIBUTE> 
+		/* attribute name */ { attribute = theModel.newAttribute( stringValue() ); }
+	
+		transport = transport()
+	
+		order = order()
+	
+		[ spaceName = stringValue() ]
+	<P_CLOSE>
+	
+	/* some finishing off code */
+	{
+		attribute.setOrder( order );
+		attribute.setTransport( transport );
+		theClass.addAttribute( attribute );
+		if( spaceName != null )
+		{
+			// find the space and add the link to the attribute metadata
+			// if we can't find it, throw an exception
+			Space theSpace = theModel.getSpace( spaceName );
+			if( theSpace != null )
+			{
+				attribute.setSpace( theSpace );
+			}
+			else
+			{
+				String attName = "ObjectRoot." +theClass.getLocalName()+ "." + attribute.getName();
+				throw new ParseException( "attribute [" + attName + "] uses undefined space \"" +
+				                          spaceName + "\"" );
+			}
+		}
+	}
+}
+
+/************************* INTERACTION CLASS PRODUCTIONS ************************/
+void interactions( ObjectModel theModel ) :
+{}
+{
+	<INTERACTIONS>
+	( interactionClass(theModel, null) )*
+	<P_CLOSE>
+}
+
+void interactionClass( ObjectModel theModel, ICMetadata parent ) :
+{
+	ICMetadata theInteraction = null;
+	Transport transport = null;
+	Order order = null;
+	String spaceName = null;
+}
+{
+	<CLASS>
+	
+	/* Interaction name */ { theInteraction = theModel.newInteraction( stringValue() ); }
+	
+	transport = transport()
+	
+	order = order()
+
+	[ spaceName = stringValue() ]
+	
+	( interactionParameter(theInteraction, theModel) | interactionClass(theModel,theInteraction) )*
+	
+	<P_CLOSE>
+	
+	/* some finishing off code */
+	{
+		// set the order and transport
+		theInteraction.setTransport( transport );
+		theInteraction.setOrder( order );
+		
+		// if we have a space name, add it to the metadata
+		if( spaceName != null )
+		{
+			// find the space and add the link to the interaction metadata
+			// if we can't find it, throw an exception
+			Space theSpace = theModel.getSpace( spaceName );
+			if( theSpace != null )
+			{
+				theInteraction.setSpace( theSpace );
+			}
+			else
+			{
+				throw new ParseException( "interaction [InteractionRoot." +
+				                          theInteraction.getLocalName() +
+				                          "] uses undefined space: \"" + spaceName + "\"" );
+			}
+		}
+		
+		if( parent == null )
+		{
+			// no parent - this must be InteractionRoot - verify
+			if( theInteraction.getQualifiedName().equals("InteractionRoot") == false )
+			{
+				// NO PARENT AND NOT INTERACTION ROOT! THROW EXCEPTION!!!!
+				throw new ParseException( "First interaction class must be InteractionRoot" );
+			}
+			else
+			{
+				// it is interaction root, add it to the model and set it as the root
+				theModel.addInteractionClass( theInteraction );
+				theModel.setInteractionRoot( theInteraction );
+			}
+		}
+		else
+		{
+			// we do have a parent, set it up and add us to the model
+			theInteraction.setParent( parent );
+			theModel.addInteractionClass( theInteraction );
+		}
+	}
+}
+
+void interactionParameter( ICMetadata theInteraction, ObjectModel theModel ) :
+{}
+{
+	<PARAMETER>
+	
+	{ theInteraction.addParameter( theModel.newParameter(stringValue()) ); }
+	
+	<P_CLOSE>
+}
+
+
+/**************************** SUPPORTING PRODUCTIONS ****************************/
+Transport transport() :
+{}
+{
+	"reliable" { return Transport.RELIABLE; } | "best_effort" { return Transport.BEST_EFFORT; }
+}
+
+Order order() :
+{}
+{
+	"timestamp" { return Order.TIMESTAMP; } | "receive" { return Order.RECEIVE; }
+}
+
+String stringValue() :
+{
+	Token token;
+}
+{
+	token=<STRING> { return token.image; }
+}
+
+/*****************************************************************************/
+/*** CAUTION: THESE MUST COME LAST!!                                       ***/
+/*** These must be the last thing in the file, lest ye be fond of the old: ***/
+/*** "whatever" cannot be matched as a string literal token... messages    ***/
+/*****************************************************************************/
+/* character sequences */
+TOKEN :
+{
+	< STRING:    (<CHAR>)+ >
+	| < CHAR:    <ALPHA> | <NUMERIC> | <SYMBOL> >
+	| < ALPHA:   [ "a"-"z","A"-"Z" ] >
+	| < NUMERIC: ["0"-"9"] >
+	| < SYMBOL:  ["-", "_", "/", "@", "&", "#", "!", "+", "~"] >
+}
+

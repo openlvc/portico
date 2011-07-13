@@ -1,0 +1,2670 @@
+Index: src-cpp/hla13/src/jni/JavaRTI.cpp
+===================================================================
+--- src-cpp/hla13/src/jni/JavaRTI.cpp	(revision 1915)
++++ src-cpp/hla13/src/jni/JavaRTI.cpp	(working copy)
+@@ -17,6 +17,9 @@
+ #include "Runtime.h"
+ #include "types/Region.h"
+ 
++/** Just to make things a little neater */
++#define JNIENV Runtime::getRuntime()->getJniEnv()
++
+ PORTICO13_NS_START
+ 
+ int JavaRTI::rtiCounter = 0;
+@@ -27,7 +30,6 @@
+ JavaRTI::JavaRTI()
+ {
+ 	// do some basic setup
+-	this->jnienv      = NULL;
+ 	this->jproxyClass = NULL;
+ 	this->jproxy      = NULL;
+ 	this->id          = ++rtiCounter;
+@@ -58,7 +60,7 @@
+ 	// delete the global reference to the proxy
+ 	if( this->jproxy != NULL )
+ 	{
+-		jnienv->DeleteGlobalRef( jproxy );
++		JNIENV->DeleteGlobalRef( jproxy );
+ 		exceptionCheck();
+ 	}
+ 
+@@ -156,11 +158,11 @@
+ {
+ 	// if we don't have a tag, just return an empty byte[]
+ 	if( tag == NULL )
+-		return jnienv->NewByteArray(0);
++		return JNIENV->NewByteArray(0);
+ 
+ 	// create the byte[] and populate it with the tag data
+-	jbyteArray jtag = jnienv->NewByteArray( strlen(tag)+1 );
+-	jnienv->SetByteArrayRegion( jtag, 0, strlen(tag)+1, (jbyte*)tag );
++	jbyteArray jtag = JNIENV->NewByteArray( strlen(tag)+1 );
++	JNIENV->SetByteArrayRegion( jtag, 0, strlen(tag)+1, (jbyte*)tag );
+ 	return jtag;
+ }
+ 
+@@ -171,12 +173,12 @@
+ jintArray JavaRTI::convertAHS( const HLA::AttributeHandleSet& ahs )
+ {
+ 	// create the array
+-	jintArray array = jnienv->NewIntArray( ahs.size() );
+-	jint* content = jnienv->GetIntArrayElements( array, NULL );
++	jintArray array = JNIENV->NewIntArray( ahs.size() );
++	jint* content = JNIENV->GetIntArrayElements( array, NULL );
+ 	for( HLA::ULong i = 0; i < ahs.size(); i++ )
+ 		content[i] = ahs.getHandle(i);
+ 
+-	jnienv->ReleaseIntArrayElements( array, content, 0 );
++	JNIENV->ReleaseIntArrayElements( array, content, 0 );
+ 	return array;
+ }
+ 
+@@ -187,12 +189,12 @@
+ jintArray JavaRTI::convertAHA( HLA::AttributeHandle incoming[], HLA::ULong size )
+ {
+ 	// create the array
+-	jintArray array = jnienv->NewIntArray( size );
+-	jint* content = jnienv->GetIntArrayElements( array, NULL );
++	jintArray array = JNIENV->NewIntArray( size );
++	jint* content = JNIENV->GetIntArrayElements( array, NULL );
+ 	for( HLA::ULong i = 0; i < size; i++ )
+ 		content[i] = incoming[i];
+ 
+-	jnienv->ReleaseIntArrayElements( array, content, 0 );
++	JNIENV->ReleaseIntArrayElements( array, content, 0 );
+ 	return array;
+ }
+ 
+@@ -203,12 +205,12 @@
+ jintArray JavaRTI::convertFHS( const HLA::FederateHandleSet& fhs )
+ {
+ 	// create the array
+-	jintArray array = jnienv->NewIntArray( fhs.size() );
+-	jint* content = jnienv->GetIntArrayElements( array, NULL );
++	jintArray array = JNIENV->NewIntArray( fhs.size() );
++	jint* content = JNIENV->GetIntArrayElements( array, NULL );
+ 	for( HLA::ULong i = 0; i < fhs.size(); i++ )
+ 		content[i] = fhs.getHandle(i);
+ 
+-	jnienv->ReleaseIntArrayElements( array, content, 0 );
++	JNIENV->ReleaseIntArrayElements( array, content, 0 );
+ 	return array;
+ }
+ 
+@@ -230,11 +232,11 @@
+ 
+ 	// create the struct to hold the values
+ 	HVPS hvps = HVPS();
+-	hvps.handles = jnienv->NewIntArray( attributes.size() );
+-	hvps.values  = jnienv->NewObjectArray( attributes.size(), BYTE_ARRAY, 0 );
++	hvps.handles = JNIENV->NewIntArray( attributes.size() );
++	hvps.values  = JNIENV->NewObjectArray( attributes.size(), BYTE_ARRAY, 0 );
+ 
+ 	// get references to the array contents as JNI requires
+-	jint *handlesContent = jnienv->GetIntArrayElements( hvps.handles, NULL );
++	jint *handlesContent = JNIENV->GetIntArrayElements( hvps.handles, NULL );
+ 
+ 	// do the conversion
+ 	for( HLA::ULong i = 0; i < attributes.size(); ++i )
+@@ -244,19 +246,19 @@
+ 
+ 		// turn the value into a byte[] and store it
+ 		HLA::ULong valueSize = attributes.getValueLength(i);
+-		jbyteArray value = jnienv->NewByteArray( valueSize );
+-		jnienv->SetByteArrayRegion( value,
++		jbyteArray value = JNIENV->NewByteArray( valueSize );
++		JNIENV->SetByteArrayRegion( value,
+ 		                            0,
+ 		                            valueSize,
+ 		                            (jbyte*)attributes.getValuePointer(i,valueSize) );
+-		jnienv->SetObjectArrayElement( hvps.values, i, value );
++		JNIENV->SetObjectArrayElement( hvps.values, i, value );
+ 		
+ 		// don't forget to release our local reference to this inner byte[]
+-		jnienv->DeleteLocalRef( value );
++		JNIENV->DeleteLocalRef( value );
+ 	}
+ 
+ 	// release the content pointers
+-	jnienv->ReleaseIntArrayElements( hvps.handles, handlesContent, 0 );
++	JNIENV->ReleaseIntArrayElements( hvps.handles, handlesContent, 0 );
+ 
+ 	// return the result
+ 	return hvps;
+@@ -280,11 +282,11 @@
+ 
+ 	// create the struct to hold the values
+ 	HVPS hvps = HVPS();
+-	hvps.handles = jnienv->NewIntArray( parameters.size() );
+-	hvps.values  = jnienv->NewObjectArray( parameters.size(), BYTE_ARRAY, 0 );
++	hvps.handles = JNIENV->NewIntArray( parameters.size() );
++	hvps.values  = JNIENV->NewObjectArray( parameters.size(), BYTE_ARRAY, 0 );
+ 
+ 	// get references to the array contents as JNI requires
+-	jint *handlesContent = jnienv->GetIntArrayElements( hvps.handles, NULL );
++	jint *handlesContent = JNIENV->GetIntArrayElements( hvps.handles, NULL );
+ 
+ 	// do the conversion
+ 	for( HLA::ULong i = 0; i < parameters.size(); ++i )
+@@ -294,19 +296,19 @@
+ 
+ 		// turn the value into a byte[] and store it
+ 		HLA::ULong valueSize = parameters.getValueLength(i);
+-		jbyteArray value = jnienv->NewByteArray( valueSize );
+-		jnienv->SetByteArrayRegion( value,
++		jbyteArray value = JNIENV->NewByteArray( valueSize );
++		JNIENV->SetByteArrayRegion( value,
+ 		                            0,
+ 		                            valueSize,
+ 		                            (jbyte*)parameters.getValuePointer(i,valueSize) );
+-		jnienv->SetObjectArrayElement( hvps.values, i, value );
++		JNIENV->SetObjectArrayElement( hvps.values, i, value );
+ 
+ 		// don't forget to release our local reference to this inner byte[]
+-		jnienv->DeleteLocalRef( value );
++		JNIENV->DeleteLocalRef( value );
+ 	}
+ 
+ 	// release the content pointers
+-	jnienv->ReleaseIntArrayElements( hvps.handles, handlesContent, 0 );
++	JNIENV->ReleaseIntArrayElements( hvps.handles, handlesContent, 0 );
+ 
+ 	// return the result
+ 	return hvps;
+@@ -341,13 +343,13 @@
+  */
+ char* JavaRTI::convertAndReleaseJString( jstring string )
+ {
+-	const char *javaString = jnienv->GetStringUTFChars( string, NULL );
++	const char *javaString = JNIENV->GetStringUTFChars( string, NULL );
+ 	char *userString = new char[strlen(javaString)+1];
+ 	strcpy( userString, javaString );
+ 
+ 	// release the java resources
+-	jnienv->ReleaseStringUTFChars( string, javaString );
+-	jnienv->DeleteLocalRef( string );
++	JNIENV->ReleaseStringUTFChars( string, javaString );
++	JNIENV->DeleteLocalRef( string );
+ 
+ 	// return the userspace string
+ 	return userString;
+@@ -367,9 +369,9 @@
+ 		return NULL;
+ 
+ 	// convert the tag
+-	jsize length = jnienv->GetArrayLength( tag );
++	jsize length = JNIENV->GetArrayLength( tag );
+ 	jbyte *buffer = new jbyte[length];
+-	jnienv->GetByteArrayRegion( tag, 0, length, buffer );
++	JNIENV->GetByteArrayRegion( tag, 0, length, buffer );
+ 	return (char*)buffer;
+ }
+ 
+@@ -392,10 +394,10 @@
+ jobjectArray JavaRTI::convertRegions( HLA::Region *theRegions[], HLA::ULong size )
+ {
+ 	// create the array
+-	jobjectArray array = jnienv->NewObjectArray( size, jregionClass, NULL );
++	jobjectArray array = JNIENV->NewObjectArray( size, jregionClass, NULL );
+ 	for( HLA::ULong i = 0; i < size; i++ )
+ 	{
+-		jnienv->SetObjectArrayElement( array, i, convertRegion(*theRegions[i]) );
++		JNIENV->SetObjectArrayElement( array, i, convertRegion(*theRegions[i]) );
+ 	}
+ 
+ 	return array;
+@@ -440,15 +442,15 @@
+ HLA::AttributeHandleSet* JavaRTI::convertToAHS( jintArray array )
+ {
+ 	// create the AHS
+-	int size = jnienv->GetArrayLength( array );
++	int size = JNIENV->GetArrayLength( array );
+ 	HLA::AttributeHandleSet *handleSet = HLA::AttributeHandleSetFactory::create(size);
+ 	
+ 	// put the values into the AHS
+-	jint *content = jnienv->GetIntArrayElements( array, NULL );
++	jint *content = JNIENV->GetIntArrayElements( array, NULL );
+ 	for( int i = 0; i < size; i++ )
+ 		handleSet->add( content[i] );
+ 	
+-	jnienv->ReleaseIntArrayElements( array, content, 0 );
++	JNIENV->ReleaseIntArrayElements( array, content, 0 );
+ 	return handleSet;
+ }
+ 
+@@ -463,6 +465,7 @@
+ void JavaRTI::attachToJVM() throw( HLA::RTIinternalError )
+ {
+ 	logger->debug( "Attaching to JVM" );
++	JNIEnv *jnienv;
+ 	JavaVMInitArgs vmArgs;
+ 	JNI_GetDefaultJavaVMInitArgs( &vmArgs );
+ 	jint result = Runtime::getRuntime()->jvm->AttachCurrentThread( (void**)&jnienv, &vmArgs );
+@@ -505,7 +508,7 @@
+ 	// get the proxy class id data and create an instance of it //
+ 	//////////////////////////////////////////////////////////////
+ 	// find the Region class //
+-	this->jregionClass = jnienv->FindClass( "org/portico/impl/hla13/types/HLA13Region" );
++	this->jregionClass = JNIENV->FindClass( "org/portico/impl/hla13/types/HLA13Region" );
+ 	if( jregionClass == NULL )
+ 	{
+ 		logger->fatal( "Can't locate: org.portico.impl.hla13.types.HLA13Region" );
+@@ -514,7 +517,7 @@
+ 	}
+ 
+ 	// find the ProxyRtiAmbassador class //
+-	this->jproxyClass = jnienv->FindClass( "org/portico/impl/cpp13/ProxyRtiAmbassador" );
++	this->jproxyClass = JNIENV->FindClass( "org/portico/impl/cpp13/ProxyRtiAmbassador" );
+ 	if( jproxyClass == NULL )
+ 	{
+ 		logger->fatal( "Can't locate: org.portico.impl.cpp13.ProxyRtiAmbassador" );
+@@ -524,7 +527,7 @@
+ 
+ 	// find the method id of the constructor //
+ 	jmethodID constructor;
+-	constructor = jnienv->GetMethodID( jproxyClass, "<init>", "(I)V" );
++	constructor = JNIENV->GetMethodID( jproxyClass, "<init>", "(I)V" );
+ 	if( constructor == NULL )
+ 	{
+ 		logger->fatal( "Can't locate ProxyRtiAmbassador() constructor ID" );
+@@ -534,22 +537,22 @@
+ 
+ 	// create the instance of the ambassador //
+ 	logger->debug( "Creating new instance of ProxyRtiAmbassador" );
+-	jobject localReference = jnienv->NewObject( jproxyClass, constructor, this->id );
++	jobject localReference = JNIENV->NewObject( jproxyClass, constructor, this->id );
+ 
+ 	// check for an exception
+ 	// we have to use the plain old JNI method of exception detection as to work, the
+ 	// exception manager requires that the JavaRTI instance be in the Runtime's map of
+ 	// instances, and that won't happen until after the constructor, which this method
+ 	// is a part of (in terms of method flow)
+-	if( jnienv->ExceptionOccurred() )
++	if( JNIENV->ExceptionOccurred() )
+ 	{
+-		jnienv->ExceptionDescribe();
+-		jnienv->ExceptionClear();
++		JNIENV->ExceptionDescribe();
++		JNIENV->ExceptionClear();
+ 		throw HLA::RTIinternalError( "Exception during ProxyRtiAmbassador() constructor" );
+ 	}
+ 
+ 	// turn the reference into something more persistent (stop it from being garbage collected)
+-	jproxy = jnienv->NewGlobalRef( localReference );
++	jproxy = JNIENV->NewGlobalRef( localReference );
+ 	if( jproxy == NULL )
+ 	{
+ 		logger->fatal( "Could not instantiate ProxyRtiAmbassador" );
+@@ -557,8 +560,8 @@
+ 	}
+ 
+ 	// cache the jclass for byte[] //
+-	BYTE_ARRAY = jnienv->FindClass( "[B" );
+-	BYTE_ARRAY = (jclass)jnienv->NewGlobalRef( BYTE_ARRAY );
++	BYTE_ARRAY = JNIENV->FindClass( "[B" );
++	BYTE_ARRAY = (jclass)JNIENV->NewGlobalRef( BYTE_ARRAY );
+ 
+ 	logger->info( "Initialized new JavaRTI (rti-%d)", this->id );
+ }
+@@ -574,7 +577,7 @@
+ 	logger->noisy( "Caching %s [%s]", method, signature );
+ 
+ 	// get the method and store it
+-	*handle = jnienv->GetMethodID( jproxyClass, method, signature );
++	*handle = JNIENV->GetMethodID( jproxyClass, method, signature );
+ 	if( *handle == NULL )
+ 	{
+ 		char *message = new char[1024];
+@@ -597,7 +600,7 @@
+ 	logger->noisy( "Caching %s [%s]", method, signature );
+ 
+ 	// get the method and store it
+-	*handle = jnienv->GetMethodID( clazz, method, signature );
++	*handle = JNIENV->GetMethodID( clazz, method, signature );
+ 	if( *handle == NULL )
+ 	{
+ 		char *message = new char[1024];
+Index: src-cpp/hla13/src/jni/Runtime.cpp
+===================================================================
+--- src-cpp/hla13/src/jni/Runtime.cpp	(revision 1915)
++++ src-cpp/hla13/src/jni/Runtime.cpp	(working copy)
+@@ -114,6 +114,20 @@
+ 	activeRtis->erase( id );
+ }
+ 
++/* 
++ * This method will get a pointer to the JNIEnv in a THREAD-SAFE MANNER!!
++ * A JNIEnv is only valid in the thread that created it. For situations where the RTIamb is
++ * created in one thread but called on in another, we need a way to make the JNIEnv valid.
++ * Unfortunately, the only way is to attempt to attach another thread to the JVM. If the thread
++ * is already attached, the existing reference will be returned.
++ */
++JNIEnv* Runtime::getJniEnv()
++{
++	JNIEnv *jnienv;
++	jvm->AttachCurrentThread( (void**)&jnienv, NULL );
++	return jnienv;
++}
++
+ /*
+  * This method will initialize the JVM. If there is already an active JVM
+  * running, it will just attach to it. If there isn't an active JVM, it will
+Index: src-cpp/hla13/src/jni/JavaRTI.h
+===================================================================
+--- src-cpp/hla13/src/jni/JavaRTI.h	(revision 1915)
++++ src-cpp/hla13/src/jni/JavaRTI.h	(working copy)
+@@ -49,7 +49,6 @@
+ 		jclass  jproxyClass;
+ 		jclass  jregionClass;
+ 		jobject jproxy;
+-		JNIEnv  *jnienv;
+ 
+ 		HLA::FederateAmbassador *fedamb; // the user FederateAmbassador implementation
+ 
+Index: src-cpp/hla13/src/jni/Runtime.h
+===================================================================
+--- src-cpp/hla13/src/jni/Runtime.h	(revision 1915)
++++ src-cpp/hla13/src/jni/Runtime.h	(working copy)
+@@ -17,11 +17,6 @@
+ 
+ #include "common.h"
+ #include "utils/Logger.h"
+-
+-// Need a forward declaration of this because the JavaRTI.h file
+-// includes this file (thus creating a circular reference). Without
+-// this, the compiler cracks the sads
+-class JavaRTI;
+ #include "JavaRTI.h"
+ 
+ PORTICO13_NS_START
+@@ -71,6 +66,9 @@
+ 		JavaRTI* newRtiAmbassador() throw( HLA::RTIinternalError );
+ 		JavaRTI* getRtiAmbassador( int id );
+ 		void     removeRtiAmbassador( int id );
++		
++		/* This method will get a pointer to the JNIEnv in a THREAD-SAFE MANNER!! */
++		JNIEnv*  getJniEnv();
+ 
+ 	private:
+ 		void   initializeJVM() throw( HLA::RTIinternalError );
+Index: src-cpp/hla13/src/services/HLA13Private.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13Private.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13Private.cpp	(working copy)
+@@ -25,12 +25,12 @@
+ RTIambPrivateRefs::RTIambPrivateRefs()
+ {
+ 	this->rti = portico13::Runtime::getRuntime()->newRtiAmbassador();
+-	this->env = this->rti->jnienv;
++	this->runtime = portico13::Runtime::getRuntime();
+ }
+ 
+ RTIambPrivateRefs::~RTIambPrivateRefs()
+ {
+-	this->env = NULL;
++	this->runtime = NULL;
+ 	delete this->rti;
+ }
+ 
+Index: src-cpp/hla13/src/services/HLA13OwnershipManagement.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13OwnershipManagement.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13OwnershipManagement.cpp	(working copy)
+@@ -30,17 +30,20 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNCONDITIONAL_DIVEST,
+ 	                                  theObject,
+ 	                                  jAttSet );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ }
+ 
+@@ -59,20 +62,23 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->NEGOTIATED_DIVEST,
+ 	                                  theObject,
+ 	                                  jAttSet,
+ 	                                  jTag );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
+-	privateRefs->env->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jTag );
+ 	privateRefs->rti->exceptionCheck();
+ }
+ 
+@@ -92,20 +98,23 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ATTRIBUTE_ACQUISITION,
+ 	                                  theObject,
+ 	                                  jAttSet,
+ 	                                  jTag );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
+-	privateRefs->env->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jTag );
+ 	privateRefs->rti->exceptionCheck();
+ }
+ 
+@@ -125,17 +134,20 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ATTRIBUTE_ACQUISITION_AVAILABLE,
+ 	                                  theObject,
+ 	                                  jAttSet );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ }
+ 
+@@ -153,18 +165,21 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+ 
+ 	// call the method
+ 	jobject ret = 
+-		privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                        privateRefs->rti->ATTRIBUTE_OWNERSHIP_RELEASE_RESPOSE,
+ 	                                        theObject,
+ 	                                        jAttSet );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	return privateRefs->rti->convertToAHS( (jintArray)ret );
+@@ -184,17 +199,20 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CANCEL_NEGOTIATED_DIVEST,
+ 	                                  theObject,
+ 	                                  jAttSet );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ }
+ 
+@@ -212,17 +230,20 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( attributes );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CANCEL_OWNERSHIP_ACQUISITION,
+ 	                                  theObject,
+ 	                                  jAttSet );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ }
+ 
+@@ -237,8 +258,11 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->QUERY_ATTRIBUTE_OWNERSHIP,
+ 	                                  theObject,
+ 	                                  theAttribute );
+@@ -258,9 +282,12 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jboolean retval =
+-		privateRefs->env->CallBooleanMethod( privateRefs->rti->jproxy,
++		jnienv->CallBooleanMethod( privateRefs->rti->jproxy,
+ 	                                         privateRefs->rti->IS_ATTRIBUTE_OWNED_BY_FEDERATE,
+ 	                                         theObject,
+ 	                                         theAttribute );
+Index: src-cpp/hla13/src/services/HLA13TimeManagement.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13TimeManagement.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13TimeManagement.cpp	(working copy)
+@@ -34,6 +34,9 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jdouble jTime      = privateRefs->rti->convertTime( theFederateTime );
+ 	jdouble jLookahead = privateRefs->rti->convertTime( theLookahead );
+@@ -42,7 +45,7 @@
+ 	               jTime, jLookahead );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_TIME_REGULATION,
+ 	                                  jTime,
+ 	                                  jLookahead );
+@@ -65,8 +68,11 @@
+ {
+ 	logger->trace( "[Starting] disableTimeRegulation()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_TIME_REGULATION );
+ 	
+ 	// run the exception check
+@@ -88,8 +94,11 @@
+ {
+ 	logger->trace( "[Starting] enableTimeConstrained()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_TIME_CONSTRAINED );
+ 	
+ 	// run the exception check
+@@ -109,8 +118,11 @@
+ {
+ 	logger->trace( "[Starting] disableTimeConstrained()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_TIME_CONSTRAINED );
+ 	
+ 	// run the exception check
+@@ -135,10 +147,13 @@
+ 	// get java versions of the parameters
+ 	jdouble jTime = privateRefs->rti->convertTime( theTime );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] timeAdvanceRequest(): time=%f", jTime );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->TIME_ADVANCE_REQUEST,
+ 	                                  jTime );
+ 
+@@ -161,13 +176,16 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jdouble jTime = privateRefs->rti->convertTime( theTime );
+ 
+ 	logger->trace( "[Starting] timeAdvanceRequestAvailable(): time=%f", jTime );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->TIME_ADVANCE_REQUEST_AVAILABLE,
+ 	                                  jTime );
+ 
+@@ -190,13 +208,16 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jdouble jTime = privateRefs->rti->convertTime( theTime );
+ 
+ 	logger->trace( "[Starting] nextEventRequest(): time=%f", jTime );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->NEXT_EVENT_REQUEST,
+ 	                                  jTime );
+ 
+@@ -219,13 +240,16 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jdouble jTime = privateRefs->rti->convertTime( theTime );
+ 
+ 	logger->trace( "[Starting] nextEventRequestAvailable(): time=%f", jTime );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->NEXT_EVENT_REQUEST_AVAILABLE,
+ 	                                  jTime );
+ 
+@@ -248,13 +272,16 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jdouble jTime = privateRefs->rti->convertTime( theTime );
+ 
+ 	logger->trace( "[Starting] flushQueueRequest(): time=%f", jTime );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->FLUSH_QUEUE_REQUEST,
+ 	                                  jTime );
+ 
+@@ -273,10 +300,13 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] enableAsynchronousDelivery()" );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_ASYNCHRONOUS_DELIVERY );
+ 	
+ 	// run the exception check
+@@ -294,10 +324,13 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] disableAsynchronousDelivery()" );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_ASYNCHRONOUS_DELIVERY );
+ 	
+ 	// run the exception check
+@@ -314,10 +347,13 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] queryLBTS()" );
+ 	
+ 	// call the method
+-	jdouble retval = privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
++	jdouble retval = jnienv->CallDoubleMethod( privateRefs->rti->jproxy,
+ 	                                                     privateRefs->rti->QUERY_LBTS );
+ 	
+ 	// run the exception check
+@@ -337,10 +373,13 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] queryFederateTime()" );
+ 	
+ 	// call the method
+-	jdouble retval = privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
++	jdouble retval = jnienv->CallDoubleMethod( privateRefs->rti->jproxy,
+ 	                                                     privateRefs->rti->QUERY_FEDERATE_TIME );
+ 	
+ 	// run the exception check
+@@ -360,11 +399,14 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] queryNextMinEventTime()" );
+ 
+ 	// call the method
+ 	jdouble retval =
+-		privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
++		jnienv->CallDoubleMethod( privateRefs->rti->jproxy,
+ 	                                        privateRefs->rti->QUERY_MIN_NEXT_EVENT_TIME );
+ 	
+ 	// run the exception check
+@@ -385,13 +427,16 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jdouble jTime = privateRefs->rti->convertTime( theLookahead );
+ 
+ 	logger->trace( "[Starting] modifyLookahead(): lookahead=%f", jTime );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->MODIFY_LOOKAHEAD,
+ 	                                  jTime );
+ 
+@@ -409,10 +454,13 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] queryLookahead()" );
+ 
+ 	// call the method
+-	jdouble retval = privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
++	jdouble retval = jnienv->CallDoubleMethod( privateRefs->rti->jproxy,
+ 	                                                     privateRefs->rti->QUERY_LOOKAHEAD );
+ 	
+ 	// run the exception check
+@@ -433,10 +481,13 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] retract()" );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->RETRACT,
+ 	                                  theHandle );
+ 
+@@ -460,20 +511,23 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] changeAttributeOrderType()" );
+ 
+ 	// get java versions of the parameters
+ 	jintArray jSyncSet = privateRefs->rti->convertAHS( theAttributes );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CHANGE_ATTRIBUTE_ORDER_TYPE,
+ 	                                  theObject,
+ 	                                  jSyncSet,
+ 	                                  theType );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jSyncSet );
++	jnienv->DeleteLocalRef( jSyncSet );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] changeAttributeOrderType()" );
+@@ -491,11 +545,14 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	logger->trace( "[Starting] changeInteractionOrderType(): class=%d, orderHandle=%d",
+ 	               theClass, theType );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CHANGE_INTERACTION_ORDER_TYPE,
+ 	                                  theClass,
+ 	                                  theType );
+Index: src-cpp/hla13/src/services/HLA13Support.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13Support.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13Support.cpp	(working copy)
+@@ -30,16 +30,19 @@
+ {
+ 	logger->trace( "[Starting] getObjectClassHandle(): className=%s", theName );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint classHandle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint classHandle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                                    privateRefs->rti->GET_OBJECT_CLASS_HANDLE,
+ 	                                                    jname );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getObjectClassHandle(): className=%s (return: %d)",
+@@ -58,9 +61,12 @@
+ {
+ 	logger->trace( "[Starting] getObjectClassName(): classHandle=%d", theHandle );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_OBJECT_CLASS_NAME,
+ 	                                                 theHandle );
+ 	
+@@ -85,17 +91,20 @@
+ 	logger->trace( "[Starting] getAttributeHandle(): attribute=%s, whichClass=%d",
+ 	               theName, whichClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_ATTRIBUTE_HANDLE,
+ 	                                               jname,
+ 	                                               whichClass );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getAttributeHandle(): attribute=%s, whichClass=%d (return: %d)",
+@@ -117,9 +126,12 @@
+ 	logger->trace( "[Starting] getAttributeName(): attribute=%d, whichClass=%d",
+ 	               theHandle, whichClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_ATTRIBUTE_NAME,
+ 	                                                 theHandle,
+ 	                                                 whichClass );
+@@ -142,16 +154,19 @@
+ {
+ 	logger->trace( "[Starting] getInteractionClassHandle(): className=%s", theName );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_INTERACTION_CLASS_HANDLE,
+ 	                                               jname );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getInteractionClassHandle(): className=%s (return: %d)",
+@@ -170,9 +185,12 @@
+ {
+ 	logger->trace( "[Starting] getInteractionClassName(): handle=%d", theHandle );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_INTERACTION_CLASS_NAME,
+ 	                                                 theHandle );
+ 	
+@@ -198,17 +216,20 @@
+ 	logger->trace( "[Starting] getParameterHandle(): parameterName=%s, whichClass=%d",\
+ 	               theName, whichClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_PARAMETER_HANDLE,
+ 	                                               jname,
+ 	                                               whichClass );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getParameterHandle(): parameterName=%s, whichClass=%d (return: %d)", 
+@@ -230,9 +251,12 @@
+ 	logger->trace( "[Starting] getParameterName(): parameterHandle=%d, whichClass=%d",
+ 	               theHandle, whichClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_PARAMETER_NAME,
+ 	                                                 theHandle,
+ 	                                                 whichClass );
+@@ -255,16 +279,19 @@
+ {
+ 	logger->trace( "[Starting] getObjectInstanceHandle(): objectName=%s", theName );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_OBJECT_INSTANCE_HANDLE,
+ 	                                               jname );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getObjectInstanceHandle(): objectName=%s (return: %d)",
+@@ -283,9 +310,12 @@
+ {
+ 	logger->trace( "[Starting] getObjectInstanceName(): objectHandle=%d", theHandle );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_OBJECT_INSTANCE_NAME,
+ 	                                                 theHandle );
+ 	
+@@ -307,16 +337,19 @@
+ {
+ 	logger->trace( "[Starting] getRoutingSpaceHandle(): spaceName=%s", theName );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_ROUTING_SPACE_HANDLE,
+ 	                                               jname );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getRoutingSpaceHandle(): spaceName=%s (return: %d)",\
+@@ -335,9 +368,12 @@
+ {
+ 	logger->trace( "[Starting] getRoutingSpaceName(): spaceHandle=%d", theHandle );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_ROUTING_SPACE_NAME,
+ 	                                                 theHandle );
+ 	
+@@ -362,17 +398,20 @@
+ 	logger->trace( "[Starting] getDimensionHandle(): dimensionName=%s, whichSpace=%d",
+ 	               theName, whichSpace );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_DIMENSION_HANDLE,
+ 	                                               jname,
+ 	                                               whichSpace );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getDimensionHandle(): dimensionName=%s, whichSpace=%d (return: %d)",
+@@ -394,9 +433,12 @@
+ 	logger->trace( "[Starting] getDimensionName(): dimensionHandle=%d, whichSpace=%d",
+ 	               theHandle, whichSpace );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_DIMENSION_NAME,
+ 	                                                 theHandle,
+ 	                                                 whichSpace );
+@@ -423,8 +465,11 @@
+ 	logger->trace( "[Starting] getAttributeRoutingSpaceHandle(): attributeHandle=%d, whichClass=%d",
+ 	               theHandle, whichClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_ATTRIBUTE_ROUTING_SPACE_HANDLE,
+ 	                                               theHandle,
+ 	                                               whichClass );
+@@ -448,8 +493,11 @@
+ {
+ 	logger->trace( "[Starting] getObjectClass(): objectHandle=%d", theObject );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_OBJECT_CLASS,
+ 	                                               theObject );
+ 
+@@ -472,8 +520,11 @@
+ {
+ 	logger->trace( "[Starting] getInteractionRoutingSpaceHandle(): classHandle=%d", theHandle );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_INTERACTION_ROUTING_SPACE_HANDLE,
+ 	                                               theHandle );
+ 
+@@ -496,16 +547,19 @@
+ {
+ 	logger->trace( "[Starting] getTransportationHandle(): transportName=%s", theName );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_TRANSPORTATION_HANDLE,
+ 	                                               jname );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getTransportationHandle(): transportName=%s (return: %d)",
+@@ -524,9 +578,12 @@
+ {
+ 	logger->trace( "[Starting] getTransportationName(): transportHandle=%d", theHandle );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_TRANSPORTATION_NAME,
+ 	                                                 theHandle );
+ 	
+@@ -548,16 +605,19 @@
+ {
+ 	logger->trace( "[Starting] getOrderingHandle(): name=%s", theName );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jname = privateRefs->env->NewStringUTF( theName );
++	jstring jname = jnienv->NewStringUTF( theName );
+ 
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->GET_ORDERING_HANDLE,
+ 	                                               jname );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jname );
++	jnienv->DeleteLocalRef( jname );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] getOrderingHandle(): name=%s (return: %d)", theName, handle );
+@@ -575,9 +635,12 @@
+ {
+ 	logger->trace( "[Starting] getOrderingName(): orderHandle=%d", theHandle );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	jstring name =
+-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++		(jstring)jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                 privateRefs->rti->GET_ORDERING_NAME,
+ 	                                                 theHandle );
+ 	
+@@ -599,8 +662,11 @@
+ {
+ 	logger->trace( "[Starting] enableClassRelevanceAdvisorySwitch()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -619,8 +685,11 @@
+ {
+ 	logger->trace( "[Starting] disableClassRelevanceAdvisorySwitch()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -639,8 +708,11 @@
+ {
+ 	logger->trace( "[Starting] enableAttributeRelevanceAdvisorySwitch()" );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -659,8 +731,11 @@
+ {
+ 	logger->trace( "[Starting] disableAttributeRelevanceAdvisorySwitch()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -679,8 +754,11 @@
+ {
+ 	logger->trace( "[Starting] enableAttributeScopeAdvisorySwitch()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -699,8 +777,11 @@
+ {
+ 	logger->trace( "[Starting] disableAttributeScopeAdvisorySwitch()" );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -719,8 +800,11 @@
+ {
+ 	logger->trace( "[Starting] enableInteractionRelevanceAdvisorySwitch()" );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ENABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -739,8 +823,11 @@
+ {
+ 	logger->trace( "[Starting] disableInteractionRelevanceAdvisorySwitch()" );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DISABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
+ 	
+ 	// run the exception check
+@@ -757,15 +844,11 @@
+ {
+ 	logger->noisy( "[Starting] tick()" );
+ 	
+-	// fix: PORT-621: attach the current thread
+-	JNIEnv *env = 0;
+-	Runtime::getRuntime()->jvm->AttachCurrentThread( (void**)&env, NULL );
+-	if( env == 0 )
+-		throw new RTI::RTIinternalError( "couldn't attach to jvm in tick()" );
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
+ 	
+ 	// call the method
+-	//privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK );
+-	env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK );
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK );
+ 	
+ 	// run the exception check
+ 	privateRefs->rti->exceptionCheck();
+@@ -782,14 +865,11 @@
+ {
+ 	logger->noisy( "[Starting] tick(min,max)" );
+ 
+-	// fix: PORT-621: attach the current thread
+-	JNIEnv *env = 0;
+-	Runtime::getRuntime()->jvm->AttachCurrentThread( (void**)&env, NULL );
+-	if( env == 0 )
+-		throw new RTI::RTIinternalError( "couldn't attach to jvm in tick()" );
+-
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK_WITH_TIME, min, max );
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK_WITH_TIME, min, max );
+ 	
+ 	// run the exception check
+ 	privateRefs->rti->exceptionCheck();
+Index: src-cpp/hla13/src/services/HLA13Common.h
+===================================================================
+--- src-cpp/hla13/src/services/HLA13Common.h	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13Common.h	(working copy)
+@@ -17,4 +17,7 @@
+ 
+ #include "HLA13Private.h"
+ 
++/** just to make the code a little shorter in the service implementations */
++#define JNIENV privateRefs->runtime->getJniEnv();
++
+ #endif /* NG6COMMON_H_ */
+Index: src-cpp/hla13/src/services/HLA13FederationManagement.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13FederationManagement.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13FederationManagement.cpp	(working copy)
+@@ -30,20 +30,23 @@
+ 	       RTI::RTIinternalError )
+ {
+ 	logger->debug( "[Starting] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
++
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
+ 	
+ 	// get java versions of the parameters
+-	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
+-	jstring jFED = privateRefs->env->NewStringUTF( FED );
++	jstring jExecutionName = jnienv->NewStringUTF( executionName );
++	jstring jFED = jnienv->NewStringUTF( FED );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CREATE_FEDERATION,
+ 	                                  jExecutionName,
+ 	                                  jFED );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jExecutionName );
+-	privateRefs->env->DeleteLocalRef( jFED );
++	jnienv->DeleteLocalRef( jExecutionName );
++	jnienv->DeleteLocalRef( jFED );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->info( "[Finished] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
+@@ -57,16 +60,19 @@
+ {
+ 	logger->debug( "[Starting] destroyFederationExecution(): name=%s", executionName );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
++	jstring jExecutionName = jnienv->NewStringUTF( executionName );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DESTROY_FEDERATION,
+ 	                                  jExecutionName );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jExecutionName );
++	jnienv->DeleteLocalRef( jExecutionName );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->info( "[Finished] destroyFederationExecution(): name=%s", executionName );
+@@ -93,22 +99,25 @@
+ 	if( federateAmbassador == NULL )
+ 		throw RTI::RTIinternalError( "Null FederateAmbassador given to joinFederationExecution()" );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jFederateName = privateRefs->env->NewStringUTF( federateName );
+-	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
++	jstring jFederateName = jnienv->NewStringUTF( federateName );
++	jstring jExecutionName = jnienv->NewStringUTF( executionName );
+ 
+ 	// store the user federate ambassador
+ 	privateRefs->rti->fedamb = federateAmbassador;
+ 
+ 	// call the method
+-	jint federateHandle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint federateHandle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                                       privateRefs->rti->JOIN_FEDERATION,
+ 	                                                       jFederateName,
+ 	                                                       jExecutionName );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jFederateName );
+-	privateRefs->env->DeleteLocalRef( jExecutionName );
++	jnienv->DeleteLocalRef( jFederateName );
++	jnienv->DeleteLocalRef( jExecutionName );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->info( "[Finished] joinFederationExecution(): federationName=%s, federateName=%s",
+@@ -127,8 +136,11 @@
+ {
+ 	logger->debug( "[Starting] resignFederationExecution(): action=%d", theAction );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->RESIGN_FEDERATION,
+ 	                                  theAction );
+ 
+@@ -152,19 +164,22 @@
+ { 
+ 	logger->trace( "[Starting] registerFederationSynchronizationPoint(): label=%s", label );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
++	jstring jLabel  = jnienv->NewStringUTF( label );
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REGISTER_FEDERATION_SYNCH,
+ 	                                  jLabel,
+ 	                                  jTag );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jLabel );
+-	privateRefs->env->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( jLabel );
++	jnienv->DeleteLocalRef( jTag );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finsihed] registerFederationSynchronizationPoint(): label=%s", label );
+@@ -187,22 +202,25 @@
+ 		delete federateList;
+ 	}
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jLabel     = privateRefs->env->NewStringUTF( label );
++	jstring jLabel     = jnienv->NewStringUTF( label );
+ 	jbyteArray jTag    = privateRefs->rti->convertTag( theTag );
+ 	jintArray jSyncSet = privateRefs->rti->convertFHS( theSet );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REGISTER_FEDERATION_SYNCH_FEDHANDLESET,
+ 	                                  jLabel,
+ 	                                  jTag,
+ 	                                  jSyncSet );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jLabel );
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( jSyncSet );
++	jnienv->DeleteLocalRef( jLabel );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( jSyncSet );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] registerFederationSynchronizationPoint(FederateHandleSet): label=%s",
+@@ -220,16 +238,19 @@
+ {
+ 	logger->trace( "[Starting] synchronizationPointAchieved(): label=%s", label );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
++	jstring jLabel  = jnienv->NewStringUTF( label );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->SYNCH_POINT_ACHIEVED,
+ 	                                  jLabel );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jLabel );
++	jnienv->DeleteLocalRef( jLabel );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] synchronizationPointAchieved(): label=%s", label );
+@@ -245,20 +266,23 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jLabel = privateRefs->env->NewStringUTF( label );
++	jstring jLabel = jnienv->NewStringUTF( label );
+ 	jdouble jTime  = privateRefs->rti->convertTime( theTime );
+ 
+ 	logger->trace( "[Starting] requestFederationSave(): label=%s, time=%f", label, jTime );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REQUEST_FEDERATION_SAVE_TIME,
+ 	                                  jLabel,
+ 	                                  jTime );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jLabel );
++	jnienv->DeleteLocalRef( jLabel );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] requestFederationSave(withTime): label=%s", label );
+@@ -273,16 +297,19 @@
+ {
+ 	logger->trace( "[Starting] requestFederationSave(): label=%s", label );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
++	jstring jLabel  = jnienv->NewStringUTF( label );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REQUEST_FEDERATION_SAVE,
+ 	                                  jLabel );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jLabel );
++	jnienv->DeleteLocalRef( jLabel );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] requestFederationSave(): label=%s", label );
+@@ -298,8 +325,11 @@
+ {
+ 	logger->trace( "[Starting] federateSaveBegun()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->FEDERATE_SAVE_BEGUN );
+ 	
+ 	// run the exception check
+@@ -318,8 +348,11 @@
+ {
+ 	logger->trace( "[Starting] federateSaveComplete()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->FEDERATE_SAVE_COMPLETE );
+ 	
+ 	// run the exception check
+@@ -337,8 +370,11 @@
+ {
+ 	logger->trace( "[Starting] federateSaveNotComplete()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->FEDERATE_SAVE_NOT_COMPLETE );
+ 	
+ 	// run the exception check
+@@ -357,16 +393,19 @@
+ {
+ 	logger->trace( "[Starting] requestFederationRestore(): label=%s", label );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
++	jstring jLabel  = jnienv->NewStringUTF( label );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REQUEST_FEDERATION_RESTORE,
+ 	                                  jLabel );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jLabel );
++	jnienv->DeleteLocalRef( jLabel );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] requestFederationRestore(): label=%s", label );
+@@ -382,8 +421,11 @@
+ {
+ 	logger->trace( "[Starting] federateRestoreComplete()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->FEDERATE_RESTORE_COMPLETE );
+ 	
+ 	// run the exception check
+@@ -401,8 +443,11 @@
+ {
+ 	logger->trace( "[Starting] federateRestoreNotComplete()" );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->FEDERATE_RESTORE_NOT_COMPLETE );
+ 	
+ 	// run the exception check
+Index: src-cpp/hla13/src/services/HLA13Private.h
+===================================================================
+--- src-cpp/hla13/src/services/HLA13Private.h	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13Private.h	(working copy)
+@@ -16,6 +16,7 @@
+ #define NG6PRIVATE_H_
+ 
+ #include "jni/JavaRTI.h"
++#include "jni/Runtime.h"
+ 
+ using namespace portico13;
+ 
+@@ -34,7 +35,7 @@
+ 	//----------------------------------------------------------
+ 	public:
+ 		JavaRTI *rti;
+-		JNIEnv *env; // shortcut to rti->jnienv
++		Runtime *runtime;
+ 
+ 	//----------------------------------------------------------
+ 	//                      CONSTRUCTORS
+Index: src-cpp/hla13/src/services/HLA13DeclarationManagement.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13DeclarationManagement.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13DeclarationManagement.cpp	(working copy)
+@@ -39,17 +39,20 @@
+ 		delete theAttributeList;
+ 	}
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( attributeList );
+ 
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->PUBLISH_OBJECT_CLASS,
+ 	                                  theClass,
+ 	                                  jAttSet );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] publishObjectClass(): objectClass=%d", theClass ); 
+@@ -68,8 +71,11 @@
+ {
+ 	logger->trace( "[Starting] unpublishObjectClass(): classHandle=%d", theClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNPUBLISH_OBJECT_CLASS,
+ 	                                  theClass );
+ 	
+@@ -90,8 +96,11 @@
+ {
+ 	logger->trace( "[Starting] publishInteractionClass(): classHandle=%d", theClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->PUBLISH_INTERACTION_CLASS,
+ 	                                  theClass );
+ 	
+@@ -113,8 +122,11 @@
+ {
+ 	logger->trace( "[Starting] unpublishInteractionClass(): classHandle=%d", theClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNPUBLISH_INTERACTION_CLASS,
+ 	                                  theClass );
+ 	
+@@ -158,13 +170,16 @@
+ 	/////////////////////////
+ 	// do the subscription //
+ 	/////////////////////////
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttSet = privateRefs->rti->convertAHS( attributes );
+ 
+ 	if( active == RTI::RTI_TRUE )
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_OBJECT_CLASS_ATTRIBUTES_ACTIVELY,
+ 		                                  theClass,
+ 		                                  jAttSet );
+@@ -172,14 +187,14 @@
+ 	else
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_OBJECT_CLASS_ATTRIBUTES_PASSIVELY,
+ 		                                  theClass,
+ 		                                  jAttSet );
+ 	}
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttSet );
++	jnienv->DeleteLocalRef( jAttSet );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] subscribeObjectClassAttributes(): classHandle=%d", theClass );
+@@ -197,8 +212,11 @@
+ {
+ 	logger->trace( "[Starting] unsubscribeObjectClass(): classHandle=%d", theClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNSUBSCRIBE_OBJECT_CLASS,
+ 	                                  theClass );
+ 	
+@@ -233,17 +251,20 @@
+ 	/////////////////////////
+ 	// do the subscription //
+ 	/////////////////////////
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	if( active == RTI::RTI_TRUE )
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS,
+ 		                                  theClass );
+ 	}
+ 	else
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_PASSIVELY,
+ 		                                  theClass );
+ 	}
+@@ -266,8 +287,11 @@
+ {
+ 	logger->trace( "[Starting] unsubscribeInteractionClass(): classHandle=%d", theClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNSUBSCRIBE_INTERACTION_CLASS,
+ 	                                  theClass );
+ 	
+Index: src-cpp/hla13/src/services/HLA13ObjectManagement.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13ObjectManagement.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13ObjectManagement.cpp	(working copy)
+@@ -34,17 +34,20 @@
+ {
+ 	logger->trace( "[Starting] registerObjectInstance(): classHandle=%d, name=%s", theClass, theObject );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jObjectName = privateRefs->env->NewStringUTF( theObject );
++	jstring jObjectName = jnienv->NewStringUTF( theObject );
+ 	
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->REGISTER_OBJECT_INSTANCE_WITH_NAME,
+ 	                                               theClass,
+ 	                                               jObjectName );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jObjectName );
++	jnienv->DeleteLocalRef( jObjectName );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] registerObjectInstance(): classHandle=%d, name=%s (return: %d)",
+@@ -65,8 +68,11 @@
+ {
+ 	logger->trace( "[Starting] registerObjectInstance(): classHandle=%d", theClass );
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->REGISTER_OBJECT_INSTANCE,
+ 	                                               theClass );
+ 	
+@@ -110,8 +116,11 @@
+ 		delete attributeString;
+ 	}
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UPDATE_ATTRIBUTE_VALUES_WITH_TIME,
+ 	                                  theObject,
+ 	                                  values.handles,
+@@ -120,9 +129,9 @@
+ 	                                  jTime );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( values.handles );
+-	privateRefs->env->DeleteLocalRef( values.values );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( values.handles );
++	jnienv->DeleteLocalRef( values.values );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] updateAttributeValues(TSO): objectHandle=%d", theObject );
+@@ -151,12 +160,15 @@
+ 		delete attributeString;
+ 	}
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 	HVPS values = privateRefs->rti->convertAHVPS( attributes );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UPDATE_ATTRIBUTE_VALUES,
+ 	                                  theObject,
+ 	                                  values.handles,
+@@ -164,9 +176,9 @@
+ 	                                  jTag );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( values.handles );
+-	privateRefs->env->DeleteLocalRef( values.values );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( values.handles );
++	jnienv->DeleteLocalRef( values.values );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] updateAttributeValues(RO): objectHandle=%d", theObject );
+@@ -202,8 +214,11 @@
+ 		delete parameterString;
+ 	}
+ 		
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->SEND_INTERACTION_WITH_TIME,
+ 	                                  theInteraction,
+ 	                                  values.handles,
+@@ -212,9 +227,9 @@
+ 	                                  jTime );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( values.handles );
+-	privateRefs->env->DeleteLocalRef( values.values );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( values.handles );
++	jnienv->DeleteLocalRef( values.values );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] sendInteraction(TSO): classHandle=%d", theInteraction );
+@@ -243,12 +258,15 @@
+ 		delete parameterString;
+ 	}
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 	HVPS values = privateRefs->rti->convertPHVPS( theParameters );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->SEND_INTERACTION,
+ 	                                  theInteraction,
+ 	                                  values.handles,
+@@ -256,9 +274,9 @@
+ 	                                  jTag );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( values.handles );
+-	privateRefs->env->DeleteLocalRef( values.values );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( values.handles );
++	jnienv->DeleteLocalRef( values.values );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] sendInteraction(RO): classHandle=%d", theInteraction );
+@@ -286,16 +304,19 @@
+ 	logger->trace( "[Starting] deleteObjectInstance(TSO): objectHandle=%d, time=%f",
+ 	               theObject, jTime );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+ 	//int handle = 
+-		privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++		jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 		                                 privateRefs->rti->DELETE_OBJECT_INSTANCE_WITH_TIME,
+ 		                                 theObject,
+ 		                                 jTag,
+ 		                                 jTime );
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( jTag );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] deleteObjectInstance(TSO): objectHandle=%d", theObject );
+@@ -319,14 +340,17 @@
+ 	// get java versions of the parameters
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->DELETE_OBJECT_INSTANCE,
+ 	                                  theObject,
+ 	                                  jTag );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( jTag );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] deleteObjectInstance(RO): objectHandle=%d" );
+@@ -344,8 +368,11 @@
+ {
+ 	logger->trace( "[Starting] localDeleteObjectInstance(): objectHandle=%d", theObject );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                 privateRefs->rti->LOCAL_DELETE_OBJECT_INSTANCE,
+ 	                                 theObject );
+ 	
+@@ -378,18 +405,21 @@
+ 		delete attributeString;
+ 	}
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttributes = privateRefs->rti->convertAHS( attributes );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CHANGE_ATTRIBUTE_TRANSPORTATION_TYPE,
+ 	                                  theObject,
+ 	                                  jAttributes,
+ 	                                  theType );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttributes );
++	jnienv->DeleteLocalRef( jAttributes );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] changeAttributeTransportationType(): objectHandle=%d, transportHandle=%d",
+@@ -411,8 +441,11 @@
+ 	logger->trace( "[Starting] changeInteractionTransportationType(): classHandle=%d, transportHandle=%d",
+ 	               theClass, theType );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->CHANGE_INTERACTION_TRANSPORTATION_TYPE,
+ 	                                  theClass,
+ 	                                  theType );
+@@ -447,14 +480,17 @@
+ 	// get java versions of the parameters
+ 	jintArray jAttributes = privateRefs->rti->convertAHS( attributes );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REQUEST_OBJECT_ATTRIBUTE_VALUE_UPDATE,
+ 	                                  theObject,
+ 	                                  jAttributes );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttributes );
++	jnienv->DeleteLocalRef( jAttributes );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] requestObjectAttributeValueUpdate(): objectHandle=%d", theObject );
+@@ -479,17 +515,20 @@
+ 		delete attributeString;
+ 	}
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttributes = privateRefs->rti->convertAHS( attributes );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE,
+ 	                                  theClass,
+ 	                                  jAttributes );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttributes );
++	jnienv->DeleteLocalRef( jAttributes );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] requestClassAttributeValueUpdate(): classHandle=%d", theClass );
+Index: src-cpp/hla13/src/services/HLA13DDM.cpp
+===================================================================
+--- src-cpp/hla13/src/services/HLA13DDM.cpp	(revision 1915)
++++ src-cpp/hla13/src/services/HLA13DDM.cpp	(working copy)
+@@ -26,8 +26,11 @@
+ {
+ 	logger->trace( "[Starting] getRegionToken(): regionAddress=%p", theRegion );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	int token = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	int token = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                             privateRefs->rti->GET_REGION_TOKEN,
+ 	                                             privateRefs->rti->convertRegion(*theRegion) );
+ 	
+@@ -47,8 +50,11 @@
+ {
+ 	logger->trace( "[Starting] getRegion(): token=%u", token );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	jobject proxy = privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++	jobject proxy = jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                    privateRefs->rti->GET_REGION,
+ 	                                                    (jint)token );
+ 	
+@@ -78,8 +84,11 @@
+ {
+ 	logger->trace( "[Starting] createRegion(): spaceHandle=%u, extents=%u", space, extents );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	jobject proxy = privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++	jobject proxy = jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                                    privateRefs->rti->CREATE_REGION,
+ 	                                                    (jint)space,
+ 	                                                    (jint)extents );
+@@ -107,8 +116,11 @@
+ {
+ 	logger->trace( "[Starting] modifyRegion(): regionAddress=%p", &theRegion );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++	jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                    privateRefs->rti->NOTIFY_OF_REGION_MODIFICATION,
+ 	                                    privateRefs->rti->convertRegion(theRegion) );
+ 	
+@@ -130,8 +142,11 @@
+ {
+ 	logger->trace( "[Starting] deleteRegion(): regionAddress=%p", theRegion );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
++	jnienv->CallObjectMethod( privateRefs->rti->jproxy,
+ 	                                    privateRefs->rti->DELETE_REGION,
+ 	                                    privateRefs->rti->convertRegion(*theRegion) );
+ 	
+@@ -171,23 +186,26 @@
+ 		delete regionString;
+ 	}
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+-	jstring jObjectName = privateRefs->env->NewStringUTF( theObject );
++	jstring jObjectName = jnienv->NewStringUTF( theObject );
+ 	jintArray handles = privateRefs->rti->convertAHA( theAttributes, size );
+ 	jobjectArray regions = privateRefs->rti->convertRegions( theRegions, size );
+ 
+ 	// call the method
+ 	// int reg(int, int[], region[])
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->REGISTER_OBJECT_WITH_NAME_AND_REGION,
+ 	                                               theClass,
+ 	                                               jObjectName,
+ 	                                               handles,
+ 	                                               regions );
+ 
+-	privateRefs->env->DeleteLocalRef( jObjectName );
+-	privateRefs->env->DeleteLocalRef( handles );
+-	privateRefs->env->DeleteLocalRef( regions );
++	jnienv->DeleteLocalRef( jObjectName );
++	jnienv->DeleteLocalRef( handles );
++	jnienv->DeleteLocalRef( regions );
+ 	// run the exception check
+ 	privateRefs->rti->exceptionCheck();
+ 	
+@@ -222,19 +240,22 @@
+ 		delete regionString;
+ 	}
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	jintArray handles = privateRefs->rti->convertAHA( theAttributes, size );
+ 	jobjectArray regions = privateRefs->rti->convertRegions( theRegions, size );
+ 
+ 	// call the method
+ 	// int reg(int, int[], region[])
+-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
++	jint handle = jnienv->CallIntMethod( privateRefs->rti->jproxy,
+ 	                                               privateRefs->rti->REGISTER_OBJECT_WITH_REGION,
+ 	                                               theClass,
+ 	                                               handles,
+ 	                                               regions );
+ 
+-	privateRefs->env->DeleteLocalRef( handles );
+-	privateRefs->env->DeleteLocalRef( regions );
++	jnienv->DeleteLocalRef( handles );
++	jnienv->DeleteLocalRef( regions );
+ 	// run the exception check
+ 	privateRefs->rti->exceptionCheck();
+ 	
+@@ -264,16 +285,19 @@
+ 		delete attributeString;
+ 	}
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// convert the parameters to their java equiv
+ 	jintArray jAttributes = privateRefs->rti->convertAHS( theAttributes );
+ 	
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->ASSOCIATE_REGION_FOR_UPDATES,
+ 	                                  privateRefs->rti->convertRegion(theRegion),
+ 	                                  theObject,
+ 	                                  jAttributes );
+ 	
+-	privateRefs->env->DeleteLocalRef( jAttributes );
++	jnienv->DeleteLocalRef( jAttributes );
+ 	// run the exception check
+ 	privateRefs->rti->exceptionCheck();
+ 	
+@@ -296,7 +320,10 @@
+ 	logger->trace( "[Starting] unassociateRegionForUpdates(): regionAddress=%p, object=%d",
+ 	               &theRegion, theObject );
+ 	
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNASSOCIATE_REGION_FOR_UPDATES,
+ 	                                  privateRefs->rti->convertRegion(theRegion),
+ 	                                  theObject );
+@@ -346,13 +373,16 @@
+ 	/////////////////////////
+ 	// do the subscription //
+ 	/////////////////////////
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jintArray jAttributes = privateRefs->rti->convertAHS( attributeList );
+ 
+ 	if( active == RTI::RTI_TRUE )
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_ATTRIBUTES_WITH_REGION,
+ 		                                  theClass,
+ 		                                  privateRefs->rti->convertRegion(theRegion),
+@@ -361,7 +391,7 @@
+ 	else
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_ATTRIBUTES_PASSIVELY_WITH_REGION,
+ 		                                  theClass,
+ 		                                  privateRefs->rti->convertRegion(theRegion),
+@@ -369,7 +399,7 @@
+ 	}
+ 
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jAttributes );
++	jnienv->DeleteLocalRef( jAttributes );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] subscribeObjectClassAttributesWithRegion(): classHandle=%d", theClass );
+@@ -390,8 +420,11 @@
+ 	logger->trace( "[Starting] unsubscribeObjectClassWithRegion(): classHandle=%d, regionAddress=%p",
+ 	               theClass, &theRegion );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNSUBSCRIBE_ATTRIBUTES_WITH_REGION,
+ 	                                  theClass,
+ 	                                  privateRefs->rti->convertRegion(theRegion) );
+@@ -431,10 +464,13 @@
+ 	/////////////////////////
+ 	// do the subscription //
+ 	/////////////////////////
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	if( active == RTI::RTI_TRUE )
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_WITH_REGION,
+ 		                                  theClass,
+ 		                                  privateRefs->rti->convertRegion(theRegion) );
+@@ -442,7 +478,7 @@
+ 	else
+ 	{
+ 		// call the method
+-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++		jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_PASSIVELY_WITH_REGION,
+ 		                                  theClass,
+ 		                                  privateRefs->rti->convertRegion(theRegion) );
+@@ -469,8 +505,11 @@
+ {
+ 	logger->trace( "[Starting] unsubscribeInteractionClassWithRegion(): classHandle=%d", theClass );
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->UNSUBSCRIBE_INTERACTION_CLASS_WITH_REGION,
+ 	                                  theClass,
+ 	                                  privateRefs->rti->convertRegion(theRegion) );
+@@ -500,6 +539,9 @@
+ 	       RTI::RestoreInProgress,
+ 	       RTI::RTIinternalError )
+ {
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 	jdouble jTime = privateRefs->rti->convertTime( theTime );
+@@ -515,7 +557,7 @@
+ 	}
+ 		
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->SEND_INTERACTION_WITH_TIME_AND_REGION,
+ 	                                  theInteraction,
+ 	                                  values.handles,
+@@ -525,9 +567,9 @@
+ 	                                  jTime );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( values.handles );
+-	privateRefs->env->DeleteLocalRef( values.values );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( values.handles );
++	jnienv->DeleteLocalRef( values.values );
+ 	privateRefs->rti->exceptionCheck();
+ 
+ 	logger->debug( "[Finished] sendInteractionWithRegion(TSO): classHandle=%d", theInteraction );
+@@ -560,12 +602,15 @@
+ 		delete parameterString;
+ 	}
+ 
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// get java versions of the parameters
+ 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
+ 	HVPS values = privateRefs->rti->convertPHVPS( parameters );
+ 	
+ 	// call the method
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->SEND_INTERACTION_WITH_REGION,
+ 	                                  theInteraction,
+ 	                                  values.handles,
+@@ -574,9 +619,9 @@
+ 	                                  privateRefs->rti->convertRegion(theRegion) );
+ 	
+ 	// clean up and run the exception check
+-	privateRefs->env->DeleteLocalRef( jTag );
+-	privateRefs->env->DeleteLocalRef( values.handles );
+-	privateRefs->env->DeleteLocalRef( values.values );
++	jnienv->DeleteLocalRef( jTag );
++	jnienv->DeleteLocalRef( values.handles );
++	jnienv->DeleteLocalRef( values.values );
+ 	privateRefs->rti->exceptionCheck();
+ 	
+ 	logger->debug( "[Finished] sendInteractionWithRegion(RO): classHandle=%d", theInteraction );
+@@ -604,16 +649,19 @@
+ 		delete attributeString;
+ 	}
+ 	
++	// get a thread-safe reference to the jnienv
++	JNIEnv *jnienv = privateRefs->runtime->getJniEnv();
++	
+ 	// convert the parameters to their java equiv
+ 	jintArray jAttributes = privateRefs->rti->convertAHS( theAttributes );
+ 
+-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
++	jnienv->CallVoidMethod( privateRefs->rti->jproxy,
+ 	                                  privateRefs->rti->REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE_WITH_REGION,
+ 	                                  theClass,
+ 	                                  jAttributes,
+ 	                                  privateRefs->rti->convertRegion(theRegion) );
+ 
+-	privateRefs->env->DeleteLocalRef( jAttributes );
++	jnienv->DeleteLocalRef( jAttributes );
+ 	// run the exception check
+ 	privateRefs->rti->exceptionCheck();
+ 	
+Index: src-cpp/hla13/src/types/Region.cpp
+===================================================================
+--- src-cpp/hla13/src/types/Region.cpp	(revision 1915)
++++ src-cpp/hla13/src/types/Region.cpp	(working copy)
+@@ -13,7 +13,10 @@
+  *
+  */
+ #include "Region.h"
++#include "jni/Runtime.h"
+ 
++#define JNIENV Runtime::getRuntime()->getJniEnv()
++
+ #ifdef BUILDING_DLC
+ HLA::ULong rti13::Region::getMaxExtent() throw ()
+ {
+@@ -35,13 +38,13 @@
+ {
+ 	this->rti = rti;
+ 	// create a global reference for the region proxy so that we can keep a hold of it
+-	this->regionProxy = rti->jnienv->NewGlobalRef( regionProxy );
++	this->regionProxy = JNIENV->NewGlobalRef( regionProxy );
+ }
+ 
+ Region::~Region()
+ {
+ 	// release the global reference to the proxy
+-	rti->jnienv->DeleteGlobalRef( this->regionProxy );
++	JNIENV->DeleteGlobalRef( this->regionProxy );
+ }
+ 
+ //----------------------------------------------------------
+@@ -63,7 +66,7 @@
+ 	throw( HLA::ArrayIndexOutOfBounds )
+ {
+ 	// call the method
+-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
++	jlong retval = JNIENV->CallLongMethod( regionProxy,
+ 	                                            rti->REGION_GET_RANGE_LOWER_BOUND,
+ 	                                            theExtent,
+ 	                                            theDimension );
+@@ -78,7 +81,7 @@
+ 	const throw( HLA::ArrayIndexOutOfBounds )
+ {
+ 	// call the method
+-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
++	jlong retval = JNIENV->CallLongMethod( regionProxy,
+ 	                                            rti->REGION_GET_RANGE_UPPER_BOUND,
+ 	                                            theExtent,
+ 	                                            theDimension );
+@@ -94,7 +97,7 @@
+ 	throw( HLA::ArrayIndexOutOfBounds )
+ {
+ 	// call the method
+-	rti->jnienv->CallVoidMethod( regionProxy,
++	JNIENV->CallVoidMethod( regionProxy,
+ 	                             rti->REGION_SET_RANGE_LOWER_BOUND,
+ 	                             extent,
+ 	                             dimension,
+@@ -110,7 +113,7 @@
+ 	throw( HLA::ArrayIndexOutOfBounds )
+ {
+ 	// call the method
+-	rti->jnienv->CallVoidMethod( regionProxy,
++	JNIENV->CallVoidMethod( regionProxy,
+ 	                             rti->REGION_SET_RANGE_UPPER_BOUND,
+ 	                             extent,
+ 	                             dimension,
+@@ -123,7 +126,7 @@
+ HLA::SpaceHandle Region::getSpaceHandle() const throw ()
+ {
+ 	// call the method
+-	jint retval = rti->jnienv->CallIntMethod( regionProxy, rti->REGION_GET_SPACE_HANDLE );
++	jint retval = JNIENV->CallIntMethod( regionProxy, rti->REGION_GET_SPACE_HANDLE );
+ 
+ 	// clean up and run the exception check
+ 	rti->exceptionCheck();
+@@ -133,7 +136,7 @@
+ HLA::ULong Region::getNumberOfExtents() const throw ()
+ {
+ 	// call the method
+-	jlong retval = rti->jnienv->CallLongMethod( regionProxy, rti->REGION_GET_NUMBER_OF_EXTENTS );
++	jlong retval = JNIENV->CallLongMethod( regionProxy, rti->REGION_GET_NUMBER_OF_EXTENTS );
+ 
+ 	// clean up and run the exception check
+ 	rti->exceptionCheck();
+@@ -145,7 +148,7 @@
+ 	const throw( HLA::ArrayIndexOutOfBounds )
+ {
+ 	// call the method
+-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
++	jlong retval = JNIENV->CallLongMethod( regionProxy,
+ 	                                            rti->REGION_GET_RANGE_LOWER_BOUND_NOTIFICATION_LIMIT,
+ 	                                            theExtent,
+ 	                                            theDimension );
+@@ -160,7 +163,7 @@
+ 	const throw( HLA::ArrayIndexOutOfBounds )
+ {
+ 	// call the method
+-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
++	jlong retval = JNIENV->CallLongMethod( regionProxy,
+ 	                                            rti->REGION_GET_RANGE_UPPER_BOUND_NOTIFICATION_LIMIT,
+ 	                                            theExtent,
+ 	                                            theDimension );

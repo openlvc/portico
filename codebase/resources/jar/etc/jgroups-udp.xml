@@ -1,0 +1,59 @@
+<config>
+    <UDP mcast_addr="${portico.jgroups.udp.address:228.10.10.10}"
+         mcast_port="${portico.jgroups.udp.port:20913}"
+		 bind_addr="${portico.jgroups.udp.bindAddress:}"
+		 receive_interfaces="${portico.jgroups.udp.receiveInterfaces:}"
+		 send_interfaces="${portico.jgroups.udp.sendInterfaces:}"
+         tos="8"
+         ucast_recv_buf_size="20000000"
+         ucast_send_buf_size="640000"
+         mcast_recv_buf_size="${portico.jgroups.udp.receiveBuffer:25000000}"
+         mcast_send_buf_size="${portico.jgroups.udp.sendBuffer:640000}"
+         loopback="true"
+         discard_incompatible_packets="true"
+         enable_bundling="${portico.jgroups.bundling:true}"
+         max_bundle_size="${portico.jgroups.bundling.maxSize:63000}"
+         max_bundle_timeout="${portico.jgroups.bundling.maxTime:25}"
+         use_incoming_packet_handler="true"
+         ip_ttl="${portico.jgroups.udp.ip_ttl:2}"
+         enable_diagnostics="${portico.jgroups.udp.diagnostics:false}"
+         thread_naming_pattern="cl"
+         use_concurrent_stack="true"
+         thread_pool.enabled="true"
+         thread_pool.min_threads="2"
+         thread_pool.max_threads="8"
+         thread_pool.keep_alive_time="5000"
+         thread_pool.queue_enabled="true"
+         thread_pool.queue_max_size="1000"
+         thread_pool.rejection_policy="Run"
+         oob_thread_pool.enabled="true"
+         oob_thread_pool.min_threads="1"
+         oob_thread_pool.max_threads="8"
+         oob_thread_pool.keep_alive_time="5000"
+         oob_thread_pool.queue_enabled="false"
+         oob_thread_pool.queue_max_size="100"
+         oob_thread_pool.rejection_policy="Run"/>
+    <PING timeout="2000" break_on_coord_rsp="true"/>
+    <!--<FD_SOCK/>-->
+    <FD_ALL interval="${portico.jgroups.fd.interval:3000}"
+            timeout="${portico.jgroups.fd.timeout:7000}"/>
+    <!--<FD timeout="${portico.jgroups.fd.timeout:10000}" max_tries="5" shun="true"/>-->
+    <VERIFY_SUSPECT timeout="1500"/>
+    <BARRIER/>
+    <pbcast.NAKACK use_stats_for_retransmission="false"
+                   exponential_backoff="150"
+                   use_mcast_xmit="true"
+                   gc_lag="0"
+                   retransmit_timeout="50,300,600,1200"
+                   discard_delivered_msgs="true"/>
+    <UNICAST timeout="300,600,1200"/>
+    <pbcast.STABLE stability_delay="1000" desired_avg_gossip="50000" max_bytes="1000000"/>
+    <VIEW_SYNC avg_send_interval="60000"/>
+    <pbcast.GMS print_local_addr="false" join_timeout="3000" shun="false" view_bundling="true"/>
+    <FC max_credits="${portico.jgroups.flow.credits:1000000}"
+        min_threshold="${portico.jgroups.flow.threshold:0.50}"/>
+    <FRAG2 frag_size="62464"/>
+    <!--pbcast.STREAMING_STATE_TRANSFER /-->
+    <pbcast.STATE_TRANSFER/>
+    <!-- pbcast.FLUSH  /-->
+</config>

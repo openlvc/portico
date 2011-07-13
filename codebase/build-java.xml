@@ -1,0 +1,784 @@
+<?xml version="1.0"?>
+<!--
+                 Welcome to the Portico Java build file
+
+       Contained in this file are all the properties and build targets
+       relating to the main Portico RTI and the Java interfaces. This
+       file is not meant to be usd by itself, but rather to be imported
+       by the main build.xml file. For more information about building
+       Portico, see the wiki:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+
+<project name="portico-java" default="java.compile">
+
+	<!-- ================================================================================= -->
+	<!--                              Properties Declarations                              -->
+	<!-- ================================================================================= -->
+
+	<!-- ==== Basic Properties ==== -->
+	<property name="java.build.dir"           location="${build.dir}/java"/>
+	<property name="java.build.classes.dir"   location="${java.build.dir}/classes"/>
+	
+	<!-- ==== Compiler Properties ==== -->
+	<property name="java.compiler.optimize"   value="false"/>
+	<property name="java.compiler.debug"      value="true"/>
+	<property name="java.compiler.debuglevel" value="lines,vars,source"/>
+	<property name="java.compiler.source"     value="1.5"/>
+	<property name="java.compiler.target"     value="1.5"/>
+	
+	<!-- ==== Source Related Properties ==== -->
+	<property name="java.src.dir"             location="src-java/portico"/>
+
+	<!-- ==== Test Related Properties ==== -->
+	<property name="java.test.src.dir"        location="src-java/test"/>
+	<property name="java.test.build.dir"      location="${java.build.dir}/test"/>
+	<property name="java.test.classes.dir"    location="${java.test.build.dir}/classes"/>
+	<property name="java.test.reports.dir"    location="${java.test.build.dir}/reports"/>
+	<property name="test.binding"             value="jvm"/>
+
+	<!-- ==== Example Federate Properties ==== -->
+	<property name="java.examples.dir"        location="src-java/example"/>
+	<property name="java.examples.build.dir"  location="${java.build.dir}/examples"/>
+	<property name="java.examples.dist.dir"   location="${dist.examples.dir}/java"/>
+
+	<!-- ==== Console Related Properties ==== -->	
+	<property name="java.console.src.dir"     location="src-java/console"/>
+	<property name="java.console.build.dir"   location="${java.build.dir}/console"/>
+	<property name="java.console.classes.dir" location="${java.console.build.dir}/classes"/>
+	
+	<!-- ==== Jar Files ==== -->
+	<property name="java.portico.jar"         location="${dist.sandbox.dir}/lib/portico.jar"/>
+	<property name="java.console.jar"         location="${dist.sandbox.dir}/lib/portico-console.jar"/>
+
+	<!-- ==== Misc Properties ==== -->
+	<property name="java.resources.jar.dir"   location="${resources.dir}/jar"/>
+
+	<!-- ==== Javadoc Properties ==== -->
+	<property name="documentation.dir"        location="documentation"/>
+	<property name="java.doc.dir"             location="${documentation.dir}/javadoc"/><!-- generated -->
+	<property name="java.doc.hla13.dir"       location="${java.doc.dir}/hla13-api"/>
+	<property name="java.doc.java1.dir"       location="${java.doc.dir}/hlajava1-api"/>
+	<property name="java.doc.hla1516.dir"     location="${java.doc.dir}/hla1516-api"/>
+	<property name="java.doc.portico.dir"     location="${java.doc.dir}/portico-api"/>
+	<property name="java.doc.hlaunit.dir"     location="${java.doc.dir}/hlaunit-api"/>
+	<property name="java.doc.external"        value="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+	<property name="java.doc.header"          value="copyright The Portico Project ${YEAR}."/>
+	<property name="java.doc.footer"          value="copyright The Portico Project ${YEAR}."/>
+	<property name="java.doc.windowtitle"
+			  value="${app.shortname} [${app.version} build] Javadoc documentation"/>
+
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- These properties are set so that any information relating to a specific path
+	     for a library can be changed in a single spot. The properties should be used
+	     when defining paths and the like later in the build file -->
+	<property name="testng.dir"            location="${lib.dir}/testng/5.7"/>
+	<property name="clover.dir"            location="${lib.dir}/clover"/>
+	<property name="jgroups.dir"           location="${lib.dir}/jgroups/JGroups-2.8.0.GA.bin"/>
+	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
+	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
+
+	<!-- ==== Classpath Declarations ==== -->
+	<path id="lib.testng.classpath">
+		<fileset dir="${testng.dir}" includes="**/*"/>
+	</path>
+	
+	<path id="lib.clover.classpath">
+		<fileset dir="${clover.dir}" includes="clover.jar"/>
+	</path>
+	
+	<path id="lib.jgroups.classpath">
+		<fileset dir="${jgroups.dir}" includes="**/*"/>
+	</path>
+
+	<path id="lib.log4j.classpath">
+		<fileset dir="${log4j.dir}" includes="**/*"/>
+	</path>
+
+	<path id="lib.asm.classpath">
+		<fileset dir="${asm.dir}" includes="**/*"/>
+	</path>
+	
+	<!-- === SPECIAL: This stuff is for the one-jar creation === -->
+	<property name="onejar.tmp" location="tmp"/>
+	<!-- jgroups -->
+	<property name="onejar.jgroups.tmp"      location="${onejar.tmp}/jgroups"/>
+	<property name="onejar.jgroups-core.jar" location="${jgroups.dir}/jgroups-core.jar"/>
+	<property name="onejar.jgroups-log.jar"  location="${jgroups.dir}/commons-logging.jar"/>
+	<!-- log4j -->
+	<property name="onejar.log4j.tmp" value="${onejar.tmp}/log4j"/>
+	<property name="onejar.log4j.jar" value="${log4j.dir}/log4j-1.2.15.jar"/>
+	<!-- asm -->
+	<property name="onejar.asm.tmp"     value="${onejar.tmp}/asm"/>
+	<property name="onejar.asm.jar"     value="${asm.dir}/asm-3.1.jar"/>
+	<property name="onejar.asm.license" value="${asm.dir}/LICENSE.asm"/>
+	
+	<path id="java.compile.classpath">
+		<path refid="lib.jgroups.classpath"/>
+		<path refid="lib.clover.classpath"/>
+		<path refid="lib.log4j.classpath"/>
+		<path refid="lib.asm.classpath"/>
+	</path>
+	
+	<path id="java.test.classpath">
+		<path refid="java.compile.classpath"/>
+		<path refid="lib.testng.classpath"/>
+		<pathelement path="${java.build.classes.dir}"/>
+		<pathelement path="${java.test.classes.dir}"/>
+		<pathelement path="${resources.dir}/jar"/>
+		<pathelement path="${resources.dir}/test-data"/>
+	</path>
+	
+	<path id="java.examples.classpath">
+		<path refid="java.compile.classpath"/>
+		<pathelement path="${java.build.classes.dir}"/>
+		<pathelement path="${java.examples.build.dir}"/>
+	</path>
+
+	<!-- ================================================================================= -->
+	<!--                                Target Declarations                                -->
+	<!-- ================================================================================= -->
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: java.clean                                     -->
+	<!-- =========================================================== -->
+	<target name="java.clean">
+		<delete dir="${java.build.dir}"/>
+		<delete dir="${java.doc.dir}"/>
+		<delete dir="savedata"/>
+	</target>
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: java.init                                      -->
+	<!-- =========================================================== -->
+	<target name="java.init" depends="init">
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                            (Target Group) Java Compile                            -->
+	<!-- ================================================================================= -->
+	<target name="java.compile" depends="java.compile.tests,java.compile.console">
+	</target>
+
+	<!-- =============================== -->
+	<!-- (macro): javac macro definition -->
+	<!-- =============================== -->
+	<macrodef name="jcompile" description="Compile java source code with default properties">
+		<!-- Attributes -->
+		<attribute name="src"/>
+		<attribute name="out"/>
+		<attribute name="classpath"/>
+		<element name="javacbody" implicit="yes" optional="yes"/>
+		<!-- Task Definition -->
+		<sequential>
+			<!-- make sure the directory exists -->
+			<mkdir dir="@{out}"/>
+
+			<!-- do the compile -->
+			<javac srcdir="@{src}"
+			       destdir="@{out}"
+			       classpathref="@{classpath}"
+			       debug="true"
+			       debuglevel="lines,vars,source"
+			       source="1.5"
+			       target="1.5"
+			       includeAntRuntime="false">
+				<javacbody/>
+			</javac>
+		</sequential>
+	</macrodef>
+
+	<!-- *********************************** -->
+	<!-- **** Target: java.compile.init **** -->
+	<!-- *********************************** -->
+	<target name="java.compile.init" depends="init">
+		<!-- Print out some information and do some initialization -->
+		<echo>Compiling java source code...</echo>
+		
+		<!-- set up some directory structure -->
+		<mkdir dir="${java.build.dir}"/>
+		<mkdir dir="${java.build.classes.dir}"/>
+		
+		<property name="java.compiler.optimize" value="false"/>
+		<echo>JAVA VERSION: ${java.version}</echo>
+		<echo>debug / debug level: ${java.compiler.debug} / ${java.compiler.debuglevel}</echo>
+		<echo>source compat: ${java.compiler.source} </echo>
+	</target>
+
+	<!-- ***************************************** -->
+	<!-- **** Target: java.compile.production **** -->
+	<!-- ***************************************** -->
+	<target name="java.compile.production" depends="java.compile.init">
+		<jcompile src="${java.src.dir}"
+		          out="${java.build.classes.dir}"
+		          classpath="java.compile.classpath"/>
+	</target>
+
+	<!-- ************************************ -->
+	<!-- **** Target: java.compile.tests **** -->
+	<!-- ************************************ -->
+	<target name="java.compile.tests" depends="java.compile.production" unless="build.devel">
+		<!-- set up the required directories -->
+		<mkdir dir="${java.test.build.dir}"/>
+		<mkdir dir="${java.test.classes.dir}"/>
+		<!-- run the compile -->
+		<jcompile src="${java.test.src.dir}"
+		          out="${java.test.classes.dir}"
+		          classpath="java.test.classpath"/>
+	</target>
+
+	<!-- ************************************** -->
+	<!-- **** Target: java.compile.console **** -->
+	<!-- ************************************** -->
+	<target name="java.compile.console" depends="java.compile.production" unless="build.devel">
+		<echo>SKIPPING CONSOLE COMPILE DURING v0.9 REFACTOR DEVELPOMENT</echo>
+		
+		<!-- set up the required directories -->
+		<!--<mkdir dir="${java.console.build.dir}"/>-->
+		<!--<mkdir dir="${java.console.classes.dir}"/>-->
+		<!-- run the compile -->
+		<!--<jcompile src="${java.console.src.dir}"-->
+		<!--          out="${java.console.classes.dir}"-->
+		<!--          classpath="java.test.classpath"/>-->
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                          (Target Group) Java Unit Testing                         -->
+	<!-- ================================================================================= -->
+	<target name="java.test" depends="java.test.all">
+	</target>
+
+	<!-- =================================== -->
+	<!-- (macro): unit-test macro definition -->
+	<!-- =================================== -->
+	<macrodef name="java-test" description="Runs TestNG on a set of test classes">
+
+		<!-- ===== Attributes ===== -->
+		<attribute name="suite" description="Descriptive name for the testing suite"/>
+		<!-- It you have a class called TestSetup in this directory, it will also be
+		     automatically included in the test suite (even though its name doesn't end in Test -->
+
+		<attribute name="directory" description="Path to test code (relative to test.classes.dir)"/>
+
+		<!-- ===== Actions ===== -->
+		<sequential>
+			<echo>===============================================</echo>
+			<echo>   Executing Test Suite: @{suite}</echo>
+			<echo>===============================================</echo>
+
+			<!-- make sure the dir to hold the reports is created -->
+			<mkdir dir="${java.test.reports.dir}/@{suite}"/>
+			
+			<!-- remove the old log directories -->
+			<delete dir="logs/@{suite}"/>
+	
+			<!-- need separate executions for when "groups" is specified and
+			     when it is not. sadly, this is only a problem on windows -->
+			<if>
+				<isset property="test.groups"/>
+				<then>
+					<!-- run a suite of tests from a given directory -->
+					<testng classpathref="java.test.classpath"
+							outputDir="${java.test.reports.dir}/@{suite}"
+							failureProperty="java.test.failed"
+							verbose="${test.level}"
+							listener="PorticoTestListener"
+							haltonfailure="false"
+							haltonskipped="false"
+							groups="${test.groups}">
+						<classfileset dir="${java.test.classes.dir}">
+							<include name="@{directory}/**/*Test.class"/>
+							<include name="@{directory}/TestSetup.class"/>
+						</classfileset>
+						<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+						<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+						<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+						<jvmarg value="-Dtest.binding=${test.binding}"/>
+						<jvmarg value="-Dtest.suite=@{suite}"/>
+					</testng>
+				</then>
+				<else>
+					<!-- run a suite of tests from a given directory -->
+					<testng classpathref="java.test.classpath"
+							outputDir="${java.test.reports.dir}/@{suite}"
+							failureProperty="java.test.failed"
+							verbose="${test.level}"
+							listener="PorticoTestListener"
+							haltonfailure="false"
+							haltonskipped="false">
+						<classfileset dir="${java.test.classes.dir}">
+							<include name="@{directory}/**/*Test.class"/>
+							<include name="@{directory}/TestSetup.class"/>
+						</classfileset>
+						<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+						<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+						<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+						<jvmarg value="-Dtest.binding=${test.binding}"/>
+						<jvmarg value="-Dtest.suite=@{suite}"/>
+					</testng>
+				</else>
+			</if>
+			
+			<!-- generate some results -->
+			<!--
+			<junitreport todir="${java.test.reports.dir}/@{suite}">
+				<fileset dir="${java.test.reports.dir}/@{suite}" includes="*/*.xml"/>
+				<report format="frames" todir="${java.test.reports.dir}/@{suite}"/>
+			</junitreport>
+			-->
+
+			<!-- check the result -->
+			<fail if="java.test.failed" message="SOME UNIT TESTS FAILED (@{suite})"/>
+		</sequential>
+	</macrodef>
+
+	<!-- ******************************** -->
+	<!-- **** Target: java.test.init **** -->
+	<!-- ******************************** -->
+	<target name="java.test.init" depends="java.compile.tests">
+		<echo>Starting unit testing...</echo>
+		
+		<!-- set up the directory structure -->
+		<mkdir dir="${java.test.reports.dir}"/>
+
+		<!-- bring in the testng task -->
+		<taskdef resource="testngtasks" classpath="${lib.dir}/testng/5.7/testng-5.7-jdk15.jar"/>
+		
+		<!-- Sets the verbosity level for TestNG. Will only set it if it isn't already present -->
+		<property name="test.level" value="1"/><!-- between 1 and 10 -->
+
+		<!-- Sets the location of the root dir from which all files should be loaded for the test.
+		     Where possible, all files should be loaded as system resources, but for some tests it
+		     is not possible to do this (FileUtilities is a good example). If the test.root.dir
+		     property is provided, then the next statement will have no effect. -->
+		<property name="test.root.dir" value="."/>
+		<property name="portico.lrc.loglevel" value="OFF"/>
+	</target>
+
+	<!-- ******************************* -->
+	<!-- **** Target: java.test.all **** -->
+	<!-- ******************************* -->
+	<target name="java.test.all" depends="java.test.portico,java.test.13,java.test.1516"/>
+
+	<!-- ****************************** -->
+	<!-- **** Target: java.test.13 **** -->
+	<!-- ****************************** -->
+	<target name="java.test.13" depends="java.test.init" unless="build.devel">
+		<java-test suite="hla13" directory="hlaunit/hla13"/>
+	</target>
+
+	<!-- ******************************** -->
+	<!-- **** Target: java.test.1516 **** -->
+	<!-- ******************************** -->
+	<target name="java.test.1516" depends="java.test.init" unless="build.devel">
+		<java-test suite="hla1516" directory="hlaunit/hla1516"/>
+	</target>
+
+	<!-- *********************************** -->
+	<!-- **** Target: java.test.portico **** -->
+	<!-- *********************************** -->
+	<target name="java.test.portico" depends="java.test.init" unless="build.devel">
+		<java-test suite="portico" directory="org/portico"/>
+	</target>
+
+	<!-- ========================== -->
+	<!--       Clover Targets       -->
+	<!-- ========================== -->
+	<target name="java.clover.run" depends="java.clover.init,java.test.all">
+		<!-- generate the reports -->
+		<clover-report>
+			<current outfile="${java.test.reports.dir}/clover/clover_html">
+				<format type="html"/>
+			</current>
+		</clover-report>
+	</target>
+	
+	<target name="java.clover.init" depends="java.clean">
+		<!-- we need to make the directory now as if call java.test.init, it'll trigger
+		     a compile, and we need clover initialized before then -->
+		<mkdir dir="${java.test.reports.dir}/clover"/>
+
+		<!-- get the clover tasks in -->
+		<taskdef resource="com/cenqua/ant/antlib.xml" classpath="lib/clover/cenquatasks.jar"/>
+		<extendclasspath path="lib/clover/clover.jar"/>
+		<taskdef resource="clovertasks" classpath="lib/clover/clover.jar"/>		
+
+		<clover-setup initString="${java.test.reports.dir}/clover/mycoverage.db">
+			<fileset dir="${java.src.dir}">
+				<include name="org/**/*.java"/>
+			</fileset>
+		</clover-setup>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                       (Target Group) Java Sandbox Generation                      -->
+	<!-- ================================================================================= -->
+	<target name="java.sandbox" depends="java.sandbox.jars,java.sandbox.win32,java.sandbox.examples">
+	</target>
+
+	<!-- *********************************** -->
+	<!-- **** Target: java.sandbox.init **** -->
+	<!-- *********************************** -->
+	<target name="java.sandbox.init" depends="java.init">
+		<!-- check to see if we need to re-create the jar file -->
+		<uptodate property="java.jar.notrequired" targetfile="${java.portico.jar}">
+			<srcfiles dir="${java.build.classes.dir}" includes="**/*.class"/>
+			<srcfiles dir="${lib.dir}" includes="**/*.jar"/>
+			<srcfiles dir="${java.resources.jar.dir}" includes="**/*"/>
+		</uptodate>
+	
+		<!-- create the required directories -->
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${dist.sandbox.dir}"/>
+		<mkdir dir="${dist.plugins.dir}"/>
+
+		<!-- copy across the dependant libraries -->
+		<mkdir dir="${dist.lib.dir}"/>
+
+		<!-- copy across the execution scripts -->		
+		<mkdir dir="${dist.bin.dir}"/>
+		<copy todir="${dist.bin.dir}">
+			<fileset dir="${scripts.dir}">
+				<include name="**/*"/>
+				<exclude name="**/devel.*"/>
+			</fileset>
+			<!--
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="portico.jar"/>
+				<filter token="version" value="${app.version}"/>
+				<filter token="embedded-jarfile" value="portico.jar"/>
+			</filterset>
+			-->
+		</copy>
+
+		<!-- chmod them -->
+		<chmod dir="${dist.bin.dir}" perm="777" includes="**/*"/>
+
+		<!-- copy across any resources -->
+		<copy todir="${dist.sandbox.dir}">
+			<fileset dir="${resources.dist.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<!-- copy across the example federates -->
+		<mkdir dir="${java.examples.dist.dir}"/>
+		<copy todir="${java.examples.dist.dir}">
+			<fileset dir="${java.examples.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<!-- chmod them -->
+		<chmod dir="${java.examples.dist.dir}" perm="777" includes="**/*.sh"/>
+
+		<!-- copy across the DOCUMENTATAION (only for release, not sandbox) -->
+		<if>
+			<isset property="build.release"/>
+			<then>
+				<!-- GENERATE JAVADOCS -->
+				<antcall target="java.doc"/>
+				
+				<!-- Documentation -->
+				<mkdir dir="${dist.documentation.dir}"/>
+				<copy todir="${dist.documentation.dir}">
+					<fileset dir="${documentation.dir}">
+						<include name="javadoc/hla*/**/*"/>
+					</fileset>
+				</copy>
+			</then>
+		</if>
+	</target>
+
+	<!-- ************************************ -->
+	<!-- **** TARGET: java.sandbox.win32 **** -->
+	<!-- ************************************ -->
+	<!-- This will make things happier for windows environments by
+	     renaming files to .txt and changind the eol format to crlf -->
+	<target name="java.sandbox.win32" depends="java.sandbox.init" if="platform.win32">
+		<!-- move some files to .txt extensions -->
+		<move file="${dist.sandbox.dir}/README" tofile="${dist.sandbox.dir}/README.txt"/>
+		<move file="${dist.sandbox.dir}/SOURCE_CODE" tofile="${dist.sandbox.dir}/SOURCE_CODE.txt"/>
+
+		<!-- fix eol settings -->
+		<fixcrlf srcdir="${dist.sandbox.dir}"
+		         includes="**/*.bat,README.txt,SOURCE_CODE.txt"
+		         eol="crlf"/>
+	</target>
+
+	<!-- *********************************** -->
+	<!-- **** Target: java.sandbox.jars **** -->
+	<!-- *********************************** -->
+	<target name="java.sandbox.jars"
+	        depends="java.compile,java.sandbox.init"
+	        unless="java.jar.notrequired">
+		<!-- ================================ -->
+		<!-- ===== CREATE THE JAR FILES ===== -->
+		<!-- ================================ -->
+		<!-- extract the deps for the one-jar style distribution -->
+		<mkdir dir="${onejar.jgroups.tmp}"/>
+		<!-- jgroups -->
+		<unjar src="${onejar.jgroups-core.jar}" dest="${onejar.jgroups.tmp}"/>
+		<unjar src="${onejar.jgroups-log.jar}" dest="${onejar.jgroups.tmp}"/>
+		<!-- log4j -->
+		<unjar src="${onejar.log4j.jar}" dest="${onejar.log4j.tmp}"/>
+		<move file="${onejar.log4j.tmp}/META-INF/LICENSE" tofile="${onejar.log4j.tmp}/LICENSE.log4j"/>
+		<move file="${onejar.log4j.tmp}/META-INF/NOTICE" tofile="${onejar.log4j.tmp}/NOTICE.log4j"/>
+		<!-- asm -->
+		<unjar src="${onejar.asm.jar}" dest="${onejar.asm.tmp}"/>
+		<copy file="${onejar.asm.license}" tofile="${onejar.asm.tmp}/LICENSE.asm"/>
+
+		<!-- =================== -->
+		<!-- portico-version.jar -->
+		<!-- =================== -->
+		<!-- Main Portico server jar - includes default RTI handler and module config -->
+		<jar destfile="${java.portico.jar}" filesetmanifest="mergewithoutmain">
+			<fileset dir="${java.build.classes.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+			<!-- copy in the build.properties        -->
+			<!-- used for things like version number -->
+			<fileset dir=".">
+				<include name="build.properties"/>
+			</fileset>
+			<!-- copy the resources across -->
+			<fileset dir="${java.resources.jar.dir}">
+				<include name="**/*"/>
+				<exclude name="**/console*"/>
+			</fileset>
+			<!-- jgroups dep -->
+			<fileset dir="${onejar.jgroups.tmp}">
+				<include name="**/*"/>
+			</fileset>
+			<!-- log4j dep -->
+			<fileset dir="${onejar.log4j.tmp}">
+				<include name="**/*"/>
+				<exclude name="**/chainsaw/**"/>
+				<exclude name="**/lf5/**"/>
+				<exclude name="**/jmx/**"/>
+				<exclude name="**/varia/**"/>
+				<exclude name="**/xml/**"/>
+				<exclude name="META-INF/**"/>
+			</fileset>
+			<!-- asm dep -->
+			<fileset dir="${onejar.asm.tmp}">
+				<include name="**/*"/>
+				<exclude name="META-INF/**"/>
+			</fileset>
+			<!-- license -->
+			<fileset dir="." includes="LICENSE.portico"/>
+			<!-- MANIFEST -->
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="org.portico.rti.Main"/>
+				<section name="${app.mainpackage}">
+					<attribute name="Implementation-Title" value="${ant.project.name}"/>
+					<attribute name="Implementation-Version" value="${app.version} ${TODAY}"/> 
+					<attribute name="Implementation-Vendor" value="The Portico Project"/>
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- =================== -->
+		<!-- portico-console.jar -->
+		<!-- =================== -->
+		<!-- executable jar file for the console -->
+		<!-- fetch this back out of the v0.8 tree, removed it because I can't just
+		     comment out the whole thing (as the tasks contains comments itself and
+		     the XML parser has a little hissy fit -->
+
+		<!-- remove the onejar temp stuff -->
+		<delete dir="${onejar.tmp}"/>
+	</target>
+
+	<!-- *************************************** -->
+	<!-- **** Target: java.sandbox.examples **** -->
+	<!-- *************************************** -->
+	<target name="java.sandbox.examples" depends="java.sandbox.jars">
+		<!-- compile and jar up the hla13 example federate -->
+		<jcompile src="${java.examples.dir}/hla13/src"
+		          out="${java.examples.build.dir}/hla13/classes"
+		          classpath="java.examples.classpath"/>
+		
+		<jar destfile="${java.examples.dist.dir}/hla13/java-hla13.jar">
+			<fileset dir="${java.examples.build.dir}/hla13/classes">
+				<include name="**/*.class"/>
+			</fileset>
+			<!-- MANIFEST -->
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="hla13.Example13Federate"/>
+			</manifest>
+		</jar>
+
+		<!-- compile and jar up the hla13java1 example federate -->
+		<jcompile src="${java.examples.dir}/hla13java1/src"
+		          out="${java.examples.build.dir}/hla13java1/classes"
+		          classpath="java.examples.classpath"/>
+		
+		<jar destfile="${java.examples.dist.dir}/hla13java1/java-hla13java1.jar">
+			<fileset dir="${java.examples.build.dir}/hla13java1/classes">
+				<include name="**/*.class"/>
+			</fileset>
+			<!-- MANIFEST -->
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="hla13.ExampleJava1Federate"/>
+			</manifest>
+		</jar>
+
+		<!-- compile and jar up the event-logger example federate -->
+		<jcompile src="${java.examples.dir}/event-logger/src"
+		          out="${java.examples.build.dir}/event-logger/classes"
+		          classpath="java.examples.classpath"/>
+		
+		<jar destfile="${java.examples.dist.dir}/event-logger/event-logger.jar">
+			<fileset dir="${java.examples.build.dir}/event-logger/classes">
+				<include name="**/*.class"/>
+			</fileset>
+			<!-- MANIFEST -->
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="EventLogger"/>
+			</manifest>
+		</jar>
+		
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                       (Target Group) Java Release Generation                      -->
+	<!-- ================================================================================= -->
+	<target name="java.release" depends="java.clean,java.release.verify,java.sandbox">
+	</target>
+
+	<!-- *********************************** -->
+	<!-- **** Target: java.release.init **** -->
+	<!-- *********************************** -->
+	<target name="java.release.init" depends="clean,init">
+		<!-- set the "build.release" property -->
+		<property name="build.release" value="${app.version}"/>
+		
+		<echo>THIS IS A RELEASE BUILD. CHECKING EVERYTHING.</echo>
+	</target>
+
+	<!-- ************************************* -->
+	<!-- **** Target: java.release.verify **** -->
+	<!-- ************************************* -->
+	<!-- 
+	     This target should verify that we are actually ready for release by running all
+	     the unit tests, etc... Any failure here should fail the build
+	-->
+	<target name="java.release.verify" depends="java.test"/>
+
+	<!-- ^^^^^^^^^^^^ NOTE ^^^^^^^^^^^^ -->
+	<!--
+	     The targets that do the .tar.gz/.zip generation reside in the main
+	     build file, as they should only be run after both the java and cpp
+	     builds have had a chance to test/sandbox everything up
+	-->
+
+	<!-- =========================================================== -->
+	<!--                       Javadoc Targets                       -->
+	<!-- =========================================================== -->
+	<target name="java.doc" depends="java.doc.all"/>
+	
+	<target name="java.doc.all" depends="java.init" unless="build.devel">
+		<echo>Generating javadocs for all production source (${java.src.dir})</echo>
+		
+		<!-- create the directories -->
+		<mkdir dir="${java.doc.dir}"/>
+		
+		<antcall target="java.doc.hla13"/>
+		<antcall target="java.doc.hla13java1"/>
+		<antcall target="java.doc.hla1516"/>
+		<antcall target="java.doc.portico"/>
+		<antcall target="java.doc.hlaunit"/>
+	</target>
+		
+	<target name="java.doc.hla13" depends="java.init" unless="build.devel">
+		<!-- run javadoc for the HLA interfaces -->
+		<echo>Generating HLA API documentation for HLA v1.3 interface</echo>
+		<mkdir dir="${java.doc.hla13.dir}"/>
+		<javadoc author="false"
+		         destdir="${java.doc.hla13.dir}"
+		         packagenames="hla.rti.*"
+		         sourcepath="${java.src.dir}"
+				 link="${java.doc.external}"
+		         use="true"
+		         version="true"
+		         breakiterator="true">
+			<classpath refid="java.compile.classpath"/>
+		</javadoc>
+	</target>
+
+	<target name="java.doc.hla13java1" depends="java.init" unless="build.devel">
+		<echo>Generating HLA API documentation for DMSO rti13.java1 compliant interface</echo>
+		<mkdir dir="${java.doc.java1.dir}"/>
+		<javadoc author="false"
+		         destdir="${java.doc.java1.dir}"
+		         packagenames="hla.rti13.*"
+		         sourcepath="${java.src.dir}"
+				 link="${java.doc.external}"
+		         use="true"
+		         version="true"
+		         breakiterator="true">
+			<classpath refid="java.compile.classpath"/>
+		</javadoc>
+	</target>
+
+	<target name="java.doc.hla1516" depends="java.init" unless="build.devel">
+		<echo>Generating HLA API documentation for HLA v1516 interface</echo>
+		<mkdir dir="${java.doc.hla1516.dir}"/>
+		<javadoc author="false"
+		         destdir="${java.doc.hla1516.dir}"
+		         packagenames="hla.rti1516.*"
+		         sourcepath="${java.src.dir}"
+				 link="${java.doc.external}"
+		         use="true"
+		         version="true"
+		         breakiterator="true">
+			<classpath refid="java.compile.classpath"/>
+		</javadoc>
+	</target>
+		
+	<target name="java.doc.portico" depends="java.init" unless="build.devel">
+		<!-- run javadoc for the portico classes (developer only) -->
+		<echo>Generating javadoc documentation for Portico codebase</echo>
+		<mkdir dir="${java.doc.portico.dir}"/>
+		<javadoc author="false"
+		         destdir="${java.doc.portico.dir}"
+		         packagenames="org.portico.*"
+		         sourcepath="${java.src.dir}"
+				 link="${java.doc.external}"
+		         use="true"
+				 private="true"
+		         version="true"
+		         breakiterator="true"
+		         windowtitle="${java.doc.windowtitle}"
+		         header="${java.doc.header}"
+		         footer="${java.doc.footer}">
+			<classpath refid="java.compile.classpath"/>
+		</javadoc>
+	</target>
+
+	<target name="java.doc.hlaunit" depends="java.init" unless="build.devel">
+		<!-- run javadoc for the HLAUnit classes (developer only) -->
+		<echo>Generating javadoc documentation for hlaunit codebase</echo>
+		<mkdir dir="${java.doc.hlaunit.dir}"/>
+		<javadoc author="false"
+		         destdir="${java.doc.hlaunit.dir}"
+		         packagenames="hlaunit.*"
+		         sourcepath="${java.test.src.dir}"
+		         link="${java.doc.external}"
+		         use="true"
+		         private="true"
+		         version="true"
+		         breakiterator="true"
+		         windowtitle="${java.doc.windowtitle}"
+		         header="${java.doc.header}"
+		         footer="${java.doc.footer}">
+			<classpath refid="java.test.classpath"/>
+		</javadoc>
+	</target>
+
+</project>

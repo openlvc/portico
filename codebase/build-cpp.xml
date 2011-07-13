@@ -1,0 +1,896 @@
+<?xml version="1.0"?>
+<!--
+                 Welcome to the Portico C++ build file
+
+       Contained in this file are all the properties and build targets
+       relating to the Portico C++ interface. This file is not meant to be
+       used by itself, but rather to be imported by the main build.xml file.
+       There are some properties that this file expects. For more information
+       about building Portico, see the wiki:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+
+<project name="portico-cpp" default="cpp.compile">
+
+	<!-- ================================================================================= -->
+	<!--                              Properties Declarations                              -->
+	<!-- ================================================================================= -->
+	<!-- bring in the ant-contrib and cc tasks -->
+	<taskdef name="cpptask" classname="com.lbf.cpptask.CppTask"/>
+
+	<!-- set the LD_LIBRARY_PATH if it isn't in the environment -->
+	<property name="env.LD_LIBRARY_PATH" value="."/>
+
+	<!-- ====================== -->
+	<!-- general c++ properties -->
+	<!-- ====================== -->
+	<property name="cpp.src.dir"                  location="src-cpp"/>
+	<property name="cpp.build.dir"                location="${build.dir}/cpp/temp"/>
+	<property name="cpp.output.dir"               location="${build.dir}/cpp/complete"/>
+
+	<!-- ================ -->
+	<!-- hla13 properties -->
+	<!-- ================ -->
+	<property name="cpp.hla13.dir"                location="${cpp.src.dir}/hla13"/>
+
+	<property name="cpp.output.ng6.dir"           location="${cpp.output.dir}/ng6"/>
+	<property name="cpp.build.ng6.dir"            location="${cpp.build.dir}/ng6"/>
+	<property name="ng6.timeimpl.dir"             location="${cpp.src.ng6.dir}/src/hla/time"/>
+
+	<property name="cpp.output.dlc13.dir"         location="${cpp.output.dir}/dlc13"/>
+	<property name="cpp.build.dlc13.dir"          location="${cpp.build.dir}/dlc13"/>
+
+	<!-- =================== -->
+	<!-- ieee1516 properties -->
+	<!-- =================== -->
+	<property name="cpp.ieee1516.dir"              location="${cpp.src.dir}/ieee1516"/>
+	<property name="cpp.output.1516.dir"           location="${cpp.output.dir}/ieee1516"/>
+	<property name="cpp.build.1516.dir"            location="${cpp.build.dir}/ieee1516"/>
+
+	<!-- =============== -->
+	<!-- java properties -->
+	<!-- =============== -->
+	<property name="cpp.inc.jvm.dir"              location="${env.JAVA_HOME}/include"/>
+
+	<!-- ================== -->
+	<!-- testing properties -->
+	<!-- ================== -->
+	<!-- HLA 1.3 tests -->
+	<property name="cpp.test.13.src.dir"          location="${cpp.src.dir}/test/ng6"/>
+	<property name="cpp.test.13.build.dir"        location="${cpp.build.dir}/ng6-test"/>
+	<property name="cpp.test.13.resources.dir"    location="${resources.dir}/test-data/cpptest/ng6"/>
+	<property name="cpp.test.13.reports.file"     location="${cpp.test.13.build.dir}/test-results.xml"/>
+	<property name="cpp.test.13.reports.dir"      location="${cpp.test.13.build.dir}/reports"/>
+
+	<!-- IEEE 1516 tests -->
+	<property name="cpp.test.1516.src.dir"        location="${cpp.src.dir}/test/ieee1516"/>
+	<property name="cpp.test.1516.build.dir"      location="${cpp.build.dir}/ieee1516-test"/>
+	<property name="cpp.test.1516.resources.dir"  location="${resources.dir}/test-data/cpptest/ieee1516"/>
+	<property name="cpp.test.1516.reports.file"   location="${cpp.test.1516.build.dir}/test-results.xml"/>
+	<property name="cpp.test.1516.reports.dir"    location="${cpp.test.1516.build.dir}/reports"/>
+
+	<property name="cppunit.home"                 location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+	<property name="cppunit.include"              location="${cppunit.home}/include"/>
+	<!--<property name="cppunit.lib" this is set in platform specific init targets -->
+	
+	<!-- =================== -->
+	<!-- examples properties -->
+	<!-- =================== -->
+	<property name="cpp.examples.dir"             location="src-cpp/example"/>
+
+	<!-- ================================================================================= -->
+	<!--                                Target Declarations                                -->
+	<!-- ================================================================================= -->
+
+	<!-- =========================================================== -->
+	<!-- >>>> Target: cpp.clean                                      -->
+	<!-- =========================================================== -->
+	<target name="cpp.clean">
+		<delete dir="${build.dir}/cpp"/>
+		<delete dir="savedata"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                       (Target Group) Platform Setup Targets                       -->
+	<!-- ================================================================================= -->
+	<!--
+	     >>>> Platform-Specific Setup Targets <<<<
+	      These tasks will set various properties depending on the platform
+	      on which the build is executing. Each of the cpp.init.* targets will
+	      be called, but they will only run if their target platform is the one
+	      currently being built on.
+	-->
+
+	<!-- ************************** -->
+	<!-- **** TARGET: cpp.init **** -->
+	<!-- ************************** -->
+	<target name="cpp.init" depends="cpp.init.win32,cpp.init.linux,cpp.init.macos">
+	</target>
+
+	<!-- ******************************** -->
+	<!-- **** TARGET: cpp.init.win32 **** -->
+	<!-- ******************************** -->
+	<target name="cpp.init.win32" if="platform.win32">
+		<echo>System is Windows, performing Windows-specific setup</echo>
+
+		<echo>MSVC Support has been Enabled</echo>
+		<echo>***** Special MSVC NOTE *****</echo>
+		<echo> To build the Portico C++ interface, the msvc compiler</echo>
+		<echo> and other tools must be available from the command line.</echo>
+		<echo> Remember to run vcvars32.bat. See the README for</echo>
+		<echo> additional information or help.</echo>
+		<echo>*****************************</echo>
+
+		<property name="cpp.runtime.ng6.name"    value="libRTI-NG"/>
+		<property name="cpp.fedtime.ng6.name"    value="libFedTime"/>
+		<property name="cpp.runtime.dlc13.name"  value="librti13"/>
+		<property name="cpp.fedtime.dlc13.name"  value="libfedtime13"/>
+		<property name="platform.jvm.dir"        value="${env.JAVA_HOME}/lib"/>
+
+		<!-- set up for CppUnit -->
+		<if>
+			<isset property="vc7"/><then><property name="cppunit.lib"
+		                                           value="${cppunit.home}/vc7"/></then>
+		<elseif>
+			<isset property="vc8"/><then><fail message="vc8 not suppoted, only vc6 and vc7"/></then>
+		</elseif>
+		<elseif>
+			<isset property="vc9"/><then><fail message="vc9 not suppoted, only vc6 and vc7"/></then>
+		</elseif>
+		<else>
+			<property name="cppunit.lib" value="${cppunit.home}/vc6"/>
+		</else>
+		</if>
+	</target>
+
+	<!-- ******************************** -->
+	<!-- **** TARGET: cpp.init.linux **** -->
+	<!-- ******************************** -->
+	<target name="cpp.init.linux" if="platform.linux">
+		<echo>System is Linux, performing Linux-specific setup</echo>
+
+		<property name="cpp.runtime.ng6.name"    value="RTI-NG"/>
+		<property name="cpp.fedtime.ng6.name"    value="FedTime"/>
+		<property name="cpp.runtime.dlc13.name"  value="rti13"/>
+		<property name="cpp.fedtime.dlc13.name"  value="fedtime13"/>
+
+		<!-- set the location of the appropriate jvm include files -->
+		<condition property="platform.jvm.dir"
+		           value="${env.JAVA_HOME}/jre/lib/i386/client"
+		           else="${env.JAVA_HOME}/jre/lib/amd64/server">
+			<os arch="i386"/>
+		</condition>
+
+		<!-- set up CppUnit -->
+		<property name="cppunit.lib" value="${cppunit.home}/gcc4-linux"/>
+	</target>
+
+	<!-- ******************************** -->
+	<!-- **** TARGET: cpp.init.macos **** -->
+	<!-- ******************************** -->
+	<target name="cpp.init.macos" if="platform.macos">
+		<echo>System is Mac OS X, performing Mac OS X-specific setup</echo>
+
+		<!--<fail message="Building on Mac OS X is not yet supported"/>-->
+		<property name="cpp.runtime.ng6.name"    value="RTI-NG"/>
+		<property name="cpp.fedtime.ng6.name"    value="FedTime"/>
+		<property name="cpp.runtime.dlc13.name"  value="rti13"/>
+		<property name="cpp.fedtime.dlc13.name"  value="fedtime13"/>
+
+		<property name="platform.jvm.dir"          value="/Library/Java/Home"/>
+
+		<!-- set up CppUnit -->
+		<property name="cppunit.lib" value="${cppunit.home}/macos"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                            (Target Group) C++ Compile                             -->
+	<!-- ================================================================================= -->
+	<target name="cpp.compile" depends="cpp.compile.ng6,cpp.compile.dlc13">
+	</target>
+
+	<!-- ============================== -->
+	<!-- (macro): Windows Compile Macro -->
+	<!-- ============================== -->
+	<macrodef name="compile-win32" description="C++ compile target for MSVC on Windows">
+		<!-- Attributes -->
+		<attribute name="outfile"/>
+		<attribute name="version" default="ng6"    description="defaults to ng6"/>
+		<attribute name="type"    default="shared" description="shared (default) or executable"/>
+		<attribute name="compilerArgs" default="/O2 /EHsc /GR /MD /W0" description="args passed to compiler"/>
+		<attribute name="linkerArgs"   default=""  description="args passed to linker"/>
+		<element name="content" implicit="yes"/>
+		<!-- Task Definition -->
+		<sequential>
+			<mkdir dir="${cpp.build.dir}/@{version}/obj"/>
+			<!-- run cpptask -->
+			<cpptask outfile="@{outfile}"
+			         objdir="${cpp.build.dir}/@{version}/obj"
+			         outtype="@{type}"
+			         compiler="msvc"
+			         compilerArgs="@{compilerArgs}"
+			         linkerArgs="@{linkerArgs}">
+				<content/>
+				<define name="WIN32"/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+	<!-- ============================= -->
+	<!-- (macro): Unix Compiling Macro -->
+	<!-- ============================= -->
+	<macrodef name="compile-unix" description="C++ compile target for GCC on Linux and Mac OS X">
+		<!-- Attributes -->
+		<attribute name="outfile"/>
+		<attribute name="version" default="ng6"    description="defaults to ng6"/>
+		<attribute name="type"    default="shared" description="shared (default) or executable"/>
+		<attribute name="compilerArgs"
+		           default="-g -O2 -fPIC -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing"
+		           description="args passed to compiler"/>
+		<attribute name="linkerArgs"   default=""  description="args passed to linker"/>
+		<element name="content" implicit="yes"/>
+		<!-- Task Definition -->
+		<sequential>
+			<mkdir dir="${cpp.build.dir}/@{version}/obj"/>
+			<!-- run cpptask -->
+			<cpptask outfile="@{outfile}"
+			         objdir="${cpp.build.dir}/@{version}/obj"
+			         outtype="@{type}"
+			         compiler="g++"
+			         compilerArgs="@{compilerArgs}"
+			         linkerArgs="@{linkerArgs}">
+				<content/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+	<!-- =========================================================== -->
+	<!--                   NG6 C++ Compile Targets                   -->
+	<!-- =========================================================== -->
+	<!-- ********************************* -->
+	<!-- **** TARGET: cpp.compile.ng6 **** -->
+	<!-- ********************************* -->
+	<target name="cpp.compile.ng6"
+	        depends="cpp.compile.ng6.win32,cpp.compile.ng6.linux,cpp.compile.ng6.macos">
+		<echo>NGv6 Compile Over</echo>
+	</target>
+
+	<!-- ************************************** -->
+	<!-- **** TARGET: cpp.compile.ng6.init **** -->
+	<!-- ************************************** -->
+	<target name="cpp.compile.ng6.init" depends="cpp.init">
+		<!-- set up the working location -->
+		<mkdir dir="${cpp.build.ng6.dir}"/>
+		<mkdir dir="${cpp.output.ng6.dir}"/> <!-- this is where the finished product goes -->
+	</target>
+
+	<!-- *************************************** -->
+	<!-- **** TARGET: cpp.compile.ng6.win32 **** -->
+	<!-- *************************************** -->
+	<target name="cpp.compile.ng6.win32" depends="cpp.compile.ng6.init" if="platform.win32">
+		<!-- Build the fedtime DLL -->
+		<compile-win32 outfile="${cpp.output.ng6.dir}/${cpp.fedtime.ng6.name}">
+		    <!-- Filesets and other settings -->
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="time/RTIfedTime.cpp"/>
+				<include name="time/FedTime.cpp"/>
+				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/win32"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="BUILDING_RTI"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="BUILDING_FEDTIME"/>
+			<library path="${platform.jvm.dir}" libs="jvm"/>
+		</compile-win32>
+
+		<!-- Build the main DLL -->
+		<compile-win32 outfile="${cpp.output.ng6.dir}/${cpp.runtime.ng6.name}">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="**/*.cpp"/>
+				<exclude name="time/RTIfedTime.cpp"/>
+				<exclude name="time/FedTime.cpp"/>
+				<exclude name="time/FedTimeFactory.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/win32"/>
+			<define name="BUILDING_RTI"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${cpp.output.ng6.dir}" libs="${cpp.fedtime.ng6.name}"/>
+			<library path="${platform.jvm.dir}" libs="jvm"/>
+		</compile-win32>
+	</target>
+
+	<!-- *************************************** -->
+	<!-- **** TARGET: cpp.compile.ng6.linux **** -->	
+	<!-- *************************************** -->
+	<target name="cpp.compile.ng6.linux" depends="cpp.compile.ng6.init" if="platform.linux">
+		<!-- build the fed time library -->
+		<compile-unix outfile="${cpp.output.ng6.dir}/${cpp.fedtime.ng6.name}">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="time/RTIfedTime.cpp"/>
+				<include name="time/FedTime.cpp"/>
+				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/linux"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${platform.jvm.dir}" libs="jvm,jsig"/>
+		</compile-unix>
+		
+		<!-- build the main library -->
+		<compile-unix outfile="${cpp.output.ng6.dir}/${cpp.runtime.ng6.name}">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="**/*.cpp"/>
+				<exclude name="time/RTIfedTime.cpp"/>
+				<exclude name="time/FedTime.cpp"/>
+				<exclude name="time/FedTimeFactory.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/linux"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${platform.jvm.dir}" libs="jvm,jsig"/>
+		</compile-unix>
+	</target>
+
+	<!-- *************************************** -->
+	<!-- **** TARGET: cpp.compile.ng6.macos **** -->
+	<!-- *************************************** -->
+	<target name="cpp.compile.ng6.macos" depends="cpp.compile.ng6.init" if="platform.macos">
+		<!-- build the main library -->
+		<compile-unix outfile="${cpp.output.ng6.dir}/${cpp.runtime.ng6.name}"
+		               linkerArgs="-framework JavaVM -arch i386 -arch ppc"
+		               compilerArgs="-g -arch i386 -arch ppc -O2 -fPIC -Wall -Wno-non-virtual-dtor">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="**/*.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/macos"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+		</compile-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlink...</echo>
+		<exec executable="ln" dir="${cpp.output.ng6.dir}" failonerror="true">
+			<arg line="-sf ./lib${cpp.runtime.ng6.name}.dylib ./lib${cpp.runtime.ng6.name}.jnilib"/>
+		</exec>
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                  DLC13 C++ Compile Targets                  -->
+	<!-- =========================================================== -->
+	<!-- *********************************** -->
+	<!-- **** Target: cpp.compile.dlc13 **** -->
+	<!-- *********************************** -->
+	<target name="cpp.compile.dlc13"
+	        depends="cpp.compile.dlc13.win32,cpp.compile.dlc13.linux,cpp.compile.dlc13.macos">
+		<echo>DLC 1.3 Compile Over</echo>
+	</target>
+
+	<!-- **************************************** -->
+	<!-- **** Target: cpp.compile.dlc13.init **** -->	
+	<!-- **************************************** -->
+	<target name="cpp.compile.dlc13.init" depends="cpp.init">
+		<!-- set up the working location -->
+		<mkdir dir="${cpp.build.dlc13.dir}"/>
+		<mkdir dir="${cpp.output.dlc13.dir}"/> <!-- this is where the finished product goes -->
+	</target>
+
+	<!-- ***************************************** -->
+	<!-- **** Target: cpp.compile.dlc13.win32 **** -->	
+	<!-- ***************************************** -->
+	<target name="cpp.compile.dlc13.win32" depends="cpp.compile.dlc13.init" if="platform.win32">
+		<echo>Win32 DLC Compile Target NOT YET IMPLEMENTED</echo>
+	</target>
+	
+	<!-- ***************************************** -->
+	<!-- **** Target: cpp.compile.dlc13.linux **** -->	
+	<!-- ***************************************** -->
+	<target name="cpp.compile.dlc13.linux" depends="cpp.compile.dlc13.init" if="platform.linux">
+		<!-- build the fed time library -->
+		<compile-unix outfile="${cpp.output.dlc13.dir}/${cpp.fedtime.dlc13.name}" version="dlc13">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="time/RTIfedTime.cpp"/>
+				<include name="time/FedTime.cpp"/>
+				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/dlc13;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/linux"/>
+			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${platform.jvm.dir}" libs="jvm,jsig"/>
+		</compile-unix>
+		
+		<!-- build the main library -->
+		<compile-unix outfile="${cpp.output.dlc13.dir}/${cpp.runtime.dlc13.name}" version="dlc13">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="**/*.cpp"/>
+				<exclude name="time/RTIfedTime.cpp"/>
+				<exclude name="time/FedTime.cpp"/>
+				<exclude name="time/FedTimeFactory.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/dlc13;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/linux"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_DLC"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${platform.jvm.dir}" libs="jvm,jsig"/>
+		</compile-unix>
+	</target>
+	
+	<!-- ***************************************** -->
+	<!-- **** Target: cpp.compile.dlc13.macos **** -->	
+	<!-- ***************************************** -->
+	<target name="cpp.compile.dlc13.macos" depends="cpp.compile.dlc13.init" if="platform.macos">
+		<!-- build the main library -->
+		<compile-unix outfile="${cpp.output.dlc13.dir}/${cpp.runtime.dlc13.name}"
+		               linkerArgs="-O2 -fPIC -framework JavaVM -arch i386 -arch ppc"
+		               compilerArgs="-g -arch i386 -arch ppc -O2 -fPIC -Wall -Wno-non-virtual-dtor"
+		               version="dlc13">
+			<fileset dir="${cpp.hla13.dir}/src">
+				<include name="**/*.cpp"/>
+			</fileset>
+			<includepath path="${cpp.hla13.dir}/include/dlc13;${cpp.hla13.dir}/src"/>
+			<includepath path="${cpp.inc.jvm.dir};${cpp.inc.jvm.dir}/macos"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+		</compile-unix>
+		
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlink...</echo>
+		<exec executable="ln" dir="${cpp.output.dlc13.dir}" failonerror="true">
+			<arg line="-sf ./lib${cpp.runtime.dlc13.name}.dylib ./lib${cpp.runtime.dlc13.name}.jnilib"/>
+		</exec>
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                 HLA 1.3 Test Compile Targets                -->
+	<!-- =========================================================== -->
+	<target name="cpp.compile.test" depends="cpp.compile.test.13,cpp.compile.test.1516"/>
+
+	<target name="cppunit.check">
+		<!-- check to see if the CppUnit library has been set up properly -->
+		<if>
+			<not><isset property="cppunit.home"/></not>
+			<then>
+				<echo>***NOTE*** cppunit.home property not set in build.properties. CppUnit *MUST*</echo>
+				<echo>***NOTE*** be installed in a location where GCC/MSVC/... can find it</echo>
+			</then>
+			<else>
+				<echo>cppunit.home=${cppunit.home}</echo>		
+			</else>
+		</if>
+	</target>
+
+	<!-- ************************************* -->
+	<!-- **** TARGET: cpp.compile.test.13 **** -->
+	<!-- ************************************* -->
+	<target name="cpp.compile.test.13"
+	        depends="cpp.compile.test.13.win32,cpp.compile.test.13.linux,cpp.compile.test.13.macos"
+	        unless="build.devel"/>
+
+	<!-- ****************************************** -->
+	<!-- **** TARGET: cpp.compile.test.13.init **** -->
+	<!-- ****************************************** -->
+	<target name="cpp.compile.test.13.init"
+	        depends="cppunit.check,cpp.compile.ng6"
+	        unless="build.devel">
+		<echo>Compiling the Unit Test Code</echo>
+		<mkdir dir="${cpp.test.13.build.dir}/obj"/>
+	</target>
+
+	<!-- ******************************************* -->
+	<!-- **** TARGET: cpp.compile.test.13.win32 **** -->
+	<!-- ******************************************* -->
+	<target name="cpp.compile.test.13.win32"
+	        depends="cpp.compile.test.13.init"
+	        if="platform.win32"
+	        unless="build.devel">
+		<compile-win32 outfile="${cpp.test.13.build.dir}/cppPorticoTest"
+		               version="ng6-test"
+		               type="executable">
+		    <!-- Filesets and other settings -->
+			<fileset dir="${cpp.test.13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${ng6.timeimpl.dir};${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+
+			<library path="${platform.jvm.dir}" libs="jvm"/>
+			<library path="${cpp.output.ng6.dir}" libs="RTI-NG,FedTime"/>
+			<library path="${cppunit.lib}" libs="cppunit_dll"/>
+		</compile-win32>
+	</target>
+
+	<!-- ******************************************* -->
+	<!-- **** TARGET: cpp.compile.test.13.linux **** -->
+	<!-- ******************************************* -->
+	<target name="cpp.compile.test.13.linux"
+	        depends="cpp.compile.test.13.init"
+	        if="platform.linux"
+	        unless="build.devel">
+		<compile-unix outfile="${cpp.test.13.build.dir}/cppPorticoTest"
+		               version="ng6-test"
+		               type="executable"
+		               compilerArgs="-g">
+		    <!-- Filesets and other settings -->
+			<fileset dir="${cpp.test.13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${ng6.timeimpl.dir};${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+
+			<library path="${platform.jvm.dir}" libs="jvm"/>
+			<library path="${cpp.output.ng6.dir}" libs="RTI-NG,FedTime"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+			<library libs="cppunit"/>
+		</compile-unix>
+	</target>
+
+	<!-- ******************************************* -->
+	<!-- **** TARGET: cpp.compile.test.13.macos **** -->
+	<!-- ******************************************* -->
+	<target name="cpp.compile.test.13.macos"
+	        depends="cpp.compile.test.13.init"
+	        if="platform.macos"
+	        unless="build.devel">
+		<!-- compile the test application -->
+		<compile-unix outfile="${cpp.test.13.build.dir}/cppPorticoTest"
+		               version="ng6-test"
+		               type="executable"
+		               compilerArgs="-g -arch i386"
+		               linkerArgs="-arch i386">
+		    <!-- Filesets and other settings -->
+			<fileset dir="${cpp.test.13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${cpp.hla13.dir}/include/ng6;${ng6.timeimpl.dir};${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+			<library path="${cpp.output.ng6.dir}" libs="RTI-NG,cppunit"/>
+		</compile-unix>
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                IEEE 1516 Test Compile Targets               -->
+	<!-- =========================================================== -->
+	<target name="cpp.compile.test.1516" unless="build.devel"/>
+
+	<!-- ================================================================================= -->
+	<!--                      (Target Group) C++ Unit Testing HLA 1.3                      -->
+	<!-- ================================================================================= -->
+	<target name="cpp.test" depends="cpp.test.13,cpp.test.1516"/>
+
+	<target name="cpp.test.13" depends="cpp.test.13.results">
+	</target>
+	
+	<!-- ********************************** -->
+	<!-- **** TARGET: cpp.test.13.init **** -->
+	<!-- ********************************** -->
+	<!-- NOTE: depends on java.sandbox so that the java-side of the interface can be found
+	           and tested as is (rather than pointing just at the compiled source) -->
+	<target name="cpp.test.13.init"
+	        depends="cppunit.check,java.sandbox,cpp.compile.test.13"
+	        unless="build.devel">
+		<echo>Running HLA 1.3 C++ Unit Tests</echo>
+
+		<!-- copy the RID file and resources to the test-dir -->
+		<copy todir="${cpp.test.13.build.dir}">
+			<fileset dir="${cpp.test.13.resources.dir}" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<chmod dir="${cpp.test.13.build.dir}" perm="777" includes="**/*.sh"/>
+		<echo>Copied test resources to ${cpp.test.13.build.dir}</echo>
+	</target>
+
+	<!-- *********************************** -->
+	<!-- **** TARGET: cpp.test.13.win32 **** -->
+	<!-- *********************************** -->
+	<target name="cpp.test.13.win32" depends="cpp.test.13.init" if="platform.win32" unless="build.devel">
+		<!-- Run the tests, don't kill the build if any fail. This will be done
+		     after the conversion of the results XML file has taken place. -->
+		<exec dir="${cpp.test.13.build.dir}"
+		      executable="${cpp.test.13.build.dir}\cppPorticoTest.exe"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="cpp.test.13.result">
+			<arg line="${cpp.test.13.reports.file}"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="PATH" path="${cppunit.lib};${env.JAVA_HOME}\jre\bin\client;${cpp.output.ng6.dir}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+	</target>
+	
+	<!-- *********************************** -->
+	<!-- **** TARGET: cpp.test.13.linux **** -->
+	<!-- *********************************** -->
+	<target name="cpp.test.13.linux" depends="cpp.test.13.init" if="platform.linux" unless="build.devel">
+		<!-- Run the tests, don't kill the build if any fail. This will be done
+		     after the conversion of the results XML file has taken place. -->
+		<exec dir="${cpp.test.13.build.dir}"
+		      executable="${cpp.test.13.build.dir}/cppPorticoTest"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="cpp.test.13.result">
+			<arg line="${cpp.test.13.reports.file}"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="LD_LIBRARY_PATH" path="${platform.jvm.dir};${cpp.output.ng6.dir};${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+	</target>
+	
+	<!-- *********************************** -->
+	<!-- **** TARGET: cpp.test.13.macos **** -->
+	<!-- *********************************** -->
+	<target name="cpp.test.13.macos" depends="cpp.test.13.init" if="platform.macos" unless="build.devel">
+		<exec dir="${cpp.test.13.build.dir}"
+		      executable="${cpp.test.13.build.dir}/cppPorticoTest"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="cpp.test.13.result">
+			<arg line="${cpp.test.13.reports.file}"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="DYLD_LIBRARY_PATH" path="${platform.jvm.dir};${cpp.output.ng6.dir};${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+	</target>
+	
+	<!-- ************************************* -->
+	<!-- **** TARGET: cpp.test.13.results **** -->
+	<!-- ************************************* -->
+	<target name="cpp.test.13.results"
+	        depends="cpp.test.13.win32,cpp.test.13.linux,cpp.test.13.macos"
+	        unless="cpp.test.notrun">
+		<echo>Generating the Unit Test Report</echo>
+		
+		<!-- do the XSL transformation generation -->
+		<!-- ONLY run it if build.devel isn't set. We have to do it this way because the
+		     stupid "unless" statement will only look at one property -->
+		<if>
+			<not><isset property="build.devel"/></not>
+			<then>
+			<mkdir dir="${cpp.test.13.reports.dir}"/>
+			<xslt style="${cpp.test.13.build.dir}/xsl/results.xsl"
+			      basedir="${cpp.test.13.build.dir}"
+			      in="${cpp.test.13.reports.file}"
+			      out="${cpp.test.13.reports.dir}/index.html"/>
+		
+			<!-- fail the build if any of the tests were a failure -->
+			<if>
+				<equals arg1="${cpp.test.13.result}" arg2="0"/>
+				<then>
+					<echo>Unit Tests PASSED</echo>
+					<echo>(see report in ${cpp.test.13.reports.dir} for details)</echo>
+				</then>
+				<else>
+					<echo>Some Unit Tests FAILED</echo>
+					<echo>(see report in ${cpp.test.13.reports.dir} for details)</echo>
+					<fail message="Unit Test Failure"/>
+				</else>
+			</if>
+			</then>
+		</if>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                     (Target Group) C++ Unit Testing IEEE 1516                     -->
+	<!-- ================================================================================= -->
+	<target name="cpp.test.1516" depends="cpp.test.1516.results">
+	</target>
+
+	<!-- ************************************ -->
+	<!-- **** TARGET: cpp.test.1516.init **** -->
+	<!-- ************************************ -->
+	<!-- NOTE: depends on java.sandbox so that the java-side of the interface can be found
+	           and tested as is (rather than pointing just at the compiled source) -->
+	<target name="cpp.test.1516.init"
+	        depends="cppunit.check,java.sandbox,cpp.compile.test.1516"
+	        unless="build.devel">
+		<echo>Running IEEE 1516 C++ Unit Tests</echo>
+
+		<!-- copy the RID file and resources to the test-dir -->
+		<copy todir="${cpp.test.1516.build.dir}">
+			<fileset dir="${cpp.test.1516.resources.dir}" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<chmod dir="${cpp.test.1516.build.dir}" perm="777" includes="**/*.sh"/>
+		<echo>Copied test resources to ${cpp.test.1516.build.dir}</echo>
+	</target>
+
+	<!-- ************************************* -->
+	<!-- **** TARGET: cpp.test.1516.win32 **** -->
+	<!-- ************************************* -->
+	<target name="cpp.test.1516.win32" depends="cpp.test.1516.init" if="platform.win32" unless="build.devel">
+		<!-- Run the tests, don't kill the build if any fail. This will be done
+		     after the conversion of the results XML file has taken place. -->
+		<exec dir="${cpp.test.1516.build.dir}"
+		      executable="${cpp.test.build.dir}\cppPorticoTest.exe"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="cpp.test.1516.result">
+			<arg line="${cpp.test.1516.reports.file}"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="PATH" path="${cppunit.lib};${env.JAVA_HOME}\jre\bin\client;${cpp.output.1516.dir}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+	</target>
+	
+	<!-- ************************************* -->
+	<!-- **** TARGET: cpp.test.1516.linux **** -->
+	<!-- ************************************* -->
+	<target name="cpp.test.1516.linux" depends="cpp.test.1516.init" if="platform.linux" unless="build.devel">
+		<!-- Run the tests, don't kill the build if any fail. This will be done
+		     after the conversion of the results XML file has taken place. -->
+		<exec dir="${cpp.test.1516.build.dir}"
+		      executable="${cpp.test.1516.build.dir}/cppPorticoTest"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="cpp.test.1516.result">
+			<arg line="${cpp.test.1516.reports.file}"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="LD_LIBRARY_PATH"
+			     path="${platform.jvm.dir};${cpp.output.1516.dir};${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+	</target>
+	
+	<!-- ************************************* -->
+	<!-- **** TARGET: cpp.test.1516.macos **** -->
+	<!-- ************************************* -->
+	<target name="cpp.test.1516.macos" depends="cpp.test.1516.init" if="platform.macos" unless="build.devel">
+		<exec dir="${cpp.test.1516.build.dir}"
+		      executable="${cpp.test.1516.build.dir}/cppPorticoTest"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="cpp.test.1516.result">
+			<arg line="${cpp.test.1516.reports.file}"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="DYLD_LIBRARY_PATH"
+			     path="${platform.jvm.dir};${cpp.output.1516.dir};${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+	</target>
+	
+	<!-- *************************************** -->
+	<!-- **** TARGET: cpp.test.1516.results **** -->
+	<!-- *************************************** -->
+	<target name="cpp.test.1516.results"/>
+	<target name="cpp.test.1516.results.NOTYET"
+	        depends="cpp.test.1516.win32,cpp.test.1516.linux,cpp.test.1516.macos"
+	        unless="cpp.test.notrun">
+		<echo>Generating the Unit Test Report</echo>
+		
+		<!-- do the XSL transformation generation -->
+		<!-- ONLY run it if build.devel isn't set. We have to do it this way because the
+		     stupid "unless" statement will only look at one property -->
+		<if>
+			<not><isset property="build.devel"/></not>
+			<then>
+			<mkdir dir="${cpp.test.1516.reports.dir}"/>
+			<xslt style="${cpp.test.1516.build.dir}/xsl/results.xsl"
+			      basedir="${cpp.test.1516.build.dir}"
+			      in="${cpp.test.1516.reports.file}"
+			      out="${cpp.test.1516.reports.dir}/index.html"/>
+		
+			<!-- fail the build if any of the tests were a failure -->
+			<if>
+				<equals arg1="${cpp.test.1516.result}" arg2="0"/>
+				<then>
+					<echo>Unit Tests PASSED</echo>
+					<echo>(see report in ${cpp.test.1516.reports.dir} for details)</echo>
+				</then>
+				<else>
+					<echo>Some Unit Tests FAILED</echo>
+					<echo>(see report in ${cpp.test.1516.reports.dir} for details)</echo>
+					<fail message="Unit Test Failure"/>
+				</else>
+			</if>
+			</then>
+		</if>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                        (Target Group) C++ Sandbox Generation                      -->
+	<!-- ================================================================================= -->
+	<!-- ***************************** -->
+	<!-- **** TARGET: cpp.sandbox **** -->
+	<!-- ***************************** -->
+	<!-- NOTE: depends on java.sandbox to generate the majority of the structure -->
+	<target name="cpp.sandbox" depends="java.sandbox,cpp.compile">
+		<!-- prepare the area to store all this stuff -->
+		<mkdir dir="${dist.inc.dir}"/>
+
+		<!-- copy the RTI headers over -->
+		<copy todir="${dist.inc.dir}">
+			<fileset dir="${cpp.hla13.dir}/include" includes="**/*"/>
+		</copy>
+
+		<!-- copy the Portico C++ libraries over -->
+		<copy todir="${dist.lib.dir}">
+			<fileset dir="${cpp.output.ng6.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
+			<fileset dir="${cpp.output.dlc13.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
+		</copy>
+
+		<!-- copy across the example federates -->
+		<mkdir dir="${dist.examples.dir}/cpp"/>
+		<copy todir="${dist.examples.dir}/cpp">
+			<fileset dir="${cpp.examples.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<!-- chmod them -->
+		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
+
+		<!--                         -->
+		<!-- platform specific tasks -->
+		<!--                         -->
+		<!-- win32: move an dlls to bin -->
+		<mkdir dir="${dist.bin.dir}"/>
+		<move todir="${dist.bin.dir}">
+			<fileset dir="${dist.lib.dir}" includes="**/*.dll"/>
+		</move>
+
+		<!-- macos: link the dylib and jnilib -->
+		<if><isset property="platform.macos"/>
+		<then>
+			<echo>creating symlinks from dylibs to jnilibs</echo>
+			<!-- can't use the symlink ant task because we want to specify a relative link
+			     between the dylib and jnilib, and if we use symlink, we get absolute paths
+			     which are obviously useless on any system except the one the particular
+			     version of Portico was built on -->
+			<exec executable="ln" dir="${dist.lib.dir}" failonerror="true">
+				<arg line="-sf ./lib${cpp.runtime.ng6.name}.dylib ./lib${cpp.runtime.ng6.name}.jnilib"/>
+			</exec>
+			<exec executable="ln" dir="${dist.lib.dir}" failonerror="true">
+				<arg line="-sf ./lib${cpp.runtime.dlc13.name}.dylib ./lib${cpp.runtime.dlc13.name}.jnilib"/>
+			</exec>
+		</then>
+		</if>
+
+		<!-- macos/linux: chmod the dylib/so appropriately -->
+		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                        (Target Group) C++ Release Generation                      -->
+	<!-- ================================================================================= -->
+	<target name="cpp.release" depends="java.release,cpp.test,cpp.sandbox">
+		<echo>Nothing more to do in C++ release generation</echo>
+	</target>
+
+</project>

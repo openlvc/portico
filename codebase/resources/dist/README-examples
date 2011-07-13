@@ -1,0 +1,58 @@
+====================================================
+Building and Executing the Portico Example Federates
+====================================================
+
+The Example Federate
+--------------------
+The example federate is designed to demonstrate how to:
+
+1) Publish and Subscribe
+2) Register and delete an object
+3) Update attribute values
+4) Send an interaction
+5) Advance time
+6) Use synchronization points
+
+The federate starts up and after going through setup (publication and subscription, enabling
+time regulation and constrained etc...) it advances time from 1-10 in 1.0 increments. Each step
+it will update the attributes of an object it has registered and will send an interaction. When
+it receives a reflection or an update, it will log this information to screen.
+
+You can run multiple instances of the example federate at once by starting each with a different
+name. This is useful to see that all federates are communicating with one another. If they are,
+you should be print-outs for the information received by each federate from the others.
+
+Compiling the Federate
+----------------------
+Portico ships with a pre-compiled version of each Java example federate, but users will have to
+compile the C++ versions for themselves with their compiler of choice.
+
+Each federate comes with helper scripts to do the compilation for you. Note that if you are using
+Java you must have JAVA_HOME set and javac must be available from the command line. If you are
+using C++, your compiler and all relevant libraries must be available from the command line.
+
+On windows you can use the helper batch files in %RTI_HOME%\bin\win32 to set up the environment
+for various versions of Visual Studio if they have been installed into the default locations.
+
+You can also set the RTI_HOME environment variable manually if you want. If you don't set this
+variable, the scripts will warn you and then guess at where RTI_HOME is located. As long as you
+are executing the scripts from the directory where they reside (RTI_HOME\examples\...) then you
+will be OK.
+
+To compile the examples, invoke the appropriate script with the "compile" argument:
+
+win32 compile
+
+
+Running the Federate
+--------------------
+As with compiling, if you are using Java you must have JAVA_HOME set and "java" available from
+the command line. You can also set RTI_HOME if you want.
+
+To run the example federate, use the appropriate script:
+
+win32 execute [federateName]
+
+The "federateName" argument is optional. If you are running more than one federate at once, make
+sure you give each of them different names.
+

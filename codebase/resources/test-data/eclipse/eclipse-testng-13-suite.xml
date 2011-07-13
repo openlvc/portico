@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<testng-results outputDirectory="codebase/build/java/test/reports/hla13/">
+<suite name="Command line suite">
+  <test verbose="2" name="Command line test" annotations="JDK">
+    <groups>
+      <run>
+        <include name="temp"/>
+      </run>
+    </groups>
+    <packages>
+        <package name="hlaunit.hla13"/>
+    </packages>
+  </test>
+</suite>
+</testng-results>

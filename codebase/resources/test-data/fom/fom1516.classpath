@@ -1,0 +1,48 @@
+####################################################################
+# Welcome to the commons bootstrapper classpath config file!!      #
+#                                                                  #
+# This file is used by the commons Bootstrapper class to configure #
+# its runtime classpath and execution information. If must contain #
+# at least the "main:" directive pointing the bootstrapper to the  #
+# applications main class (that the bootstrapper will execute once #
+# it has build a classpath. The other directives are optional but  #
+# do provide the main "meat" of the configuration. They are:       #
+#                                                                  #
+# "path:" - Add the given location directly to the classpath (be   #
+#           it a directory of file)                                #
+# "scan:" - If the given location is a directory, look inside it   #
+#           for any jar,war,ear or zip files and add them to the   #
+#           classpath (but not the directory itself)               #
+# "deep:" - Works the same as scan, only any sub-directories that  #
+#           are found will be looked into as well (as well as any  #
+#           sub-directories in those directories, and so on.... )  #
+# "prop:" - Sets up a system property. The format of the string    #
+#           following "prop:" must be the in the usual format for  #
+#           property declarations (key=value)                      #
+#                                                                  #
+# Comments are specified by the '#' character as you can see, and  #
+# any empty lines will also be ignored. Further, any whitespace    #
+# at the start or end of a line will be trimmed before processing  #
+#                                                                  #
+# Enjoy! And file any bugs at http://jira.porticoproject.org       #
+####################################################################
+
+##################
+### MAIN CLASS ###
+##################
+# The fully qualified name of the applications main class
+main:org.portico.testframework.HLA1516FOMParserTest
+
+#################
+### CLASSPATH ###
+#################
+deep:lib/commons
+path:build/classes
+path:build/test/classes
+path:resources/jar
+
+##################
+### PROPERTIES ###
+##################
+prop:portico.lrc.connection=org.portico.binding.jvm.JVMClientConnection
+

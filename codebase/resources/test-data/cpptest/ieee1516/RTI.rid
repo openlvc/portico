@@ -1,0 +1,7 @@
+# Portico C++ LRC config
+# NOTE: Don't add any spaces between anything... Just <variable>=<value> please.
+# NOTE: Always use forward-slashes (/) in paths, to ensure compatibility with UNIX & Windows.
+
+portico.loglevel=FATAL
+portico.connection=org.portico.bindings.jvm.JVMConnection
+
