@@ -198,36 +198,20 @@
 #
 # portico.jgroups.udp.bindAddress = 
 
-# (4.6) JGroup UDP Receive Interfaces
-#        The interfaces/addresses JGroups will listen on for incoming multicast packets. This
-#        should be a comma-separated list of IP-addresses or interface names,
-#        e.g. "192.168.0.10,eth1,127.0.0.1". Default will pick the first configured,
-#        connected interface.
-#
-# portico.jgroups.udp.receiveInterfaces = 
-
-# (4.7) JGroup UDP Send Interfaces
-#        The interfaces/addresses JGroups will send multicast packets. This should be a
-#        comma-separated list of IP-addresses or interface names, e.g. "192.168.0.10,eth1,127.0.0.1"
-#        Default will pick the first configured, connected interface.
-#
-# portico.jgroups.udp.sendInterfaces = 
-
-
-# (4.8) JGroups UDP Receive Buffer Size
+# (4.6) JGroups UDP Receive Buffer Size
 #        The size of the buffer that incoming messages are stored in before they're passed in to
 #        the LRC. If you find that you are sending messages that are quite large or quite small,
 #        you may want to adjust this value appropriately. Default is quite large (about 24mb).
 #
 # portico.jgroups.udp.receiveBuffer = 25000000
 
-# (4.9) JGroups UDP Send Buffer Size
+# (4.7) JGroups UDP Send Buffer Size
 #        The size of the buffer that messages are put in before they are sent out. Don't modify
 #        this unless you know what you're doing. 640k is enough for everything (ZING!)
 #
 # portico.jgroups.udp.sendBuffer = 640000
 
-# (4.10) JGroups Bundling Support
+# (4.8) JGroups Bundling Support
 #         If you are sending lots of smaller messages, higher overall throughput can be obtained by
 #         bundling them together into a fewer number of larger messages. However, doing so comes at
 #         the cost of latency. Messages will be stored up until either a timeout period is reached,
@@ -236,7 +220,7 @@
 #
 # portico.jgroups.bundling = true
 
-# (4.11) JGroups Bundling Max Size
+# (4.9) JGroups Bundling Max Size
 #         If bundling is enabled, messages will be queued until their total size exceeds this
 #         threshold value (or a timeout occurs, see below). Once the total size reaches this point,
 #         all queued messages will be bundled together and sent out in one packet.
@@ -245,7 +229,7 @@
 #
 # portico.jgroups.bundling.maxSize = 63000
 
-# (4.12) JGroups Bundling Max Timeout
+# (4.10) JGroups Bundling Max Timeout
 #         If bundling is enabled, messages will be queue either until their total size exceeds a
 #         threshold (see above) or the time that a message has been queued exceeds this value
 #         (provided in milliseconds). When this time is passed, a message is sent out, regardless
@@ -253,7 +237,7 @@
 #
 # portico.jgroups.bundling.maxTime = 25
 
-# (4.13) JGroups Flow Control
+# (4.11) JGroups Flow Control
 #         Flow control is used to limit the rate at which messages are sent so that slow receivers
 #         don't get overwhelmed, causing them to drop messages and requiring potentially expensive
 #         retransmission. This value sets the maximum number of bytes that can be sent by a federate
