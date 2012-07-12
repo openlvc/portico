@@ -164,7 +164,6 @@ public class Broadcaster
 	//----------------------------------------------------------
 	private class FederateInfo
 	{
-		@SuppressWarnings( "unused" )
 		public int federateHandle;
 		public String federateName;
 
@@ -174,7 +173,6 @@ public class Broadcaster
 			this.federateName = federateName;
 		}
 
-		@SuppressWarnings( "unused" )
         public int hashcode()
 		{
 			return federateName.hashCode();
