@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="macros">
+	<!-- =========================================================== -->
+	<!--                      General Settings                       -->
+	<!-- =========================================================== -->
+	<description>
+		Set of common macros that can be used in any of the project build profiles.
+	</description>
+
+	<!-- =========================================================== -->
+	<!--                       Macro: jcompile                       -->
+	<!-- =========================================================== -->
+	<!--
+	     Macro for compiling Java source code in the provided directory, placing
+	     the generates class files in the out directory.
+	     
+	     This calls the standard Ant <javac> task. If you wish to provide more
+	     configuration options, you can pass any child-elements that task will
+	     take by including them as child elements of this macro.
+	     
+	     Usage Example:
+	     <jcompile srcdir="${java.src.dir}"
+	               outdir="${java.build.dir}/classes"
+	               classpath="classpath.reference">
+	        <javac-specific-children> **optional
+	     </jcompile>
+	     
+	     Additional Relevant Ant Properties:
+ 	      * (optional) java.compiler.source = Source compatibility level to pass to javac
+ 	      * (optional) java.compiler.target = Specific Java version to generate class files for	     
+	-->
+	<macrodef name="jcompile" description="Compile java source code with default properties">
+		<!-- Attributes -->
+		<attribute name="srcdir"    description="Location of the source code to compile"/>
+		<attribute name="outdir"    description="Location to place the compiled code"/>
+		<attribute name="classpath" description="The classpath reference used during compilation"/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements to pass to the body of the javac task"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<!-- make sure the directory exists -->
+			<mkdir dir="@{outdir}"/>
+
+			<!-- do the compile -->
+			<javac srcdir="@{srcdir}"
+			       destdir="@{outdir}"
+			       classpathref="@{classpath}"
+			       debug="true"
+			       debuglevel="lines,vars,source"
+			       source="${java.compiler.source}"
+			       target="${java.compiler.target}"
+			       includeAntRuntime="false">
+				<body/>
+			</javac>
+		</sequential>
+	</macrodef>
+
+	<!-- =========================================================== -->
+	<!--                        Macro: jtest                         -->
+	<!-- =========================================================== -->
+<!-- bring in the testng task -->
+<taskdef resource="testngtasks" classpath="${lib.dir}/testng/5.7/testng-5.7-jdk15.jar"/>
+
+	<!--
+	     Macro for executing a TestNG test suite. The suite attribute allows you
+	     to define the name of the suite. This is appended to various search and
+	     output folders, keeping artefacts from different test suites separate.
+	     Providing a suite name is optional, wih a default of "" used in absence.
+	     
+	     The macro seaches for all test classes in "classdir/suite-name". A Test
+	     class is one whose name ends in "Test". It will also look for a class in
+	     the root package for the suite called "TestSetup" and include it.
+
+	     This calls the standard <testng> task. If you wish to provide more
+	     configuration options, you can pass any valid child-elements that task 
+	     takes by including them as child elements of this macro.
+
+	     Usage Example:
+	     <jtest suite="TestSuiteOne"                    ** optional
+	            classdir="${java.test.build.dir}"
+	            outdir="${java.test.reports.dir}"
+	            classpath="classpath.reference"
+	            groups="testng,group,names">            ** optional, defaults to all
+	        <jvmarg value="-Dtest.suite=@{suite}"/>     ** provided by default
+	        <other-testng-specific-children>            **optional
+	     </jtest>
+	-->
+	<macrodef name="jtest" description="Runs TestNG on a set of test classes">
+		<!-- Attributes -->
+		<attribute name="suite"     description="Name of test suite" default=""/>
+		<attribute name="classdir"  description="Path to the compiled test code (excluding suite)"/>
+		<attribute name="outdir"    description="The ouptut directory (also see suite attribute)"/>
+		<attribute name="classpath" description="The classpath reference for running the tests"/>
+		<attribute name="groups"    description="The specific test groups to run" default=""/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements pass to the body of the testng task"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<echo>===============================================</echo>
+			<echo>   Executing Test Suite: @{suite}</echo>
+			<echo>===============================================</echo>
+	
+			<!-- make sure the dir to hold the reports is created -->
+			<mkdir dir="@{outdir}/@{suite}"/>
+	
+			<!-- remove the old log directories -->
+			<delete dir="logs/@{suite}"/>
+	
+			<!-- run a suite of tests from a given directory -->
+			<testng classpathref="@{classpath}"
+			        outputDir="${outdir}/@{suite}"
+			        failureProperty="java.test.failed"
+			        listener="PorticoTestListener"
+			        haltonfailure="false"
+			        haltonskipped="false"
+			        groups="@{groups}">
+				<classfileset dir="@{classdir}/@{suite}">
+					<include name="**/*Test.class"/>
+					<include name="TestSetup.class"/>
+				</classfileset>
+				<jvmarg value="-Dtest.suite=@{suite}"/>
+				<body/>
+			</testng>
+			
+			<!-- check the result -->
+			<fail if="java.test.failed" message="Unit test failure in test suite (@{suite})"/>
+		</sequential>
+	</macrodef>
+
+</project>

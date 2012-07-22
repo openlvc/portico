@@ -8,7 +8,7 @@ rem time, but we'd still be more than happy to incorporate them
 rem into the main distribution.
 
 set DEVELOPMENT_HOME=.
-set ANT_HOME=%DEVELOPMENT_HOME%\support\ant-bin\apache-ant-1.7.0
-set ANT_LIB=%DEVELOPMENT_HOME%\support\ant-contrib\
+set ANT_HOME=%DEVELOPMENT_HOME%\system\ant\apache-ant-1.8.4
+set ANT_LIB=%DEVELOPMENT_HOME%\support\ant-optional\
 
 "%ANT_HOME%\bin\ant.bat" %* -lib %ANT_LIB%

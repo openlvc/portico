@@ -1,7 +1,7 @@
 #!/bin/sh
 DEVELOPMENT_HOME=$PWD
-ANT_HOME=$DEVELOPMENT_HOME/support/ant-bin/apache-ant-1.7.0
-ANT_LIB=$ANT_HOME/lib/:$DEVELOPMENT_HOME/support/ant-contrib/
+ANT_HOME=$DEVELOPMENT_HOME/system/ant/apache-ant-1.8.4
+ANT_LIB=$ANT_HOME/lib/:$DEVELOPMENT_HOME/system/ant-optional/
 
 export DEVELOPMENT_HOME ANT_HOME ANT_LIB
 

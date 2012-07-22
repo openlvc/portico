@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="java">
+
+	<!-- =========================================================== -->
+	<!--                      General Settings                       -->
+	<!-- =========================================================== -->
+	<description>
+		Java build profile for the Portico Open Source RTI
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<property name="build.dir"           location="${master.build.dir}/java"/>
+
+	<!-- ==== Source Related Properties ==== -->
+	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
+	<property name="portico.build.dir"        location="${build.dir}/portico"/>
+	<property name="portico.classes.dir"      location="${portico.build.dir}/classes"/>
+
+	<!-- ==== Test Related Properties ==== -->
+	<property name="test.src.dir"             location="${java.src.dir}/test"/>
+	<property name="test.build.dir"           location="${java.build.dir}/test"/>
+	<property name="test.classes.dir"         location="${test.build.dir}/classes"/>
+	<property name="test.reports.dir"         location="${test.build.dir}/reports"/>
+	<property name="test.binding"             value="jvm"/>
+
+	<!-- ==== Example Federate Properties ==== -->
+	<property name="examples.src.dir"         location="${java.src.dir}/examples"/>
+	<property name="examples.build.dir"       location="${build.dir}/examples"/>
+<!--<property name="java.examples.dist.dir"   location="${dist.examples.dir}/java"/>-->
+
+
+	<!-- =========================================================== -->
+	<!--                      Extension Points                       -->
+	<!-- =========================================================== -->
+	<extension-point name="_compilers"/>
+
+	<!-- =========================================================== -->
+	<!--                        Clean Targets                        -->
+	<!-- =========================================================== -->
+	<target name="clean">
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                       Compile Targets                       -->
+	<!-- =========================================================== -->
+	<target name="compile" extensionOf="master.compile" depends="_compilers">
+	</target>
+	
+	<target name="compile.portico" extensionOf="_compilers">
+		<jcompile src="${portico.src.dir}"
+		          out="${portico.classes.dir}"
+		          classpath="java.compile.classpath"/>
+	</target>
+
+	<target name="compile.tests" extensionOf="_compilers">
+	</target>
+
+	<target name="compile.examples" extensionOf="_compilers">
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                       Testing Targets                       -->
+	<!-- =========================================================== -->
+	<target name="test" extensionOf="master.test">
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                       Sandbox Targets                       -->
+	<!-- =========================================================== -->
+	<target name="sandbox" extensionOf="master.sandbox">
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                  Installer Creation Targets                 -->
+	<!-- =========================================================== -->
+	<target name="installer" extensionOf="master.installer">
+	</target>
+
+	<!-- =========================================================== -->
+	<!--                 Release Generation Targets                  -->
+	<!-- =========================================================== -->
+	<target name="release" extensionOf="master.release">
+	</target>
+
+</project>
