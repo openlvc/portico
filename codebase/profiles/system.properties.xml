@@ -85,7 +85,7 @@
 	<property name="resources.installers.dir"  location="${resources.dir}/installers"/>
 	
 	<!-- Generated Build and Distribution Properties -->
-	<property name="master.build.dir"       location="build"/>
+	<property name="build.dir"              location="build"/>
 	<property name="dist.name"              value="${app.shortname}-${app.version}"/>
 	
 	

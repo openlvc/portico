@@ -20,11 +20,11 @@
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
-	<property name="build.dir"           location="${master.build.dir}/java"/>
+	<property name="java.build.dir"           location="${build.dir}/java"/>
 
 	<!-- ==== Source Related Properties ==== -->
 	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
-	<property name="portico.build.dir"        location="${build.dir}/portico"/>
+	<property name="portico.build.dir"        location="${java.build.dir}/portico"/>
 	<property name="portico.classes.dir"      location="${portico.build.dir}/classes"/>
 
 	<!-- ==== Test Related Properties ==== -->
@@ -32,47 +32,142 @@
 	<property name="test.build.dir"           location="${java.build.dir}/test"/>
 	<property name="test.classes.dir"         location="${test.build.dir}/classes"/>
 	<property name="test.reports.dir"         location="${test.build.dir}/reports"/>
+
 	<property name="test.binding"             value="jvm"/>
+	<property name="test.loglevel"            value="OFF"/>
+	<property name="test.fileLogLevel"        value="OFF"/>
 
 	<!-- ==== Example Federate Properties ==== -->
 	<property name="examples.src.dir"         location="${java.src.dir}/examples"/>
 	<property name="examples.build.dir"       location="${build.dir}/examples"/>
 <!--<property name="java.examples.dist.dir"   location="${dist.examples.dir}/java"/>-->
 
-
 	<!-- =========================================================== -->
-	<!--                      Extension Points                       -->
+	<!--                     Project Libraries                       -->
 	<!-- =========================================================== -->
-	<extension-point name="_compilers"/>
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- These properties are set so that any information relating to a specific path
+	     for a library can be changed in a single spot. The properties should be used
+	     when defining paths and the like later in the build file -->
+	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
+	<property name="jgroups.dir"           location="${lib.dir}/jgroups/JGroups-2.8.0.GA.bin"/>
+	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
+	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
 
+	<!-- Classpaths for individual libraries -->
+	<path id="lib.testng.classpath">
+		<fileset dir="${testng.dir}" includes="**/*.jar"/>
+	</path>
+	
+	<path id="lib.jgroups.classpath">
+		<fileset dir="${jgroups.dir}" includes="**/*"/>
+	</path>
+
+	<path id="lib.log4j.classpath">
+		<fileset dir="${log4j.dir}" includes="**/*"/>
+	</path>
+
+	<path id="lib.asm.classpath">
+		<fileset dir="${asm.dir}" includes="**/*"/>
+	</path>
+
+	<!-- ========================== -->
+	<!-- Classpath Set Declarations -->
+	<!-- ========================== -->
+	<path id="compile.classpath">
+		<path refid="lib.jgroups.classpath"/>
+		<path refid="lib.log4j.classpath"/>
+		<path refid="lib.asm.classpath"/>
+	</path>
+	
+	<path id="test.classpath">
+		<path refid="compile.classpath"/>
+		<path refid="lib.testng.classpath"/>
+		<pathelement path="${portico.classes.dir}"/>
+		<pathelement path="${test.classes.dir}"/>
+		<pathelement path="${resources.dir}/jars/portico.jar"/>
+		<pathelement path="${resources.dir}/test-data"/>
+	</path>
+	
 	<!-- =========================================================== -->
 	<!--                        Clean Targets                        -->
 	<!-- =========================================================== -->
-	<target name="clean">
+	<target name="clean" extensionOf="master.clean">
+		<delete dir="${java.build.dir}"/>
+		<delete dir="saverestore"/>
 	</target>
 
 	<!-- =========================================================== -->
 	<!--                       Compile Targets                       -->
 	<!-- =========================================================== -->
-	<target name="compile" extensionOf="master.compile" depends="_compilers">
-	</target>
-	
-	<target name="compile.portico" extensionOf="_compilers">
-		<jcompile src="${portico.src.dir}"
-		          out="${portico.classes.dir}"
-		          classpath="java.compile.classpath"/>
+	<!-- 
+	     Target: Compile
+	     
+	     The parent compilation target. This will compile all the core Portico RTI code,
+	     the HLA Java interfaces and the full Java test suite.
+	-->
+	<target name="compile"
+	        extensionOf="master.compile"
+	        description="Compile the core Portico RTI, HLA Java interfaces and Java test suite"
+	        depends="compile.portico, compile.tests"/>
+
+	<!-- compile the main production code -->	
+	<target name="compile.portico">
+		<java-compile srcdir="${portico.src.dir}"
+		              outdir="${portico.classes.dir}"
+		              classpath="compile.classpath"/>
 	</target>
 
-	<target name="compile.tests" extensionOf="_compilers">
-	</target>
-
-	<target name="compile.examples" extensionOf="_compilers">
+	<!-- compile the hlaunit test suite code -->
+	<target name="compile.tests" depends="compile.portico">
+		<java-compile srcdir="${test.src.dir}"
+		              outdir="${test.classes.dir}"
+		              classpath="test.classpath"/>
 	</target>
 
 	<!-- =========================================================== -->
 	<!--                       Testing Targets                       -->
 	<!-- =========================================================== -->
-	<target name="test" extensionOf="master.test">
+	<!--
+	     Target: Test
+	     
+	     The parent testing target that will invoke the testing suites for the Java
+	     HLA 1.3, IEEE 1516 and IEEE 1516e testing suites.
+	-->
+	<target name="test"
+	        extensionOf="master.test"
+	        depends="test.portico, test.hla13, test.ieee1516, test.evolved"/>
+	
+	<target name="test.portico" depends="compile.tests">
+	<!--
+		<java-test suite="portico"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
+	-->
+	</target>
+
+	<target name="test.hla13" depends="compile.tests">
+		<java-test suite="hlaunit/hla13"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
+	</target>
+	
+	<target name="test.ieee1516" depends="compile.tests">
+	</target>
+	
+	<target name="test.evolved" depends="compile.tests">
 	</target>
 
 	<!-- =========================================================== -->

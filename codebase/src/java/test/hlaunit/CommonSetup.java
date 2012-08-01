@@ -73,7 +73,7 @@ public class CommonSetup
 		/////////////////////////////////////////////////////////////////////////////
 		// set up the plugins directory, otherwise the handlers might not be found //
 		/////////////////////////////////////////////////////////////////////////////
-		File plugindir = new File( System.getProperty("user.dir") + "/build/java/classes" );
+		File plugindir = new File( System.getProperty("user.dir") + "/build/java/portico/classes" );
 		System.setProperty( PorticoConstants.PROPERTY_PLUGIN_PATH, plugindir.getAbsolutePath() );
 		
 		try

@@ -19,53 +19,5 @@
 		Project-wide library settings. This file is brought directly into the main build file
 	</description>
 
-	<!-- =========================================================== -->
-	<!--                     Project Libraries                       -->
-	<!-- =========================================================== -->
-	<!-- ==== Library Path Definitions ==== -->
-	<!-- These properties are set so that any information relating to a specific path
-	     for a library can be changed in a single spot. The properties should be used
-	     when defining paths and the like later in the build file -->
-	<property name="testng.dir"            location="${lib.dir}/testng/5.7"/>
-	<property name="jgroups.dir"           location="${lib.dir}/jgroups/JGroups-2.8.0.GA.bin"/>
-	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
-	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
 
-	<!-- ==== Classpath Declarations ==== -->
-	<path id="lib.testng.classpath">
-		<fileset dir="${testng.dir}" includes="**/*"/>
-	</path>
-	
-	<path id="lib.jgroups.classpath">
-		<fileset dir="${jgroups.dir}" includes="**/*"/>
-	</path>
-
-	<path id="lib.log4j.classpath">
-		<fileset dir="${log4j.dir}" includes="**/*"/>
-	</path>
-
-	<path id="lib.asm.classpath">
-		<fileset dir="${asm.dir}" includes="**/*"/>
-	</path>
-
-	<path id="java.compile.classpath">
-		<path refid="lib.jgroups.classpath"/>
-		<path refid="lib.log4j.classpath"/>
-		<path refid="lib.asm.classpath"/>
-	</path>
-	
-	<path id="java.test.classpath">
-		<path refid="java.compile.classpath"/>
-		<path refid="lib.testng.classpath"/>
-		<pathelement path="${java.build.classes.dir}"/>
-		<pathelement path="${java.test.classes.dir}"/>
-		<pathelement path="${resources.dir}/jar"/>
-		<pathelement path="${resources.dir}/test-data"/>
-	</path>
-	
-	<path id="java.examples.classpath">
-		<path refid="java.compile.classpath"/>
-		<pathelement path="${java.build.classes.dir}"/>
-		<pathelement path="${java.examples.build.dir}"/>
-	</path>
-
+</project>

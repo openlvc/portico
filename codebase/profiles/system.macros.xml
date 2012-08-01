@@ -11,6 +11,7 @@
        http://porticoproject.org/index.php?title=Building_Portico
 -->
 <project name="macros">
+
 	<!-- =========================================================== -->
 	<!--                      General Settings                       -->
 	<!-- =========================================================== -->
@@ -19,7 +20,7 @@
 	</description>
 
 	<!-- =========================================================== -->
-	<!--                       Macro: jcompile                       -->
+	<!--                     Macro: java-compile                     -->
 	<!-- =========================================================== -->
 	<!--
 	     Macro for compiling Java source code in the provided directory, placing
@@ -40,7 +41,7 @@
  	      * (optional) java.compiler.source = Source compatibility level to pass to javac
  	      * (optional) java.compiler.target = Specific Java version to generate class files for	     
 	-->
-	<macrodef name="jcompile" description="Compile java source code with default properties">
+	<macrodef name="java-compile" description="Compile java source code with default properties">
 		<!-- Attributes -->
 		<attribute name="srcdir"    description="Location of the source code to compile"/>
 		<attribute name="outdir"    description="Location to place the compiled code"/>
@@ -72,10 +73,15 @@
 	</macrodef>
 
 	<!-- =========================================================== -->
-	<!--                        Macro: jtest                         -->
+	<!--                      Macro: java-test                       -->
 	<!-- =========================================================== -->
-<!-- bring in the testng task -->
-<taskdef resource="testngtasks" classpath="${lib.dir}/testng/5.7/testng-5.7-jdk15.jar"/>
+	<!-- bring in the testng task -->
+	<taskdef resource="testngtasks" classpath="${lib.dir}/testng/testng-5.12.1/testng-5.12.1.jar"/>
+	
+	<!-- Define a default value for the TestNG groups that will control what test groups
+	     are and are not executed. By default, we provide "", which will run all tests. If
+	     this property is provided on the command line, this declaration will NOT override it -->
+	<property name="test.groups" value=""/>
 
 	<!--
 	     Macro for executing a TestNG test suite. The suite attribute allows you
@@ -101,13 +107,13 @@
 	        <other-testng-specific-children>            **optional
 	     </jtest>
 	-->
-	<macrodef name="jtest" description="Runs TestNG on a set of test classes">
+	<macrodef name="java-test" description="Runs TestNG on a set of test classes">
 		<!-- Attributes -->
 		<attribute name="suite"     description="Name of test suite" default=""/>
 		<attribute name="classdir"  description="Path to the compiled test code (excluding suite)"/>
 		<attribute name="outdir"    description="The ouptut directory (also see suite attribute)"/>
 		<attribute name="classpath" description="The classpath reference for running the tests"/>
-		<attribute name="groups"    description="The specific test groups to run" default=""/>
+		<attribute name="groups"    description="The specific test groups to run" default="${test.groups}"/>
 
 		<!-- Child Elements -->
 		<element name="body"
@@ -129,15 +135,15 @@
 	
 			<!-- run a suite of tests from a given directory -->
 			<testng classpathref="@{classpath}"
-			        outputDir="${outdir}/@{suite}"
+			        outputDir="@{outdir}/@{suite}"
 			        failureProperty="java.test.failed"
 			        listener="PorticoTestListener"
 			        haltonfailure="false"
 			        haltonskipped="false"
 			        groups="@{groups}">
-				<classfileset dir="@{classdir}/@{suite}">
-					<include name="**/*Test.class"/>
-					<include name="TestSetup.class"/>
+				<classfileset dir="@{classdir}">
+					<include name="@{suite}/TestSetup.class"/>
+					<include name="@{suite}/**/*Test.class"/>
 				</classfileset>
 				<jvmarg value="-Dtest.suite=@{suite}"/>
 				<body/>

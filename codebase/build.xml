@@ -27,11 +27,21 @@
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
 	<!-- =========================================================== -->
+	<!--               System Properties and Utilities               -->
+	<!-- =========================================================== -->
+	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
+	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
+
+	<!-- =========================================================== -->
 	<!--                       Master Targets                        -->
 	<!-- =========================================================== -->
 	<target name="clean"
 	        description="Removes all generated build artefacts."
-	        depends="master.clean"/>
+	        depends="master.clean">
+		<!-- Remove any top-level directories that might need to go -->
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
 	
 	<target name="compile"
 	        description="Compile all the production code."
@@ -73,21 +83,8 @@
 	<extension-point name="master.release"/>
 
 	<!-- =========================================================== -->
-	<!--               System Properties and Utilities               -->
-	<!-- =========================================================== -->
-	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
-	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
-<!--<import file="profiles/project.libraries.xml"/>-->    <!-- project-wide library settings -->
-
-	<!-- =========================================================== -->
 	<!--                        Build Profiles                       -->
 	<!-- =========================================================== -->
 	<include file="profiles/java.xml" as="java"/>
 	
-<!--
-	<include file="profiles/java.properties.xml" as="java"/>
-	<include file="profiles/cpp.properties.xml" as="cpp"/>
-	<include file="profiles/hla13.xml" as="hla13"/>
-	<include file="profiles/evolved.xml" as="evolved"/>
--->
 </project>
