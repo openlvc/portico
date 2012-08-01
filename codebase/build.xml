@@ -37,11 +37,7 @@
 	<!-- =========================================================== -->
 	<target name="clean"
 	        description="Removes all generated build artefacts."
-	        depends="master.clean">
-		<!-- Remove any top-level directories that might need to go -->
-		<delete dir="${build.dir}"/>
-		<delete dir="${dist.dir}"/>
-	</target>
+	        depends="master.clean,common.clean"/>
 	
 	<target name="compile"
 	        description="Compile all the production code."
@@ -86,5 +82,15 @@
 	<!--                        Build Profiles                       -->
 	<!-- =========================================================== -->
 	<include file="profiles/java.xml" as="java"/>
-	
+
+
+	<!-- =========================================================== -->
+	<!--      Private Internal Targets. Do not modify or extend.     -->
+	<!-- =========================================================== -->
+	<target name="common.clean">
+		<!-- Remove any top-level directories that might need to go -->
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+
 </project>
