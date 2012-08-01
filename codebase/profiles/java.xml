@@ -138,9 +138,9 @@
 	        extensionOf="master.test"
 	        depends="test.portico, test.hla13, test.ieee1516, test.evolved"/>
 	
+	<!-- Run the core Portico suite that tests various internal parts of the RTI -->
 	<target name="test.portico" depends="compile.tests">
-	<!--
-		<java-test suite="portico"
+		<java-test suite="org/portico"
 		           classdir="${test.classes.dir}"
 		           outdir="${test.reports.dir}"
 		           classpath="test.classpath">
@@ -149,9 +149,9 @@
 			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
 			<jvmarg value="-Dtest.binding=${test.binding}"/>
 	     </java-test>
-	-->
 	</target>
 
+	<!-- Run the HLA 1.3 test suite -->
 	<target name="test.hla13" depends="compile.tests">
 		<java-test suite="hlaunit/hla13"
 		           classdir="${test.classes.dir}"
@@ -163,11 +163,23 @@
 			<jvmarg value="-Dtest.binding=${test.binding}"/>
 	     </java-test>
 	</target>
-	
+
+	<!-- Run the IEEE 1516 test suite -->
 	<target name="test.ieee1516" depends="compile.tests">
+		<java-test suite="hlaunit/hla1516"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
 	</target>
-	
+
+	<!-- Run the IEEE 1516e (Evolved) test suite -->
 	<target name="test.evolved" depends="compile.tests">
+		<echo>IEEE 1516e (HLA Evolved) Test Suite not yet implemented</echo>
 	</target>
 
 	<!-- =========================================================== -->
