@@ -94,7 +94,8 @@
 	<!-- =========================================================== -->
 	<target name="clean" extensionOf="master.clean">
 		<delete dir="${java.build.dir}"/>
-		<delete dir="saverestore"/>
+		<delete dir="savedata"/>
+		<delete dir="logs"/>
 	</target>
 
 	<!-- =========================================================== -->
