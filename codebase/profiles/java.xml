@@ -12,9 +12,9 @@
 -->
 <project name="java">
 
-	<!-- =========================================================== -->
-	<!--                      General Settings                       -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
 	<description>
 		Java build profile for the Portico Open Source RTI
 	</description>
@@ -42,6 +42,10 @@
 	<property name="examples.build.dir"       location="${build.dir}/examples"/>
 <!--<property name="java.examples.dist.dir"   location="${dist.examples.dir}/java"/>-->
 
+	<!-- ==== Onejar Related Properties ==== -->
+	<!-- To provide a single jar, we extract all deps here and copy them into the portico jar -->
+	<property name="onejar.dir"               location="${build.dir}/onejar"/>
+	
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
 	<!-- =========================================================== -->
@@ -89,21 +93,19 @@
 		<pathelement path="${resources.dir}/test-data"/>
 	</path>
 	
-	<!-- =========================================================== -->
-	<!--                        Clean Targets                        -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
 	<target name="clean" extensionOf="master.clean">
 		<delete dir="${java.build.dir}"/>
 		<delete dir="savedata"/>
 		<delete dir="logs"/>
 	</target>
 
-	<!-- =========================================================== -->
-	<!--                       Compile Targets                       -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
 	<!-- 
-	     Target: Compile
-	     
 	     The parent compilation target. This will compile all the core Portico RTI code,
 	     the HLA Java interfaces and the full Java test suite.
 	-->
@@ -126,18 +128,17 @@
 		              classpath="test.classpath"/>
 	</target>
 
-	<!-- =========================================================== -->
-	<!--                       Testing Targets                       -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
 	<!--
-	     Target: Test
-	     
 	     The parent testing target that will invoke the testing suites for the Java
 	     HLA 1.3, IEEE 1516 and IEEE 1516e testing suites.
 	-->
 	<target name="test"
 	        extensionOf="master.test"
 	        depends="test.portico, test.hla13, test.ieee1516, test.evolved"/>
+
 	
 	<!-- Run the core Portico suite that tests various internal parts of the RTI -->
 	<target name="test.portico" depends="compile.tests">
@@ -183,22 +184,109 @@
 		<echo>IEEE 1516e (HLA Evolved) Test Suite not yet implemented</echo>
 	</target>
 
-	<!-- =========================================================== -->
-	<!--                       Sandbox Targets                       -->
-	<!-- =========================================================== -->
-	<target name="sandbox" extensionOf="master.sandbox">
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="master.sandbox" depends="compile,jars">
+		<!-- create the required directories -->
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${dist.sandbox.dir}"/>
+		<mkdir dir="${dist.sandbox.dir}/plugins"/>
+
+		<!-- copy across the dependant libraries -->
+		<mkdir dir="${dist.lib.dir}"/>
+
+		<!-- copy across the resources -->
+		<copy todir="${dist.sandbox.dir}">
+			<fileset dir="${resources.dist.dir}/common" includes="**/*"/>
+		</copy>
+
+		<!-- chmod anything in a bin directory -->
+		<chmod dir="${dist.sandbox.dir}" perm="777" includes="bin/**/*"/>
+
+		<!-- copy across the example federates -->
+		<!--
+		<mkdir dir="${java.examples.dist.dir}"/>
+		<copy todir="${java.examples.dist.dir}">
+			<fileset dir="${java.examples.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<chmod dir="${java.examples.dist.dir}" perm="777" includes="**/*.sh"/>
+		-->
+		
+		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->
 	</target>
 
-	<!-- =========================================================== -->
-	<!--                  Installer Creation Targets                 -->
-	<!-- =========================================================== -->
+
+	<!-- ==================================== -->
+	<!--           Jar File Targets           -->
+	<!-- ==================================== -->
+	<!--
+	     Add an extension point that all jar file generation targets can tack on to. If there
+	     is only a single jar file, this is somewhat redundant, but leaving for common structure
+	     across builds for other projects as well.
+	-->
+	<extension-point name="jars"/>
+
+	<!-- build the main portico jar file -->
+	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
+		<!-- construct the main portico jar file -->
+		<jar destfile="${dist.sandbox.dir}/lib/portico.jar">
+			<!-- portico code -->
+			<fileset dir="${portico.classes.dir}" includes="**/*.class"/>
+			
+			<!-- dependency code (onejar stuff) -->
+			<fileset dir="${onejar.dir}" includes="**/*"/>
+
+			<!-- internal jar resources -->
+			<fileset dir="${resources.jars.dir}/portico.jar" includes="**/*"/>
+
+			<!-- license -->
+			<fileset dir="${basedir}" includes="LICENSE.portico"/>
+
+			<!-- build.properties file for version information -->
+			<fileset dir="${basedir}" includes="build.properties"/>
+
+			<!-- MANIFEST -->
+			<manifest>
+				<attribute name="Built-By" value="Calytrix Technologies"/>
+				<section name="org/portico">
+					<attribute name="Implementation-Title" value="portico"/>
+					<attribute name="Implementation-Version" value="${app.version} ${TODAY}"/>
+					<attribute name="Implementation-Vendor" value="Calytrix Technologies"/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Extract all the releant dependencies into the onejar location -->	
+	<target name="onejar">
+		<mkdir dir="${onejar.dir}"/>
+
+		<!-- extract the deps for the one-jar style distribution -->
+		<unjar dest="${onejar.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
+			<patternset includes="**/*.class"/>
+		</unjar>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                             Installer Creation Targets                            -->
+	<!-- ================================================================================= -->
 	<target name="installer" extensionOf="master.installer">
 	</target>
 
-	<!-- =========================================================== -->
-	<!--                 Release Generation Targets                  -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
 	<target name="release" extensionOf="master.release">
+		<!-- Generate javadoc and put it into the sandbox -->
 	</target>
 
 </project>
