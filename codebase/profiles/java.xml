@@ -223,7 +223,6 @@
 		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->
 	</target>
 
-
 	<!-- ==================================== -->
 	<!--           Jar File Targets           -->
 	<!-- ==================================== -->
@@ -269,18 +268,32 @@
 	<target name="onejar">
 		<mkdir dir="${onejar.dir}"/>
 
-		<!-- extract the deps for the one-jar style distribution -->
-		<unjar dest="${onejar.dir}">
-			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
-			<patternset includes="**/*.class"/>
-		</unjar>
+		<!-- Check to see if we need to extract things again due to dependency changes
+		     or new dependencies being added. Otherwise we skip this step. -->
+		<uptodate property="deps.uptodate" targetfile="${onejar.dir}/.created">
+			<srcfiles dir="${lib.dir}" includes="**/*.jar"/>
+		</uptodate>
+		
+		<if><isset property="deps.uptodate"/>
+		<then>
+			<echo>No need to unjar deps again - they're up to date</echo>
+		</then>
+		<else>
+			<touch file="${onejar.dir}/.created"/>
+			<!-- extract the deps for the one-jar style distribution -->
+			<unjar dest="${onejar.dir}">
+				<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
+				<patternset includes="**/*.class"/>
+			</unjar>
+		</else>
+		</if>
 	</target>
 
 	<!-- ================================================================================= -->
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
-	<target name="installer" extensionOf="master.installer">
-	</target>
+	<!-- No special installation tasks to do for the Java build -->
+	<target name="installer" extensionOf="master.installer"/>
 
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
