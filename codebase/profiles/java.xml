@@ -285,8 +285,71 @@
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
-	<target name="release" extensionOf="master.release">
-		<!-- Generate javadoc and put it into the sandbox -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts (such as javadoc)
+	     in with it in preparation for release.
+	-->
+	<target name="release"
+	        extensionOf="master.release"
+	        depends="clean,test,sandbox,javadoc,installer"/>
+
+	<!-- Generate the javadocs and place them in the sandbox. We only do this for a release
+	     build because of the amount of time it takes -->
+	<target name="javadoc" depends="sandbox">
+		<!-- Make room in the sandbox for the javadoc. Create a property for shortcut purposes -->
+		<property name="javadoc.dir" value="${dist.sandbox.dir}/documentation/javadoc"/>
+		<mkdir dir="${javadoc.dir}"/>
+		
+		<echo>Generating HLA API documentatin for HLA v1.3 Java Interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/hla13"
+		              packages="hla.rti.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="SISO HLA v1.3 Javadoc (The Portico Project)"
+		              header="SISO HLA v1.3 Javadoc"/>
+
+		<echo>Generating HLA API documentation for DMSO rti13.java1 compliant interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/hla13-java1"
+		              packages="hla.rti13.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="HLA v1.3 DMSO rti13.java1 Interface Javadoc (The Portico Project)"
+		              header="DMSO rti13.java1 Compatible Interface"/>
+
+		<echo>Generating HLA API documentation for IEEE 1516-2000 Java Interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/ieee1516"
+		              packages="hla.rti1516.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="IEEE 1516-2000 Javadoc (The Portico Project)"
+		              header="IEEE 1516 (2000) Javadoc"/>
+
+		<!--
+		<echo>Generating HLA API documentation for IEEE 1516-2010 (Evolved) Java Interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/ieee1516e"
+		              packages="hla.rti1516e.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="IEEE 1516-2010 (Evolved) Javadoc (The Portico Project)"
+		              header="IEEE 1516e (HLA Evolved) Javadoc"/>
+		-->
+
+		<echo>Generating API documentation for Portico Core Libraries</echo>
+		<java-javadoc outdir="${javadoc.dir}/portico"
+		              packages="org.portico.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="Portico Core RTI Javadoc"/>
+
+		<echo>Generating API documentation for Portico HLAUnit Unit Testing Framework</echo>
+		<java-javadoc outdir="${javadoc.dir}/hlaunit"
+		              packages="hlaunit.*"
+		              sourcepath="${test.src.dir}"
+		              classpath="test.classpath"
+		              windowtitle="Portico HLAUnit Testing Framework Javadoc"
+		              header="Portico HLAUnit Testing Framework Javadoc"/>
+
 	</target>
 
 </project>

@@ -154,4 +154,57 @@
 		</sequential>
 	</macrodef>
 
+	<!-- =========================================================== -->
+	<!--                     Macro: java-javadoc                     -->
+	<!-- =========================================================== -->
+	<!--
+	     Macro for generating javadocs for the identified packages and placing the
+	     results in the out directory. This will apply a common set of defaults on
+	     all Javadoc runs.
+	     
+	     This calls the standard Ant <javadoc> task. By default it leans on some
+	     system properties (below) unless overridden.
+	     
+	     Usage Example:
+	     <java-javadoc outdir="${javadoc.dir}/hla13"
+	                   packages=""
+	                   sourcepath="${portico.src.dir}"
+	                   classpath="compile.classpath"/>
+	     
+	     Additional Relevant Ant Properties:
+	      * (optional) Defaults to value of ${javadoc.windowtitle}
+	      * (optional) Defaults to value of ${javadoc.header}
+	      * (optional) Defaults to value of ${javadoc.footer}
+	-->
+	<macrodef name="java-javadoc" description="Generate Javadocs with common settings">
+		<!-- Attributes -->
+		<attribute name="outdir"      description="The directory to place the javadoc in"/>
+		<attribute name="packages"    description="Name of the packages to generate javadoc for"/>
+		<attribute name="sourcepath"  description="Directory where the source is located"/>
+		<attribute name="classpath"   description="Reference to the classpath for compiled code"/>
+		<attribute name="windowtitle" default="${javadoc.windowtitle}"/>
+		<attribute name="header"      default="${javadoc.header}"/>
+		<attribute name="footer"      default="${javadoc.footer}"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<!-- make sure the directory exists -->
+			<mkdir dir="@{outdir}"/>
+
+			<javadoc destdir="@{outdir}"
+			        packagenames="@{packages}"
+			        sourcepath="@{sourcepath}"
+			        link="${javadoc.oracle}"
+			        use="true"
+			        version="true"
+			        breakiterator="true"
+			        windowtitle="@{windowtitle}"
+			        header="@{header}"
+			        footer="@{footer}"
+			        additionalparam="-quiet">
+				<classpath refid="@{classpath}"/>
+			</javadoc>
+		</sequential>
+	</macrodef>
+
 </project>
