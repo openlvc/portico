@@ -57,7 +57,7 @@
 
 	<target name="release"
 	        description="Create a production-ready release. Run all tests and generate installer."
-	        depends="master.release"/>
+	        depends="clean,test,sandbox,installer,master.release"/>
 	
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
