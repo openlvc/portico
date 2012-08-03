@@ -199,6 +199,51 @@
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
 	<target name="sandbox" extensionOf="master.sandbox" depends="compile">
+		<!-- prepare the area to store all this stuff -->
+		<mkdir dir="${dist.sandbox.dir}/include"/>
+
+		<!-- copy the RTI headers over -->
+		<copy todir="${dist.sandbox.dir}/include">
+			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- copy the Portico C++ libraries over -->
+		<copy todir="${dist.lib.dir}">
+			<fileset dir="${ng6.complete.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
+			<fileset dir="${dlc13.complete.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
+		</copy>
+
+		<!-- copy across the example federates -->
+		<!--
+		<mkdir dir="${dist.examples.dir}/cpp"/>
+		<copy todir="${dist.examples.dir}/cpp">
+			<fileset dir="${cpp.examples.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<!- chmod them ->
+		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
+		-->
+
+		<!-- macos: link the dylib and jnilib -->
+		<echo>creating symlinks from dylibs to jnilibs</echo>
+		<!-- can't use the symlink ant task because we want to specify a relative link
+			 between the dylib and jnilib, and if we use symlink, we get absolute paths -->
+		<exec executable="ln" dir="${dist.lib.dir}" failonerror="true"> <!-- ng6 -->
+			<arg line="-sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"/>
+		</exec>
+		<exec executable="ln" dir="${dist.lib.dir}" failonerror="true"> <!-- dlc13 -->
+			<arg line="-sf ./librti13.dylib ./librti13.jnilib"/>
+		</exec>
+
+		<!-- macos/linux: chmod the dylib/so appropriately -->
+		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 	</target>
 
 	<!-- ================================================================================= -->
