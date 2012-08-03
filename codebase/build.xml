@@ -82,7 +82,7 @@
 	<!--                        Build Profiles                       -->
 	<!-- =========================================================== -->
 	<include file="profiles/java.xml" as="java"/>
-
+	<include file="profiles/cpp.xml" as="cpp"/>
 
 	<!-- =========================================================== -->
 	<!--      Private Internal Targets. Do not modify or extend.     -->

@@ -12,16 +12,16 @@
 -->
 <project name="macros">
 
-	<!-- =========================================================== -->
-	<!--                      General Settings                       -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
 	<description>
 		Set of common macros that can be used in any of the project build profiles.
 	</description>
 
-	<!-- =========================================================== -->
-	<!--                     Macro: java-compile                     -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                               Macro: java-compile                                 -->
+	<!-- ================================================================================= -->
 	<!--
 	     Macro for compiling Java source code in the provided directory, placing
 	     the generates class files in the out directory.
@@ -72,9 +72,9 @@
 		</sequential>
 	</macrodef>
 
-	<!-- =========================================================== -->
-	<!--                      Macro: java-test                       -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                 Macro: java-test                                  -->
+	<!-- ================================================================================= -->
 	<!-- bring in the testng task -->
 	<taskdef resource="testngtasks" classpath="${lib.dir}/testng/testng-5.12.1/testng-5.12.1.jar"/>
 	
@@ -154,9 +154,9 @@
 		</sequential>
 	</macrodef>
 
-	<!-- =========================================================== -->
-	<!--                     Macro: java-javadoc                     -->
-	<!-- =========================================================== -->
+	<!-- ================================================================================= -->
+	<!--                                Macro: java-javadoc                                -->
+	<!-- ================================================================================= -->
 	<!--
 	     Macro for generating javadocs for the identified packages and placing the
 	     results in the out directory. This will apply a common set of defaults on
@@ -204,6 +204,104 @@
 			        additionalparam="-quiet">
 				<classpath refid="@{classpath}"/>
 			</javadoc>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                  Macro: cpp-unix                                  -->
+	<!-- ================================================================================= -->
+	<!-- bring in the cpp compiling ant task -->
+	<taskdef name="cpptask" classname="com.lbf.cpptask.CppTask"/>
+
+	<!--
+	     Macro for compiling C++ source files on Linux using g++ and the custom
+	     cpptask Ant Task. This macro will generate libraries or executables and
+	     expects its body to be made of any valid cpptask sub-elements. You can
+	     also specify the specific compiler and linker arguments.
+	     
+	     Usage Example:
+	     <cpp-unix outfile="libraryName"
+	               outdir="${output.dir}"
+	               type="shared"
+	               compilerArgs="-Wall"
+	               linkerArgs="-framework JavaVM -arch i386">
+	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
+	        <includepath path="${include.path.1}:${include.path.2}"/>
+	        <includepath path="${include.path.3}"/>
+	        <define name="SYMBOL_NAME"/>
+	        <define name="OTHER_SYMBOL_NAME"/>
+		</cpp-unix>
+	-->
+	<macrodef name="cpp-unix" description="C++ compile target for GCC on Linux and Mac OS X">
+		<!-- Attributes -->
+		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
+		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
+		<attribute name="type"      description="shared (default) or executable" default="shared"/>
+		<attribute name="compilerArgs"
+		           description="arg list passed directly to compiler"
+		           default="-g -O2 -fPIC -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing"/>
+		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements pass to the body of the cpp task"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<mkdir dir="@{outdir}/obj"/>
+			<mkdir dir="@{outdir}/complete"/>
+			<!-- run cpptask -->
+			<cpptask outfile="@{outdir}/complete/@{outfile}"
+			         objdir="@{outdir}/obj"
+			         outtype="@{type}"
+			         compiler="g++"
+			         compilerArgs="@{compilerArgs}"
+			         linkerArgs="@{linkerArgs}">
+				<body/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                               Macro: cppunit-report                               -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for generating HTML reports from a CppUnit XML output file. This
+	     macro will *fail the build* if any of the unit tests failed during the
+	     testing run.
+	     
+	     Usage Example:
+	     <cppunit-report result="${testrun.result}"
+	                     xmlfile="${testrun.results.file}"
+	                     xslfile="${testrun.results.stylesheet}"
+	                     outfile="${testrun.complete.dir}"/>
+	-->
+	<macrodef name="cppunit-report" description="Generate a HTML result from CppUnit output file">
+		<!-- Attributes -->
+		<attribute name="result"   description="result value of the test run to check for success"/>
+		<attribute name="xmlfile"  description="results xml file generated by CppUnit"/>
+		<attribute name="xslfile"  description="stylesheet to generate test report with"/>
+		<attribute name="outfile"  description="the report file to generate"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<xslt style="@{xslfile}" in="@{xmlfile}" out="@{outfile}"/>
+		
+			<!-- fail the build if any of the tests were a failure -->
+			<if>
+				<equals arg1="@{result}" arg2="0"/>
+				<then>
+					<echo>Unit Tests PASSED</echo>
+					<echo>(see report in @{outfile} for details)</echo>
+				</then>
+				<else>
+					<echo>Some Unit Tests FAILED</echo>
+					<echo>(see report in @{outfile} for details)</echo>
+					<fail message="Unit Test Failure, see @{outfile} for details"/>
+				</else>
+			</if>
 		</sequential>
 	</macrodef>
 

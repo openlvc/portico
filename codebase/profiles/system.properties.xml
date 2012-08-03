@@ -32,6 +32,9 @@
 	<!-- =========================================================== -->
 	<!-- load the environment variables -->
 	<property environment="env"/>
+	
+	<!-- load our local build.properties file if it exists -->
+	<property file="build.properties"/>
 
 	<!-- get date and time information -->
 	<tstamp><format property="YEAR" pattern="yyyy"/></tstamp>
@@ -85,6 +88,7 @@
 	<property name="resources.jars.dir"        location="${resources.dir}/jars"/>
 	<property name="resources.dist.dir"        location="${resources.dir}/dist"/>
 	<property name="resources.installers.dir"  location="${resources.dir}/installers"/>
+	<property name="resources.testdata.dir"    location="${resources.dir}/test-data"/>
 	
 	<!-- Generated Build and Distribution Properties -->
 	<property name="build.dir"              location="build"/>
