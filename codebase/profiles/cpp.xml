@@ -23,14 +23,14 @@
 	<property name="jdk.home" location="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home"/>
 
 	<!-- ==== Basic Properties ==== -->
-	<property name="cpp.build.dir"             location="${build.dir}/cpp/macos"/>
+	<property name="cpp.build.dir"             location="${build.dir}/cpp/macosx"/>
 
 	<!-- ==== NG6 and DLC13 Interface Properties ==== -->
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
 	<property name="test13.src.dir"            location="${cpp.src.dir}/test13"/>
-
+	
 	<!-- ng6 build -->
 	<property name="ng6.build.dir"             location="${cpp.build.dir}/ng6"/>
 	<property name="ng6.complete.dir"          location="${ng6.build.dir}/complete"/>
@@ -56,7 +56,7 @@
 	     when defining paths and the like later in the build file -->
 	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
 	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
-	<property name="cppunit.lib"           location="${cppunit.dir}/macos"/>
+	<property name="cppunit.lib"           location="${cppunit.dir}/macosx"/>
 
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
@@ -152,7 +152,8 @@
 	<!-- ================================================================================= -->
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
-	<target name="test" extensionOf="master.test" depends="compile, test.test13"/>
+	<!-- Depends on java.sandbox so the jar file is constructed for the C++ side to call into -->
+	<target name="test" extensionOf="master.test" depends="compile, java.sandbox, test.test13"/>
 
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
@@ -198,8 +199,10 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="compile">
-		<!-- prepare the area to store all this stuff -->
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox, compile">
+		<!-- ======= -->
+		<!-- Headers -->
+		<!-- ======= -->
 		<mkdir dir="${dist.sandbox.dir}/include"/>
 
 		<!-- copy the RTI headers over -->
@@ -207,7 +210,10 @@
 			<fileset dir="${hla13.include.dir}" includes="**/*"/>
 		</copy>
 
-		<!-- copy the Portico C++ libraries over -->
+		<!-- ========= -->
+		<!-- Libraries -->
+		<!-- ========= -->
+		<!-- copy the Portico C++ NGv6 and DLC 1.3 libraries -->
 		<copy todir="${dist.lib.dir}">
 			<fileset dir="${ng6.complete.dir}"
 			         includes="**/*"
@@ -219,31 +225,26 @@
 			         followsymlinks="false"/>
 		</copy>
 
+		<!-- macosx: link the dylib and jnilib -->
+		<echo>creating symlinks from dylibs to jnilibs</echo>
+		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/> <!-- ng6 -->
+		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>  <!-- dlc13 -->
+		
+		<!-- macosx/linux: chmod the dylib/so appropriately -->
+		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+
+		<!-- ================= -->
+		<!-- Example Federates -->
+		<!-- ================= -->
 		<!-- copy across the example federates -->
-		<!--
 		<mkdir dir="${dist.examples.dir}/cpp"/>
 		<copy todir="${dist.examples.dir}/cpp">
-			<fileset dir="${cpp.examples.dir}">
+			<fileset dir="${cpp.src.dir}/examples">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-		<!- chmod them ->
+		<!-- chmod them -->
 		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
-		-->
-
-		<!-- macos: link the dylib and jnilib -->
-		<echo>creating symlinks from dylibs to jnilibs</echo>
-		<!-- can't use the symlink ant task because we want to specify a relative link
-			 between the dylib and jnilib, and if we use symlink, we get absolute paths -->
-		<exec executable="ln" dir="${dist.lib.dir}" failonerror="true"> <!-- ng6 -->
-			<arg line="-sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"/>
-		</exec>
-		<exec executable="ln" dir="${dist.lib.dir}" failonerror="true"> <!-- dlc13 -->
-			<arg line="-sf ./librti13.dylib ./librti13.jnilib"/>
-		</exec>
-
-		<!-- macos/linux: chmod the dylib/so appropriately -->
-		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 	</target>
 
 	<!-- ================================================================================= -->

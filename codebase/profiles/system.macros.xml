@@ -305,4 +305,36 @@
 		</sequential>
 	</macrodef>
 
+	<!-- ================================================================================= -->
+	<!--                                Macro: symlink-dylib                               -->
+	<!-- ================================================================================= -->
+	<!--
+	     Portico uses JNI to bridge between the Java and C++ interfaces. Due to a particular
+	     quirk in the way that Mac OS X and JNI works, we must create both a dylib and a jnilib
+	     file. One is loaded by standard Mac applications to load the C++ interface and this
+	     allows calls to flow from C++ to Java. For callbacks to happen (calls to flow from Java
+	     back to C++) we need a jnilib file. Creating a symlink from the dylib to a file with
+	     the jnilib extension seems to work. No idea why, but it does. This task makes it easy.
+	     It will create a relative link so that the files can be moved around (rather than one
+	     with an absolute location that would pin the link to the location it was in when created.
+	     
+	     Usage example:
+	     <symlink-dylib directory="[directory where dylib reside]" name="libRTI-NG"/>
+
+		 This will CD into the directory and execute a "ln -sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"
+	-->
+	<macrodef name="symlink-dylib"
+	          description="Creates relative symlink from dylib to jnilib of the same name">
+		<!-- Attriutes -->
+		<attribute name="directory" description="Directory to create symlink from"/>
+		<attribute name="name" description="Name of dylib (no extension) to create jnilib link for"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<exec executable="ln" dir="@{directory}" failonerror="true">
+				<arg line="-sf ./@{name}.dylib ./@{name}.jnilib"/>
+			</exec>	
+		</sequential>
+	</macrodef>
+
 </project>

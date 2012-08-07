@@ -49,19 +49,19 @@
 	<!-- These tasks will initialize a bunch of properties based
 	     on the system that the build is currently running on. The
 	     various properties and values set are:
-	       * ${platform}         : One of "macos, win32, win64, linux32, linux64"
-	       * ${platform.macos}   : "true" if we are running on Mac OS X
+	       * ${platform}         : One of "macosx, win32, win64, linux32, linux64"
+	       * ${platform.macosx}  : "true" if we are running on Mac OS X
 	       * ${platform.win32}   : "true" if we are running on 32-bit Windows
 	       * ${platform.win64}   : "true" if we are running on 64-bit Windows
 	       * ${platform.linux32} : "true" if we are running on 32-bit Linux
 	       * ${platform.linux64} : "true" if we are running on 64-bit Linux
 	-->
-	<condition property="platform.macos" value="true"><os family="mac" arch="x86_64"/></condition>
+	<condition property="platform.macosx" value="true"><os family="mac" arch="x86_64"/></condition>
 	<condition property="platform.win32" value="true"><os family="winnt" arch="x86_32"/></condition>
 	<condition property="platform.win64" value="true"><os family="winnt" arch="x86_64"/></condition>
 	<condition property="platform.linux32" value="true"><os name="Linux" arch="x86_32"/></condition>
 	<condition property="platform.linux64" value="true"><os name="Linux" arch="x86_64"/></condition>
-	<condition property="platform" value="macos"><isset property="platform.macos"/></condition>
+	<condition property="platform" value="macosx"><isset property="platform.macosx"/></condition>
 	<condition property="platform" value="win32"><isset property="platform.win32"/></condition>
 	<condition property="platform" value="win64"><isset property="platform.win64"/></condition>
 	<condition property="platform" value="linux32"><isset property="platform.linux32"/></condition>
@@ -97,6 +97,7 @@
 	<property name="dist.dir"               location="dist"/>
 	<property name="dist.sandbox.dir"       location="${dist.dir}/${dist.name}"/>
 	<property name="dist.lib.dir"           location="${dist.sandbox.dir}/lib"/>
+	<property name="dist.examples.dir"      location="${dist.sandbox.dir}/examples"/>
 	<property name="dist.zip.file"          location="${dist.dir}/${dist.name}-${platform}.zip"/>
 	<property name="dist.tgz.file"          location="${dist.dir}/${dist.name}-${platform}.tar.gz"/>
 

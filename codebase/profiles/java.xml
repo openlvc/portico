@@ -209,16 +209,17 @@
 		<!-- chmod anything in a bin directory -->
 		<chmod dir="${dist.sandbox.dir}" perm="777" includes="bin/**/*"/>
 
+		<!-- ================= -->
+		<!-- Example Federates -->
+		<!-- ================= -->
 		<!-- copy across the example federates -->
-		<!--
-		<mkdir dir="${java.examples.dist.dir}"/>
-		<copy todir="${java.examples.dist.dir}">
-			<fileset dir="${java.examples.dir}">
+		<mkdir dir="${dist.examples.dir}/java"/>
+		<copy todir="${dist.examples.dir}/java">
+			<fileset dir="${examples.src.dir}">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-		<chmod dir="${java.examples.dist.dir}" perm="777" includes="**/*.sh"/>
-		-->
+		<chmod dir="${dist.examples.dir}" perm="777" includes="**/*.sh"/>
 		
 		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->
 	</target>
