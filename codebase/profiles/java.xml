@@ -294,7 +294,7 @@
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
 	<!-- No special installation tasks to do for the Java build -->
-	<target name="installer" extensionOf="master.installer"/>
+	<!--<target name="installer" extensionOf="master.installer"/>-->
 
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->

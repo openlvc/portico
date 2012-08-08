@@ -19,9 +19,6 @@
 		C++ build profile for the Portico Open Source RTI on Mac OS X
 	</description>
 
-	<!-- ==== JDK Related Properties ==== -->
-	<property name="jdk.home" location="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home"/>
-
 	<!-- ==== Basic Properties ==== -->
 	<property name="cpp.build.dir"             location="${build.dir}/cpp/macosx"/>
 
@@ -88,7 +85,7 @@
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/darwin"/>
+			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
 			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
@@ -114,7 +111,7 @@
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/dlc13"/>
 			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/darwin"/>
+			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
 			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_DLC"/>
 			<define name="BUILDING_FEDTIME"/>
@@ -177,7 +174,7 @@
 		      resultproperty="test13.result">
 			<arg line="${test13.complete.dir}/test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${jdk.home}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
+			<env key="DYLD_LIBRARY_PATH" path="${macosx.jdk.home}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
 			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
@@ -251,7 +248,7 @@
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
 	<!-- No special installation tasks to do for this build -->
-	<target name="installer" extensionOf="master.installer"/>
+	<!--<target name="installer" extensionOf="master.installer"/>-->
 
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->

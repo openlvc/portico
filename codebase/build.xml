@@ -84,6 +84,8 @@
 	<include file="profiles/java.xml" as="java"/>
 	<include file="profiles/cpp.xml" as="cpp"/>
 
+	<include file="profiles/macosx/installer.xml" as="installer.macosx"/>
+
 	<!-- =========================================================== -->
 	<!--      Private Internal Targets. Do not modify or extend.     -->
 	<!-- =========================================================== -->

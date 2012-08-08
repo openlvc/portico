@@ -77,6 +77,9 @@
 	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
+	<!-- ==== JDK Related Properties ==== -->
+	<property name="macosx.jdk.home" location="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home"/>
+	
 	<!-- Location Properties -->
 	<property name="lib.dir"                   location="lib"/>
 	<property name="src.dir"                   location="src"/>
