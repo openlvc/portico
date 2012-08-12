@@ -1,0 +1,108 @@
+Index: src/main/org/apache/tools/ant/taskdefs/ImportTask.java
+===================================================================
+--- src/main/org/apache/tools/ant/taskdefs/ImportTask.java	(revision 1361465)
++++ src/main/org/apache/tools/ant/taskdefs/ImportTask.java	(working copy)
+@@ -22,6 +22,7 @@
+ import org.apache.tools.ant.ProjectHelper;
+ import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.ProjectHelperRepository;
++import org.apache.tools.ant.PropertyHelper;
+ import org.apache.tools.ant.Task;
+ import org.apache.tools.ant.types.Resource;
+ import org.apache.tools.ant.types.ResourceCollection;
+@@ -70,6 +71,10 @@
+     private final Union resources = new Union();
+     private static final FileUtils FILE_UTILS = FileUtils.getFileUtils();
+ 
++    // added by Tim
++    private String ifCondition = null;
++    private String unlessCondition = null;
++
+     public ImportTask() {
+         resources.setCache(true);
+     }
+@@ -115,6 +120,26 @@
+     }
+ 
+     /**
++     * Only import the project if the property identified in this value
++     * evaludates to true.
++     *
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    public void setIf(String property) {
++        ifCondition = property == null ? "" : property;
++    }
++
++    /**
++     * Import the file specified *unless* the value of the identified
++     * property evaluates to false.
++     *
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    public void setUnless(String property) {
++        unlessCondition = property == null ? "" : property;
++    }
++
++    /**
+      * The resource to import.
+      *
+      * @since Ant 1.8.0
+@@ -124,6 +149,18 @@
+     }
+ 
+     public void execute() {
++        // Added by Tim: test the if and allows conditions
++        if (!testIfAllows()) {
++            project.log(this, "Skipped because property '" + project.replaceProperties(ifCondition)
++                    + "' not set.", Project.MSG_VERBOSE);
++            return;
++        }
++        if (!testUnlessAllows()) {
++            project.log(this, "Skipped because property '"
++                    + project.replaceProperties(unlessCondition) + "' set.", Project.MSG_VERBOSE);
++            return;
++        }
++
+         if (file == null && resources.size() == 0) {
+             throw new BuildException("import requires file attribute or"
+                                      + " at least one nested resource");
+@@ -289,6 +326,38 @@
+     }
+ 
+     /**
++     * Tests whether or not the "if" condition allows the execution of this target.
++     *
++     * @return whether or not the "if" condition is satisfied. If no
++     *         condition (or an empty condition) has been set,
++     *         <code>true</code> is returned.
++     *
++     * @see #setIf(String)
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    private boolean testIfAllows() {
++        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(getProject());
++        Object o = propertyHelper.parseProperties(ifCondition);
++        return propertyHelper.testIfCondition(o);
++    }
++
++    /**
++     * Tests whether or not the "unless" condition allows the execution of this target.
++     *
++     * @return whether or not the "unless" condition is satisfied. If no
++     *         condition (or an empty condition) has been set,
++     *         <code>true</code> is returned.
++     *
++     * @see #setUnless(String)
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    private boolean testUnlessAllows() {
++        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(getProject());
++        Object o = propertyHelper.parseProperties(unlessCondition);
++        return propertyHelper.testUnlessCondition(o);
++    }
++
++    /**
+      * Sets a bunch of Thread-local ProjectHelper properties.
+      * 
+      * @since Ant 1.8.0
