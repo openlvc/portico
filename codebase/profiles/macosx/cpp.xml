@@ -258,6 +258,6 @@
 	     tests, generate a sandbox and place all additional release artefacts inside in prep
 	     for release.
 	-->
-	<target name="release" extensionOf="master.release" depends="clean,test,sandbox,installer"/>
+	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
 
 </project>
