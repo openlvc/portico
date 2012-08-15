@@ -89,10 +89,8 @@
 	<include file="profiles/macosx/installer.xml"    as="installer"    if="platform.macosx"/>
 	
 	<!-- Windows 32bit C++ and Installer profiles -->
-	<!--
-	<include file="profiles/windows/cpp32.xml"       as="cpp"          if="platform.win32"/>
-	<include file="profiles/windows/installer32.xml" as="installer"    if="platform.win32"/>
-	-->
+	<include file="profiles/win32/cpp32.xml"         as="cpp"          if="platform.win64"/> <!-- fixme -->
+	<include file="profiles/win32/installer32.xml"   as="installer"    if="platform.win32"/>
 
 	<!-- Windows 64bit C++ and Installer profiles -->
 	<!--

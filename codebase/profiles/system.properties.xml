@@ -57,8 +57,8 @@
 	       * ${platform.linux64} : "true" if we are running on 64-bit Linux
 	-->
 	<condition property="platform.macosx" value="true"><os family="mac" arch="x86_64"/></condition>
-	<condition property="platform.win32" value="true"><os family="winnt" arch="x86_32"/></condition>
-	<condition property="platform.win64" value="true"><os family="winnt" arch="x86_64"/></condition>
+	<condition property="platform.win32" value="true"><os family="windows" arch="x86"/></condition>
+	<condition property="platform.win64" value="true"><os family="windows" arch="amd64"/></condition>
 	<condition property="platform.linux32" value="true"><os name="Linux" arch="x86_32"/></condition>
 	<condition property="platform.linux64" value="true"><os name="Linux" arch="x86_64"/></condition>
 	<condition property="platform" value="macosx"><isset property="platform.macosx"/></condition>
@@ -79,6 +79,7 @@
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
 	<property name="macosx.jdk.home" location="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home"/>
+	<property name="windows.jdk.home" location="${env.JAVA_HOME}"/>
 	
 	<!-- Location Properties -->
 	<property name="lib.dir"                   location="lib"/>

@@ -19,6 +19,64 @@
 		Set of common macros that can be used in any of the project build profiles.
 	</description>
 
+	
+	<!-- ================================================================================= -->
+	<!--                                 Macro: jdk-home                                   -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for ensuring that the environment variable JAVA_HOME is set and for
+	     setting the jdk.home property from it. If the JAVA_HOME environment variable
+	     is not set, this macro will fail the build. If the variable is set, it will
+	     attempt to confirm that the variable points to a valid JDK (not a JRE). Should
+	     this check fail, again, the build will be failed. Should this check pass, the
+	     value of the property "jdk.home" will be set to JAVA_HOME.
+		 
+	     Usage Example:
+	     <jdk-home/>
+	-->
+	<macrodef name="jdk-home"
+	          description="Validate that JAVA_HOME is set and ensure jdk.home points to it">
+
+		<!-- Attributes -->
+		<!-- None -->
+		
+		<!-- Task Definition -->
+		<sequential>
+			<!-- check that jdk.home hasn't already been set (maybe from build.properties) -->
+			<if>
+				<isset property="jdk.home"/>
+				<then>
+					<echo>jdk.home already set in build properties, skipping JAVA_HOME check</echo>
+					<echo>jdk.home is: ${jdk.home}</echo>
+				</then>
+				<else>
+					<!-- we can do the checks now, as jdk.home isn't set -->
+					<!-- make sure we have JAVA_HOME -->
+					<if>
+						<not><isset property="env.JAVA_HOME"/></not>
+						<then>
+						<fail message="The JAVA_HOME environment variable must be set (and point to a valid JDK)"/>
+						</then>
+					</if>
+
+					<!-- make sure env.JAVA_HOME points to a JDK -->
+					<!-- we determine this by looking for a child jre directory -->
+					<if>
+						<resourceexists><file file="${env.JAVA_HOME}/jre"/></resourceexists>
+						<then>
+							<!-- we're cool! set the property -->
+							<property name="jdk.home" value="${env.JAVA_HOME}"/>
+							<echo>jdk.home set to: ${jdk.home}</echo>
+						</then>
+						<else>
+							<fail message="The JAVA_HOME environment variable is set, but does not point to a valid JDK"/>
+						</else>
+					</if>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+	
 	<!-- ================================================================================= -->
 	<!--                               Macro: java-compile                                 -->
 	<!-- ================================================================================= -->
@@ -260,6 +318,190 @@
 			         compilerArgs="@{compilerArgs}"
 			         linkerArgs="@{linkerArgs}">
 				<body/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                 Macro: cpp-vsenv                                  -->
+	<!-- ================================================================================= -->
+	<!--
+	     This macro sets up the environment for compiling C++ applications with the
+	     Visual Studio compiler from the command line. It takes an attribute that
+	     identifies which version of the visual studio compiler should be used, and
+	     from that then identifies where the batch file that sets up the VS environment
+	     is located.
+	
+	     With all modern Visual Studio installs, an environment variable is created that
+	     points to where the tools directory in the install is located. The name of this
+	     variable changes from version to version. For example, if you are using VS9 (2008)
+	     the name of the variable is "VS90COMMONTOOLS", but if you are using VS10 (2010),
+	     the name is "VS100COMMONTOOLS". This macro depends on these variables to locate
+	     the batch file that will initialize the environment (usually vsvarsall.bat). It
+	     will then invoke that so that the compiler is available to call directly from
+	     the build (by the cpp-win32 macro).
+	
+	     Usage Example:
+	     <cpp-vsenv version="vc10" platform="x86"/> **defaults shown
+	
+	     Valid options for version are: vc7, vc8, vc9, vc10
+	     Valid options for platform are: x86, amd64
+	-->
+	<macrodef name="cpp-vsenv" description="Initialize the environment for Visual Studio compiling">
+		<!-- Attributes -->
+		<attribute name="version"
+		           description="Visual Studio version (vc7, vc8, vc9 or vc10)"
+		           default="vc10"/>
+		<attribute name="target"
+		           description="Target platform to build for (x86 or amd64)"
+		           default="x86"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<!-- Unset all the temp properties we use in macro so we can run it more than once -->
+			<var name="vstemp.env" unset="true"/>
+			<var name="vstemp.vcvars" unset="true"/>
+			<var name="vstemp.compiler" unset="true"/>
+
+			<!-- ========================================= -->
+			<!-- ===== Locate Environment Setup File ===== -->
+			<!-- ========================================= -->
+			<!-- Locate the vcvarsall.bat file we need to run -->
+			<condition property="vstemp.env" value="${env.VS100COMNTOOLS}"><equals arg1="@{version}" arg2="vc10"/></condition>
+			<condition property="vstemp.env" value="${env.VS90COMNTOOLS}"><equals arg1="@{version}" arg2="vc9"/></condition>
+			<condition property="vstemp.env" value="${env.VS80COMNTOOLS}"><equals arg1="@{version}" arg2="vc8"/></condition>
+			<condition property="vstemp.env" value="${env.VS70COMNTOOLS}"><equals arg1="@{version}" arg2="vc7"/></condition>
+			<property name="vstemp.vcvars" location="${vstemp.env}\..\..\VC\vcvarsall.bat"/>
+			<!-- Make sure it exists -->
+			<if><not><resourceexists><file file="${vstemp.vcvars}"/></resourceexists></not>
+			<then>
+				<echo>Expected to find vcvarsall.bat here: ${vstemp.vcvars}</echo>
+				<fail message="Could not locate vcvarsall.bat (required to set up environment)"/>
+			</then>
+			</if>
+
+			<!-- Set the vstemp.compiler property that will be pass as an arg to vcvarsall.bat -->
+			<!-- If building a 32-bit target, the vcvarsall.bat arg is always x86 -->
+			<if><equals arg1="@{target}" arg2="x86"/>
+			<then>
+				<property name="vstemp.compiler" value="x86"/>
+			</then>
+			</if>
+			<!-- If building a 64-bit target, the vcvarsall.bat arg depends on the platform -->
+			<if><equals arg1="@{target}" arg2="amd64"/>
+			<then>
+				<if><istrue value="${platform.win32}"/>
+				<then>
+					<echo>Building 64-bit targets on 32-bit Windows. Using cross-compiler.</echo>
+					<property name="vstemp.compiler" value="x86_amd64"/>
+				</then>
+				<else>
+					<property name="vstemp.compiler" value="amd64"/>
+				</else>
+				</if>
+			</then>
+			</if>
+			
+			<!-- ===================================== -->
+			<!-- ===== Configuration Environment ===== -->
+			<!-- ===================================== -->
+			<!-- Complete environment setup based on the Visual Studio version we are targeting -->
+			<!-- === Visual Studio 10 (2010) === -->
+			<if><equals arg1="@{version}" arg2="vc10"/>
+			<then>
+				<echo>Configuring environment for Visual Studio 10 (2010) (@{target})</echo>
+				<echo>${vstemp.vcvars} ${vstemp.compiler}</echo>
+				<exec executable="cmd">
+					<arg value="/c"/>
+					<arg value="${vstemp.vcvars}"/>
+					<arg value="${vstemp.compiler}"/>
+				</exec>
+
+				<!--
+				<exec executable="${vstemp.vcvars}" vmlauncher="false">
+					<arg value="${vstemp.compiler}"/>
+				</exec>
+				-->
+			</then>
+			</if>
+
+			<!-- === Visual Studio 9 (2008) === -->
+			<if><equals arg1="@{version}" arg2="vc9"/>
+			<then>
+				<echo>Configuring environment for Visual Studio 9 (2008) (@{target})</echo>
+			</then>
+			</if>
+
+			<!-- === Visual Studio 8 (2005) === -->
+			<if><equals arg1="@{version}" arg2="vc8"/>
+			<then>
+				<echo>Configuring environment for Visual Studio 8 (2005) (@{target})</echo>
+			</then>
+			</if>
+
+			<!-- === Visual Studio 7 (2003) === -->
+			<if><equals arg1="@{version}" arg2="vc7"/>
+			<then>
+				<echo>Configuring environment for Visual Studio 7 (2003) (x86 only)</echo>
+			</then>
+			</if>
+
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                 Macro: cpp-win32                                  -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for compiling C++ source files on Windows using MSVC and the custom
+	     cpptask Ant Task. This macro will generate libraries or executables and
+	     expects its body to be made of any valid cpptask sub-elements. You can
+	     also specify the specific compiler and linker arguments.
+	     
+	     Usage Example:
+	     <cpp-win32 outfile="libraryName"
+	                outdir="${output.dir}"
+	                type="shared"
+	                compilerArgs="-Wall"
+	                linkerArgs="">
+	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
+	        <includepath path="${include.path.1}:${include.path.2}"/>
+	        <includepath path="${include.path.3}"/>
+	        <define name="SYMBOL_NAME"/>
+	        <define name="OTHER_SYMBOL_NAME"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+	-->
+	<macrodef name="cpp-win32" description="C++ compile target for VC10 (32bit) on Windows">
+		<!-- Attributes -->                                                                                                                                                             
+		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
+		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
+		<attribute name="type"      description="shared (default) or executable" default="shared"/>
+		<attribute name="compilerArgs"
+		           description="arg list passed directly to compiler"
+		           default="/O2 /EHsc /GR /MD /W0"/>
+		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements pass to the body of the cpp task"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<mkdir dir="@{outdir}/obj"/>
+			<mkdir dir="@{outdir}/complete"/>
+			<!-- run cpptask -->
+			<cpptask outfile="@{outdir}/complete/@{outfile}"
+			         objdir="@{outdir}/obj"
+			         outtype="@{type}"
+					 outarch="x86"
+			         compiler="vc10"
+			         compilerArgs="@{compilerArgs}"
+			         linkerArgs="@{linkerArgs}">
+				<body/>
+				<define name="WIN32"/>
 			</cpptask>
 		</sequential>
 	</macrodef>
