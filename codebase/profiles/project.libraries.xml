@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="project.libraries">
+
+	<!-- =========================================================== -->
+	<!--                      General Settings                       -->
+	<!-- =========================================================== -->
+	<description>
+		Project-wide library settings. This file is brought directly into the main build file
+	</description>
+
+
+</project>

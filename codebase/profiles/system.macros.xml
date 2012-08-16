@@ -1,0 +1,455 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="macros">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Set of common macros that can be used in any of the project build profiles.
+	</description>
+
+	
+	<!-- ================================================================================= -->
+	<!--                                 Macro: jdk-home                                   -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for ensuring that the environment variable JAVA_HOME is set and for
+	     setting the jdk.home property from it. If the JAVA_HOME environment variable
+	     is not set, this macro will fail the build. If the variable is set, it will
+	     attempt to confirm that the variable points to a valid JDK (not a JRE). Should
+	     this check fail, again, the build will be failed. Should this check pass, the
+	     value of the property "jdk.home" will be set to JAVA_HOME.
+		 
+	     Usage Example:
+         <jdk-home/>
+	-->
+	<macrodef name="jdk-home"
+	          description="Validate that JAVA_HOME is set and ensure jdk.home points to it">
+
+		<!-- Attributes -->
+		<!-- None -->
+		
+		<!-- Task Definition -->
+		<sequential>
+			<!-- check that jdk.home hasn't already been set (maybe from build.properties) -->
+			<if>
+				<isset property="jdk.home"/>
+				<then>
+					<echo>jdk.home already set (build.properties), skipping JAVA_HOME check</echo>
+					<echo>jdk.home is: ${jdk.home}</echo>
+				</then>
+				<else>
+					<!-- we can do the checks now, as jdk.home isn't set -->
+					<!-- make sure we have JAVA_HOME -->
+					<if>
+						<not><isset property="env.JAVA_HOME"/></not>
+						<then>
+						<fail message="The JAVA_HOME environment variable is not set (it must point to a valid JDK)"/>
+						</then>
+					</if>
+
+					<!-- make sure env.JAVA_HOME points to a JDK -->
+					<!-- we determine this by looking for a child jre directory -->
+					<if>
+						<resourceexists><file file="${env.JAVA_HOME}/jre"/></resourceexists>
+						<then>
+							<!-- we're cool! set the property -->
+							<property name="jdk.home" value="${env.JAVA_HOME}"/>
+							<echo>jdk.home set to: ${jdk.home}</echo>
+						</then>
+						<else>
+							<fail message="The JAVA_HOME environment variable is set, but does not point to a valid JDK"/>
+						</else>
+					</if>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+	
+	<!-- ================================================================================= -->
+	<!--                               Macro: java-compile                                 -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for compiling Java source code in the provided directory, placing
+	     the generates class files in the out directory.
+	     
+	     This calls the standard Ant <javac> task. If you wish to provide more
+	     configuration options, you can pass any child-elements that task will
+	     take by including them as child elements of this macro.
+	     
+	     Usage Example:
+	     <jcompile srcdir="${java.src.dir}"
+	               outdir="${java.build.dir}/classes"
+	               classpath="classpath.reference">
+	        <javac-specific-children> **optional
+	     </jcompile>
+	     
+	     Additional Relevant Ant Properties:
+ 	      * (optional) java.compiler.source = Source compatibility level to pass to javac
+ 	      * (optional) java.compiler.target = Specific Java version to generate class files for	     
+	-->
+	<macrodef name="java-compile" description="Compile java source code with default properties">
+		<!-- Attributes -->
+		<attribute name="srcdir"    description="Location of the source code to compile"/>
+		<attribute name="outdir"    description="Location to place the compiled code"/>
+		<attribute name="classpath" description="The classpath reference used during compilation"/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements to pass to the body of the javac task"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<!-- make sure the directory exists -->
+			<mkdir dir="@{outdir}"/>
+
+			<!-- do the compile -->
+			<javac srcdir="@{srcdir}"
+			       destdir="@{outdir}"
+			       classpathref="@{classpath}"
+			       debug="true"
+			       debuglevel="lines,vars,source"
+			       source="${java.compiler.source}"
+			       target="${java.compiler.target}"
+			       includeAntRuntime="false">
+				<body/>
+			</javac>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                 Macro: java-test                                  -->
+	<!-- ================================================================================= -->
+	<!-- bring in the testng task -->
+	<taskdef resource="testngtasks" classpath="${lib.dir}/testng/testng-5.12.1/testng-5.12.1.jar"/>
+	
+	<!-- Define a default value for the TestNG groups that will control what test groups
+	     are and are not executed. By default, we provide "", which will run all tests. If
+	     this property is provided on the command line, this declaration will NOT override it -->
+	<property name="test.groups" value=""/>
+
+	<!--
+	     Macro for executing a TestNG test suite. The suite attribute allows you
+	     to define the name of the suite. This is appended to various search and
+	     output folders, keeping artefacts from different test suites separate.
+	     Providing a suite name is optional, wih a default of "" used in absence.
+	     
+	     The macro seaches for all test classes in "classdir/suite-name". A Test
+	     class is one whose name ends in "Test". It will also look for a class in
+	     the root package for the suite called "TestSetup" and include it.
+
+	     This calls the standard <testng> task. If you wish to provide more
+	     configuration options, you can pass any valid child-elements that task 
+	     takes by including them as child elements of this macro.
+
+	     Usage Example:
+	     <jtest suite="TestSuiteOne"                    ** optional
+	            classdir="${java.test.build.dir}"
+	            outdir="${java.test.reports.dir}"
+	            classpath="classpath.reference"
+	            groups="testng,group,names">            ** optional, defaults to all
+	        <jvmarg value="-Dtest.suite=@{suite}"/>     ** provided by default
+	        <other-testng-specific-children>            **optional
+	     </jtest>
+	-->
+	<macrodef name="java-test" description="Runs TestNG on a set of test classes">
+		<!-- Attributes -->
+		<attribute name="suite"     description="Name of test suite" default=""/>
+		<attribute name="classdir"  description="Path to the compiled test code (excluding suite)"/>
+		<attribute name="outdir"    description="The ouptut directory (also see suite attribute)"/>
+		<attribute name="classpath" description="The classpath reference for running the tests"/>
+		<attribute name="groups"    description="The specific test groups to run" default="${test.groups}"/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements pass to the body of the testng task"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<echo>===============================================</echo>
+			<echo>   Executing Test Suite: @{suite}</echo>
+			<echo>===============================================</echo>
+	
+			<!-- make sure the dir to hold the reports is created -->
+			<mkdir dir="@{outdir}/@{suite}"/>
+	
+			<!-- remove the old log directories -->
+			<delete dir="logs/@{suite}"/>
+	
+			<!-- run a suite of tests from a given directory -->
+			<testng classpathref="@{classpath}"
+			        outputDir="@{outdir}/@{suite}"
+			        failureProperty="java.test.failed"
+			        listener="PorticoTestListener"
+			        haltonfailure="false"
+			        haltonskipped="false"
+			        groups="@{groups}">
+				<classfileset dir="@{classdir}">
+					<include name="@{suite}/TestSetup.class"/>
+					<include name="@{suite}/**/*Test.class"/>
+				</classfileset>
+				<jvmarg value="-Dtest.suite=@{suite}"/>
+				<body/>
+			</testng>
+			
+			<!-- check the result -->
+			<fail if="java.test.failed" message="Unit test failure in test suite (@{suite})"/>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                Macro: java-javadoc                                -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for generating javadocs for the identified packages and placing the
+	     results in the out directory. This will apply a common set of defaults on
+	     all Javadoc runs.
+	     
+	     This calls the standard Ant <javadoc> task. By default it leans on some
+	     system properties (below) unless overridden.
+	     
+	     Usage Example:
+	     <java-javadoc outdir="${javadoc.dir}/hla13"
+	                   packages=""
+	                   sourcepath="${portico.src.dir}"
+	                   classpath="compile.classpath"/>
+	     
+	     Additional Relevant Ant Properties:
+	      * (optional) Defaults to value of ${javadoc.windowtitle}
+	      * (optional) Defaults to value of ${javadoc.header}
+	      * (optional) Defaults to value of ${javadoc.footer}
+	-->
+	<macrodef name="java-javadoc" description="Generate Javadocs with common settings">
+		<!-- Attributes -->
+		<attribute name="outdir"      description="The directory to place the javadoc in"/>
+		<attribute name="packages"    description="Name of the packages to generate javadoc for"/>
+		<attribute name="sourcepath"  description="Directory where the source is located"/>
+		<attribute name="classpath"   description="Reference to the classpath for compiled code"/>
+		<attribute name="windowtitle" default="${javadoc.windowtitle}"/>
+		<attribute name="header"      default="${javadoc.header}"/>
+		<attribute name="footer"      default="${javadoc.footer}"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<!-- make sure the directory exists -->
+			<mkdir dir="@{outdir}"/>
+
+			<javadoc destdir="@{outdir}"
+			        packagenames="@{packages}"
+			        sourcepath="@{sourcepath}"
+			        link="${javadoc.oracle}"
+			        use="true"
+			        version="true"
+			        breakiterator="true"
+			        windowtitle="@{windowtitle}"
+			        header="@{header}"
+			        footer="@{footer}"
+			        additionalparam="-quiet">
+				<classpath refid="@{classpath}"/>
+			</javadoc>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                  Macro: cpp-unix                                  -->
+	<!-- ================================================================================= -->
+	<!-- bring in the cpp compiling ant task -->
+	<taskdef name="cpptask" classname="com.lbf.cpptask.CppTask"/>
+
+	<!--
+	     Macro for compiling C++ source files on Linux using g++ and the custom
+	     cpptask Ant Task. This macro will generate libraries or executables and
+	     expects its body to be made of any valid cpptask sub-elements. You can
+	     also specify the specific compiler and linker arguments.
+	     
+	     Usage Example:
+	     <cpp-unix outfile="libraryName"
+	               outdir="${output.dir}"
+	               type="shared"
+	               compilerArgs="-Wall"
+	               linkerArgs="-framework JavaVM -arch i386">
+	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
+	        <includepath path="${include.path.1}:${include.path.2}"/>
+	        <includepath path="${include.path.3}"/>
+	        <define name="SYMBOL_NAME"/>
+	        <define name="OTHER_SYMBOL_NAME"/>
+		</cpp-unix>
+	-->
+	<macrodef name="cpp-unix" description="C++ compile target for GCC on Linux and Mac OS X">
+		<!-- Attributes -->
+		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
+		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
+		<attribute name="type"      description="shared (default) or executable" default="shared"/>
+		<attribute name="compilerArgs"
+		           description="arg list passed directly to compiler"
+		           default="-g -O2 -fPIC -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing"/>
+		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements pass to the body of the cpp task"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<mkdir dir="@{outdir}/obj"/>
+			<mkdir dir="@{outdir}/complete"/>
+			<!-- run cpptask -->
+			<cpptask outfile="@{outdir}/complete/@{outfile}"
+			         objdir="@{outdir}/obj"
+			         outtype="@{type}"
+			         compiler="g++"
+			         compilerArgs="@{compilerArgs}"
+			         linkerArgs="@{linkerArgs}">
+				<body/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                 Macro: cpp-win32                                  -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for compiling C++ source files on Windows using MSVC and the custom
+	     cpptask Ant Task. This macro will generate libraries or executables and
+	     expects its body to be made of any valid cpptask sub-elements. You can
+	     also specify the specific compiler and linker arguments.
+	     
+	     Usage Example:
+	     <cpp-win32 outfile="libraryName"
+	                outdir="${output.dir}"
+	                type="shared"
+	                compilerArgs="-Wall"
+	                linkerArgs="">
+	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
+	        <includepath path="${include.path.1}:${include.path.2}"/>
+	        <includepath path="${include.path.3}"/>
+	        <define name="SYMBOL_NAME"/>
+	        <define name="OTHER_SYMBOL_NAME"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+	-->
+	<macrodef name="cpp-win32" description="C++ compile target for VC10 (32bit) on Windows">
+		<!-- Attributes -->                                                                                                                                                             
+		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
+		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
+		<attribute name="type"      description="shared (default) or executable" default="shared"/>
+		<attribute name="compilerArgs"
+		           description="arg list passed directly to compiler"
+		           default="/O2 /EHsc /GR /MD /W0"/>
+		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+
+		<!-- Child Elements -->
+		<element name="body"
+		         implicit="yes"
+		         optional="yes"
+		         description="Child elements pass to the body of the cpp task"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<mkdir dir="@{outdir}/obj"/>
+			<mkdir dir="@{outdir}/complete"/>
+			<!-- run cpptask -->
+			<cpptask outfile="@{outdir}/complete/@{outfile}"
+			         objdir="@{outdir}/obj"
+			         outtype="@{type}"
+					 outarch="x86"
+			         compiler="vc10"
+			         compilerArgs="@{compilerArgs}"
+			         linkerArgs="@{linkerArgs}">
+				<body/>
+				<define name="WIN32"/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                               Macro: cppunit-report                               -->
+	<!-- ================================================================================= -->
+	<!--
+	     Macro for generating HTML reports from a CppUnit XML output file. This
+	     macro will *fail the build* if any of the unit tests failed during the
+	     testing run.
+	     
+	     Usage Example:
+	     <cppunit-report result="${testrun.result}"
+	                     xmlfile="${testrun.results.file}"
+	                     xslfile="${testrun.results.stylesheet}"
+	                     outfile="${testrun.complete.dir}"/>
+	-->
+	<macrodef name="cppunit-report" description="Generate a HTML result from CppUnit output file">
+		<!-- Attributes -->
+		<attribute name="result"   description="result value of the test run to check for success"/>
+		<attribute name="xmlfile"  description="results xml file generated by CppUnit"/>
+		<attribute name="xslfile"  description="stylesheet to generate test report with"/>
+		<attribute name="outfile"  description="the report file to generate"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<xslt style="@{xslfile}" in="@{xmlfile}" out="@{outfile}"/>
+		
+			<!-- fail the build if any of the tests were a failure -->
+			<if>
+				<equals arg1="@{result}" arg2="0"/>
+				<then>
+					<echo>Unit Tests PASSED</echo>
+					<echo>(see report in @{outfile} for details)</echo>
+				</then>
+				<else>
+					<echo>Some Unit Tests FAILED</echo>
+					<echo>(see report in @{outfile} for details)</echo>
+					<fail message="Unit Test Failure, see @{outfile} for details"/>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                Macro: symlink-dylib                               -->
+	<!-- ================================================================================= -->
+	<!--
+	     Portico uses JNI to bridge between the Java and C++ interfaces. Due to a particular
+	     quirk in the way that Mac OS X and JNI works, we must create both a dylib and a jnilib
+	     file. One is loaded by standard Mac applications to load the C++ interface and this
+	     allows calls to flow from C++ to Java. For callbacks to happen (calls to flow from Java
+	     back to C++) we need a jnilib file. Creating a symlink from the dylib to a file with
+	     the jnilib extension seems to work. No idea why, but it does. This task makes it easy.
+	     It will create a relative link so that the files can be moved around (rather than one
+	     with an absolute location that would pin the link to the location it was in when created.
+	     
+	     Usage example:
+	     <symlink-dylib directory="[directory where dylib reside]" name="libRTI-NG"/>
+
+		 This will CD into the directory and execute a "ln -sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"
+	-->
+	<macrodef name="symlink-dylib"
+	          description="Creates relative symlink from dylib to jnilib of the same name">
+		<!-- Attriutes -->
+		<attribute name="directory" description="Directory to create symlink from"/>
+		<attribute name="name" description="Name of dylib (no extension) to create jnilib link for"/>
+		
+		<!-- Task Definition -->
+		<sequential>
+			<exec executable="ln" dir="@{directory}" failonerror="true">
+				<arg line="-sf ./@{name}.dylib ./@{name}.jnilib"/>
+			</exec>	
+		</sequential>
+	</macrodef>
+
+</project>

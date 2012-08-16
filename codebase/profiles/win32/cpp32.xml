@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="cpp">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Windows 32-bit C++ build profile for the Portico Open Source RTI
+	</description>
+
+	<!-- ==== JDK Settings ==== -->
+	<property name="jdk.include.dir"           location="${jdk.home}/include/win32"/>
+	<property name="jdk.lib.dir"               location="${jdk.home}/lib"/>
+	<!--<property name="jdk.lib.dir"               location="${jdk.home}/jre/bin/server"/>-->
+	
+	<!-- ==== Basic Properties ==== -->
+	<property name="cpp.build.dir"             location="${build.dir}/cpp/win32"/>
+
+	<!-- ==== NG6 and DLC13 Interface Properties ==== -->
+	<!-- source -->
+	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
+	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
+	<property name="test13.src.dir"            location="${cpp.src.dir}/test13"/>
+
+	<!-- ng6 build -->
+	<property name="ng6.build.dir"             location="${cpp.build.dir}/ng6"/>
+	<property name="ng6.complete.dir"          location="${ng6.build.dir}/complete"/>
+	<property name="ng6.obj.dir"               location="${ng6.build.dir}/obj"/>
+
+	<!-- dlc13 build -->
+	<property name="dlc13.build.dir"           location="${cpp.build.dir}/dlc13"/>
+	<property name="dlc13.complete.dir"        location="${dlc13.build.dir}/complete"/>
+	<property name="dlc13.obj.dir"             location="${dlc13.build.dir}/obj"/>
+
+	<!-- ng6 test build -->
+	<property name="test13.build.dir"          location="${cpp.build.dir}/test13"/>
+	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
+	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
+
+
+	<!-- =========================================================== -->
+	<!--                     Project Libraries                       -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- These properties are set so that any information relating to a specific path
+	     for a library can be changed in a single spot. The properties should be used
+	     when defining paths and the like later in the build file -->
+	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
+	<property name="cppunit.lib"           location="${cppunit.dir}/vc7"/>
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="master.clean">
+		<delete dir="${cpp.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<!--
+	     The parent compilation target. This will compile all the core Portico C++
+	     interface and the associated unit test suite code.
+	-->
+	<target name="compile"
+	        extensionOf="master.compile"
+	        description="Compile the Portico C++ interfaces and Testing Suite for Win32 VC10"
+	        depends="compile.ng6, compile.dlc13"/>
+
+	<!-- ==================================== -->
+	<!--            NGv6 Interface            -->
+	<!-- ==================================== -->
+	<target name="compile.ng6">
+		<!-- Build the fedtime DLL -->
+		<cpp-win32 outfile="libFedTime" outdir="${ng6.build.dir}">
+			<!-- Filesets and other settings -->
+			<fileset dir="${hla13.src.dir}">
+				<include name="time/RTIfedTime.cpp"/>
+				<include name="time/FedTime.cpp"/>
+				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
+			</fileset>
+			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+
+		<!-- Build the main DLL -->
+		<cpp-win32 outfile="libRTI-NG" outdir="${ng6.build.dir}">
+			<fileset dir="${hla13.src.dir}">
+				<include name="**/*.cpp"/>
+				<exclude name="time/RTIfedTime.cpp"/>
+				<exclude name="time/FedTime.cpp"/>
+				<exclude name="time/FedTimeFactory.cpp"/>
+			</fileset>
+			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_RTI"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${ng6.build.dir}/complete" libs="FedTime"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+	</target>
+
+	<!-- ==================================== -->
+	<!--           DLC 1.3 Interface          -->
+	<!-- ==================================== -->
+	<target name="compile.dlc13">
+		<!-- Build the fedtime DLL -->
+		<cpp-win32 outfile="fedtime13" outdir="${dlc13.build.dir}">
+			<!-- Filesets and other settings -->
+			<fileset dir="${hla13.src.dir}">
+				<include name="time/RTIfedTime.cpp"/>
+				<include name="time/FedTime.cpp"/>
+				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
+			</fileset>
+			<includepath path="${hla13.include.dir}/dlc13"/>
+			<includepath path="${hla13.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+
+		<!-- Build the main DLL -->
+		<cpp-win32 outfile="rti13" outdir="${dlc13.build.dir}">
+			<fileset dir="${hla13.src.dir}">
+				<include name="**/*.cpp"/>
+				<exclude name="time/RTIfedTime.cpp"/>
+				<exclude name="time/FedTime.cpp"/>
+				<exclude name="time/FedTimeFactory.cpp"/>
+			</fileset>
+			<includepath path="${hla13.include.dir}/dlc13"/>
+			<includepath path="${hla13.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_RTI"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${dlc13.build.dir}/complete" libs="fedtime13"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+	</target>
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="compile.test13">
+		<cpp-win32 outfile="test13"
+		           outdir="${test13.build.dir}"
+		           type="executable">
+			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${ng6.complete.dir}" libs="RTI-NG"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+		</cpp-win32>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- Depends on java.sandbox so the jar file is constructed for the C++ side to call into -->
+	<target name="test" extensionOf="master.test" depends="compile, java.sandbox, test.test13"/>
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test.test13" depends="java.compile,compile.test13">
+		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
+		<copy todir="${test13.complete.dir}">
+			<fileset dir="${resources.testdata.dir}/cpptest/ng6" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
+		<echo>Copied testing resources to ${test13.complete.dir}</echo>
+
+		<!-- 2. run the actual test application -->
+		<exec dir="${test13.complete.dir}"
+		      executable="${test13.complete.dir}/test13"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="test13.result">
+			<arg line="${test13.complete.dir}/test-results.xml"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="DYLD_LIBRARY_PATH" path="${macosx.jdk.home}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+
+		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
+		<echo>Generating the Unit Test Report</echo>
+		<cppunit-report result="${test13.result}"
+		                xmlfile="${test13.complete.dir}/test-results.xml"
+		                xslfile="${test13.complete.dir}/xsl/results.xsl"
+		                outfile="${test13.complete.dir}/test-results.html"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!--
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox, compile">
+		<!-- ======= -->
+		<!-- Headers -->
+		<!-- ======= -->
+		<mkdir dir="${dist.sandbox.dir}/include"/>
+
+		<!-- copy the RTI headers over -->
+		<copy todir="${dist.sandbox.dir}/include">
+			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========= -->
+		<!-- Libraries -->
+		<!-- ========= -->
+		<!-- copy the Portico C++ NGv6 and DLC 1.3 libraries -->
+		<copy todir="${dist.lib.dir}">
+			<fileset dir="${ng6.complete.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
+			<fileset dir="${dlc13.complete.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
+		</copy>
+
+		<!-- macosx: link the dylib and jnilib -->
+		<echo>creating symlinks from dylibs to jnilibs</echo>
+		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/> <!-- ng6 -->
+		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>  <!-- dlc13 -->
+
+		<!-- macosx/linux: chmod the dylib/so appropriately -->
+		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+
+		<!-- ================= -->
+		<!-- Example Federates -->
+		<!-- ================= -->
+		<!-- copy across the example federates -->
+		<mkdir dir="${dist.examples.dir}/cpp"/>
+		<copy todir="${dist.examples.dir}/cpp">
+			<fileset dir="${cpp.src.dir}/examples">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<!-- chmod them -->
+		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                             Installer Creation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- No special installation tasks to do for this build -->
+	<!--<target name="installer" extensionOf="master.installer"/>-->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!--
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts inside in prep
+	     for release.
+	-->
+	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
+
+</project>
