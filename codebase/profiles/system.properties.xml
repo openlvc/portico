@@ -57,6 +57,7 @@
 	       * ${platform.linux64} : "true" if we are running on 64-bit Linux
 	-->
 	<condition property="platform.macosx" value="true"><os family="mac" arch="x86_64"/></condition>
+	<condition property="platform.windows" value="true"><os family="windows"/></condition>
 	<condition property="platform.win32" value="true"><os family="windows" arch="x86"/></condition>
 	<condition property="platform.win64" value="true"><os family="windows" arch="amd64"/></condition>
 	<condition property="platform.linux32" value="true"><os name="Linux" arch="x86_32"/></condition>
@@ -70,6 +71,9 @@
 	<!-- =========================================================== -->
 	<!--                     Compiler Properties                     -->
 	<!-- =========================================================== -->
+	<!-- jdk properties, set in build.properties or via call to <jdk-home/> macro in build.xml -->
+	<!-- <property name="jdk.home" value="${env.JAVA_HOME}/> -->
+
 	<!-- java compiler properties -->
 	<property name="java.compiler.source" value="1.6"/>
 	<property name="java.compiler.target" value="1.6"/>

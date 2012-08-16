@@ -20,7 +20,7 @@
 	<!--                      General Settings                       -->
 	<!-- =========================================================== -->
 	<description>
-		Open source, extensible HLA Run Time Infrastructure implementation
+        Open source, extensible HLA Run Time Infrastructure implementation
 	</description>
 
 	<!-- bring in the ant-contrib tasks -->
@@ -31,6 +31,8 @@
 	<!-- =========================================================== -->
 	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
 	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
+
+	<jdk-home/> <!-- validate JAVA_HOME and set jdk.home property -->
 
 	<!-- =========================================================== -->
 	<!--                       Master Targets                        -->
@@ -89,8 +91,8 @@
 	<include file="profiles/macosx/installer.xml"    as="installer"    if="platform.macosx"/>
 	
 	<!-- Windows 32bit C++ and Installer profiles -->
-	<include file="profiles/win32/cpp32.xml"         as="cpp"          if="platform.win64"/> <!-- fixme -->
-	<include file="profiles/win32/installer32.xml"   as="installer"    if="platform.win32"/>
+	<include file="profiles/win32/cpp32.xml"         as="cpp"          if="platform.windows"/>
+	<include file="profiles/win32/installer32.xml"   as="installer"    if="platform.windows"/>
 
 	<!-- Windows 64bit C++ and Installer profiles -->
 	<!--
