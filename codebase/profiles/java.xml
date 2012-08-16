@@ -1,0 +1,369 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="java">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Java build profile for the Portico Open Source RTI
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<property name="java.build.dir"           location="${build.dir}/java"/>
+
+	<!-- ==== Source Related Properties ==== -->
+	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
+	<property name="portico.build.dir"        location="${java.build.dir}/portico"/>
+	<property name="portico.classes.dir"      location="${portico.build.dir}/classes"/>
+
+	<!-- ==== Test Related Properties ==== -->
+	<property name="test.src.dir"             location="${java.src.dir}/test"/>
+	<property name="test.build.dir"           location="${java.build.dir}/test"/>
+	<property name="test.classes.dir"         location="${test.build.dir}/classes"/>
+	<property name="test.reports.dir"         location="${test.build.dir}/reports"/>
+
+	<property name="test.binding"             value="jvm"/>
+	<property name="test.loglevel"            value="OFF"/>
+	<property name="test.fileLogLevel"        value="OFF"/>
+
+	<!-- ==== Example Federate Properties ==== -->
+	<property name="examples.src.dir"         location="${java.src.dir}/examples"/>
+	<property name="examples.build.dir"       location="${build.dir}/examples"/>
+<!--<property name="java.examples.dist.dir"   location="${dist.examples.dir}/java"/>-->
+
+	<!-- ==== Onejar Related Properties ==== -->
+	<!-- To provide a single jar, we extract all deps here and copy them into the portico jar -->
+	<property name="onejar.dir"               location="${build.dir}/onejar"/>
+	
+	<!-- =========================================================== -->
+	<!--                     Project Libraries                       -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- These properties are set so that any information relating to a specific path
+	     for a library can be changed in a single spot. The properties should be used
+	     when defining paths and the like later in the build file -->
+	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
+	<property name="jgroups.dir"           location="${lib.dir}/jgroups/JGroups-2.8.0.GA.bin"/>
+	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
+	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
+
+	<!-- Classpaths for individual libraries -->
+	<path id="lib.testng.classpath">
+		<fileset dir="${testng.dir}" includes="**/*.jar"/>
+	</path>
+	
+	<path id="lib.jgroups.classpath">
+		<fileset dir="${jgroups.dir}" includes="**/*"/>
+	</path>
+
+	<path id="lib.log4j.classpath">
+		<fileset dir="${log4j.dir}" includes="**/*"/>
+	</path>
+
+	<path id="lib.asm.classpath">
+		<fileset dir="${asm.dir}" includes="**/*"/>
+	</path>
+
+	<!-- ========================== -->
+	<!-- Classpath Set Declarations -->
+	<!-- ========================== -->
+	<path id="compile.classpath">
+		<path refid="lib.jgroups.classpath"/>
+		<path refid="lib.log4j.classpath"/>
+		<path refid="lib.asm.classpath"/>
+	</path>
+	
+	<path id="test.classpath">
+		<path refid="compile.classpath"/>
+		<path refid="lib.testng.classpath"/>
+		<pathelement path="${portico.classes.dir}"/>
+		<pathelement path="${test.classes.dir}"/>
+		<pathelement path="${resources.dir}/jars/portico.jar"/>
+		<pathelement path="${resources.dir}/test-data"/>
+	</path>
+	
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="master.clean">
+		<delete dir="${java.build.dir}"/>
+		<delete dir="savedata"/>
+		<delete dir="logs"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent compilation target. This will compile all the core Portico RTI code,
+	     the HLA Java interfaces and the full Java test suite.
+	-->
+	<target name="compile"
+	        extensionOf="master.compile"
+	        description="Compile the core Portico RTI, HLA Java interfaces and Java test suite"
+	        depends="compile.portico, compile.tests"/>
+
+	<!-- compile the main production code -->	
+	<target name="compile.portico">
+		<java-compile srcdir="${portico.src.dir}"
+		              outdir="${portico.classes.dir}"
+		              classpath="compile.classpath"/>
+	</target>
+
+	<!-- compile the hlaunit test suite code -->
+	<target name="compile.tests" depends="compile.portico">
+		<java-compile srcdir="${test.src.dir}"
+		              outdir="${test.classes.dir}"
+		              classpath="test.classpath"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+	<!--
+	     The parent testing target that will invoke the testing suites for the Java
+	     HLA 1.3, IEEE 1516 and IEEE 1516e testing suites.
+	-->
+	<target name="test"
+	        extensionOf="master.test"
+	        depends="test.portico, test.hla13, test.ieee1516, test.evolved"/>
+
+	
+	<!-- Run the core Portico suite that tests various internal parts of the RTI -->
+	<target name="test.portico" depends="compile.tests">
+		<java-test suite="org/portico"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
+	</target>
+
+	<!-- Run the HLA 1.3 test suite -->
+	<target name="test.hla13" depends="compile.tests">
+		<java-test suite="hlaunit/hla13"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
+	</target>
+
+	<!-- Run the IEEE 1516 test suite -->
+	<target name="test.ieee1516" depends="compile.tests">
+		<java-test suite="hlaunit/hla1516"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
+	</target>
+
+	<!-- Run the IEEE 1516e (Evolved) test suite -->
+	<target name="test.evolved" depends="compile.tests">
+		<echo>IEEE 1516e (HLA Evolved) Test Suite not yet implemented</echo>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="master.sandbox" depends="compile,jars">
+		<!-- create the required directories -->
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${dist.sandbox.dir}"/>
+		<mkdir dir="${dist.sandbox.dir}/plugins"/>
+
+		<!-- copy across the dependant libraries -->
+		<mkdir dir="${dist.lib.dir}"/>
+
+		<!-- copy across the resources -->
+		<copy todir="${dist.sandbox.dir}">
+			<fileset dir="${resources.dist.dir}/common" includes="**/*"/>
+		</copy>
+
+		<!-- chmod anything in a bin directory -->
+		<chmod dir="${dist.sandbox.dir}" perm="777" includes="bin/**/*"/>
+
+		<!-- ================= -->
+		<!-- Example Federates -->
+		<!-- ================= -->
+		<!-- copy across the example federates -->
+		<mkdir dir="${dist.examples.dir}/java"/>
+		<copy todir="${dist.examples.dir}/java">
+			<fileset dir="${examples.src.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<chmod dir="${dist.examples.dir}" perm="777" includes="**/*.sh"/>
+		
+		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->
+	</target>
+
+	<!-- ==================================== -->
+	<!--           Jar File Targets           -->
+	<!-- ==================================== -->
+	<!--
+	     Add an extension point that all jar file generation targets can tack on to. If there
+	     is only a single jar file, this is somewhat redundant, but leaving for common structure
+	     across builds for other projects as well.
+	-->
+	<extension-point name="jars"/>
+
+	<!-- build the main portico jar file -->
+	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
+		<!-- construct the main portico jar file -->
+		<jar destfile="${dist.sandbox.dir}/lib/portico.jar">
+			<!-- portico code -->
+			<fileset dir="${portico.classes.dir}" includes="**/*.class"/>
+			
+			<!-- dependency code (onejar stuff) -->
+			<fileset dir="${onejar.dir}" includes="**/*"/>
+
+			<!-- internal jar resources -->
+			<fileset dir="${resources.jars.dir}/portico.jar" includes="**/*"/>
+
+			<!-- license -->
+			<fileset dir="${basedir}" includes="LICENSE.portico"/>
+
+			<!-- build.properties file for version information -->
+			<fileset dir="${basedir}" includes="build.properties"/>
+
+			<!-- MANIFEST -->
+			<manifest>
+				<attribute name="Built-By" value="Calytrix Technologies"/>
+				<section name="org/portico">
+					<attribute name="Implementation-Title" value="portico"/>
+					<attribute name="Implementation-Version" value="${app.version} ${TODAY}"/>
+					<attribute name="Implementation-Vendor" value="Calytrix Technologies"/>
+				</section>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Extract all the releant dependencies into the onejar location -->	
+	<target name="onejar">
+		<mkdir dir="${onejar.dir}"/>
+
+		<!-- Check to see if we need to extract things again due to dependency changes
+		     or new dependencies being added. Otherwise we skip this step. -->
+		<uptodate property="deps.uptodate" targetfile="${onejar.dir}/.created">
+			<srcfiles dir="${lib.dir}" includes="**/*.jar"/>
+		</uptodate>
+		
+		<if><isset property="deps.uptodate"/>
+		<then>
+			<echo>No need to unjar deps again - they're up to date</echo>
+		</then>
+		<else>
+			<touch file="${onejar.dir}/.created"/>
+			<!-- extract the deps for the one-jar style distribution -->
+			<unjar dest="${onejar.dir}">
+				<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
+				<patternset includes="**/*.class"/>
+			</unjar>
+		</else>
+		</if>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                             Installer Creation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- No special installation tasks to do for the Java build -->
+	<!--<target name="installer" extensionOf="master.installer"/>-->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts (such as javadoc)
+	     in with it in preparation for release.
+	-->
+	<target name="release"
+	        extensionOf="master.release"
+	        depends="clean,test,sandbox,javadoc,installer"/>
+
+	<!-- Generate the javadocs and place them in the sandbox. We only do this for a release
+	     build because of the amount of time it takes -->
+	<target name="javadoc" depends="sandbox">
+		<!-- Make room in the sandbox for the javadoc. Create a property for shortcut purposes -->
+		<property name="javadoc.dir" value="${dist.sandbox.dir}/documentation/javadoc"/>
+		<mkdir dir="${javadoc.dir}"/>
+		
+		<echo>Generating HLA API documentatin for HLA v1.3 Java Interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/hla13"
+		              packages="hla.rti.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="SISO HLA v1.3 Javadoc (The Portico Project)"
+		              header="SISO HLA v1.3 Javadoc"/>
+
+		<echo>Generating HLA API documentation for DMSO rti13.java1 compliant interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/hla13-java1"
+		              packages="hla.rti13.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="HLA v1.3 DMSO rti13.java1 Interface Javadoc (The Portico Project)"
+		              header="DMSO rti13.java1 Compatible Interface"/>
+
+		<echo>Generating HLA API documentation for IEEE 1516-2000 Java Interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/ieee1516"
+		              packages="hla.rti1516.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="IEEE 1516-2000 Javadoc (The Portico Project)"
+		              header="IEEE 1516 (2000) Javadoc"/>
+
+		<!--
+		<echo>Generating HLA API documentation for IEEE 1516-2010 (Evolved) Java Interface</echo>
+		<java-javadoc outdir="${javadoc.dir}/ieee1516e"
+		              packages="hla.rti1516e.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="IEEE 1516-2010 (Evolved) Javadoc (The Portico Project)"
+		              header="IEEE 1516e (HLA Evolved) Javadoc"/>
+		-->
+
+		<echo>Generating API documentation for Portico Core Libraries</echo>
+		<java-javadoc outdir="${javadoc.dir}/portico"
+		              packages="org.portico.*"
+		              sourcepath="${portico.src.dir}"
+		              classpath="compile.classpath"
+		              windowtitle="Portico Core RTI Javadoc"/>
+
+		<echo>Generating API documentation for Portico HLAUnit Unit Testing Framework</echo>
+		<java-javadoc outdir="${javadoc.dir}/hlaunit"
+		              packages="hlaunit.*"
+		              sourcepath="${test.src.dir}"
+		              classpath="test.classpath"
+		              windowtitle="Portico HLAUnit Testing Framework Javadoc"
+		              header="Portico HLAUnit Testing Framework Javadoc"/>
+
+	</target>
+
+</project>

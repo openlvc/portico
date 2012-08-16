@@ -1,3 +1,3 @@
 #!/bin/bash
-gdb ./cppPorticoTest -x gdb.env
+gdb ./test13 -x gdb.env
 
