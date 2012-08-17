@@ -59,7 +59,7 @@ public class FOM
 
 	public FOM()
 	{
-		this.fom = new ObjectModel( HLAVersion.HLA1516 );
+		this.fom = new ObjectModel( HLAVersion.IEEE1516 );
 	}
 
 	//----------------------------------------------------------

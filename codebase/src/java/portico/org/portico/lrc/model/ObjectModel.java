@@ -706,7 +706,7 @@ public class ObjectModel implements Serializable
 		// remove any MOM stuff that currently exists in the model //
 		/////////////////////////////////////////////////////////////
 		String managerName = "ObjectRoot.Manager";
-		if( model.version == HLAVersion.HLA1516 )
+		if( model.version == HLAVersion.IEEE1516 )
 		{
 			managerName = "HLAobjectRoot.HLAmanager";
 		}
