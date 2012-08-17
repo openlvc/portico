@@ -19,9 +19,6 @@ import hla.rti1516e.exceptions.IllegalTimeArithmetic;
 import hla.rti1516e.exceptions.InvalidLogicalTimeInterval;
 import hla.rti1516e.time.HLAfloat64Interval;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-
 public class DoubleTimeInterval implements HLAfloat64Interval
 {
 	//----------------------------------------------------------
@@ -107,39 +104,12 @@ public class DoubleTimeInterval implements HLAfloat64Interval
 
 	public int encodedLength()
 	{
-		try
-		{
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeDouble( this.time );
-			stream.close();
-			return byteStream.toByteArray().length;
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen
-			return -1;
-		}
+		return 8;
 	}
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		try
-		{
-			// convert the into an array
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeDouble( this.time );
-			stream.close();
-			byte[] bytes = byteStream.toByteArray();
-			
-			// copy it into the given array
-			System.arraycopy( bytes, 0, buffer, offset, bytes.length );
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}
+		DoubleTimeFactory.encode( this.time, buffer, offset );
 	}
 
 	public double getValue()
