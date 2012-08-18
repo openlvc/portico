@@ -12,15 +12,14 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.types.time;
 
 import hla.rti1516e.exceptions.CouldNotEncode;
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
 import hla.rti1516e.exceptions.InvalidLogicalTimeInterval;
 import hla.rti1516e.time.HLAinteger64Interval;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import org.portico.utils.bithelpers.BitHelpers;
 
 public class LongTimeInterval implements HLAinteger64Interval
 {
@@ -107,39 +106,12 @@ public class LongTimeInterval implements HLAinteger64Interval
 
 	public int encodedLength()
 	{
-		try
-		{
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeLong( this.time );
-			stream.close();
-			return byteStream.toByteArray().length;
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen
-			return -1;
-		}
+		return 8;
 	}
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		try
-		{
-			// convert the into an array
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeLong( this.time );
-			stream.close();
-			byte[] bytes = byteStream.toByteArray();
-			
-			// copy it into the given array
-			System.arraycopy( bytes, 0, buffer, offset, bytes.length );
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}
+		BitHelpers.putLong( this.time, buffer, offset );
 	}
 
 	public long getValue()

@@ -12,7 +12,9 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.types.time;
+
+import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516e.exceptions.CouldNotEncode;
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
@@ -109,7 +111,7 @@ public class DoubleTimeInterval implements HLAfloat64Interval
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		DoubleTimeFactory.encode( this.time, buffer, offset );
+		BitHelpers.putDouble( this.time, buffer, offset );
 	}
 
 	public double getValue()

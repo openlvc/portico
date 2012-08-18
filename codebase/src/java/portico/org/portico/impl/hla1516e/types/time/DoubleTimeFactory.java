@@ -12,7 +12,9 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.types.time;
+
+import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516e.exceptions.CouldNotDecode;
 import hla.rti1516e.time.HLAfloat64Interval;
@@ -42,12 +44,12 @@ public class DoubleTimeFactory implements HLAfloat64TimeFactory
 	//----------------------------------------------------------
 	public HLAfloat64Time decodeTime( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new DoubleTime( decode(buffer,offset) );
+		return new DoubleTime( BitHelpers.readDouble(buffer,offset) );
 	}
 
 	public HLAfloat64Interval decodeInterval( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new DoubleTimeInterval( decode(buffer,offset) );
+		return new DoubleTimeInterval( BitHelpers.readDouble(buffer,offset) );
 	}
 
 	public HLAfloat64Time makeInitial()
@@ -88,41 +90,4 @@ public class DoubleTimeFactory implements HLAfloat64TimeFactory
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static void encode( double value, byte[] buffer, int offset )
-	{
-		int length = buffer.length-offset;
-		if( length <= 8 )
-		{
-			throw new RuntimeException( "Buffer overflow. Tried to write 8 bytes, only "+
-			                            length+" bytes available" );
-		}
-
-		long rawbits = Double.doubleToLongBits( value );
-		buffer[offset]   = (byte)(rawbits >>> 56);
-		buffer[offset+1] = (byte)(rawbits >>> 48);
-		buffer[offset+2] = (byte)(rawbits >>> 40);
-		buffer[offset+3] = (byte)(rawbits >>> 32);
-		buffer[offset+4] = (byte)(rawbits >>> 24);
-		buffer[offset+5] = (byte)(rawbits >>> 16);
-		buffer[offset+6] = (byte)(rawbits >>>  8);
-		buffer[offset+7] = (byte)(rawbits >>>  0);
-	}
-
-	public static double decode( byte[] buffer, int offset )
-	{
-		int length = buffer.length - offset;
-		if( buffer.length-offset <= 8 )
-			throw new RuntimeException( "Buffer underflow. Tried to read 8 bytes, found "+length );
-
-		long temp = (((long)buffer[0] << 56) +
-                     ((long)(buffer[1] & 255) << 48) +
-                     ((long)(buffer[2] & 255) << 40) +
-                     ((long)(buffer[3] & 255) << 32) +
-                     ((long)(buffer[4] & 255) << 24) +
-                     ((buffer[5] & 255) << 16) +
-                     ((buffer[6] & 255) <<  8) +
-                     ((buffer[7] & 255) <<  0));
-
-		return Double.longBitsToDouble( temp );
-	}
 }

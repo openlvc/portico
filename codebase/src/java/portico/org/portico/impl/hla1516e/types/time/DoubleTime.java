@@ -12,16 +12,15 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.types.time;
+
+import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
-import hla.rti1516e.time.HLAinteger64Interval;
-import hla.rti1516e.time.HLAinteger64Time;
+import hla.rti1516e.time.HLAfloat64Interval;
+import hla.rti1516e.time.HLAfloat64Time;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-
-public class LongTime implements HLAinteger64Time
+public class DoubleTime implements HLAfloat64Time
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -31,11 +30,11 @@ public class LongTime implements HLAinteger64Time
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private long time;
+	private double time;
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public LongTime( long value )
+	public DoubleTime( double value )
 	{
 		this.time = value;
 	}
@@ -46,12 +45,12 @@ public class LongTime implements HLAinteger64Time
 	////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Non-Standard Compliant Methods ////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	public long getTime()
+	public double getTime()
 	{
 		return this.time;
 	}
 	
-	public void setTime( long time )
+	public void setTime( double time )
 	{
 		this.time = time;
 	}
@@ -60,13 +59,13 @@ public class LongTime implements HLAinteger64Time
 	{
 		return "" + time;
 	}
-
+	
 	////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Logical Time Interface Methods ////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	public boolean isInitial()
 	{
-		return this.time == 0;
+		return this.time == 0.0;
 	}
 
 	public boolean isFinal()
@@ -77,29 +76,29 @@ public class LongTime implements HLAinteger64Time
 	/**
      * Returns a new HLAfloat64Time whose value is (this + interval).
      */
-	public HLAinteger64Time add( HLAinteger64Interval interval ) throws IllegalTimeArithmetic
+	public HLAfloat64Time add( HLAfloat64Interval interval ) throws IllegalTimeArithmetic
 	{
-		return new LongTime( this.time + interval.getValue() );
+		return new DoubleTime( this.time + interval.getValue() );
 	}
 
 	/**
      * Returns a new HLAfloat64Time whose value is (this - interval).
      */
-	public HLAinteger64Time subtract( HLAinteger64Interval interval ) throws IllegalTimeArithmetic
+	public HLAfloat64Time subtract( HLAfloat64Interval interval ) throws IllegalTimeArithmetic
 	{
-		return new LongTime( this.time - interval.getValue() );
+		return new DoubleTime( this.time - interval.getValue() );
 	}
 
 	/**
      * Returns a new HLAfloat64Interval whose value is the time interval between this
      * and the provided time.
      */
-	public HLAinteger64Interval distance( HLAinteger64Time other )
+	public HLAfloat64Interval distance( HLAfloat64Time other )
 	{
-		return new LongTimeInterval( Math.abs(this.time-other.getValue()) );
+		return new DoubleTimeInterval( Math.abs(this.time-other.getValue()) );
 	}
 
-	public int compareTo( HLAinteger64Time other )
+	public int compareTo( HLAfloat64Time other )
 	{
 		double otherTime = other.getValue();
 		if( this.time == otherTime )
@@ -112,42 +111,15 @@ public class LongTime implements HLAinteger64Time
 
 	public int encodedLength()
 	{
-		try
-		{
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeLong( this.time );
-			stream.close();
-			return byteStream.toByteArray().length;
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen
-			return -1;
-		}
+		return 8;
 	}
 
 	public void encode( byte[] buffer, int offset )
 	{
-		try
-		{
-			// convert the into an array
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeLong( this.time );
-			stream.close();
-			byte[] bytes = byteStream.toByteArray();
-			
-			// copy it into the given array
-			System.arraycopy( bytes, 0, buffer, offset, bytes.length );
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}
+		BitHelpers.putDouble( this.time, buffer, offset );
 	}
 
-	public long getValue()
+	public double getValue()
 	{
 		return this.time;
 	}

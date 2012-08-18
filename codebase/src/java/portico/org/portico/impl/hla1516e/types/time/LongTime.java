@@ -12,13 +12,15 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.types.time;
 
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
-import hla.rti1516e.time.HLAfloat64Interval;
-import hla.rti1516e.time.HLAfloat64Time;
+import hla.rti1516e.time.HLAinteger64Interval;
+import hla.rti1516e.time.HLAinteger64Time;
 
-public class DoubleTime implements HLAfloat64Time
+import org.portico.utils.bithelpers.BitHelpers;
+
+public class LongTime implements HLAinteger64Time
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -28,11 +30,11 @@ public class DoubleTime implements HLAfloat64Time
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private double time;
+	private long time;
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public DoubleTime( double value )
+	public LongTime( long value )
 	{
 		this.time = value;
 	}
@@ -43,12 +45,12 @@ public class DoubleTime implements HLAfloat64Time
 	////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Non-Standard Compliant Methods ////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	public double getTime()
+	public long getTime()
 	{
 		return this.time;
 	}
 	
-	public void setTime( double time )
+	public void setTime( long time )
 	{
 		this.time = time;
 	}
@@ -57,13 +59,13 @@ public class DoubleTime implements HLAfloat64Time
 	{
 		return "" + time;
 	}
-	
+
 	////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Logical Time Interface Methods ////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	public boolean isInitial()
 	{
-		return this.time == 0.0;
+		return this.time == 0;
 	}
 
 	public boolean isFinal()
@@ -74,29 +76,29 @@ public class DoubleTime implements HLAfloat64Time
 	/**
      * Returns a new HLAfloat64Time whose value is (this + interval).
      */
-	public HLAfloat64Time add( HLAfloat64Interval interval ) throws IllegalTimeArithmetic
+	public HLAinteger64Time add( HLAinteger64Interval interval ) throws IllegalTimeArithmetic
 	{
-		return new DoubleTime( this.time + interval.getValue() );
+		return new LongTime( this.time + interval.getValue() );
 	}
 
 	/**
      * Returns a new HLAfloat64Time whose value is (this - interval).
      */
-	public HLAfloat64Time subtract( HLAfloat64Interval interval ) throws IllegalTimeArithmetic
+	public HLAinteger64Time subtract( HLAinteger64Interval interval ) throws IllegalTimeArithmetic
 	{
-		return new DoubleTime( this.time - interval.getValue() );
+		return new LongTime( this.time - interval.getValue() );
 	}
 
 	/**
      * Returns a new HLAfloat64Interval whose value is the time interval between this
      * and the provided time.
      */
-	public HLAfloat64Interval distance( HLAfloat64Time other )
+	public HLAinteger64Interval distance( HLAinteger64Time other )
 	{
-		return new DoubleTimeInterval( Math.abs(this.time-other.getValue()) );
+		return new LongTimeInterval( Math.abs(this.time-other.getValue()) );
 	}
 
-	public int compareTo( HLAfloat64Time other )
+	public int compareTo( HLAinteger64Time other )
 	{
 		double otherTime = other.getValue();
 		if( this.time == otherTime )
@@ -114,10 +116,10 @@ public class DoubleTime implements HLAfloat64Time
 
 	public void encode( byte[] buffer, int offset )
 	{
-		DoubleTimeFactory.encode( this.time, buffer, offset );
+		BitHelpers.putLong( this.time, buffer, offset );
 	}
 
-	public double getValue()
+	public long getValue()
 	{
 		return this.time;
 	}
