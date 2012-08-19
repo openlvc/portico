@@ -14,15 +14,10 @@
  */
 package org.portico.impl.hla1516e.types;
 
-import hla.rti1516e.AttributeHandle;
-import hla.rti1516e.AttributeHandleValueMap;
-import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.FederateHandleSet;
+import hla.rti1516e.FederateHandleSetFactory;
 
-import java.util.HashMap;
-
-public class HLA1516eAttributeHandleValueMap
-       extends HashMap<AttributeHandle,byte[]>
-       implements AttributeHandleValueMap
+public class HLA1516eFederateHandleSetFactory implements FederateHandleSetFactory
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -35,46 +30,13 @@ public class HLA1516eAttributeHandleValueMap
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eAttributeHandleValueMap()
-	{
-		super();
-	}
-
-	public HLA1516eAttributeHandleValueMap( int capacity )
-	{
-		super( capacity );
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	/**
-	 * Returns a {@link ByteWrapper} around the byte[] mapped to the provided
-	 * {@link AttributeHandle}, or null if there is no mapping for the key.
-	 */
-	public ByteWrapper getValueReference( AttributeHandle key )
+	public FederateHandleSet create()
 	{
-		byte[] value = super.get( key );
-		if( value == null )
-			return null;
-		else
-			return new ByteWrapper( value );
-	}
-
-	/**
-	 * Finds the mapping for the provided {@link AttributeHandle} and update the
-	 * provided {@link ByteWrapper} with it. The same wrapper is then returned.
-	 * If there is no value for the attribute, null is returned.
-	 */
-	public ByteWrapper getValueReference( AttributeHandle key, ByteWrapper byteWrapper )
-	{
-		byte[] value = super.get( key );
-		if( value == null )
-			return null;
-		
-		// update the wrapper and return
-		byteWrapper.reassign( value, 0, value.length );
-		return byteWrapper;
+		return new HLA1516eFederateHandleSet();
 	}
 
 	//----------------------------------------------------------

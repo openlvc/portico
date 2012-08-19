@@ -34,6 +34,15 @@ public class HLA1516eAttributeSetRegionSetPairList
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eAttributeSetRegionSetPairList()
+	{
+		super();
+	}
+
+	public HLA1516eAttributeSetRegionSetPairList( int capacity )
+	{
+		super( capacity );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

@@ -35,6 +35,15 @@ public class HLA1516eParameterHandleValueMap
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eParameterHandleValueMap()
+	{
+		super();
+	}
+
+	public HLA1516eParameterHandleValueMap( int capacity )
+	{
+		super( capacity );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
