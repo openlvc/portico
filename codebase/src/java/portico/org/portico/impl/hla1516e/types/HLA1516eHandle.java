@@ -25,6 +25,7 @@ import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.ParameterHandle;
 import hla.rti1516e.RegionHandle;
+import hla.rti1516e.TransportationTypeHandle;
 
 /**
  * Generic handle class. All the IEEE 1516e handle types provide the same interface.
@@ -50,7 +51,8 @@ public class HLA1516eHandle implements AttributeHandle,
                                        ObjectClassHandle,
                                        ObjectInstanceHandle,
                                        ParameterHandle,
-                                       RegionHandle
+                                       RegionHandle,
+                                       TransportationTypeHandle
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
