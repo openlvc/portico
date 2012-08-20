@@ -14,6 +14,9 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAbyte;
 
 public class HLA1516eByte extends HLA1516eDataElement implements HLAbyte
@@ -25,10 +28,19 @@ public class HLA1516eByte extends HLA1516eDataElement implements HLAbyte
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-
+	private byte value;
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eByte()
+	{
+		this.value = Byte.MIN_VALUE;
+	}
+
+	public HLA1516eByte( byte value )
+	{
+		this.value = value;
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -40,7 +52,7 @@ public class HLA1516eByte extends HLA1516eDataElement implements HLAbyte
 	 */
 	public byte getValue()
 	{
-		return -1;
+		return this.value;
 	}
 
 	/**
@@ -50,7 +62,46 @@ public class HLA1516eByte extends HLA1516eDataElement implements HLAbyte
 	 */
 	public void setValue( byte value )
 	{
-		
+		this.value = value;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public int getOctetBoundary()
+	{
+		return 1;
+	}
+
+	@Override
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		byteWrapper.put( this.value );
+	}
+
+	@Override
+	public int getEncodedLength()
+	{
+		return 1;
+	}
+
+	@Override
+	public byte[] toByteArray() throws EncoderException
+	{
+		return new byte[]{ this.value };
+	}
+
+	@Override
+	public void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		this.value = (byte)byteWrapper.get();
+	}
+
+	@Override
+	public void decode( byte[] bytes ) throws DecoderException
+	{
+		this.value = bytes[0];
 	}
 
 	//----------------------------------------------------------

@@ -61,229 +61,230 @@ public class HLA1516eEncoderFactory implements EncoderFactory
 	//----------------------------------------------------------
 	public HLAASCIIchar createHLAASCIIchar()
 	{
-		return null;
+		return new HLA1516eASCIIchar();
 	}
 
 	public HLAASCIIchar createHLAASCIIchar( byte b )
 	{
-		return null;
+		return new HLA1516eASCIIchar( b );
 	}
 
 	public HLAASCIIstring createHLAASCIIstring()
 	{
-		return null;
+		return new HLA1516eASCIIstring();
 	}
 
 	public HLAASCIIstring createHLAASCIIstring( String s )
 	{
-		return null;
+		return new HLA1516eASCIIstring( s );
 	}
 
 	public HLAboolean createHLAboolean()
 	{
-		return null;
+		return new HLA1516eBoolean();
 	}
 
 	public HLAboolean createHLAboolean( boolean b )
 	{
-		return null;
+		return new HLA1516eBoolean( b );
 	}
 
 	public HLAbyte createHLAbyte()
 	{
-		return null;
+		return new HLA1516eByte();
 	}
 
 	public HLAbyte createHLAbyte( byte b )
 	{
-		return null;
+		return new HLA1516eByte( b );
 	}
 
 	public <T extends DataElement> HLAvariantRecord<T> createHLAvariantRecord( T discriminant )
 	{
+//still unimplemented 
 		return null;
 	}
 
 	public HLAfixedRecord createHLAfixedRecord()
 	{
-		return null;
+		return new HLA1516eFixedRecord();
 	}
 
-	public <T extends DataElement> HLAfixedArray<T> createHLAfixedArray( DataElementFactory<T> factory,
-	                                                              int size )
+	public <T extends DataElement> HLAfixedArray<T>
+	       createHLAfixedArray( DataElementFactory<T> factory, int size )
 	{
-		return null;
+		return new HLA1516eFixedArray<T>( factory, size );
 	}
-	
+
 	public <T extends DataElement> HLAfixedArray<T> createHLAfixedArray( T... elements )
 	{
-		return null;
+		return new HLA1516eFixedArray<T>( elements );
 	}
 
 	public HLAfloat32BE createHLAfloat32BE()
 	{
-		return null;
+		return new HLA1516eFloat32BE();
 	}
 
 	public HLAfloat32BE createHLAfloat32BE( float f )
 	{
-		return null;
+		return new HLA1516eFloat32BE( f );
 	}
 
 	public HLAfloat32LE createHLAfloat32LE()
 	{
-		return null;
+		return new HLA1516eFloat32LE();
 	}
 
 	public HLAfloat32LE createHLAfloat32LE( float f )
 	{
-		return null;
+		return new HLA1516eFloat32LE( f );
 	}
 
 	public HLAfloat64BE createHLAfloat64BE()
 	{
-		return null;
+		return new HLA1516eFloat64BE();
 	}
 
 	public HLAfloat64BE createHLAfloat64BE( double d )
 	{
-		return null;
+		return new HLA1516eFloat64BE( d );
 	}
 
 	public HLAfloat64LE createHLAfloat64LE()
 	{
-		return null;
+		return new HLA1516eFloat64LE();
 	}
 
 	public HLAfloat64LE createHLAfloat64LE( double d )
 	{
-		return null;
+		return new HLA1516eFloat64LE( d );
 	}
 
 	public HLAinteger16BE createHLAinteger16BE()
 	{
-		return null;
+		return new HLA1516eInteger16BE();
 	}
 
 	public HLAinteger16BE createHLAinteger16BE( short s )
 	{
-		return null;
+		return new HLA1516eInteger16BE( s );
 	}
 
 	public HLAinteger16LE createHLAinteger16LE()
 	{
-		return null;
+		return new HLA1516eInteger16LE();
 	}
 
 	public HLAinteger16LE createHLAinteger16LE( short s )
 	{
-		return null;
+		return new HLA1516eInteger16LE( s );
 	}
 
 	public HLAinteger32BE createHLAinteger32BE()
 	{
-		return null;
+		return new HLA1516eInteger32BE();
 	}
 
 	public HLAinteger32BE createHLAinteger32BE( int i )
 	{
-		return null;
+		return new HLA1516eInteger32BE( i );
 	}
 
 	public HLAinteger32LE createHLAinteger32LE()
 	{
-		return null;
+		return new HLA1516eInteger32LE();
 	}
 
 	public HLAinteger32LE createHLAinteger32LE( int i )
 	{
-		return null;
+		return new HLA1516eInteger32LE( i );
 	}
 
 	public HLAinteger64BE createHLAinteger64BE()
 	{
-		return null;
+		return new HLA1516eInteger64BE();
 	}
 
 	public HLAinteger64BE createHLAinteger64BE( long l )
 	{
-		return null;
+		return new HLA1516eInteger64BE( l );
 	}
 
 	public HLAinteger64LE createHLAinteger64LE()
 	{
-		return null;
+		return new HLA1516eInteger64LE();
 	}
 
 	public HLAinteger64LE createHLAinteger64LE( long l )
 	{
-		return null;
+		return new HLA1516eInteger64LE( l );
 	}
 
 	public HLAoctet createHLAoctet()
 	{
-		return null;
+		return new HLA1516eOctet();
 	}
 
 	public HLAoctet createHLAoctet( byte b )
 	{
-		return null;
+		return new HLA1516eOctet( b );
 	}
 
 	public HLAoctetPairBE createHLAoctetPairBE()
 	{
-		return null;
+		return new HLA1516eOctetPairBE();
 	}
 
 	public HLAoctetPairBE createHLAoctetPairBE( short s )
 	{
-		return null;
+		return new HLA1516eOctetPairBE( s );
 	}
 
 	public HLAoctetPairLE createHLAoctetPairLE()
 	{
-		return null;
+		return new HLA1516eOctetPairLE();
 	}
 
 	public HLAoctetPairLE createHLAoctetPairLE( short s )
 	{
-		return null;
+		return new HLA1516eOctetPairLE( s );
 	}
 
 	public HLAopaqueData createHLAopaqueData()
 	{
-		return null;
+		return new HLA1516eOpaqueData();
 	}
 
 	public HLAopaqueData createHLAopaqueData( byte[] b )
 	{
-		return null;
+		return new HLA1516eOpaqueData( b );
 	}
 
 	public HLAunicodeChar createHLAunicodeChar()
 	{
-		return null;
+		return new HLA1516eUnicodeChar();
 	}
 
 	public HLAunicodeChar createHLAunicodeChar( short c )
 	{
-		return null;
+		return new HLA1516eUnicodeChar( c );
 	}
 
 	public HLAunicodeString createHLAunicodeString()
 	{
-		return null;
+		return new HLA1516eUnicodeString();
 	}
 
 	public HLAunicodeString createHLAunicodeString( String s )
 	{
-		return null;
+		return new HLA1516eUnicodeString( s );
 	}
 
-	public <T extends DataElement> HLAvariableArray<T> createHLAvariableArray( DataElementFactory<T> factory,
-	                                                                    T... elements )
+	public <T extends DataElement> HLAvariableArray<T>
+	       createHLAvariableArray( DataElementFactory<T> factory, T... elements )
 	{
-		return null;
+		return new HLA1516eVariableArray<T>( elements );
 	}
 
 	//----------------------------------------------------------

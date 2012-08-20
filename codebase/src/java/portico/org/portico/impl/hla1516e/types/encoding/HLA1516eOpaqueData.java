@@ -14,9 +14,15 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAopaqueData;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.portico.utils.bithelpers.BitHelpers;
 
 public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaqueData
 {
@@ -27,10 +33,20 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	public byte[] value;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eOpaqueData()
+	{
+		this.setValue( new byte[0] );
+	}
+
+	public HLA1516eOpaqueData( byte[] value )
+	{
+		this.setValue( value );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -42,7 +58,7 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	 */
 	public int size()
 	{
-		return -1;
+		return this.value.length;
 	}
 
 	/**
@@ -54,7 +70,7 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	 */
 	public byte get( int index )
 	{
-		return -1;
+		return this.value[index];
 	}
 
 	/**
@@ -64,7 +80,28 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	 */
 	public Iterator<Byte> iterator()
 	{
-		return null;
+		return new Iterator<Byte>()
+		{
+			private int index = 0;
+			public boolean hasNext()
+			{
+				return index+1 < value.length;
+			}
+			
+			public Byte next()
+			{
+				if( hasNext() == false )
+					throw new NoSuchElementException( "Past end of the iterator: index=" + index );
+				
+				index++;
+				return value[index];
+			}
+			
+			public void remove() throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException( "Removal not supported" );
+			}
+		};
 	}
 
 	/**
@@ -74,7 +111,7 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	 */
 	public byte[] getValue()
 	{
-		return null;
+		return this.value;
 	}
 
 	/**
@@ -84,7 +121,55 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	 */
 	public void setValue( byte[] value )
 	{
-		
+		if( value == null )
+			this.value = new byte[0];
+		else
+			this.value = value;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public final int getOctetBoundary()
+	{
+		return 4;
+	}
+
+	@Override
+	public final int getEncodedLength()
+	{
+		return 4+value.length;
+	}
+
+	@Override
+	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		byteWrapper.put( toByteArray() );
+	}
+
+	@Override
+	public final byte[] toByteArray() throws EncoderException
+	{
+		byte[] buffer = new byte[4+value.length];
+		BitHelpers.putIntBE( value.length, buffer, 0 );
+		BitHelpers.putByteArray( value, buffer, 4 );
+		return buffer;
+	}
+
+	@Override
+	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		int length = byteWrapper.getInt();
+		byte[] buffer = new byte[length];
+		byteWrapper.get( buffer );
+	}
+
+	@Override
+	public final void decode( byte[] bytes ) throws DecoderException
+	{
+		int length = BitHelpers.readIntBE( bytes, 0 );
+		this.value = BitHelpers.readByteArray( bytes, 4, length );
 	}
 
 	//----------------------------------------------------------

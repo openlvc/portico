@@ -14,13 +14,19 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.encoding.DataElement;
+import hla.rti1516e.encoding.DataElementFactory;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAfixedArray;
 
 import java.util.Iterator;
+import java.util.List;
 
-public class HLA1516eFixedArray
+public class HLA1516eFixedArray<T extends DataElement>
        extends HLA1516eDataElement
-       implements HLAfixedArray<HLA1516eDataElement>
+       implements HLAfixedArray<T>
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -29,10 +35,26 @@ public class HLA1516eFixedArray
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	protected List<T> elements;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eFixedArray( T... provided )
+	{
+		for( T element : provided )
+			this.elements.add( element );
+	}
+
+	/**
+	 * Create a new fixed array of the provided size and prepopulate it with
+	 * the identified number of T instances (using the factory) 
+	 */
+	public HLA1516eFixedArray( DataElementFactory<T> factory, int size )
+	{
+		for( int i = 0; i < size; i++ )
+			elements.add( factory.createElement(i) );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -44,7 +66,7 @@ public class HLA1516eFixedArray
 	 */
 	public int size()
 	{
-		return -1;
+		return this.elements.size();
 	}
 
 	/**
@@ -54,9 +76,9 @@ public class HLA1516eFixedArray
 	 * 
 	 * @return the element at the specified <code>index</code>
 	 */
-	public HLA1516eDataElement get( int index )
+	public T get( int index )
 	{
-		return null;
+		return this.elements.get( index );
 	}
 
 	/**
@@ -64,9 +86,51 @@ public class HLA1516eFixedArray
 	 * 
 	 * @return an iterator for the elements in this fixed array
 	 */
-	public Iterator<HLA1516eDataElement> iterator()
+	public Iterator<T> iterator()
+	{
+		return this.elements.iterator();
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public int getOctetBoundary()
+	{
+		if( elements.isEmpty() )
+			return 1; // can't return 0 or we'll have problems later... what to do!?
+		else
+			return elements.get(0).getOctetBoundary();
+	}
+
+	@Override
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		
+	}
+
+	@Override
+	public int getEncodedLength()
+	{
+		return -1;
+	}
+
+	@Override
+	public byte[] toByteArray() throws EncoderException
 	{
 		return null;
+	}
+
+	@Override
+	public void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		
+	}
+
+	@Override
+	public void decode( byte[] bytes ) throws DecoderException
+	{
+		
 	}
 
 	//----------------------------------------------------------

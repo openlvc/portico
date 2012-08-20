@@ -16,7 +16,7 @@ package org.portico.impl.hla1516e.types.encoding;
 
 import hla.rti1516e.encoding.HLAoctet;
 
-public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
+public class HLA1516eOctet extends HLA1516eByte implements HLAoctet
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -29,29 +29,19 @@ public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eOctet()
+	{
+		super();
+	}
+
+	public HLA1516eOctet( byte value )
+	{
+		super( value );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	/**
-	 * Returns the byte value of this element.
-	 * 
-	 * @return value
-	 */
-	public byte getValue()
-	{
-		return -1;
-	}
-
-	/**
-	 * Sets the byte value of this element.
-	 * 
-	 * @param value new value
-	 */
-	public void setValue( byte value )
-	{
-		
-	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

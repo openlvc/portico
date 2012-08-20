@@ -111,7 +111,7 @@ public class DoubleTimeInterval implements HLAfloat64Interval
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		BitHelpers.putDouble( this.time, buffer, offset );
+		BitHelpers.putDoubleBE( this.time, buffer, offset );
 	}
 
 	public double getValue()

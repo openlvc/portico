@@ -116,7 +116,7 @@ public class DoubleTime implements HLAfloat64Time
 
 	public void encode( byte[] buffer, int offset )
 	{
-		BitHelpers.putDouble( this.time, buffer, offset );
+		BitHelpers.putDoubleBE( this.time, buffer, offset );
 	}
 
 	public double getValue()

@@ -44,12 +44,12 @@ public class DoubleTimeFactory implements HLAfloat64TimeFactory
 	//----------------------------------------------------------
 	public HLAfloat64Time decodeTime( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new DoubleTime( BitHelpers.readDouble(buffer,offset) );
+		return new DoubleTime( BitHelpers.readDoubleBE(buffer,offset) );
 	}
 
 	public HLAfloat64Interval decodeInterval( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new DoubleTimeInterval( BitHelpers.readDouble(buffer,offset) );
+		return new DoubleTimeInterval( BitHelpers.readDoubleBE(buffer,offset) );
 	}
 
 	public HLAfloat64Time makeInitial()

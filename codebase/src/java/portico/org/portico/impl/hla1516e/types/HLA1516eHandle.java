@@ -94,12 +94,12 @@ public class HLA1516eHandle implements AttributeHandle,
 	
 	public void encode( byte[] buffer, int offset )
 	{
-		BitHelpers.putInt( this.handle, buffer, offset );
+		BitHelpers.putIntBE( this.handle, buffer, offset );
 	}
 
 	public int decode( byte[] buffer, int offset )
 	{
-		return BitHelpers.readInt( buffer, offset );
+		return BitHelpers.readIntBE( buffer, offset );
 	}
 
 	
@@ -117,7 +117,7 @@ public class HLA1516eHandle implements AttributeHandle,
 	 */
 	public static <T> T decode( Class<T> standardType, byte[] buffer, int offset )
 	{
-		return standardType.cast( new HLA1516eHandle(BitHelpers.readInt(buffer,offset)) );
+		return standardType.cast( new HLA1516eHandle(BitHelpers.readIntBE(buffer,offset)) );
 	}
 
 }

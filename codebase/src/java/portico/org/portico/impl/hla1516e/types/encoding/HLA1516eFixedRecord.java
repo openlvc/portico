@@ -14,10 +14,15 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DataElement;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAfixedRecord;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixedRecord
 {
@@ -28,10 +33,15 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private List<DataElement> elements;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eFixedRecord()
+	{
+		this.elements = new ArrayList<DataElement>();
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -43,7 +53,8 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	 */
 	public void add( DataElement dataElement )
 	{
-		
+		if( dataElement != null )
+			this.elements.add( dataElement );
 	}
 
 	/**
@@ -53,7 +64,7 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	 */
 	public int size()
 	{
-		return -1;
+		return this.elements.size();
 	}
 
 	/**
@@ -65,7 +76,7 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	 */
 	public DataElement get( int index )
 	{
-		return null;
+		return this.elements.get( index );
 	}
 
 	/**
@@ -75,7 +86,57 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	 */
 	public Iterator<DataElement> iterator()
 	{
+		return this.elements.iterator();
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Not really sure what to do here. Will just figure out what the octet boundary of
+	 * the biggest element is and return that.
+	 */
+	@Override
+	public int getOctetBoundary()
+	{
+		int biggest = 1;
+		for( DataElement element : elements )
+		{
+			if( element.getOctetBoundary() > biggest )
+				biggest = element.getOctetBoundary();
+		}
+		
+		return biggest;
+	}
+
+	@Override
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		
+	}
+
+	@Override
+	public int getEncodedLength()
+	{
+		return -1;
+	}
+
+	@Override
+	public byte[] toByteArray() throws EncoderException
+	{
 		return null;
+	}
+
+	@Override
+	public void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		
+	}
+
+	@Override
+	public void decode( byte[] bytes ) throws DecoderException
+	{
+		
 	}
 
 	//----------------------------------------------------------

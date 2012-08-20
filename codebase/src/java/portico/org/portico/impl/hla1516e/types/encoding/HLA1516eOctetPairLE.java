@@ -16,7 +16,7 @@ package org.portico.impl.hla1516e.types.encoding;
 
 import hla.rti1516e.encoding.HLAoctetPairLE;
 
-public class HLA1516eOctetPairLE extends HLA1516eDataElement implements HLAoctetPairLE
+public class HLA1516eOctetPairLE extends HLA1516eInteger16LE implements HLAoctetPairLE
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -29,29 +29,19 @@ public class HLA1516eOctetPairLE extends HLA1516eDataElement implements HLAoctet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eOctetPairLE()
+	{
+		super();
+	}
+
+	public HLA1516eOctetPairLE( short value )
+	{
+		super( value );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	/**
-	 * Returns the short value of this element.
-	 * 
-	 * @return short value
-	 */
-	public short getValue()
-	{
-		return 1;
-	}
-
-	/**
-	 * Sets the short value of this element.
-	 * 
-	 * @param value new value
-	 */
-	public void setValue( short value )
-	{
-		
-	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

@@ -111,7 +111,7 @@ public class LongTimeInterval implements HLAinteger64Interval
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		BitHelpers.putLong( this.time, buffer, offset );
+		BitHelpers.putLongBE( this.time, buffer, offset );
 	}
 
 	public long getValue()

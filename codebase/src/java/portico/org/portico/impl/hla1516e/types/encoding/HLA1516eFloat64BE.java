@@ -14,6 +14,11 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import org.portico.utils.bithelpers.BitHelpers;
+
+import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAfloat64BE;
 
 public class HLA1516eFloat64BE extends HLA1516eDataElement implements HLAfloat64BE
@@ -25,10 +30,20 @@ public class HLA1516eFloat64BE extends HLA1516eDataElement implements HLAfloat64
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private double value;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eFloat64BE()
+	{
+		this.value = Double.MIN_VALUE;
+	}
+
+	public HLA1516eFloat64BE( double value )
+	{
+		this.value = value;
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -40,7 +55,7 @@ public class HLA1516eFloat64BE extends HLA1516eDataElement implements HLAfloat64
 	 */
 	public double getValue()
 	{
-		return -1.0;
+		return this.value;
 	}
 
 	/**
@@ -50,7 +65,50 @@ public class HLA1516eFloat64BE extends HLA1516eDataElement implements HLAfloat64
 	 */
 	public void setValue( double value )
 	{
-		
+		this.value = value;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public final int getOctetBoundary()
+	{
+		return 8;
+	}
+
+	@Override
+	public final int getEncodedLength()
+	{
+		return 8;
+	}
+
+	@Override
+	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		byteWrapper.put( toByteArray() );
+	}
+
+	@Override
+	public final byte[] toByteArray() throws EncoderException
+	{
+		byte[] buffer = new byte[8];
+		BitHelpers.putDoubleBE( value, buffer, 0 );
+		return buffer;
+	}
+
+	@Override
+	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		byte[] buffer = new byte[8];
+		byteWrapper.get( buffer );
+		decode( buffer );
+	}
+
+	@Override
+	public final void decode( byte[] bytes ) throws DecoderException
+	{
+		this.value = BitHelpers.readDoubleBE( bytes, 0 );
 	}
 
 	//----------------------------------------------------------

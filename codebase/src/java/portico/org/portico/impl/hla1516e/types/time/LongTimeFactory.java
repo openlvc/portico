@@ -43,12 +43,12 @@ public class LongTimeFactory implements HLAinteger64TimeFactory
 	//----------------------------------------------------------
 	public HLAinteger64Time decodeTime( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new LongTime( BitHelpers.readLong(buffer,offset) );
+		return new LongTime( BitHelpers.readLongBE(buffer,offset) );
 	}
 
 	public HLAinteger64Interval decodeInterval( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new LongTimeInterval( BitHelpers.readLong(buffer,offset) );
+		return new LongTimeInterval( BitHelpers.readLongBE(buffer,offset) );
 	}
 
 	public HLAinteger64Time makeInitial()

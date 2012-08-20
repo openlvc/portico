@@ -19,7 +19,7 @@ import hla.rti1516e.encoding.DataElement;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 
-public class HLA1516eDataElement implements DataElement
+public abstract class HLA1516eDataElement implements DataElement
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -41,10 +41,7 @@ public class HLA1516eDataElement implements DataElement
 	 * 
 	 * @return the octet boundary of this element
 	 */
-	public int getOctetBoundary()
-	{
-		return -1;
-	}
+	public abstract int getOctetBoundary();
 
 	/**
 	 * Encodes this element into the specified ByteWrapper.
@@ -53,20 +50,14 @@ public class HLA1516eDataElement implements DataElement
 	 * 
 	 * @throws EncoderException if the element can not be encoded
 	 */
-	public void encode( ByteWrapper byteWrapper ) throws EncoderException
-	{
-		
-	}
+	public abstract void encode( ByteWrapper byteWrapper ) throws EncoderException;
 
 	/**
 	 * Returns the size in bytes of this element's encoding.
 	 * 
 	 * @return the size in bytes of this element's encoding
 	 */
-	public int getEncodedLength()
-	{
-		return -1;
-	}
+	public abstract int getEncodedLength();
 
 	/**
 	 * Returns a byte array with this element encoded.
@@ -75,10 +66,7 @@ public class HLA1516eDataElement implements DataElement
 	 * 
 	 * @throws EncoderException if the element can not be encoded
 	 */
-	public byte[] toByteArray() throws EncoderException
-	{
-		return null;
-	}
+	public abstract byte[] toByteArray() throws EncoderException;
 
 	/**
 	 * Decodes this element from the ByteWrapper.
@@ -87,10 +75,7 @@ public class HLA1516eDataElement implements DataElement
 	 * 
 	 * @throws DecoderException if the element can not be decoded
 	 */
-	public void decode( ByteWrapper byteWrapper ) throws DecoderException
-	{
-		
-	}
+	public abstract void decode( ByteWrapper byteWrapper ) throws DecoderException;
 
 	/**
 	 * Decodes this element from the byte array.
@@ -99,9 +84,25 @@ public class HLA1516eDataElement implements DataElement
 	 * 
 	 * @throws DecoderException if the element can not be decoded
 	 */
-	public void decode( byte[] bytes ) throws DecoderException
+	public abstract void decode( byte[] bytes ) throws DecoderException;
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// Helper Methods /////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	protected final void AvalidateNotNull( Object buffer ) throws DecoderException
 	{
-		
+		if( buffer == null )
+			throw new DecoderException( "buffer was null" );
+	}
+
+	protected final void AvalidateBytesRemaining( byte[] buffer, int offset, int expected )
+		throws DecoderException
+	{
+		if( buffer.length-offset < expected )
+		{
+			throw new DecoderException( "buffer underflow: expected "+expected+", found "+
+			                            (buffer.length-offset) );
+		}
 	}
 
 	//----------------------------------------------------------

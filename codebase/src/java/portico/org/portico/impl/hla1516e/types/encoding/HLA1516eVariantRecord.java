@@ -14,12 +14,18 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DataElement;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAvariantRecord;
 
-public class HLA1516eVariantRecord
+/**
+ * Urgh. Can't even touch this for now. Will have to go back and read. Le sigh.
+ */
+public class HLA1516eVariantRecord<T extends DataElement>
        extends HLA1516eDataElement
-       implements HLAvariantRecord<HLA1516eDataElement>
+       implements HLAvariantRecord<T>
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -42,7 +48,7 @@ public class HLA1516eVariantRecord
 	 * @param discriminant discriminant to associate data element with
 	 * @param dataElement data element to associate the discriminant with
 	 */
-	public void setVariant( HLA1516eDataElement discriminant, DataElement dataElement )
+	public void setVariant( T discriminant, DataElement dataElement )
 	{
 		
 	}
@@ -52,7 +58,7 @@ public class HLA1516eVariantRecord
 	 * 
 	 * @param discriminant active discriminant
 	 */
-	public void setDiscriminant( HLA1516eDataElement discriminant )
+	public void setDiscriminant( T discriminant )
 	{
 		
 	}
@@ -62,7 +68,7 @@ public class HLA1516eVariantRecord
 	 * 
 	 * @return the active discriminant
 	 */
-	public HLA1516eDataElement getDiscriminant()
+	public T getDiscriminant()
 	{
 		return null;
 	}
@@ -75,6 +81,45 @@ public class HLA1516eVariantRecord
 	public DataElement getValue()
 	{
 		return null;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public int getOctetBoundary()
+	{
+		return 1;
+	}
+
+	@Override
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		
+	}
+
+	@Override
+	public int getEncodedLength()
+	{
+		return -1;
+	}
+
+	@Override
+	public byte[] toByteArray() throws EncoderException
+	{
+		return null;
+	}
+
+	@Override
+	public void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		
+	}
+
+	@Override
+	public void decode( byte[] bytes ) throws DecoderException
+	{
+		
 	}
 
 	//----------------------------------------------------------
