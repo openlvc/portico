@@ -21,6 +21,22 @@ import hla.rti1516e.*;
 import hla.rti1516e.exceptions.*;
 
 import org.apache.log4j.Logger;
+import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMapFactory;
+import org.portico.impl.hla1516e.types.HLA1516eAttributeSetRegionSetPairListFactory;
+import org.portico.impl.hla1516e.types.HLA1516eDimensionHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eDimensionHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eFederateHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eFederateHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eInteractionClassHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eObjectClassHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eObjectInstanceHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eParameterHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMapFactory;
+import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
+import org.portico.impl.hla1516e.types.time.DoubleTimeFactory;
 import org.portico.lrc.PorticoConstants;
 import org.portico.utils.messaging.ErrorResponse;
 import org.portico.utils.messaging.MessageContext;
@@ -2207,91 +2223,91 @@ public class Rti1516eAmbassador
 	public AttributeHandleFactory getAttributeHandleFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eAttributeHandleFactory();
 	}
 
 	public AttributeHandleSetFactory getAttributeHandleSetFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eAttributeHandleSetFactory();
 	}
 
 	public AttributeHandleValueMapFactory getAttributeHandleValueMapFactory()
 	    throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eAttributeHandleValueMapFactory();
 	}
 
 	public AttributeSetRegionSetPairListFactory getAttributeSetRegionSetPairListFactory()
 	    throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eAttributeSetRegionSetPairListFactory();
 	}
 
 	public DimensionHandleFactory getDimensionHandleFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eDimensionHandleFactory();
 	}
 
 	public DimensionHandleSetFactory getDimensionHandleSetFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eDimensionHandleSetFactory();
 	}
 
 	public FederateHandleFactory getFederateHandleFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eFederateHandleFactory();
 	}
 
 	public FederateHandleSetFactory getFederateHandleSetFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eFederateHandleSetFactory();
 	}
 
 	public InteractionClassHandleFactory getInteractionClassHandleFactory()
 	    throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eInteractionClassHandleFactory();
 	}
 
 	public ObjectClassHandleFactory getObjectClassHandleFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eObjectClassHandleFactory();
 	}
 
 	public ObjectInstanceHandleFactory getObjectInstanceHandleFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eObjectInstanceHandleFactory();
 	}
 
 	public ParameterHandleFactory getParameterHandleFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eParameterHandleFactory();
 	}
 
 	public ParameterHandleValueMapFactory getParameterHandleValueMapFactory()
 	    throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eParameterHandleValueMapFactory();
 	}
 
 	public RegionHandleSetFactory getRegionHandleSetFactory()
 		throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eRegionHandleSetFactory();
 	}
 
 	public TransportationTypeHandleFactory getTransportationTypeHandleFactory()
 	    throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new HLA1516eTransportationTypeHandleFactory();
 	}
 
 	public String getHLAversion()
@@ -2301,7 +2317,7 @@ public class Rti1516eAmbassador
 
 	public LogicalTimeFactory getTimeFactory() throws FederateNotExecutionMember, NotConnected
 	{
-		return null;
+		return new DoubleTimeFactory();
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
