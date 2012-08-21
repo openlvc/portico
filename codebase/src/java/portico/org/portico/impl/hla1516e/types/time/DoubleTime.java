@@ -16,6 +16,7 @@ package org.portico.impl.hla1516e.types.time;
 
 import org.portico.utils.bithelpers.BitHelpers;
 
+import hla.rti1516e.LogicalTime;
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
 import hla.rti1516e.time.HLAfloat64Interval;
 import hla.rti1516e.time.HLAfloat64Time;
@@ -127,5 +128,9 @@ public class DoubleTime implements HLAfloat64Time
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static double fromTime( LogicalTime time )
+	{
+		return ((DoubleTime)time).time;
+	}
 
 }

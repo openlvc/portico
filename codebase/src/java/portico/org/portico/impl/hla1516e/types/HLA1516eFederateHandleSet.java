@@ -16,6 +16,7 @@ package org.portico.impl.hla1516e.types;
 
 import hla.rti1516e.FederateHandle;
 import hla.rti1516e.FederateHandleSet;
+import hla.rti1516e.exceptions.RTIinternalError;
 
 import java.util.HashSet;
 
@@ -42,4 +43,22 @@ public class HLA1516eFederateHandleSet
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static HashSet<Integer> toJavaSet( FederateHandleSet set ) throws RTIinternalError
+	{
+		try
+		{
+			HashSet<Integer> realSet = new HashSet<Integer>();
+			for( FederateHandle handle : set )
+			{
+				realSet.add( ((HLA1516eHandle)handle).handle );
+			}
+			
+			return realSet;
+		}
+		catch( Exception e )
+		{
+			throw new RTIinternalError( "Can't convert FederateHandleSet to Portico native type: " +
+			                            e.getMessage() , e );
+		}
+	}
 }

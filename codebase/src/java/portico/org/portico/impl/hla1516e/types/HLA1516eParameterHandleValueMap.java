@@ -17,6 +17,7 @@ package org.portico.impl.hla1516e.types;
 import hla.rti1516e.ParameterHandle;
 import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.exceptions.RTIinternalError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,4 +89,23 @@ public class HLA1516eParameterHandleValueMap
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static HashMap<Integer,byte[]> toJavaMap( ParameterHandleValueMap map )
+		throws RTIinternalError
+	{
+		try
+		{
+			HashMap<Integer,byte[]> realMap = new HashMap<Integer,byte[]>();
+			for( ParameterHandle handle : map.keySet() )
+			{
+				realMap.put( ((HLA1516eHandle)handle).handle, map.get(handle) );
+			}
+			
+			return realMap;
+		}
+		catch( Exception e )
+		{
+			throw new RTIinternalError( "Can't convert ParameterHandleValueMap to Portico native type: " +
+			                            e.getMessage() , e );
+		}
+	}
 }

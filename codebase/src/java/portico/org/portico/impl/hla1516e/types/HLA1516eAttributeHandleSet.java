@@ -19,6 +19,7 @@ import java.util.Set;
 
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
+import hla.rti1516e.exceptions.RTIinternalError;
 
 public class HLA1516eAttributeHandleSet
        extends HashSet<AttributeHandle>
@@ -59,4 +60,22 @@ public class HLA1516eAttributeHandleSet
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static HashSet<Integer> toJavaSet( AttributeHandleSet set ) throws RTIinternalError
+	{
+		try
+		{
+			HashSet<Integer> realSet = new HashSet<Integer>();
+			for( AttributeHandle handle : set )
+			{
+				realSet.add( ((HLA1516eHandle)handle).handle );
+			}
+			
+			return realSet;
+		}
+		catch( Exception e )
+		{
+			throw new RTIinternalError( "Can't convert AttributeHandleSet to Portico native type: " +
+			                            e.getMessage() , e );
+		}
+	}
 }

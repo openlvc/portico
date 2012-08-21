@@ -16,6 +16,12 @@ package org.portico.impl.hla1516e.types;
 
 import org.portico.utils.bithelpers.BitHelpers;
 
+import hla.rti1516.InvalidAttributeHandle;
+import hla.rti1516.InvalidFederateHandle;
+import hla.rti1516.InvalidInteractionClassHandle;
+import hla.rti1516.InvalidObjectClassHandle;
+import hla.rti1516.InvalidParameterHandle;
+import hla.rti1516.RTIinternalError;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.DimensionHandle;
 import hla.rti1516e.FederateHandle;
@@ -61,7 +67,7 @@ public class HLA1516eHandle implements AttributeHandle,
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private int handle;
+	protected int handle;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -120,4 +126,138 @@ public class HLA1516eHandle implements AttributeHandle,
 		return standardType.cast( new HLA1516eHandle(BitHelpers.readIntBE(buffer,offset)) );
 	}
 
+	///////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////// Attribute Handle Conversion ///////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+	public static final int fromHandle( AttributeHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( DimensionHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( FederateHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( InteractionClassHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( MessageRetractionHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( ObjectClassHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( ObjectInstanceHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( ParameterHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( RegionHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+	
+	public static final int fromHandle( TransportationTypeHandle handle )
+	{
+		return ((HLA1516eHandle)handle).handle;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////// Handle Conversion with Validation ////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+	public static int validatedHandle( AttributeHandle handle ) throws InvalidAttributeHandle
+	{
+		if( handle instanceof HLA1516eHandle )
+		{
+			return ((HLA1516eHandle)handle).handle;
+		}
+		else
+		{
+			throw new InvalidAttributeHandle( "Expecting HLA1516eHandle, found: " +
+			                                  handle.getClass() );
+		}
+	}
+	
+	public static int validatedHandle( FederateHandle handle ) throws InvalidFederateHandle
+	{
+		if( handle instanceof HLA1516eHandle )
+		{
+			return ((HLA1516eHandle)handle).handle;
+		}
+		else
+		{
+			throw new InvalidFederateHandle( "Expecting HLA1516eHandle, found: " +
+			                                 handle.getClass() );
+		}
+	}
+	
+	public static int validatedHandle( ObjectClassHandle handle ) throws InvalidObjectClassHandle
+	{
+		if( handle instanceof HLA1516eHandle )
+		{
+			return ((HLA1516eHandle)handle).handle;
+		}
+		else
+		{
+			throw new InvalidObjectClassHandle( "Expecting HLA1516eHandle, found: " +
+			                                    handle.getClass() );
+		}
+	}
+	
+	public static int validatedHandle( InteractionClassHandle handle )
+		throws InvalidInteractionClassHandle
+	{
+		if( handle instanceof HLA1516eHandle )
+		{
+			return ((HLA1516eHandle)handle).handle;
+		}
+		else
+		{
+			throw new InvalidInteractionClassHandle( "Expecting HLA1516eHandle, found: " +
+			                                         handle.getClass() );
+		}
+	}
+	
+	public static int validatedHandle( ParameterHandle handle ) throws InvalidParameterHandle
+	{
+		if( handle instanceof HLA1516eHandle )
+		{
+			return ((HLA1516eHandle)handle).handle;
+		}
+		else
+		{
+			throw new InvalidParameterHandle( "Expecting HLA1516eHandle, found: " +
+			                                  handle.getClass() );
+		}
+	}
+	
+	public static int validatedHandle( ObjectInstanceHandle handle ) throws RTIinternalError
+	{
+		if( handle instanceof HLA1516eHandle )
+		{
+			return ((HLA1516eHandle)handle).handle;
+		}
+		else
+		{
+			throw new RTIinternalError( "Expecting HLA1516eHandle, found: " + 
+			                            handle.getClass() );
+		}
+	}
 }

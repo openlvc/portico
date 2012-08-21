@@ -17,6 +17,7 @@ package org.portico.impl.hla1516e.types;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.exceptions.RTIinternalError;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,4 +89,23 @@ public class HLA1516eAttributeHandleValueMap
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static HashMap<Integer,byte[]> toJavaMap( AttributeHandleValueMap map )
+		throws RTIinternalError
+	{
+		try
+		{
+			HashMap<Integer,byte[]> realMap = new HashMap<Integer,byte[]>();
+			for( AttributeHandle handle : map.keySet() )
+			{
+				realMap.put( ((HLA1516eHandle)handle).handle, map.get(handle) );
+			}
+			
+			return realMap;
+		}
+		catch( Exception e )
+		{
+			throw new RTIinternalError( "Can't convert AttributeHandleValueMap to Portico native type: " +
+			                            e.getMessage() , e );
+		}
+	}
 }

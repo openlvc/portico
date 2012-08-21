@@ -15,6 +15,8 @@
 package org.portico.impl.hla1516e;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import hla.rti1516e.*;
@@ -22,23 +24,92 @@ import hla.rti1516e.exceptions.*;
 
 import org.apache.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMapFactory;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeSetRegionSetPairListFactory;
 import org.portico.impl.hla1516e.types.HLA1516eDimensionHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eDimensionHandleSetFactory;
 import org.portico.impl.hla1516e.types.HLA1516eFederateHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eFederateHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eFederateHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eInteractionClassHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eObjectClassHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eObjectInstanceHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleFactory;
+import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMapFactory;
 import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSetFactory;
 import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
+import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.time.DoubleTimeFactory;
 import org.portico.lrc.PorticoConstants;
+import org.portico.lrc.compat.JAttributeAcquisitionWasNotRequested;
+import org.portico.lrc.compat.JAttributeAlreadyBeingAcquired;
+import org.portico.lrc.compat.JAttributeAlreadyBeingDivested;
+import org.portico.lrc.compat.JAttributeAlreadyOwned;
+import org.portico.lrc.compat.JAttributeDivestitureWasNotRequested;
+import org.portico.lrc.compat.JAttributeNotDefined;
+import org.portico.lrc.compat.JAttributeNotOwned;
+import org.portico.lrc.compat.JAttributeNotPublished;
+import org.portico.lrc.compat.JConcurrentAccessAttempted;
+import org.portico.lrc.compat.JCouldNotOpenFED;
+import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
+import org.portico.lrc.compat.JErrorReadingFED;
+import org.portico.lrc.compat.JFederateNotExecutionMember;
+import org.portico.lrc.compat.JFederateOwnsAttributes;
+import org.portico.lrc.compat.JFederatesCurrentlyJoined;
+import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
+import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
+import org.portico.lrc.compat.JInteractionClassNotDefined;
+import org.portico.lrc.compat.JInteractionClassNotPublished;
+import org.portico.lrc.compat.JInteractionClassNotSubscribed;
+import org.portico.lrc.compat.JInteractionParameterNotDefined;
+import org.portico.lrc.compat.JInvalidFederationTime;
+import org.portico.lrc.compat.JInvalidResignAction;
+import org.portico.lrc.compat.JObjectAlreadyRegistered;
+import org.portico.lrc.compat.JObjectClassNotDefined;
+import org.portico.lrc.compat.JObjectClassNotPublished;
+import org.portico.lrc.compat.JObjectClassNotSubscribed;
+import org.portico.lrc.compat.JObjectNotKnown;
+import org.portico.lrc.compat.JOwnershipAcquisitionPending;
+import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.compat.JResignAction;
+import org.portico.lrc.compat.JRestoreInProgress;
+import org.portico.lrc.compat.JSaveInProgress;
+import org.portico.lrc.compat.JSynchronizationLabelNotAnnounced;
+import org.portico.lrc.model.ACInstance;
+import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.services.federation.msg.CreateFederation;
+import org.portico.lrc.services.federation.msg.DestroyFederation;
+import org.portico.lrc.services.federation.msg.ResignFederation;
+import org.portico.lrc.services.object.msg.DeleteObject;
+import org.portico.lrc.services.object.msg.LocalDelete;
+import org.portico.lrc.services.object.msg.RegisterObject;
+import org.portico.lrc.services.object.msg.RequestClassUpdate;
+import org.portico.lrc.services.object.msg.RequestObjectUpdate;
+import org.portico.lrc.services.object.msg.SendInteraction;
+import org.portico.lrc.services.object.msg.UpdateAttributes;
+import org.portico.lrc.services.ownership.msg.AttributeAcquire;
+import org.portico.lrc.services.ownership.msg.AttributeDivest;
+import org.portico.lrc.services.ownership.msg.AttributeRelease;
+import org.portico.lrc.services.ownership.msg.CancelAcquire;
+import org.portico.lrc.services.ownership.msg.CancelDivest;
+import org.portico.lrc.services.ownership.msg.QueryOwnership;
+import org.portico.lrc.services.pubsub.msg.PublishInteractionClass;
+import org.portico.lrc.services.pubsub.msg.PublishObjectClass;
+import org.portico.lrc.services.pubsub.msg.SubscribeInteractionClass;
+import org.portico.lrc.services.pubsub.msg.SubscribeObjectClass;
+import org.portico.lrc.services.pubsub.msg.UnpublishInteractionClass;
+import org.portico.lrc.services.pubsub.msg.UnpublishObjectClass;
+import org.portico.lrc.services.pubsub.msg.UnsubscribeInteractionClass;
+import org.portico.lrc.services.pubsub.msg.UnsubscribeObjectClass;
+import org.portico.lrc.services.sync.msg.SyncPointAchieved;
+import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
 import org.portico.utils.messaging.ErrorResponse;
+import org.portico.utils.messaging.ExtendedSuccessMessage;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico.utils.messaging.ResponseMessage;
@@ -135,9 +206,9 @@ public class Rti1516eAmbassador
 	}
 
 	// 4.5
-	public void createFederationExecution( String federationExecutionName,
+	public void createFederationExecution( String executionName,
 	                                       URL[] fomModules,
-	                                       String logicalTimeImplementationName )
+	                                       String timeImplementation )
 	    throws CouldNotCreateLogicalTimeFactory,
 	           InconsistentFDD,
 	           ErrorReadingFDD,
@@ -146,13 +217,52 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "createFederationExecution()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// attempt to parse the FOM //
+		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederationExecutionAlreadyExists )
+			{
+				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JCouldNotOpenFED )
+			{
+				throw new CouldNotOpenFDD( theException );
+			}
+			else if( theException instanceof JErrorReadingFED )
+			{
+				throw new ErrorReadingFDD( theException );
+			}
+			else
+			{
+				logException( "createFederationExecution", theException );
+			}
+		}
 	}
 
 	// 4.5
-	public void createFederationExecution( String federationExecutionName,
-	                                       URL[] fomModules,
-	                                       URL mimModule )
+	public void createFederationExecution( String executionName, URL[] fomModules, URL mimModule )
 	    throws InconsistentFDD,
 	           ErrorReadingFDD,
 	           CouldNotOpenFDD,
@@ -163,11 +273,52 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "createFederationExecution()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// attempt to parse the FOM //
+		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederationExecutionAlreadyExists )
+			{
+				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JCouldNotOpenFED )
+			{
+				throw new CouldNotOpenFDD( theException );
+			}
+			else if( theException instanceof JErrorReadingFED )
+			{
+				throw new ErrorReadingFDD( theException );
+			}
+			else
+			{
+				logException( "createFederationExecution", theException );
+			}
+		}
 	}
 
 	// 4.5
-	public void createFederationExecution( String federationExecutionName, URL[] fomModules )
+	public void createFederationExecution( String executionName, URL[] fomModules )
 		throws InconsistentFDD,
 		       ErrorReadingFDD,
 		       CouldNotOpenFDD,
@@ -175,11 +326,52 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "createFederationExecution()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// attempt to parse the FOM //
+		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederationExecutionAlreadyExists )
+			{
+				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JCouldNotOpenFED )
+			{
+				throw new CouldNotOpenFDD( theException );
+			}
+			else if( theException instanceof JErrorReadingFED )
+			{
+				throw new ErrorReadingFDD( theException );
+			}
+			else
+			{
+				logException( "createFederationExecution", theException );
+			}
+		}
 	}
 
 	// 4.5
-	public void createFederationExecution( String federationExecutionName, URL fomModule )
+	public void createFederationExecution( String executionName, URL fomModule )
 		throws InconsistentFDD,
 		       ErrorReadingFDD,
 		       CouldNotOpenFDD,
@@ -187,17 +379,94 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "createFederationExecution()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// attempt to parse the FOM //
+		CreateFederation request = new CreateFederation( executionName, fomModule );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederationExecutionAlreadyExists )
+			{
+				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JCouldNotOpenFED )
+			{
+				throw new CouldNotOpenFDD( theException );
+			}
+			else if( theException instanceof JErrorReadingFED )
+			{
+				throw new ErrorReadingFDD( theException );
+			}
+			else
+			{
+				logException( "createFederationExecution", theException );
+			}
+		}
 	}
 
 	// 4.6
-	public void destroyFederationExecution( String federationExecutionName )
+	public void destroyFederationExecution( String executionName )
 		throws FederatesCurrentlyJoined,
 		       FederationExecutionDoesNotExist,
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "destroyFederationExecution()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		DestroyFederation request = new DestroyFederation( executionName );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederatesCurrentlyJoined )
+			{
+				throw new FederatesCurrentlyJoined( theException );
+			}
+			else if( theException instanceof JFederationExecutionDoesNotExist )
+			{
+				throw new FederationExecutionDoesNotExist( theException );
+			}
+			else
+			{
+				logException( "destroyFederationExecution", theException );
+			}
+		}
 	}
 
 	// 4.7
@@ -292,24 +561,117 @@ public class Rti1516eAmbassador
 		       CallNotAllowedFromWithinCallback,
 		       RTIinternalError
 	{
-		featureNotSupported( "resignFederationExecution()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// the constructor below will throw InvalidResignAction for a dodgy value
+		ResignFederation request;
+		try
+		{
+			if( resignAction == null )
+				throw new RTIinternalError( "Null resign action" );
+			
+			int iValue = resignAction.hashCode();
+			request = new ResignFederation( JResignAction.for1516Value(iValue) );
+		}
+		catch( JInvalidResignAction e )
+		{
+			throw new RTIinternalError( e );
+		}
+		
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateOwnsAttributes )
+			{
+				throw new FederateOwnsAttributes( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JInvalidResignAction )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "resignFederationExecution", theException );
+			}
+		}
 	}
 
 	// 4.11
-	public void registerFederationSynchronizationPoint( String synchronizationPointLabel,
-	                                                    byte[] userSuppliedTag )
+	public void registerFederationSynchronizationPoint( String label, byte[] userSuppliedTag )
 	    throws SaveInProgress,
 	           RestoreInProgress,
 	           FederateNotExecutionMember,
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "registerFederationSynchronizationPoint()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		SyncPointAnnouncement request = new SyncPointAnnouncement( label, userSuppliedTag );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "registerFederationSynchronizationPoint", theException );
+			}
+		}
 	}
 
 	// 4.11
-	public void registerFederationSynchronizationPoint( String synchronizationPointLabel,
-	                                                    byte[] userSuppliedTag,
+	public void registerFederationSynchronizationPoint( String label,
+	                                                    byte[] tag,
 	                                                    FederateHandleSet synchronizationSet )
 	    throws InvalidFederateHandle,
 	           SaveInProgress,
@@ -318,7 +680,51 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "registerFederationSynchronizationPoint()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// convert set into appropriate form
+		HashSet<Integer> set = null;
+		if( synchronizationSet != null )
+			set = HLA1516eFederateHandleSet.toJavaSet( synchronizationSet );
+		SyncPointAnnouncement request = new SyncPointAnnouncement( label, tag, set );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "registerFederationSynchronizationPoint", theException );
+			}
+		}
 	}
 
 	// 4.14
@@ -330,7 +736,51 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "synchronizationPointAchieved()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		SyncPointAchieved request = new SyncPointAchieved( synchronizationPointLabel );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSynchronizationLabelNotAnnounced )
+			{
+				throw new SynchronizationPointLabelNotAnnounced( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "synchronizationPointAchieved", theException );
+			}
+		}
 	}
 
 	// 4.14
@@ -343,7 +793,51 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "synchronizationPointAchieved()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		SyncPointAchieved request = new SyncPointAchieved( synchronizationPointLabel );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSynchronizationLabelNotAnnounced )
+			{
+				throw new SynchronizationPointLabelNotAnnounced( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "synchronizationPointAchieved", theException );
+			}
+		}
 	}
 
 	// 4.16
@@ -492,7 +986,58 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// check the handle set //
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( attributeList );
+		int handle = HLA1516eHandle.fromHandle( theClass );
+		PublishObjectClass request = new PublishObjectClass( handle, set );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "publishObjectClassAttributes", theException );
+			}
+		}
 	}
 
 	// 5.3
@@ -505,7 +1050,59 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		UnpublishObjectClass request = new UnpublishObjectClass(HLA1516eHandle.fromHandle(theClass));
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JOwnershipAcquisitionPending )
+			{
+				throw new OwnershipAcquisitionPending( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JObjectClassNotPublished )
+			{
+				// ignore! it's the 1516 spec way :(
+			}
+			else
+			{
+				logException( "unpublishObjectClass", theException );
+			}
+		}
 	}
 
 	// 5.3
@@ -520,7 +1117,65 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int cHandle = HLA1516eHandle.fromHandle( theClass );
+		HashSet<Integer> attributes = HLA1516eAttributeHandleSet.toJavaSet( attributeList );
+		UnpublishObjectClass request = new UnpublishObjectClass( cHandle, attributes );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JOwnershipAcquisitionPending )
+			{
+				throw new OwnershipAcquisitionPending( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JObjectClassNotPublished )
+			{
+				// ignore! it's the 1516 spec way :(
+			}
+			else
+			{
+				logException( "unpublishObjectClassAttributes", theException );
+			}
+		}
 	}
 
 	// 5.4
@@ -532,7 +1187,52 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		PublishInteractionClass request =
+			new PublishInteractionClass( HLA1516eHandle.fromHandle(theInteraction) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInteractionClassNotDefined )
+			{
+				throw new InteractionClassNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "publishInteractionClass", theException );
+			}
+		}
 	}
 
 	// 5.5
@@ -544,7 +1244,56 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		UnpublishInteractionClass request =
+			new UnpublishInteractionClass( HLA1516eHandle.fromHandle(theInteraction) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInteractionClassNotDefined )
+			{
+				throw new InteractionClassNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JInteractionClassNotPublished )
+			{
+				// ignore! it's the 1516 spec way :(
+			}
+			else
+			{
+				logException( "unpublishInteractionClass", theException );
+			}
+		}
 	}
 
 	// 5.6
@@ -558,7 +1307,61 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( attributeList );
+		int handle = HLA1516eHandle.fromHandle( theClass );
+		SubscribeObjectClass request = new SubscribeObjectClass( handle, set, true );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JObjectClassNotSubscribed )
+			{
+				// ignore, for that is the 1516 way
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "subscribeObjectClassAttributes", theException );
+			}
+		}
 	}
 
 	// 5.6
@@ -574,7 +1377,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributes(updateRateDesignator)" );
 	}
 
 	// 5.6
@@ -588,7 +1391,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributesPassively()" );
 	}
 
 	// 5.6
@@ -604,7 +1407,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributesPassively()" );
 	}
 
 	// 5.7
@@ -616,7 +1419,56 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		UnsubscribeObjectClass request =
+			new UnsubscribeObjectClass( HLA1516eHandle.fromHandle(theClass) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JObjectClassNotSubscribed )
+			{
+				// ignore, for that is the 1516 way
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "unsucbscirbeObjectClass", theException );
+			}
+		}
 	}
 
 	// 5.7
@@ -630,7 +1482,61 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int cHandle = HLA1516eHandle.fromHandle( theClass );
+		HashSet<Integer> attributes = HLA1516eAttributeHandleSet.toJavaSet( attributeList );
+		UnsubscribeObjectClass request = new UnsubscribeObjectClass( cHandle, attributes );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JObjectClassNotSubscribed )
+			{
+				// ignore, for that is the 1516 way
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JObjectClassNotSubscribed )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "unsucbscirbeObjectClassAttributes", theException );
+			}
+		}
 	}
 
 	// 5.8
@@ -643,7 +1549,56 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		SubscribeInteractionClass request =
+			new SubscribeInteractionClass( HLA1516eHandle.fromHandle(theClass) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInteractionClassNotDefined )
+			{
+				throw new InteractionClassNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JInteractionClassNotSubscribed )
+			{
+				// ignore, for that is the 1516 way
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "subscribeInteractionClass", theException );
+			}
+		}
 	}
 
 	// 5.8
@@ -656,7 +1611,7 @@ public class Rti1516eAmbassador
 	    NotConnected,
 	    RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeInteractionClassPassively()" );
 	}
 
 	// 5.9
@@ -668,7 +1623,56 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		UnsubscribeInteractionClass request =
+			new UnsubscribeInteractionClass( HLA1516eHandle.fromHandle(theClass) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInteractionClassNotDefined )
+			{
+				throw new InteractionClassNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JInteractionClassNotSubscribed )
+			{
+				// ignore, for that is the 1516 way
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "unsubscribeInteractionClass", theException );
+			}
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -683,7 +1687,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "reserveObjectInstanceName()" );
 	}
 
 	// 6.4
@@ -695,7 +1699,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "releaseObjectInstanceName()" );
 	}
 
 	// 6.5
@@ -708,7 +1712,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "reserveMultipleObjectInstanceName()" );
 	}
 
 	// 6.7
@@ -720,7 +1724,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "releaseMultipleObjectInstanceName()" );
 	}
 
 	// 6.8
@@ -733,8 +1737,58 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		RegisterObject request = new RegisterObject( HLA1516eHandle.fromHandle(theClass) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			ExtendedSuccessMessage success = (ExtendedSuccessMessage)response;
+			OCInstance instance = (OCInstance)success.getResult();
+			return new HLA1516eHandle( instance.getHandle() );
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JObjectClassNotPublished )
+			{
+				throw new ObjectClassNotPublished( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "registerObjectInstance", theException );
+				return null;
+			}
+		}
 	}
 
 	// 6.8
@@ -750,14 +1804,69 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		RegisterObject request =
+			new RegisterObject( HLA1516eHandle.fromHandle(theClass), theObjectName );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			ExtendedSuccessMessage success = (ExtendedSuccessMessage)response;
+			OCInstance instance = (OCInstance)success.getResult();
+			return new HLA1516eHandle( instance.getHandle() );
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JObjectClassNotPublished )
+			{
+				throw new ObjectClassNotPublished( theException );
+			}
+			else if( theException instanceof JObjectAlreadyRegistered )
+			{
+				throw new ObjectInstanceNameInUse( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "registerObjectInstance", theException );
+				return null;
+			}
+		}
 	}
 
 	// 6.10
 	public void updateAttributeValues( ObjectInstanceHandle theObject,
 	                                   AttributeHandleValueMap theAttributes,
-	                                   byte[] userSuppliedTag )
+	                                   byte[] tag )
 	    throws AttributeNotOwned,
 	           AttributeNotDefined,
 	           ObjectInstanceNotKnown,
@@ -767,13 +1876,67 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		HashMap<Integer,byte[]> map = HLA1516eAttributeHandleValueMap.toJavaMap( theAttributes );
+		int objectId = HLA1516eHandle.fromHandle( theObject );
+		UpdateAttributes request = new UpdateAttributes( objectId, tag, map );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotOwned )
+			{
+				throw new AttributeNotOwned( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "updateAttributeValues", theException );
+			}
+		}
 	}
 
 	// 6.10
 	public MessageRetractionReturn updateAttributeValues( ObjectInstanceHandle theObject,
 	                                                      AttributeHandleValueMap theAttributes,
-	                                                      byte[] userSuppliedTag,
+	                                                      byte[] tag,
 	                                                      LogicalTime theTime )
 	    throws InvalidLogicalTime,
 	           AttributeNotOwned,
@@ -785,14 +1948,80 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double doubleTime = PorticoConstants.NULL_TIME;
+		if( theTime != null )
+			doubleTime = DoubleTime.fromTime( theTime );
+
+		HashMap<Integer,byte[]> map = HLA1516eAttributeHandleValueMap.toJavaMap( theAttributes );
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		UpdateAttributes request = new UpdateAttributes( oHandle, tag, map, doubleTime );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return null;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotOwned )
+			{
+				throw new AttributeNotOwned( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "updateAttributeValues(LogicalTime)", theException );
+				throw new RTIinternalError( theException );
+			}
+		}
 	}
 
 	// 6.12
 	public void sendInteraction( InteractionClassHandle theInteraction,
 	                             ParameterHandleValueMap theParameters,
-	                             byte[] userSuppliedTag )
+	                             byte[] tag )
 	    throws InteractionClassNotPublished,
 	           InteractionParameterNotDefined,
 	           InteractionClassNotDefined,
@@ -802,13 +2031,67 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		HashMap<Integer,byte[]> map = HLA1516eParameterHandleValueMap.toJavaMap( theParameters ); 
+		int interactionId = HLA1516eHandle.fromHandle( theInteraction );
+		SendInteraction request = new SendInteraction( interactionId, tag, map );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInteractionClassNotDefined )
+			{
+				throw new InteractionClassNotDefined( theException );
+			}
+			else if( theException instanceof JInteractionClassNotPublished )
+			{
+				throw new InteractionClassNotPublished( theException );
+			}
+			else if( theException instanceof JInteractionParameterNotDefined )
+			{
+				throw new InteractionParameterNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "sendInteraction", theException );
+			}
+		}
 	}
 
 	// 6.12
 	public MessageRetractionReturn sendInteraction( InteractionClassHandle theInteraction,
 	                                                ParameterHandleValueMap theParameters,
-	                                                byte[] userSuppliedTag,
+	                                                byte[] tag,
 	                                                LogicalTime theTime )
 	    throws InvalidLogicalTime,
 	           InteractionClassNotPublished,
@@ -820,8 +2103,73 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double doubleTime = PorticoConstants.NULL_TIME;
+		if( theTime != null )
+			doubleTime = DoubleTime.fromTime( theTime );
+		HashMap<Integer,byte[]> map = HLA1516eParameterHandleValueMap.toJavaMap( theParameters );
+		int iHandle = HLA1516eHandle.fromHandle( theInteraction );
+
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		SendInteraction request = new SendInteraction( iHandle, tag, map, doubleTime );
+		ResponseMessage response = processMessage( request );
+		
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return null;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInteractionClassNotDefined )
+			{
+				throw new InteractionClassNotDefined( theException );
+			}
+			else if( theException instanceof JInteractionClassNotPublished )
+			{
+				throw new InteractionClassNotPublished( theException );
+			}
+			else if( theException instanceof JInteractionParameterNotDefined )
+			{
+				throw new InteractionParameterNotDefined( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "sentInteraction(LogicalTime)", theException );
+				throw new RTIinternalError( theException );
+			}
+		}
 	}
 
 	// 6.14
@@ -834,7 +2182,56 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		DeleteObject request =
+			new DeleteObject( HLA1516eHandle.fromHandle(objectHandle), userSuppliedTag );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JDeletePrivilegeNotHeld )
+			{
+				throw new DeletePrivilegeNotHeld( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "deleteObjectInstance", theException );
+			}
+		}
 	}
 
 	// 6.14
@@ -850,8 +2247,68 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = PorticoConstants.NULL_TIME;
+		if( theTime != null )
+			time = DoubleTime.fromTime( theTime );
+		int oHandle = HLA1516eHandle.fromHandle( objectHandle );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		DeleteObject request = new DeleteObject( oHandle, userSuppliedTag, time );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return null;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JDeletePrivilegeNotHeld )
+			{
+				throw new DeletePrivilegeNotHeld( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "deleteObjectInstance", theException );
+				return null;
+			}
+		}
 	}
 
 	// 6.16
@@ -865,13 +2322,64 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		LocalDelete request = new LocalDelete( HLA1516eHandle.fromHandle(objectHandle) );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JFederateOwnsAttributes )
+			{
+				throw new FederateOwnsAttributes( theException );
+			}
+			else if( theException instanceof JOwnershipAcquisitionPending )
+			{
+				throw new OwnershipAcquisitionPending( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "localDeleteObjectInstance", theException );
+			}
+		}
 	}
 
 	// 6.19
 	public void requestAttributeValueUpdate( ObjectInstanceHandle theObject,
 	                                         AttributeHandleSet theAttributes,
-	                                         byte[] userSuppliedTag )
+	                                         byte[] tag )
 	    throws AttributeNotDefined,
 	           ObjectInstanceNotKnown,
 	           SaveInProgress,
@@ -880,13 +2388,67 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		RequestObjectUpdate request = new RequestObjectUpdate( oHandle, set, tag );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "requestAttributeValueUpdate", theException );
+			}
+		}
 	}
 
 	// 6.19
 	public void requestAttributeValueUpdate( ObjectClassHandle theClass,
 	                                         AttributeHandleSet theAttributes,
-	                                         byte[] userSuppliedTag )
+	                                         byte[] tag )
 	    throws AttributeNotDefined,
 	           ObjectClassNotDefined,
 	           SaveInProgress,
@@ -895,7 +2457,61 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+		int cHandle = HLA1516eHandle.fromHandle( theClass );
+		RequestClassUpdate request = new RequestClassUpdate( cHandle, set, tag );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectClassNotDefined )
+			{
+				throw new ObjectClassNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "requestAttributeValueUpdate(class)", theException );
+			}
+		}
 	}
 
 	// 6.23
@@ -913,7 +2529,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "requestAttributeTransportationTypeChange()" );
 	}
 
 	// 6.25
@@ -927,7 +2543,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "queryAttributeTransportationType()" );
 	}
 
 	// 6.27
@@ -943,7 +2559,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "requestInteractionTransportationTypeChange()" );
 	}
 
 	// 6.29
@@ -956,7 +2572,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "queryInteractionTransportationType()" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -974,7 +2590,66 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+
+		AttributeDivest request = new AttributeDivest( oHandle, set, true );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotOwned )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "unconditionalAttributeOwnershipDivestiture", theException );
+			}
+		}
 	}
 
 	// 7.3
@@ -991,7 +2666,70 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+
+		AttributeDivest request = new AttributeDivest( oHandle, set, userSuppliedTag );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotOwned )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeAlreadyBeingDivested )
+			{
+				throw new AttributeAlreadyBeingDivested( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "negotiatedAttributeOwnershipDivestiture", theException );
+			}
+		}
 	}
 
 	// 7.6
@@ -1009,7 +2747,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "confirmDivestiture()" );
 	}
 
 	// 7.8
@@ -1027,7 +2765,74 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( desiredAttributes );
+
+		AttributeAcquire request = new AttributeAcquire( oHandle, set, userSuppliedTag );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JObjectClassNotPublished )
+			{
+				throw new ObjectClassNotPublished( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotPublished )
+			{
+				throw new AttributeNotPublished( theException );
+			}
+			else if( theException instanceof JFederateOwnsAttributes )
+			{
+				throw new FederateOwnsAttributes( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "attributeOwnershipAcquisition", theException );
+			}
+		}
 	}
 
 	// 7.9
@@ -1045,7 +2850,78 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( desiredAttributes );
+
+		AttributeAcquire request = new AttributeAcquire( oHandle, set, true );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JObjectClassNotPublished )
+			{
+				throw new ObjectClassNotPublished( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotPublished )
+			{
+				throw new AttributeNotPublished( theException );
+			}
+			else if( theException instanceof JFederateOwnsAttributes )
+			{
+				throw new FederateOwnsAttributes( theException );
+			}
+			else if( theException instanceof JAttributeAlreadyBeingAcquired )
+			{
+				throw new AttributeAlreadyBeingAcquired( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "attributeOwnershipAcquisitionIfAvailable", theException );
+			}
+		}
 	}
 
 	// 7.12
@@ -1060,10 +2936,11 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "attributeOwnershipReleaseDenied()" );
 	}
 
 	// 7.13
+	@SuppressWarnings("unchecked")
 	public AttributeHandleSet attributeOwnershipDivestitureIfWanted( ObjectInstanceHandle theObject,
 	                                                                 AttributeHandleSet theAttributes )
 	    throws AttributeNotOwned,
@@ -1075,8 +2952,72 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		// TODO NOTE This is just used the same as a release response in 1.3 at the moment.
+		//           However, in 1516/e this doesn't have to be used in response to a release
+		//           request, it can be used any time any federate wants
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+
+		AttributeRelease request = new AttributeRelease( oHandle, set );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return new HLA1516eAttributeHandleSet( (Set<Integer>)response.getResult() );
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotOwned )
+			{
+				throw new AttributeNotOwned( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "attributeOwnershipDivestitureIfWanted", theException );
+			}
+		}
+		
+		featureNotSupported( "attributeOwnershipDivestitureIfWanted()" );
+		return null; // keep the compiler happy
 	}
 
 	// 7.14
@@ -1092,7 +3033,70 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+
+		CancelDivest request = new CancelDivest( oHandle, set );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeNotOwned )
+			{
+				throw new AttributeNotOwned( theException );
+			}
+			else if( theException instanceof JAttributeDivestitureWasNotRequested )
+			{
+				throw new AttributeDivestitureWasNotRequested( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "cancelNegotiatedAttributeOwnershipDivestiture", theException );
+			}
+		}
 	}
 
 	// 7.15
@@ -1108,7 +3112,70 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		HashSet<Integer> set = HLA1516eAttributeHandleSet.toJavaSet( theAttributes );
+
+		CancelAcquire request = new CancelAcquire( oHandle, set );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JAttributeAlreadyOwned )
+			{
+				throw new AttributeAlreadyOwned( theException );
+			}
+			else if( theException instanceof JAttributeAcquisitionWasNotRequested )
+			{
+				throw new AttributeAcquisitionWasNotRequested( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "cancelAttributeOwnershipAcquisition", theException );
+			}
+		}
 	}
 
 	// 7.17
@@ -1122,7 +3189,62 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		int oHandle = HLA1516eHandle.fromHandle( theObject );
+		int aHandle = HLA1516eHandle.fromHandle( theAttribute );
+
+		QueryOwnership request = new QueryOwnership( oHandle, aHandle );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JObjectNotKnown )
+			{
+				throw new ObjectInstanceNotKnown( theException );
+			}
+			else if( theException instanceof JAttributeNotDefined )
+			{
+				throw new AttributeNotDefined( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JConcurrentAccessAttempted )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else
+			{
+				logException( "queryAttributeOwnership", theException );
+			}
+		}
 	}
 
 	// 7.19
@@ -1136,8 +3258,25 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return false;
+		helper.checkJoined();
+		
+		int oHandle = HLA1516eHandle.fromHandle( theObject );		
+		OCInstance instance = helper.getState().getRepository().getInstance( oHandle );
+		if( instance == null )
+		{
+			throw new ObjectInstanceNotKnown( "handle: " + oHandle );
+		}
+		else
+		{
+			// convert the handle into an ACInstance
+			int aHandle = HLA1516eHandle.fromHandle( theAttribute );
+			ACInstance attribute = instance.getAttribute( aHandle );
+			if( attribute == null )
+				throw new AttributeNotDefined( "handle: " + aHandle );
+
+			// check to see if we are the owner
+			return attribute.getOwner() == helper.getState().getFederateHandle();
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
