@@ -23,4 +23,9 @@ public final class InTimeAdvancingState extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InTimeAdvancingState(Throwable cause)
+   {
+      super(cause);
+   }
 }

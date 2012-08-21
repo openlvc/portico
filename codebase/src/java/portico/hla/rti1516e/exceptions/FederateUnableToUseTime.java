@@ -24,4 +24,9 @@ public final class FederateUnableToUseTime extends RTIexception {
    {
       super(message, cause);
    }
+
+   public FederateUnableToUseTime(Throwable cause)
+   {
+      super(cause);
+   }
 }

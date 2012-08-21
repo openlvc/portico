@@ -23,4 +23,9 @@ public final class FederateInternalError extends RTIexception {
    {
       super(message, cause);
    }
+
+   public FederateInternalError(Throwable cause)
+   {
+      super(cause);
+   }
 }

@@ -24,4 +24,9 @@ public final class InvalidOrderType extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InvalidOrderType(Throwable cause)
+   {
+      super(cause);
+   }
 }

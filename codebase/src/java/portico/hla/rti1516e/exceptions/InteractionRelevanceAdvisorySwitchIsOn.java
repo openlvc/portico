@@ -24,6 +24,11 @@ public final class InteractionRelevanceAdvisorySwitchIsOn extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InteractionRelevanceAdvisorySwitchIsOn(Throwable cause)
+   {
+      super(cause);
+   }
 }
 
 //end InteractionRelevanceAdvisorySwitchIsOn

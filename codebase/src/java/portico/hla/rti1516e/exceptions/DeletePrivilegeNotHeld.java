@@ -24,4 +24,9 @@ public final class DeletePrivilegeNotHeld extends RTIexception {
    {
       super(message, cause);
    }
+
+   public DeletePrivilegeNotHeld(Throwable cause)
+   {
+      super(cause);
+   }
 }

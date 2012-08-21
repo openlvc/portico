@@ -23,4 +23,9 @@ public final class InvalidTransportationName extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InvalidTransportationName(Throwable cause)
+   {
+      super(cause);
+   }
 }

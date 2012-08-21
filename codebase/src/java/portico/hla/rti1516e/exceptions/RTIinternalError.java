@@ -24,4 +24,9 @@ public class RTIinternalError extends RTIexception {
    {
       super(message, cause);
    }
+   
+   public RTIinternalError(Throwable cause)
+   {
+	   super(cause);
+   }
 }

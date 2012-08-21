@@ -24,4 +24,9 @@ public final class AttributeAlreadyBeingDivested extends RTIexception {
    {
       super(message, cause);
    }
+
+   public AttributeAlreadyBeingDivested(Throwable cause)
+   {
+      super(cause);
+   }
 }

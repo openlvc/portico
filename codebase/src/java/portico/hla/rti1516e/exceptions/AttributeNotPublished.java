@@ -24,4 +24,9 @@ public final class AttributeNotPublished extends RTIexception {
    {
       super(message, cause);
    }
+
+   public AttributeNotPublished(Throwable cause)
+   {
+      super(cause);
+   }
 }

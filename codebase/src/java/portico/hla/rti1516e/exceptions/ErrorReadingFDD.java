@@ -23,4 +23,9 @@ public final class ErrorReadingFDD extends RTIexception {
    {
       super(message, cause);
    }
+
+   public ErrorReadingFDD(Throwable cause)
+   {
+      super(cause);
+   }
 }

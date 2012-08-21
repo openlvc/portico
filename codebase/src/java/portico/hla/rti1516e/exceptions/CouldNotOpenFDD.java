@@ -23,4 +23,9 @@ public final class CouldNotOpenFDD extends RTIexception {
    {
       super(message, cause);
    }
+
+   public CouldNotOpenFDD(Throwable cause)
+   {
+      super(cause);
+   }
 }
