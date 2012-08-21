@@ -181,6 +181,9 @@ public class PorticoConstants
 	/** Component name that identifies a Kernel representing a HLA 1516 LRC */
 	public static final String KEYWORD_LRC1516 = "lrc1516";
 	
+	/** Component name that identifies a Kernel representing a HLA 1516-Evolved LRC */
+	public static final String KEYWORD_LRC1516e = "lrc1516e";
+	
 	///////////////////////////////////////////////
 	//////////// Connection Properties ////////////
 	///////////////////////////////////////////////

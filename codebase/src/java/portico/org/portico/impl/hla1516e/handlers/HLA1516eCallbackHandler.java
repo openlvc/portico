@@ -12,17 +12,22 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.handlers;
 
-import java.util.HashSet;
-import java.util.Set;
+import hla.rti1516e.FederateAmbassador;
 
-import hla.rti1516e.AttributeHandle;
-import hla.rti1516e.AttributeHandleSet;
+import java.util.Map;
 
-public class HLA1516eAttributeHandleSet
-       extends HashSet<AttributeHandle>
-       implements AttributeHandleSet
+import org.portico.impl.hla1516e.Impl1516eHelper;
+import org.portico.lrc.LRCMessageHandler;
+import org.portico.utils.messaging.MessageContext;
+
+/**
+ * Parent class for all IEEE-1516e callback handlers. Caches some useful variables and provides
+ * some simple helper methods for common tasks (such as fetching the FederateAmbassador from the
+ * {@link Impl1516eHelper}.
+ */
+public abstract class HLA1516eCallbackHandler extends LRCMessageHandler
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -31,29 +36,38 @@ public class HLA1516eAttributeHandleSet
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	protected Impl1516eHelper helper;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eAttributeHandleSet()
-	{
-		super();
-	}
-	
-	public HLA1516eAttributeHandleSet( Set<Integer> attributes )
-	{
-		this();
-		for( Integer attribute : attributes )
-			this.add( new HLA1516eHandle(attribute) );
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	/**
+	 * Basic caching of important components. All child handlers should delegate up to here.
+	 */
 	@Override
-	public AttributeHandleSet clone()
+	public void initialize( Map<String,Object> properties )
 	{
-		return (AttributeHandleSet)super.clone();
+		super.initialize( properties );
+		this.helper = (Impl1516eHelper)lrc.getSpecHelper();
+	}
+
+	/**
+	 * The guts of the handler is left to the actual handler.
+	 */
+	public abstract void process( MessageContext context ) throws Exception;
+
+	/**
+	 * Fetch the return the {@link FederateAmbassador} reference from the helper.
+	 * Can't just pre-store this as the handlers are all created <i>before</i> we
+	 * join a federation (and thus, before we have a FederateAmbassador to store).
+	 */
+	protected final FederateAmbassador fedamb()
+	{
+		return this.helper.getFederateAmbassador();
 	}
 
 	//----------------------------------------------------------

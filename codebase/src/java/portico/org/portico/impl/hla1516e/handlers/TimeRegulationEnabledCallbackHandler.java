@@ -12,17 +12,21 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.handlers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
-import hla.rti1516e.AttributeHandle;
-import hla.rti1516e.AttributeHandleSet;
+import org.portico.impl.hla1516e.types.time.DoubleTime;
+import org.portico.lrc.services.time.msg.EnableTimeRegulation;
+import org.portico.utils.messaging.MessageContext;
+import org.portico.utils.messaging.MessageHandler;
 
-public class HLA1516eAttributeHandleSet
-       extends HashSet<AttributeHandle>
-       implements AttributeHandleSet
+@MessageHandler(modules="lrc1516e-callback",
+                keywords="lrc1516e",
+                sinks="incoming",
+                priority=3,
+                messages=EnableTimeRegulation.class)
+public class TimeRegulationEnabledCallbackHandler extends HLA1516eCallbackHandler
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -35,27 +39,23 @@ public class HLA1516eAttributeHandleSet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eAttributeHandleSet()
-	{
-		super();
-	}
-	
-	public HLA1516eAttributeHandleSet( Set<Integer> attributes )
-	{
-		this();
-		for( Integer attribute : attributes )
-			this.add( new HLA1516eHandle(attribute) );
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	@Override
-	public AttributeHandleSet clone()
+	public void initialize( Map<String,Object> properties )
 	{
-		return (AttributeHandleSet)super.clone();
+		super.initialize( properties );
 	}
-
+	
+	public void process( MessageContext context ) throws Exception
+	{
+		DoubleTime currentTime = new DoubleTime( lrcState.getCurrentTime() );
+		logger.trace( "CALLBACK timeRegulationEnabled(time="+currentTime+")" );
+		fedamb().timeRegulationEnabled( currentTime );
+		context.success();
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

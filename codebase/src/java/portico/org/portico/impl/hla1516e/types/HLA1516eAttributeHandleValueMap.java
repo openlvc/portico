@@ -19,6 +19,7 @@ import hla.rti1516e.AttributeHandleValueMap;
 import hla.rti1516e.encoding.ByteWrapper;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class HLA1516eAttributeHandleValueMap
        extends HashMap<AttributeHandle,byte[]>
@@ -43,6 +44,13 @@ public class HLA1516eAttributeHandleValueMap
 	public HLA1516eAttributeHandleValueMap( int capacity )
 	{
 		super( capacity );
+	}
+
+	public HLA1516eAttributeHandleValueMap( Map<Integer,byte[]> attributes )
+	{
+		this();
+		for( Integer attribute : attributes.keySet() )
+			this.put( new HLA1516eHandle(attribute), attributes.get(attribute) );
 	}
 
 	//----------------------------------------------------------

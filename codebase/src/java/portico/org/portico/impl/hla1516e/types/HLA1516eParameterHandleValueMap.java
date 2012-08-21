@@ -19,6 +19,7 @@ import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.encoding.ByteWrapper;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class HLA1516eParameterHandleValueMap
        extends HashMap<ParameterHandle,byte[]>
@@ -43,6 +44,13 @@ public class HLA1516eParameterHandleValueMap
 	public HLA1516eParameterHandleValueMap( int capacity )
 	{
 		super( capacity );
+	}
+	
+	public HLA1516eParameterHandleValueMap( Map<Integer,byte[]> parameters )
+	{
+		this();
+		for( Integer parameter : parameters.keySet() )
+			this.put( new HLA1516eHandle(parameter), parameters.get(parameter) );
 	}
 
 	//----------------------------------------------------------

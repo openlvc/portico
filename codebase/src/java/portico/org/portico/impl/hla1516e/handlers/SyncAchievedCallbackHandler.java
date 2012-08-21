@@ -12,17 +12,24 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.handlers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
-import hla.rti1516e.AttributeHandle;
-import hla.rti1516e.AttributeHandleSet;
+import org.portico.impl.hla1516e.types.HLA1516eFederateHandleSet;
+import org.portico.lrc.services.sync.msg.SyncPointAchieved;
+import org.portico.utils.messaging.MessageContext;
+import org.portico.utils.messaging.MessageHandler;
 
-public class HLA1516eAttributeHandleSet
-       extends HashSet<AttributeHandle>
-       implements AttributeHandleSet
+/**
+ * This handler generates IEDE1516e callbacks for synchronization point announcements.
+ */
+@MessageHandler(modules="lrc1516e-callback",
+                keywords="lrc1516e",
+                sinks="incoming",
+                priority=3,
+                messages=SyncPointAchieved.class)
+public class SyncAchievedCallbackHandler extends HLA1516eCallbackHandler
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -35,27 +42,30 @@ public class HLA1516eAttributeHandleSet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eAttributeHandleSet()
-	{
-		super();
-	}
-	
-	public HLA1516eAttributeHandleSet( Set<Integer> attributes )
-	{
-		this();
-		for( Integer attribute : attributes )
-			this.add( new HLA1516eHandle(attribute) );
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	@Override
-	public AttributeHandleSet clone()
+	public void initialize( Map<String,Object> properties )
 	{
-		return (AttributeHandleSet)super.clone();
+		super.initialize( properties );
 	}
+	
+	public void process( MessageContext context ) throws Exception
+	{
+		SyncPointAchieved request = context.getRequest( SyncPointAchieved.class, this );
+		String label = request.getLabel();
 
+		// remove the point from the state
+		syncManager.removePoint( label );
+		
+		// queue a callback
+		logger.trace( "CALLBACK federationSynchronized(label="+label+")" );
+		fedamb().federationSynchronized( label, new HLA1516eFederateHandleSet() );
+
+		context.success();
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

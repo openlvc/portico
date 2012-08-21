@@ -12,17 +12,23 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types;
+package org.portico.impl.hla1516e.handlers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
-import hla.rti1516e.AttributeHandle;
-import hla.rti1516e.AttributeHandleSet;
+import org.portico.lrc.services.saverestore.msg.SaveRequest;
+import org.portico.utils.messaging.MessageContext;
+import org.portico.utils.messaging.MessageHandler;
 
-public class HLA1516eAttributeHandleSet
-       extends HashSet<AttributeHandle>
-       implements AttributeHandleSet
+/**
+ * Generate initiateFederateSave() callbacks to an IEEE-1516e compliant federate ambassador
+ */
+@MessageHandler(modules="lrc1516e-callback",
+                keywords= {"lrc1516e"},
+                sinks="incoming",
+                priority=3,
+                messages=SaveRequest.class)
+public class InitiateSaveCallbackHandler extends HLA1516eCallbackHandler
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -35,25 +41,27 @@ public class HLA1516eAttributeHandleSet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eAttributeHandleSet()
-	{
-		super();
-	}
-	
-	public HLA1516eAttributeHandleSet( Set<Integer> attributes )
-	{
-		this();
-		for( Integer attribute : attributes )
-			this.add( new HLA1516eHandle(attribute) );
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	@Override
-	public AttributeHandleSet clone()
+	public void initialize( Map<String,Object> properties )
 	{
-		return (AttributeHandleSet)super.clone();
+		super.initialize( properties );
+	}
+	
+	public void process( MessageContext context ) throws Exception
+	{
+		SaveRequest request = context.getRequest( SaveRequest.class, this );
+		String label = request.getLabel();
+
+		if( logger.isTraceEnabled() )
+			logger.trace( "CALLBACK initiateFederateSave(label="+label+")" );
+
+		// do the callback
+		fedamb().initiateFederateSave( label );
+
+		context.success();
 	}
 
 	//----------------------------------------------------------
