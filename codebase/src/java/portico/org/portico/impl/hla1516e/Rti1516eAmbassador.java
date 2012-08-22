@@ -42,6 +42,7 @@ import org.portico.impl.hla1516e.types.HLA1516eParameterHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMapFactory;
 import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSetFactory;
+import org.portico.impl.hla1516e.types.HLA1516eResignAction;
 import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.time.DoubleTimeFactory;
@@ -63,6 +64,7 @@ import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
 import org.portico.lrc.compat.JEnableTimeConstrainedPending;
 import org.portico.lrc.compat.JEnableTimeRegulationPending;
 import org.portico.lrc.compat.JErrorReadingFED;
+import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
 import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JFederateOwnsAttributes;
 import org.portico.lrc.compat.JFederatesCurrentlyJoined;
@@ -83,7 +85,6 @@ import org.portico.lrc.compat.JObjectClassNotSubscribed;
 import org.portico.lrc.compat.JObjectNotKnown;
 import org.portico.lrc.compat.JOwnershipAcquisitionPending;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.compat.JRestoreInProgress;
 import org.portico.lrc.compat.JSaveInProgress;
 import org.portico.lrc.compat.JSynchronizationLabelNotAnnounced;
@@ -100,6 +101,7 @@ import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.lrc.services.federation.msg.DestroyFederation;
+import org.portico.lrc.services.federation.msg.JoinFederation;
 import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.lrc.services.object.msg.LocalDelete;
@@ -188,12 +190,11 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "connect()" );
+		this.connect( federateReference, callbackModel );
 	}
 
 	// 4.2
-	public void connect( FederateAmbassador federateReference,
-	                     CallbackModel callbackModel )
+	public void connect( FederateAmbassador federateReference, CallbackModel callbackModel )
 	    throws ConnectionFailed,
 	           InvalidLocalSettingsDesignator,
 	           UnsupportedCallbackModel,
@@ -201,7 +202,16 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "connect()" );
+		// check the callback model to make sure it is something we support
+		if( callbackModel == CallbackModel.HLA_IMMEDIATE )
+			throw new UnsupportedCallbackModel( "Callback model not supported: "+callbackModel );
+	
+		// check to make sure we're not already connected
+		if( helper.getFederateAmbassador() != null )
+			throw new AlreadyConnected("");
+
+		// store the FederateAmbassador for now, we'll stick it on the join call shortly
+		this.helper.setFederateAmbassador( federateReference );
 	}
 
 	// 4.3
@@ -210,7 +220,15 @@ public class Rti1516eAmbassador implements RTIambassador
 		       CallNotAllowedFromWithinCallback,
 		       RTIinternalError
 	{
-		featureNotSupported( "disconnect()" );
+		// make sure we're not currently involved in a federation
+		if( helper.getState().isJoined() )
+		{
+			throw new FederateIsExecutionMember( "Can't disconnect. Joined to federation ["+
+			                                     helper.getState().getFederationName()+"]" );
+		}
+		
+		// remove our federate ambassador reference to signal we're "disconnected" :P
+		this.helper.setFederateAmbassador( null );
 	}
 
 	// 4.5
@@ -229,7 +247,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "createFederationExecution()" );
+		featureNotSupported( "createFederationExecution(fomModules,mimModule)" );
 	}
 
 	// 4.5
@@ -520,7 +538,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution()" );
+		featureNotSupported( "joinFederationExecution(name,type,federation,modules[])" );
 		return null;
 	}
 
@@ -540,14 +558,14 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution()" );
+		featureNotSupported( "joinFederationExecution(type,federation,modules[])" );
 		return null;
 	}
 
 	// 4.9
 	public FederateHandle joinFederationExecution( String federateName,
 	                                               String federateType,
-	                                               String federationExecutionName )
+	                                               String federationName )
 	    throws CouldNotCreateLogicalTimeFactory,
 	           FederateNameAlreadyInUse,
 	           FederationExecutionDoesNotExist,
@@ -558,8 +576,63 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution()" );
-		return null;
+		// 0. check the federate ambassador //
+		// If we don't have a federate ambassador, we haven't connected yet
+		if( helper.getFederateAmbassador() == null )
+			throw new NotConnected( "Federate has not called connect() yet" );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		JoinFederation request = new JoinFederation( federationName, federateName );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			ExtendedSuccessMessage success = (ExtendedSuccessMessage)response;
+			
+			// return the "handle"
+			return new HLA1516eHandle( (Integer)success.getResult() );
+		}
+		else
+		{
+			// reset the fedamb
+			this.helper.setFederateAmbassador( null );
+
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateAlreadyExecutionMember )
+			{
+				throw new FederateAlreadyExecutionMember( theException );
+			}
+			else if( theException instanceof JFederationExecutionDoesNotExist )
+			{
+				throw new FederationExecutionDoesNotExist( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "joinFederationExecution", theException );
+				return null;
+			}
+		}
 	}
 
 	// 4.9
@@ -574,7 +647,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution()" );
+		featureNotSupported( "joinFederationExecution(type,federation)" );
 		return null;
 	}
 
@@ -592,20 +665,12 @@ public class Rti1516eAmbassador implements RTIambassador
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
 		// the constructor below will throw InvalidResignAction for a dodgy value
-		ResignFederation request;
-		try
-		{
-			if( resignAction == null )
-				throw new RTIinternalError( "Null resign action" );
-			
-			int iValue = resignAction.hashCode();
-			request = new ResignFederation( JResignAction.for1516Value(iValue) );
-		}
-		catch( JInvalidResignAction e )
-		{
-			throw new RTIinternalError( e );
-		}
-		
+		if( resignAction == null )
+			throw new RTIinternalError( "Null resign action" );
+
+		ResignFederation request =
+			new ResignFederation( HLA1516eResignAction.fromResignAction(resignAction) );
+
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////

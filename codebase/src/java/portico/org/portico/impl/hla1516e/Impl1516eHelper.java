@@ -18,6 +18,7 @@ import hla.rti1516e.FederateAmbassador;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
 import hla.rti1516e.exceptions.InTimeAdvancingState;
 import hla.rti1516e.exceptions.InvalidLogicalTime;
+import hla.rti1516e.exceptions.NotConnected;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hla.rti1516e.exceptions.RequestForTimeConstrainedPending;
 import hla.rti1516e.exceptions.RequestForTimeRegulationPending;
@@ -152,6 +153,16 @@ public class Impl1516eHelper implements ISpecHelper
 	////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Convenience Methods ////////////////////////////
 	////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Checks to make sure the federate has connected to the RTI. Throws a {@link NotConnected}
+	 * exception if it is not.
+	 */
+	public void checkConnected() throws NotConnected
+	{
+		if( this.fedamb == null )
+			throw new NotConnected("");
+	}
+
 	/**
 	 * Check to see if we are currently ticking (and thus not able to make an RTI callback). If
 	 * we are currently ticking, a {@link hla.rti.ConcurrentAccessAttempted
