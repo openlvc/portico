@@ -58,7 +58,7 @@ import org.portico.utils.messaging.MessageHandler;
  * another federate is waiting.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="incoming",
                 priority=7, // we want to handle it before the callback handler
                 messages=SyncRegistrationRequest.class)

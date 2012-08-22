@@ -23,7 +23,7 @@ import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="outgoing",
                 messages=DisableAsynchronousDelivery.class)
 public class DisableAsyncDeliveryHandler extends LRCMessageHandler

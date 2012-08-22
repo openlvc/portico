@@ -69,7 +69,7 @@ import org.portico.utils.messaging.MessageHandler;
  * discussion of this approach, see the architectural documentation on the Portico website.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="outgoing",
                 messages=AttributeAcquire.class)
 public class AcquireOwnershipHandler extends LRCMessageHandler

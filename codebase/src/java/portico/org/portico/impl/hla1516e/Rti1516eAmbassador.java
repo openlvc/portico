@@ -144,7 +144,7 @@ import org.portico.utils.messaging.ResponseMessage;
 /**
  * The Portico implementation of the IEEE 1516-2010 (HLA Evolved) RTIambassador class.
  */
-public class Rti1516eAmbassador
+public class Rti1516eAmbassador implements RTIambassador
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -159,7 +159,7 @@ public class Rti1516eAmbassador
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	private Rti1516eAmbassador() throws RTIinternalError
+	public Rti1516eAmbassador() throws RTIinternalError
 	{
 		this.helper = new Impl1516eHelper();
 		this.logger = this.helper.getLrcLogger();

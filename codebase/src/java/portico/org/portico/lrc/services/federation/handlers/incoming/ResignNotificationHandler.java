@@ -38,7 +38,7 @@ import org.portico.utils.messaging.MessageHandler;
  * processing by the local federate.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="incoming",
                 messages=ResignFederation.class)
 public class ResignNotificationHandler extends LRCMessageHandler
