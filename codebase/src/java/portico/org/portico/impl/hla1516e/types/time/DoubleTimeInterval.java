@@ -16,9 +16,12 @@ package org.portico.impl.hla1516e.types.time;
 
 import org.portico.utils.bithelpers.BitHelpers;
 
+import hla.rti1516e.LogicalTimeInterval;
 import hla.rti1516e.exceptions.CouldNotEncode;
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
+import hla.rti1516e.exceptions.InvalidLogicalTime;
 import hla.rti1516e.exceptions.InvalidLogicalTimeInterval;
+import hla.rti1516e.exceptions.InvalidLookahead;
 import hla.rti1516e.time.HLAfloat64Interval;
 
 public class DoubleTimeInterval implements HLAfloat64Interval
@@ -122,5 +125,33 @@ public class DoubleTimeInterval implements HLAfloat64Interval
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-
+	public static double fromInterval( LogicalTimeInterval lti ) throws InvalidLogicalTime
+	{
+		if( lti == null )
+			throw new InvalidLogicalTime( "Expecting DoubleTimeInterval, found: null" );
+		
+		if( lti instanceof DoubleTimeInterval )
+		{
+			return ((DoubleTimeInterval)lti).time;
+		}
+		else
+		{
+			throw new InvalidLogicalTime( "Expecting DoubleTimeInterval, found: "+lti.getClass() );
+		}
+	}
+	
+	public static double fromLookahead( LogicalTimeInterval lti ) throws InvalidLookahead
+	{
+		if( lti == null )
+			throw new InvalidLookahead( "Expecting DoubleTimeInterval, found: null" );
+		
+		if( lti instanceof DoubleTimeInterval )
+		{
+			return ((DoubleTimeInterval)lti).time;
+		}
+		else
+		{
+			throw new InvalidLookahead( "Expecting DoubleTimeInterval, found: "+lti.getClass() );
+		}
+	}
 }

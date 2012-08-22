@@ -16,12 +16,6 @@ package org.portico.impl.hla1516e.types;
 
 import org.portico.utils.bithelpers.BitHelpers;
 
-import hla.rti1516.InvalidAttributeHandle;
-import hla.rti1516.InvalidFederateHandle;
-import hla.rti1516.InvalidInteractionClassHandle;
-import hla.rti1516.InvalidObjectClassHandle;
-import hla.rti1516.InvalidParameterHandle;
-import hla.rti1516.RTIinternalError;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.DimensionHandle;
 import hla.rti1516e.FederateHandle;
@@ -32,6 +26,12 @@ import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.ParameterHandle;
 import hla.rti1516e.RegionHandle;
 import hla.rti1516e.TransportationTypeHandle;
+import hla.rti1516e.exceptions.InvalidAttributeHandle;
+import hla.rti1516e.exceptions.InvalidFederateHandle;
+import hla.rti1516e.exceptions.InvalidInteractionClassHandle;
+import hla.rti1516e.exceptions.InvalidObjectClassHandle;
+import hla.rti1516e.exceptions.InvalidParameterHandle;
+import hla.rti1516e.exceptions.RTIinternalError;
 
 /**
  * Generic handle class. All the IEEE 1516e handle types provide the same interface.

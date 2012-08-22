@@ -45,7 +45,10 @@ import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSetFactory;
 import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.time.DoubleTimeFactory;
+import org.portico.impl.hla1516e.types.time.DoubleTimeInterval;
 import org.portico.lrc.PorticoConstants;
+import org.portico.lrc.compat.JAsynchronousDeliveryAlreadyDisabled;
+import org.portico.lrc.compat.JAsynchronousDeliveryAlreadyEnabled;
 import org.portico.lrc.compat.JAttributeAcquisitionWasNotRequested;
 import org.portico.lrc.compat.JAttributeAlreadyBeingAcquired;
 import org.portico.lrc.compat.JAttributeAlreadyBeingDivested;
@@ -57,17 +60,21 @@ import org.portico.lrc.compat.JAttributeNotPublished;
 import org.portico.lrc.compat.JConcurrentAccessAttempted;
 import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
+import org.portico.lrc.compat.JEnableTimeConstrainedPending;
+import org.portico.lrc.compat.JEnableTimeRegulationPending;
 import org.portico.lrc.compat.JErrorReadingFED;
 import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JFederateOwnsAttributes;
 import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
+import org.portico.lrc.compat.JFederationTimeAlreadyPassed;
 import org.portico.lrc.compat.JInteractionClassNotDefined;
 import org.portico.lrc.compat.JInteractionClassNotPublished;
 import org.portico.lrc.compat.JInteractionClassNotSubscribed;
 import org.portico.lrc.compat.JInteractionParameterNotDefined;
 import org.portico.lrc.compat.JInvalidFederationTime;
+import org.portico.lrc.compat.JInvalidLookahead;
 import org.portico.lrc.compat.JInvalidResignAction;
 import org.portico.lrc.compat.JObjectAlreadyRegistered;
 import org.portico.lrc.compat.JObjectClassNotDefined;
@@ -80,8 +87,17 @@ import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.compat.JRestoreInProgress;
 import org.portico.lrc.compat.JSaveInProgress;
 import org.portico.lrc.compat.JSynchronizationLabelNotAnnounced;
+import org.portico.lrc.compat.JTimeAdvanceAlreadyInProgress;
+import org.portico.lrc.compat.JTimeConstrainedAlreadyEnabled;
+import org.portico.lrc.compat.JTimeConstrainedWasNotEnabled;
+import org.portico.lrc.compat.JTimeRegulationAlreadyEnabled;
+import org.portico.lrc.compat.JTimeRegulationWasNotEnabled;
 import org.portico.lrc.model.ACInstance;
+import org.portico.lrc.model.ACMetadata;
+import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.model.OCMetadata;
+import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.lrc.services.federation.msg.ResignFederation;
@@ -108,6 +124,17 @@ import org.portico.lrc.services.pubsub.msg.UnsubscribeInteractionClass;
 import org.portico.lrc.services.pubsub.msg.UnsubscribeObjectClass;
 import org.portico.lrc.services.sync.msg.SyncPointAchieved;
 import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
+import org.portico.lrc.services.time.msg.DisableAsynchronousDelivery;
+import org.portico.lrc.services.time.msg.DisableTimeConstrained;
+import org.portico.lrc.services.time.msg.DisableTimeRegulation;
+import org.portico.lrc.services.time.msg.EnableAsynchronousDelivery;
+import org.portico.lrc.services.time.msg.EnableTimeConstrained;
+import org.portico.lrc.services.time.msg.EnableTimeRegulation;
+import org.portico.lrc.services.time.msg.FlushQueueRequest;
+import org.portico.lrc.services.time.msg.ModifyLookahead;
+import org.portico.lrc.services.time.msg.NextEventRequest;
+import org.portico.lrc.services.time.msg.QueryGalt;
+import org.portico.lrc.services.time.msg.TimeAdvanceRequest;
 import org.portico.utils.messaging.ErrorResponse;
 import org.portico.utils.messaging.ExtendedSuccessMessage;
 import org.portico.utils.messaging.MessageContext;
@@ -3294,7 +3321,72 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double la = DoubleTimeInterval.fromLookahead( theLookahead );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		EnableTimeRegulation request = new EnableTimeRegulation( 0.0, la );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JTimeRegulationAlreadyEnabled )
+			{
+				throw new TimeRegulationAlreadyEnabled( theException );
+			}
+			else if( theException instanceof JEnableTimeRegulationPending )
+			{
+				throw new RequestForTimeRegulationPending( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidLookahead )
+			{
+				throw new InvalidLookahead( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "enableTimeRegulation", theException );
+			}
+		}
 	}
 
 	// 8.4
@@ -3306,7 +3398,51 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		DisableTimeRegulation request = new DisableTimeRegulation();
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JTimeRegulationWasNotEnabled )
+			{
+				throw new TimeRegulationIsNotEnabled( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "disableTimeRegulation", theException );
+			}
+		}
 	}
 
 	// 8.5
@@ -3320,7 +3456,59 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		EnableTimeConstrained request = new EnableTimeConstrained();
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JTimeConstrainedAlreadyEnabled )
+			{
+				throw new TimeConstrainedAlreadyEnabled( theException );
+			}
+			else if( theException instanceof JEnableTimeConstrainedPending )
+			{
+				throw new RequestForTimeConstrainedPending( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "enbaleTimeConstrained", theException );
+			}
+		}
 	}
 
 	// 8.7
@@ -3332,7 +3520,51 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		DisableTimeConstrained request = new DisableTimeConstrained();
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JTimeConstrainedWasNotEnabled )
+			{
+				throw new TimeConstrainedIsNotEnabled( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "disableTimeConstrained", theException );
+			}
+		}
 	}
 
 	// 8.8
@@ -3348,7 +3580,73 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = DoubleTime.fromTime( theTime ); // also checks for null
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// the constructor below will throw InvalidResignAction for a dodgy value
+		TimeAdvanceRequest request = new TimeAdvanceRequest( time );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederationTimeAlreadyPassed )
+			{
+				throw new LogicalTimeAlreadyPassed( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JEnableTimeRegulationPending )
+			{
+				throw new RequestForTimeRegulationPending( theException );
+			}
+			else if( theException instanceof JEnableTimeConstrainedPending )
+			{
+				throw new RequestForTimeConstrainedPending( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "timeAdvanceRequest", theException );
+			}
+		}
 	}
 
 	// 8.9
@@ -3364,7 +3662,74 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		//XXX: NOTE!! This is just the same as a regular time advance request at this point in time
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = DoubleTime.fromTime( theTime ); // also checks for null
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// the constructor below will throw InvalidResignAction for a dodgy value
+		TimeAdvanceRequest request = new TimeAdvanceRequest( time, true );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederationTimeAlreadyPassed )
+			{
+				throw new LogicalTimeAlreadyPassed( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JEnableTimeRegulationPending )
+			{
+				throw new RequestForTimeRegulationPending( theException );
+			}
+			else if( theException instanceof JEnableTimeConstrainedPending )
+			{
+				throw new RequestForTimeConstrainedPending( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "timeAdvanceRequestAvailable", theException );
+			}
+		}
 	}
 
 	// 8.10
@@ -3380,7 +3745,73 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = DoubleTime.fromTime( theTime );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// the constructor below will throw InvalidResignAction for a dodgy value
+		NextEventRequest request = new NextEventRequest( time );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederationTimeAlreadyPassed )
+			{
+				throw new LogicalTimeAlreadyPassed( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JEnableTimeRegulationPending )
+			{
+				throw new RequestForTimeRegulationPending( theException );
+			}
+			else if( theException instanceof JEnableTimeConstrainedPending )
+			{
+				throw new RequestForTimeConstrainedPending( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "nextMessageRequest", theException );
+			}
+		}
 	}
 
 	// 8.11
@@ -3396,7 +3827,73 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = DoubleTime.fromTime( theTime );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// the constructor below will throw InvalidResignAction for a dodgy value
+		NextEventRequest request = new NextEventRequest( time, true );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederationTimeAlreadyPassed )
+			{
+				throw new LogicalTimeAlreadyPassed( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JEnableTimeRegulationPending )
+			{
+				throw new RequestForTimeRegulationPending( theException );
+			}
+			else if( theException instanceof JEnableTimeConstrainedPending )
+			{
+				throw new RequestForTimeConstrainedPending( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "nextMessageRequestAvailable", theException );
+			}
+		}
 	}
 
 	// 8.12
@@ -3412,7 +3909,73 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = DoubleTime.fromTime( theTime );
+		
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// the constructor below will throw InvalidResignAction for a dodgy value
+		FlushQueueRequest request = new FlushQueueRequest( time );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidFederationTime )
+			{
+				throw new InvalidLogicalTime( theException );
+			}
+			else if( theException instanceof JFederationTimeAlreadyPassed )
+			{
+				throw new LogicalTimeAlreadyPassed( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JEnableTimeRegulationPending )
+			{
+				throw new RequestForTimeRegulationPending( theException );
+			}
+			else if( theException instanceof JEnableTimeConstrainedPending )
+			{
+				throw new RequestForTimeConstrainedPending( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "flushQueueRequest", theException );
+			}
+		}
 	}
 
 	// 8.14
@@ -3424,7 +3987,50 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		ResponseMessage response = processMessage( new EnableAsynchronousDelivery() );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JAsynchronousDeliveryAlreadyEnabled )
+			{
+				throw new AsynchronousDeliveryAlreadyEnabled( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "enableAsynchronousDelivery", theException );
+			}
+		}
 	}
 
 	// 8.15
@@ -3436,7 +4042,50 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		ResponseMessage response = processMessage( new DisableAsynchronousDelivery() );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JAsynchronousDeliveryAlreadyDisabled )
+			{
+				throw new AsynchronousDeliveryAlreadyDisabled( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "disableAsynchronousDelivery", theException );
+			}
+		}
 	}
 
 	// 8.16
@@ -3447,8 +4096,49 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		QueryGalt request = new QueryGalt();
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			DoubleTime time = new DoubleTime( (Integer)response.getResult() );
+			return new TimeQueryReturn( true, time );
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "queryGALT", theException );
+				return null; // will never get to here
+			}
+		}
 	}
 
 	// 8.17
@@ -3459,8 +4149,11 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		helper.checkSave();
+		helper.checkRestore();
+		
+		return new DoubleTime( helper.getState().getCurrentTime() );
 	}
 
 	// 8.18
@@ -3471,8 +4164,12 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		helper.checkSave();
+		helper.checkRestore();
+		
+		DoubleTime time = new DoubleTime( helper.getState().getCurrentTime() );
+		return new TimeQueryReturn( true, time );
 	}
 
 	// 8.19
@@ -3486,7 +4183,72 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		////////////////////////////////////////////////////////
+		// 0. check that we have the right logical time class //
+		////////////////////////////////////////////////////////
+		double time = 0.0;
+		try
+		{
+			time = DoubleTimeInterval.fromInterval( theLookahead );
+		}
+		catch( Exception e )
+		{
+			throw new InvalidLookahead( "Error converting lookahead: " + e.getMessage(), e );
+		}
+
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		ModifyLookahead request = new ModifyLookahead( time );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// request was fine
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JInvalidLookahead )
+			{
+				throw new InvalidLookahead( theException );
+			}
+			else if( theException instanceof JTimeRegulationWasNotEnabled )
+			{
+				throw new TimeRegulationIsNotEnabled( theException );
+			}
+			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
+			{
+				throw new InTimeAdvancingState( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else
+			{
+				logException( "modifyLookahead", theException );
+			}
+		}
 	}
 
 	// 8.20
@@ -3498,8 +4260,11 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		helper.checkSave();
+		helper.checkRestore();
+		
+		return new DoubleTimeInterval( helper.getState().getLookahead() );
 	}
 
 	// 8.21
@@ -3513,7 +4278,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "retract()" );
 	}
 
 	// 8.23
@@ -3529,7 +4294,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "changeAttributeOrderType()" );
 	}
 
 	// 8.24
@@ -3542,7 +4307,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "changeInteractionOrderType()" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -3557,7 +4322,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "createRegion()" );
 		return null;
 	}
 
@@ -3571,7 +4336,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "commitRegionModifications()" );
 	}
 
 	// 9.4
@@ -3585,7 +4350,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "deleteRegion()" );
 	}
 
 	// 9.5
@@ -3605,7 +4370,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "registerObjectInstanceWithRegions()" );
 		return null;
 	}
 
@@ -3629,7 +4394,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "registerObjectInstanceWithRegions()" );
 		return null;
 	}
 
@@ -3647,7 +4412,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "associateRegionsForUpdates()" );
 	}
 
 	// 9.7
@@ -3663,7 +4428,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "unassociateRegionsForUpdates()" );
 	}
 
 	// 9.8
@@ -3680,7 +4445,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributesWithRegions()" );
 	}
 
 	// 9.8
@@ -3699,7 +4464,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributesWithRegions()" );
 	}
 
 	// 9.8
@@ -3716,7 +4481,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributesPassivelyWithRegions()" );
 	}
 
 	// 9.8
@@ -3735,7 +4500,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeObjectClassAttributesPassivelyWithRegions()" );
 	}
 
 	// 9.9
@@ -3751,7 +4516,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "unsubscribeObjectClassAttributesWithRegions()" );
 	}
 
 	// 9.10
@@ -3768,7 +4533,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeInteractionClassWithRegions()" );
 	}
 
 	// 9.10
@@ -3785,7 +4550,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "subscribeInteractionClassPassivelyWithRegions()" );
 	}
 
 	// 9.11
@@ -3800,7 +4565,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "unsubscribeInteractionClassWithRegions()" );
 	}
 
 	// 9.12
@@ -3820,7 +4585,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "sendInteractionWithRegions()" );
 	}
 
 	// 9.12
@@ -3843,7 +4608,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "sendInteractionWithRegions()" );
 		return null;
 	}
 
@@ -3862,7 +4627,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "requestAttributeValueUpdateWithRegions()" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -3874,7 +4639,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getAutomaticResignDirective()" );
 		return null;
 	}
 
@@ -3885,7 +4650,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "setAutomaticResignDirective()" );
 	}
 
 	// 10.4
@@ -3895,7 +4660,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getFederateHandle()" );
 		return null;
 	}
 
@@ -3907,7 +4672,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getFederateName()" );
 		return null;
 	}
 
@@ -3918,8 +4683,18 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		// get the class
+		OCMetadata cls = helper.getFOM().getObjectClass( theName );
+		if( cls == null )
+		{
+			throw new NameNotFound( theName );
+		}
+		else
+		{
+			return new HLA1516eHandle( cls.getHandle() );
+		}
 	}
 
 	// 10.7
@@ -3929,8 +4704,19 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		// get the class
+		int handle = HLA1516eHandle.validatedHandle( theHandle );
+		OCMetadata cls = helper.getFOM().getObjectClass( handle );
+		if( cls == null )
+		{
+			throw new RTIinternalError( "unknown handle: " + theHandle );
+		}
+		else
+		{
+			return cls.getQualifiedName();
+		}
 	}
 
 	// 10.8
@@ -3940,7 +4726,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getKnownObjectClassHandle()" );
 		return null;
 	}
 
@@ -3951,8 +4737,17 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		OCInstance instance = helper.getState().getRepository().getInstance( theName );
+		if( instance == null )
+		{
+			throw new ObjectInstanceNotKnown( "name: " + theName );
+		}
+		else
+		{
+			return new HLA1516eHandle( instance.getHandle() );
+		}
 	}
 
 	// 10.10
@@ -3962,8 +4757,18 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		int handle = HLA1516eHandle.validatedHandle( theHandle );
+		OCInstance instance = helper.getState().getRepository().getInstance( handle );
+		if( instance == null )
+		{
+			throw new RTIinternalError( "handle: " + handle );
+		}
+		else
+		{
+			return instance.getName();
+		}
 	}
 
 	// 10.11
@@ -3974,8 +4779,24 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		int cHandle = HLA1516eHandle.validatedHandle( whichClass );
+		OCMetadata cls = helper.getFOM().getObjectClass( cHandle );
+		if( cls == null )
+		{
+			throw new InvalidObjectClassHandle( "handle: " + whichClass );
+		}
+		
+		ACMetadata aClass = helper.getFOM().getAttributeClass( cHandle, theName );
+		if( aClass == null )
+		{
+			throw new NameNotFound( "name: " + theName );
+		}
+		else
+		{
+			return new HLA1516eHandle( aClass.getHandle() );
+		}
 	}
 
 	// 10.12
@@ -3987,8 +4808,27 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		int ocHandle = HLA1516eHandle.validatedHandle( whichClass );
+		int acHandle = HLA1516eHandle.validatedHandle( theHandle );
+		OCMetadata cls = helper.getFOM().getObjectClass( ocHandle );
+		if( cls == null )
+		{
+			throw new RTIinternalError( "handle: " + whichClass );
+		}
+		else
+		{
+			String name = cls.getAttributeName( acHandle );
+			if( name == null )
+			{
+				throw new AttributeNotDefined( "handle: " + theHandle );
+			}
+			else
+			{
+				return name;
+			}
+		}
 	}
 
 	// 10.13
@@ -3998,7 +4838,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getUpdateRateValue()" );
 		return 0.0;
 	}
 
@@ -4011,7 +4851,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getUpdateRateValueForAttribute()" );
 		return 0.0;
 	}
 
@@ -4022,8 +4862,18 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		// get the class
+		ICMetadata cls = helper.getFOM().getInteractionClass( theName );
+		if( cls == null )
+		{
+			throw new NameNotFound( theName );
+		}
+		else
+		{
+			return new HLA1516eHandle( cls.getHandle() );
+		}
 	}
 
 	// 10.16
@@ -4033,8 +4883,19 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		// get the class
+		int handle = HLA1516eHandle.validatedHandle( theHandle );
+		ICMetadata cls = helper.getFOM().getInteractionClass( handle );
+		if( cls == null )
+		{
+			throw new RTIinternalError( "handle: " + theHandle );
+		}
+		else
+		{
+			return cls.getQualifiedName();
+		}
 	}
 
 	// 10.17
@@ -4045,8 +4906,26 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		int cHandle = HLA1516eHandle.validatedHandle( whichClass );
+		ICMetadata cls = helper.getFOM().getInteractionClass( cHandle );
+		if( cls == null )
+		{
+			throw new RTIinternalError( "handle: " + cHandle );
+		}
+		else
+		{
+			int handle = cls.getParameterHandle( theName );
+			if( handle == ObjectModel.INVALID_HANDLE )
+			{
+				throw new NameNotFound( "name: " + theName );
+			}
+			else
+			{
+				return new HLA1516eHandle( handle );
+			}
+		}
 	}
 
 	// 10.18
@@ -4058,8 +4937,27 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return null;
+		helper.checkJoined();
+		
+		int icHandle = HLA1516eHandle.validatedHandle( whichClass );
+		int pcHandle = HLA1516eHandle.validatedHandle( theHandle );
+		ICMetadata cls = helper.getFOM().getInteractionClass( icHandle );
+		if( cls == null )
+		{
+			throw new RTIinternalError( "handle: " + icHandle );
+		}
+		else
+		{
+			String name = cls.getParameterName( pcHandle );
+			if( name == null )
+			{
+				throw new InteractionParameterNotDefined( "handle: " + pcHandle );
+			}
+			else
+			{
+				return name;
+			}
+		}
 	}
 
 	// 10.19
@@ -4069,7 +4967,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getOrderType()" );
 		return null;
 	}
 
@@ -4080,7 +4978,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getOrderName()" );
 		return null;
 	}
 
@@ -4091,7 +4989,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getTransportationTypeHandle()" );
 		return null;
 	}
 
@@ -4102,7 +5000,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getTransportationTypeName()" );
 		return null;
 	}
 
@@ -4116,7 +5014,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getAvailableDimensionsForClassAttribute()" );
 		return null;
 	}
 
@@ -4128,7 +5026,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getAvailableDimensionsForInteractionClass()" );
 		return null;
 	}
 
@@ -4139,7 +5037,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getDimensionHandle()" );
 		return null;
 	}
 
@@ -4150,7 +5048,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getDimensionName()" );
 		return null;
 	}
 
@@ -4161,7 +5059,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getDimensionUpperBound()" );
 		return 0;
 	}
 
@@ -4174,7 +5072,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getDimensionHandleSet()" );
 		return null;
 	}
 
@@ -4188,7 +5086,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "getRangeBounds()" );
 		return null;
 	}
 
@@ -4204,7 +5102,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "setRangeBounds()" );
 	}
 
 	// 10.31
@@ -4214,8 +5112,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return 0;
+		return HLA1516eHandle.fromHandle( federateHandle );
 	}
 
 	// 10.32
@@ -4225,7 +5122,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "normalizeServiceGroup()" );
 		return 0;
 	}
 
@@ -4238,7 +5135,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "enableObjectClassRelevanceAdvisorySwitch()" );
 	}
 
 	// 10.34
@@ -4250,7 +5147,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "disableObjectClassRelevanceAdvisorySwitch()" );
 	}
 
 	// 10.35
@@ -4262,7 +5159,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "enableAttributeRelevanceAdvisorySwitch()" );
 	}
 
 	// 10.36
@@ -4274,7 +5171,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "disableAttributeRelevanceAdvisorySwitch()" );
 	}
 
 	// 10.37
@@ -4286,7 +5183,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "enableAttributeScopeAdvisorySwitch()" );
 	}
 
 	// 10.38
@@ -4298,7 +5195,7 @@ public class Rti1516eAmbassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "disableAttributeScopeAdvisorySwitch()" );
 	}
 
 	// 10.39
@@ -4310,7 +5207,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "enableInteractionRelevanceAdvisorySwitch()" );
 	}
 
 	// 10.40
@@ -4322,7 +5219,7 @@ public class Rti1516eAmbassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "disableInteractionRelevanceAdvisorySwitch()" );
 	}
 
 	// 10.41
@@ -4330,8 +5227,7 @@ public class Rti1516eAmbassador
 	    throws CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return false;
+		return helper.evokeSingle( approximateMinimumTimeInSeconds );
 	}
 
 	// 10.42
@@ -4340,20 +5236,20 @@ public class Rti1516eAmbassador
 	    throws CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
-		return false;
+		return helper.evokeMultiple( approximateMinimumTimeInSeconds,
+		                             approximateMaximumTimeInSeconds );
 	}
 
 	// 10.43
 	public void enableCallbacks() throws SaveInProgress, RestoreInProgress, RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "enableCallbacks()" );
 	}
 
 	// 10.44
 	public void disableCallbacks() throws SaveInProgress, RestoreInProgress, RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "disableCallbacks()" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
