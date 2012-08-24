@@ -24,7 +24,7 @@ import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 
 @MessageHandler(modules="lrc1516e-callback",
-                keywords= {"lrc1516e","lrcjava1"},
+                keywords= {"lrc1516e"},
                 sinks="incoming",
                 priority=3,
                 messages=CancelConfirmation.class)

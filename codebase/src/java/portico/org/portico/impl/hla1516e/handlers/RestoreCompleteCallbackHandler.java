@@ -27,7 +27,7 @@ import org.portico.utils.messaging.MessageHandler;
  * federate ambassador
  */
 @MessageHandler(modules="lrc13-callback",
-                keywords= {"lrc13","lrcjava1"},
+                keywords= {"lrc1516e"},
                 sinks="incoming",
                 priority=3,
                 messages=RestoreComplete.class)
