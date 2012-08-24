@@ -84,26 +84,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	public TestFederateAmbassador( TestFederate federate )
 	{
 		this.federate = federate;
-		
-		this.announced = new HashMap<String,byte[]>();
-		this.synched = new HashSet<String>();
-		this.syncSucceeded = "";
-		this.syncFailed = "";
-		
-		this.constrained = false;
-		this.regulating = false;
-		this.logicalTime = -1;
-		
-		this.instances = new HashMap<Integer,TestObject>();
-		this.discovered = new Vector<TestObject>();
-		this.roUpdated = new HashSet<Integer>();
-		this.tsoUpdated = new HashSet<Integer>();
-		this.roRemoved = new HashSet<Integer>();
-		this.tsoRemoved = new HashSet<Integer>();
-		this.updatesRequested = new HashMap<Integer,Set<Integer>>();
-		
-		this.roInteractions = new Vector<TestInteraction>();
-		this.tsoInteractions = new Vector<TestInteraction>();
+		this.reinitialize();
 	}
 	
 	//----------------------------------------------------------
@@ -132,6 +113,33 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	public HashMap<Integer,TestObject> getInstances()
 	{
 		return this.instances;
+	}
+
+	/**
+	 * Clear out any state associated with this federate. Should be called when
+	 * the federate resigns from the federation.
+	 */
+	protected void reinitialize()
+	{
+		this.announced = new HashMap<String,byte[]>();
+		this.synched = new HashSet<String>();
+		this.syncSucceeded = "";
+		this.syncFailed = "";
+		
+		this.constrained = false;
+		this.regulating = false;
+		this.logicalTime = -1;
+		
+		this.instances = new HashMap<Integer,TestObject>();
+		this.discovered = new Vector<TestObject>();
+		this.roUpdated = new HashSet<Integer>();
+		this.tsoUpdated = new HashSet<Integer>();
+		this.roRemoved = new HashSet<Integer>();
+		this.tsoRemoved = new HashSet<Integer>();
+		this.updatesRequested = new HashMap<Integer,Set<Integer>>();
+		
+		this.roInteractions = new Vector<TestInteraction>();
+		this.tsoInteractions = new Vector<TestInteraction>();
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////

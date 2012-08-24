@@ -680,6 +680,8 @@ public class Rti1516eAmbassador implements RTIambassador
 		if( response.isError() == false )
 		{
 			// everything went fine!
+			// reinitialize the federate to get rid of any built-up state
+			helper.reinitializeLrc();
 			return;
 		}
 		else

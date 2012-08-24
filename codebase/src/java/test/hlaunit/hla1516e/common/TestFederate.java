@@ -62,7 +62,6 @@ public class TestFederate
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-
 	public TestFederate( String name, Abstract1516eTest test )
 	{
 		if( name == null || test == null )
@@ -139,10 +138,14 @@ public class TestFederate
 	}
 	
 	/**
-	 * Calls disconnect() on the RTI to break the connection before we exit.
+	 * Calls disconnect() on the RTI to break the connection before we exit. The
+	 * federate will not try to disconnect if it is currently not connected.
 	 */
 	public void quickDisconnect()
 	{
+		if( this.isConnected() == false )
+			return;
+
 		try
 		{
 			this.rtiamb.disconnect();
@@ -213,7 +216,6 @@ public class TestFederate
 	
 	/**
 	 * Same as {@link #quickDestroy()} except that you can specify the federation name
-	 * @param name
 	 */
 	public void quickDestroy( String name )
 	{
@@ -307,6 +309,7 @@ public class TestFederate
 		try
 		{
 			this.rtiamb.resignFederationExecution( resignAction );
+			this.fedamb.reinitialize();
 		}
 		catch( FederateNotExecutionMember nem )
 		{
@@ -325,6 +328,25 @@ public class TestFederate
 	public void quickResign()
 	{
 		this.quickResign( ResignAction.DELETE_OBJECTS );
+	}
+
+	/**
+	 * This method will see the federate resign with no action. If there is a problem (such
+	 * as the federate isn't joined), the exception will be caught and swallowed. This method
+	 * will always return without error.
+	 */
+	public void quickResignTolerant()
+	{
+		try
+		{
+			((Rti1516eAmbassador)this.rtiamb).getHelper().checkJoined(); // throws exception if not
+			this.rtiamb.resignFederationExecution( ResignAction.NO_ACTION );
+			this.fedamb.reinitialize();
+		}
+		catch( Exception e )
+		{
+			// gulp.
+		}
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -1505,7 +1527,9 @@ public class TestFederate
 			Assert.fail( "There was an exception while tick(min,max)'ing: " + e.getMessage(), e );
 		}
 	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+
 }

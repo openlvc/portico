@@ -313,6 +313,11 @@ public class Impl1516eHelper implements ISpecHelper
 	{
 		return this.lrc.getLrcLogger();
 	}
+	
+	protected void reinitializeLrc()
+	{
+		this.lrc.reinitialize();
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

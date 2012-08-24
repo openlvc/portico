@@ -18,6 +18,7 @@ import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516e.LogicalTime;
 import hla.rti1516e.exceptions.IllegalTimeArithmetic;
+import hla.rti1516e.exceptions.InvalidLogicalTime;
 import hla.rti1516e.time.HLAfloat64Interval;
 import hla.rti1516e.time.HLAfloat64Time;
 
@@ -32,6 +33,7 @@ public class DoubleTime implements HLAfloat64Time
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private double time;
+
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -128,9 +130,20 @@ public class DoubleTime implements HLAfloat64Time
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static double fromTime( LogicalTime time )
+	public static double fromTime( LogicalTime time ) throws InvalidLogicalTime
 	{
-		return ((DoubleTime)time).time;
+		try
+		{
+			return ((DoubleTime)time).time;
+		}
+		catch( ClassCastException cce )
+		{
+			throw new InvalidLogicalTime( "Expecting DoubleTime, found: " + time.getClass() );
+		}
+		catch( NullPointerException npe )
+		{
+			throw new InvalidLogicalTime( "Expecting DoubleTime, found: null" );
+		}
 	}
 
 }
