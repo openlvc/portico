@@ -223,8 +223,10 @@ public class LRC
 			component = PorticoConstants.KEYWORD_LRC13;
 		else if( specHelper.getHlaVersion() == HLAVersion.JAVA1 )
 			component = PorticoConstants.KEYWORD_LRCJAVA1;
-		else if( specHelper.getHlaVersion() == HLAVersion.HLA1516 )
+		else if( specHelper.getHlaVersion() == HLAVersion.IEEE1516 )
 			component = PorticoConstants.KEYWORD_LRC1516;
+		else if( specHelper.getHlaVersion() == HLAVersion.IEEE1516e )
+			component = PorticoConstants.KEYWORD_LRC1516e;
 		
 		// apply the modules to the contained sinks
 		logger.trace( "Applying modules using component keyword: " + component );

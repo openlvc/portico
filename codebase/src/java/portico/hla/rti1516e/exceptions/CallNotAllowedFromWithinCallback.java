@@ -23,4 +23,9 @@ public final class CallNotAllowedFromWithinCallback extends RTIexception {
    {
       super(message, cause);
    }
+
+   public CallNotAllowedFromWithinCallback(Throwable cause)
+   {
+      super(cause);
+   }
 }

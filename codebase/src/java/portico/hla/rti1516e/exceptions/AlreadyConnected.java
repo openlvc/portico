@@ -23,4 +23,9 @@ public final class AlreadyConnected extends RTIexception {
    {
       super(message, cause);
    }
+   
+   public AlreadyConnected(Throwable cause)
+   {
+      super(cause);
+   }   
 }

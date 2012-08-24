@@ -23,4 +23,9 @@ public final class InconsistentFDD extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InconsistentFDD(Throwable cause)
+   {
+      super(cause);
+   }
 }

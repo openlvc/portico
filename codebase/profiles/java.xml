@@ -137,7 +137,7 @@
 	-->
 	<target name="test"
 	        extensionOf="master.test"
-	        depends="test.portico, test.hla13, test.ieee1516, test.evolved"/>
+	        depends="test.portico, test.hla13, test.ieee1516, test.ieee1516e"/>
 
 	
 	<!-- Run the core Portico suite that tests various internal parts of the RTI -->
@@ -180,8 +180,16 @@
 	</target>
 
 	<!-- Run the IEEE 1516e (Evolved) test suite -->
-	<target name="test.evolved" depends="compile.tests">
-		<echo>IEEE 1516e (HLA Evolved) Test Suite not yet implemented</echo>
+	<target name="test.ieee1516e" depends="compile.tests">
+		<java-test suite="hlaunit/hla1516e"
+		           classdir="${test.classes.dir}"
+		           outdir="${test.reports.dir}"
+		           classpath="test.classpath">
+			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
+			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
+			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
+			<jvmarg value="-Dtest.binding=${test.binding}"/>
+	     </java-test>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -339,7 +347,6 @@
 		              windowtitle="IEEE 1516-2000 Javadoc (The Portico Project)"
 		              header="IEEE 1516 (2000) Javadoc"/>
 
-		<!--
 		<echo>Generating HLA API documentation for IEEE 1516-2010 (Evolved) Java Interface</echo>
 		<java-javadoc outdir="${javadoc.dir}/ieee1516e"
 		              packages="hla.rti1516e.*"
@@ -347,7 +354,6 @@
 		              classpath="compile.classpath"
 		              windowtitle="IEEE 1516-2010 (Evolved) Javadoc (The Portico Project)"
 		              header="IEEE 1516e (HLA Evolved) Javadoc"/>
-		-->
 
 		<echo>Generating API documentation for Portico Core Libraries</echo>
 		<java-javadoc outdir="${javadoc.dir}/portico"

@@ -19,5 +19,8 @@ package org.portico.impl;
  */
 public enum HLAVersion
 {
-	HLA13, JAVA1, HLA1516;
+	HLA13,      // standard HLA v1.3 interface
+	JAVA1,      // the "java1" HLA v1.3 interface (rti13.java1 package from old DMSO java bindings)
+	IEEE1516,   // standard IEEE 1516-2000 interface
+	IEEE1516e;  // standard IEEE 1516-2010 interface
 }

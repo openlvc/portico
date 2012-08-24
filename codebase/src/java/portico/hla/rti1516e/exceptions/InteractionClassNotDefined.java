@@ -24,4 +24,9 @@ public final class InteractionClassNotDefined extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InteractionClassNotDefined(Throwable cause)
+   {
+      super(cause);
+   }
 }

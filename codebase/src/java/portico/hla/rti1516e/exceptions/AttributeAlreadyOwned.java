@@ -24,4 +24,9 @@ public final class AttributeAlreadyOwned extends RTIexception {
    {
       super(message, cause);
    }
+
+   public AttributeAlreadyOwned(Throwable cause)
+   {
+      super(cause);
+   }
 }

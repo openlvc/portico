@@ -23,4 +23,9 @@ public final class ErrorReadingMIM extends RTIexception {
    {
       super(message, cause);
    }
+
+   public ErrorReadingMIM(Throwable cause)
+   {
+      super(cause);
+   }
 }

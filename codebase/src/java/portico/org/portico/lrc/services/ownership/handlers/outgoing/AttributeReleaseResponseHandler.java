@@ -39,7 +39,7 @@ import org.portico.utils.messaging.MessageHandler;
  * should any of them be the new owners of any releases.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="outgoing",
                 messages=AttributeRelease.class)
 public class AttributeReleaseResponseHandler extends LRCMessageHandler

@@ -24,4 +24,9 @@ public final class AttributeAlreadyBeingAcquired extends RTIexception {
    {
       super(message, cause);
    }
+
+   public AttributeAlreadyBeingAcquired(Throwable cause)
+   {
+      super(cause);
+   }
 }

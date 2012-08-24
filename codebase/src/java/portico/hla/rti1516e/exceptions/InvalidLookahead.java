@@ -24,4 +24,9 @@ public final class InvalidLookahead extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InvalidLookahead(Throwable cause)
+   {
+      super(cause);
+   }
 }

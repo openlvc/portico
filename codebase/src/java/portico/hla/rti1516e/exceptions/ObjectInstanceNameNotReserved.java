@@ -24,4 +24,9 @@ public final class ObjectInstanceNameNotReserved extends RTIexception {
    {
       super(message, cause);
    }
+
+   public ObjectInstanceNameNotReserved(Throwable cause)
+   {
+      super(cause);
+   }
 }

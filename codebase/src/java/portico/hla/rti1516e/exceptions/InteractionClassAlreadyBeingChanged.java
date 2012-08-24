@@ -24,4 +24,9 @@ public final class InteractionClassAlreadyBeingChanged extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InteractionClassAlreadyBeingChanged(Throwable cause)
+   {
+      super(cause);
+   }
 }

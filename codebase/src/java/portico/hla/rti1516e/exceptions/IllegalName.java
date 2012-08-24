@@ -24,4 +24,9 @@ public final class IllegalName extends RTIexception {
    {
       super(message, cause);
    }
+
+   public IllegalName(Throwable cause)
+   {
+      super(cause);
+   }
 }

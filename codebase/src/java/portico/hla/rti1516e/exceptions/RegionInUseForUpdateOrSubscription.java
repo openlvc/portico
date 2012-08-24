@@ -23,4 +23,9 @@ public final class RegionInUseForUpdateOrSubscription extends RTIexception {
    {
       super(message, cause);
    }
+
+   public RegionInUseForUpdateOrSubscription(Throwable cause)
+   {
+      super(cause);
+   }
 }
