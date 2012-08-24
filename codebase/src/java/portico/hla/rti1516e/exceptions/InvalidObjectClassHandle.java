@@ -24,4 +24,9 @@ public final class InvalidObjectClassHandle extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InvalidObjectClassHandle(Throwable cause)
+   {
+      super(cause);
+   }
 }

@@ -30,7 +30,7 @@ import org.portico.utils.messaging.MessageHandler;
  * (forcing it to run after us). This class will store information about the discovery locally.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="incoming",
                 priority=7, // we want to handle it before the callback handler
                 messages=DiscoverObject.class)

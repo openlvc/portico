@@ -24,4 +24,9 @@ public final class InvalidInteractionClassHandle extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InvalidInteractionClassHandle(Throwable cause)
+   {
+      super(cause);
+   }
 }

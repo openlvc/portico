@@ -24,4 +24,9 @@ public final class InteractionParameterNotDefined extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InteractionParameterNotDefined(Throwable cause)
+   {
+      super(cause);
+   }
 }

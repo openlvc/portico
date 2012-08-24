@@ -24,4 +24,9 @@ public final class FederateHasNotBegunSave extends RTIexception {
    {
       super(message, cause);
    }
+
+   public FederateHasNotBegunSave(Throwable cause)
+   {
+      super(cause);
+   }
 }

@@ -24,4 +24,9 @@ public final class AttributeDivestitureWasNotRequested extends RTIexception {
    {
       super(message, cause);
    }
+
+   public AttributeDivestitureWasNotRequested(Throwable cause)
+   {
+      super(cause);
+   }
 }

@@ -23,4 +23,9 @@ public final class FederateNotExecutionMember extends RTIexception {
    {
       super(message, cause);
    }
+
+   public FederateNotExecutionMember(Throwable cause)
+   {
+      super(cause);
+   }
 }

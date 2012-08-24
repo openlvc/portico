@@ -32,7 +32,7 @@ import org.portico.utils.messaging.MessageHandler;
  * federate can take owneship of, the request is recorded and veto'd.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="incoming",
                 priority=7,
                 messages=AttributeDivest.class)

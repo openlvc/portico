@@ -24,4 +24,9 @@ public final class AttributeNotSubscribed extends RTIexception {
    {
       super(message, cause);
    }
+
+   public AttributeNotSubscribed(Throwable cause)
+   {
+      super(cause);
+   }
 }

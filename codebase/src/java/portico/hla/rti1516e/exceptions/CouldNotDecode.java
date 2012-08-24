@@ -23,4 +23,9 @@ public final class CouldNotDecode extends RTIexception {
    {
       super(message, cause);
    }
+
+   public CouldNotDecode(Throwable cause)
+   {
+      super(cause);
+   }
 }

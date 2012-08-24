@@ -23,4 +23,9 @@ public final class InvalidLocalSettingsDesignator extends RTIexception {
    {
       super(message, cause);
    }
+
+   public InvalidLocalSettingsDesignator(Throwable cause)
+   {
+      super(cause);
+   }
 }

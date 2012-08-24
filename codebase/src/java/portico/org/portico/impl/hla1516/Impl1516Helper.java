@@ -71,7 +71,7 @@ public class Impl1516Helper implements ISpecHelper
 	//----------------------------------------------------------
 	public HLAVersion getHlaVersion()
 	{
-		return HLAVersion.HLA1516;
+		return HLAVersion.IEEE1516;
 	}
 	
 	public void processMessage( MessageContext context ) throws Exception

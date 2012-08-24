@@ -24,4 +24,9 @@ public final class MessageCanNoLongerBeRetracted extends RTIexception {
    {
       super(message, cause);
    }
+
+   public MessageCanNoLongerBeRetracted(Throwable cause)
+   {
+      super(cause);
+   }
 }

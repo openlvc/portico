@@ -24,4 +24,9 @@ public final class RegionNotCreatedByThisFederate extends RTIexception {
    {
       super(message, cause);
    }
+
+   public RegionNotCreatedByThisFederate(Throwable cause)
+   {
+      super(cause);
+   }
 }

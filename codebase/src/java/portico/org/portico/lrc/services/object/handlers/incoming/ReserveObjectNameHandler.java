@@ -27,7 +27,7 @@ import org.portico.utils.messaging.MessageHandler;
  * lower than the handle of the federate that has already reserved the name.
  */
 @MessageHandler(modules="lrc-base",
-                keywords={"lrc13","lrcjava1","lrc1516"},
+                keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="incoming",
                 priority=7, // we want to handle it before any callback handler
                 messages=ReserveObjectName.class)

@@ -24,4 +24,9 @@ public final class RequestForTimeRegulationPending extends RTIexception {
    {
       super(message, cause);
    }
+
+   public RequestForTimeRegulationPending(Throwable cause)
+   {
+      super(cause);
+   }
 }

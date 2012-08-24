@@ -24,4 +24,9 @@ public final class TimeRegulationIsNotEnabled extends RTIexception {
    {
       super(message, cause);
    }
+
+   public TimeRegulationIsNotEnabled(Throwable cause)
+   {
+      super(cause);
+   }
 }
