@@ -84,16 +84,18 @@
 	<!-- ==================================== -->
 	<target name="compile.ng6">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime" outdir="${ng6.build.dir}" linkerArgs="/FORCE">
+		<cpp-win32 outfile="libFedTime" outdir="${ng6.build.dir}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
 				<include name="time/FedTime.cpp"/>
 				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
 			</fileset>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_RTI"/> <!-- needed to ensure Exception.cpp stuff works -->
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
@@ -122,24 +124,32 @@
 	<!--           DLC 1.3 Interface          -->
 	<!-- ==================================== -->
 	<target name="compile.dlc13">
+		<!-- Windows DLC compilation currently disabled -->
+		<echo>Windows HLA 1.3 DLC interface genaration not currently supported</echo>
+
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libfedtime13" outdir="${dlc13.build.dir}" linkerArgs="/FORCE">
-			<!-- Filesets and other settings -->
+		<!--
+		<cpp-win32 outfile="libfedtime13" outdir="${dlc13.build.dir}">
+			<!- Filesets and other settings ->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
 				<include name="time/FedTime.cpp"/>
 				<include name="time/FedTimeFactory.cpp"/>
+				<include name="types/Exception.cpp"/>
 			</fileset>
 			<includepath path="${hla13.include.dir}/dlc13"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
 			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_RTI"/> <!- needed to ensure Exception.cpp stuff works ->
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
+		-->
 
 		<!-- Build the main DLL -->
+		<!--
 		<cpp-win32 outfile="librti13" outdir="${dlc13.build.dir}">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
@@ -155,7 +165,8 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${dlc13.build.dir}/complete" libs="fedtime13"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
-		</cpp-win32>		
+		</cpp-win32>
+		-->
 	</target>
 
 	<!-- ==================================== -->
