@@ -56,9 +56,9 @@
 	<!-- These properties are set so that any information relating to a specific path
 	     for a library can be changed in a single spot. The properties should be used
 	     when defining paths and the like later in the build file -->
-	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
-	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
-	<property name="cppunit.lib"           location="${cppunit.dir}/vc7"/>
+	<property name="cppunit.dir"               location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+	<property name="cppunit.include.dir"       location="${cppunit.dir}/include"/>
+	<property name="cppunit.lib.dir"           location="${cppunit.dir}/win32/vc10"/>
 
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
@@ -84,18 +84,16 @@
 	<!-- ==================================== -->
 	<target name="compile.ng6">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime" outdir="${ng6.build.dir}">
+		<cpp-win32 outfile="libFedTime" outdir="${ng6.build.dir}" linkerArgs="/FORCE">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
 				<include name="time/FedTime.cpp"/>
 				<include name="time/FedTimeFactory.cpp"/>
-				<include name="types/Exception.cpp"/>
 			</fileset>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
-			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
@@ -125,26 +123,24 @@
 	<!-- ==================================== -->
 	<target name="compile.dlc13">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="fedtime13" outdir="${dlc13.build.dir}">
+		<cpp-win32 outfile="libfedtime13" outdir="${dlc13.build.dir}" linkerArgs="/FORCE">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
 				<include name="time/FedTime.cpp"/>
 				<include name="time/FedTimeFactory.cpp"/>
-				<include name="types/Exception.cpp"/>
 			</fileset>
 			<includepath path="${hla13.include.dir}/dlc13"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
 			<define name="BUILDING_DLC"/>
-			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="rti13" outdir="${dlc13.build.dir}">
+		<cpp-win32 outfile="librti13" outdir="${dlc13.build.dir}">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -159,23 +155,21 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${dlc13.build.dir}/complete" libs="fedtime13"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
-		</cpp-win32>
+		</cpp-win32>		
 	</target>
 
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="compile.test13">
-		<cpp-win32 outfile="test13"
-		           outdir="${test13.build.dir}"
-		           type="executable">
+	<target name="compile.test13" depends="compile.ng6">
+		<cpp-win32 outfile="test13" outdir="${test13.build.dir}" type="executable">
 			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
-			<includepath path="${cppunit.include}"/>
+			<includepath path="${cppunit.include.dir}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${ng6.complete.dir}" libs="RTI-NG"/>
-			<library path="${cppunit.lib}" libs="cppunit"/>
+			<library path="${ng6.complete.dir}" libs="RTI-NG,FedTime"/>
+			<library path="${cppunit.lib.dir}" libs="cppunit"/>
 		</cpp-win32>
 	</target>
 
@@ -196,19 +190,19 @@
 				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
 			</filterset>
 		</copy>
-		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
 		<echo>Copied testing resources to ${test13.complete.dir}</echo>
 
 		<!-- 2. run the actual test application -->
 		<exec dir="${test13.complete.dir}"
-		      executable="${test13.complete.dir}/test13"
+		      executable="${test13.complete.dir}\test13.exe"
 		      failonerror="false"
 		      failifexecutionfails="false"
 		      resultproperty="test13.result">
-			<arg line="${test13.complete.dir}/test-results.xml"/>
+			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${macosx.jdk.home}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
-			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PATH" path="${ng6.complete.dir};${jdk.home}\jre\bin\client"/>
+			<env key="PORTICO_DEBUG" value="OFF"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
 		</exec>
@@ -246,22 +240,20 @@
 		<!-- copy the Portico C++ NGv6 and DLC 1.3 libraries -->
 		<copy todir="${dist.lib.dir}">
 			<fileset dir="${ng6.complete.dir}"
-			         includes="**/*"
+			         includes="**/*.lib,**/*.dll"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>
 			<fileset dir="${dlc13.complete.dir}"
-			         includes="**/*"
+			         includes="**/*.lib,**/*.dll"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>
 		</copy>
 
-		<!-- macosx: link the dylib and jnilib -->
-		<echo>creating symlinks from dylibs to jnilibs</echo>
-		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/> <!-- ng6 -->
-		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>  <!-- dlc13 -->
-
-		<!-- macosx/linux: chmod the dylib/so appropriately -->
-		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<!-- win32: move an dlls to bin -->
+		<mkdir dir="${dist.sandbox.dir}/bin"/>
+		<move todir="${dist.sandbox.dir}/bin">
+			<fileset dir="${dist.lib.dir}" includes="**/*.dll"/>
+		</move>
 
 		<!-- ================= -->
 		<!-- Example Federates -->
@@ -273,8 +265,6 @@
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-		<!-- chmod them -->
-		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->
