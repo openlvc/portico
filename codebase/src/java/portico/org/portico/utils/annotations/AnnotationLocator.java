@@ -223,6 +223,7 @@ public class AnnotationLocator
     			inputStream.close();
     		}
     		
+			jarfile.close();
     		return names;
 		}
 		catch( Exception e )
