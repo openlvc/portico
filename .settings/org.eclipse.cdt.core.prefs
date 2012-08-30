@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/WINDOWSSDK/delimiter=;
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/WINDOWSSDK/operation=replace
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/WINDOWSSDK/value=${ProgramFiles(x86)}\\Microsoft SDKs\\Windows\\v7.0A
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/append=true
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/appendContributed=true
+environment/project/org.eclipse.cdt.msvc.dll.debug.355197734/WINDOWSSDK/delimiter=;
+environment/project/org.eclipse.cdt.msvc.dll.debug.355197734/WINDOWSSDK/operation=append
+environment/project/org.eclipse.cdt.msvc.dll.debug.355197734/WINDOWSSDK/value=${ProgramFiles(x86)}\\Microsoft SDKs\\Windows\\v7.0A
+environment/project/org.eclipse.cdt.msvc.dll.debug.355197734/append=true
+environment/project/org.eclipse.cdt.msvc.dll.debug.355197734/appendContributed=true
