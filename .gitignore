@@ -4,6 +4,7 @@
 # /
 /MacOSX
 /eclipse-build
+/(*
 
 # /.settings/
 /.settings/org.eclipse.mylyn.tasks.ui.prefs
