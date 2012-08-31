@@ -1,4 +1,12 @@
 eclipse.preferences.version=1
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/JAVA_HOME/delimiter=\:
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/JAVA_HOME/operation=append
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/JAVA_HOME/value=/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/WINDOWSSDK/delimiter=;
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/WINDOWSSDK/operation=replace
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/WINDOWSSDK/value=${ProgramFiles(x86)}\\Microsoft SDKs\\Windows\\v7.0A
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/append=true
+environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711/appendContributed=true
 environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/WINDOWSSDK/delimiter=;
 environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/WINDOWSSDK/operation=replace
 environment/project/org.eclipse.cdt.msvc.dll.debug.2103734852/WINDOWSSDK/value=${ProgramFiles(x86)}\\Microsoft SDKs\\Windows\\v7.0A
