@@ -52,7 +52,7 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -O2 -fPIC -arch i386 -I$RTI_HOME/include/ng6 \
+	g++ -O2 -fPIC -I$RTI_HOME/include/ng6 \
 	    -DRTI_USES_STD_FSTREAM \
 		-lRTI-NG -L$RTI_HOME/lib \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
@@ -65,7 +65,7 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	DYLD_LIBRARY_PATH="$RTI_HOME/lib" ./example-federate $*
+	DYLD_LIBRARY_PATH="$RTI_HOME/lib:$JAVA_HOME/jre/lib/server" ./example-federate $*
 	exit;
 fi
 
