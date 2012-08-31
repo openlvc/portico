@@ -155,7 +155,7 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.test13" depends="java.compile,compile.test13">
+	<target name="test.test13" depends="java.sandbox,compile.test13">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/ng6" includes="**/*"/>
