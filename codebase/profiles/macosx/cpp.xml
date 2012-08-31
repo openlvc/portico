@@ -130,11 +130,11 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="compile.test13">
+	<target name="compile.test13" depends="compile.ng6">
 		<cpp-unix outfile="test13"
 		          outdir="${test13.build.dir}"
 		          type="executable"
-		          compilerArgs="-g -arch i386"
+		          compilerArgs="-g -arch i386 -Wno-write-strings"
 		          linkerArgs="-arch i386">
 			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/ng6"/>
