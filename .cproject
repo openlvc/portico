@@ -70,7 +70,7 @@
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1540291162" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1061133066" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
-								<option id="gnu.c.compiler.option.include.paths.671203499" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
+								<option id="gnu.c.compiler.option.include.paths.671203499" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1616835589" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.819984807" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1179114575" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -90,6 +90,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/eclipse-build/cpp/ng6-Win32-libRTI-NG.dll"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ng6 win32) libRTI-NG.dll"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="libRTI-NG" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -122,6 +123,7 @@
 									<listOptionValue builtIn="false" value="RTI_DISABLE_WARNINGS"/>
 								</option>
 								<option id="org.eclipse.cdt.msvc.cl.option.includes.1724424626" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${WindowsSDK}\Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${VS100COMNTOOLS}..\..\VC\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include&quot;"/>
@@ -141,6 +143,7 @@
 								<option defaultValue="true" id="org.eclipse.cdt.msvc.link.option.dll.1887881463" name="Build a DLL" superClass="org.eclipse.cdt.msvc.link.option.dll" valueType="boolean"/>
 								<option id="org.eclipse.cdt.msvc.link.option.debug.62969508" name="Generate Debug Info (/debug)" superClass="org.eclipse.cdt.msvc.link.option.debug" value="true" valueType="boolean"/>
 								<option id="org.eclipse.cdt.msvc.link.option.libraries.1623975302" name="Libraries" superClass="org.eclipse.cdt.msvc.link.option.libraries" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="libFedTime"/>
 									<listOptionValue builtIn="false" value="${JAVA_HOME}\lib\jvm.lib"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/portico/(ng6 win32) libFedTime.dll/libFedTime.lib}"/>
 								</option>
@@ -159,6 +162,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/eclipse-build/cpp/ng6-win32-libFedTime.dll"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ng6 win32) libFedTime.dll"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="libFedTime" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -170,6 +174,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/eclipse-build/cpp/ng6-win32-libFedTime.dll"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ng6 win32) libFedTime.dll"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="libFedTime" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -227,6 +232,100 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
+		<cconfiguration id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547" moduleId="org.eclipse.cdt.core.settings" name="(ieee1516e macosx) librti1516e.dylib">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="dylib" artifactName="RTI-NG" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" description="Main IEEE-1516e Portico library for 64-bit Mac OS X" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547" name="(ieee1516e macosx) librti1516e.dylib" parent="org.eclipse.cdt.msvc.dll.debug">
+					<folderInfo id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.1578702320" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.116108958" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
+							<builder buildPath="${workspace_loc:/portico/(ng6 macosx) libRTI-NG.dylib}" id="cdt.managedbuild.target.gnu.builder.base.2109569068" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base">
+								<outputEntries>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="(ng6 macosx) libRTI-NG.dylib"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="(ng6 win32) libRTI-NG.dll"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="(ng6 win32) libFedTime.dll"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="(ieee1516e macosx) librti1516e.dylib"/>
+								</outputEntries>
+							</builder>
+							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1812591764" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base">
+								<option defaultValue="true" id="macosx.c.link.option.nostart.1553494493" name="Do not use standard start files (-nostartfiles)" superClass="macosx.c.link.option.nostart" valueType="boolean"/>
+								<option defaultValue="true" id="macosx.c.link.option.nodeflibs.1705108704" name="Do not use default libraries (-nodefaultlibs)" superClass="macosx.c.link.option.nodeflibs" valueType="boolean"/>
+								<option defaultValue="true" id="macosx.c.link.option.shared.1873438692" name="Shared (-dynamiclib)" superClass="macosx.c.link.option.shared" valueType="boolean"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1040709887" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
+								<option id="macosx.cpp.link.option.libs.1006816629" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs"/>
+								<option defaultValue="true" id="macosx.cpp.link.option.shared.1805618852" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.option.shared" valueType="boolean"/>
+								<option id="macosx.cpp.link.option.paths.489343096" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths"/>
+								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.540471668" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.base.1959882752" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
+								<option id="gnu.both.asm.option.include.paths.1650129197" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include"/>
+									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/src}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1720487220" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.233777393" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
+							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.1705684220" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base">
+								<option id="gnu.cpp.compiler.option.include.paths.880701978" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include"/>
+									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/src}&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.423874631" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
+									<listOptionValue builtIn="false" value="BUILDING_FEDTIME"/>
+									<listOptionValue builtIn="false" value="RTI_USES_STD_FSTREAM"/>
+									<listOptionValue builtIn="false" value="RTI_DISABLE_WARNINGS"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.optimization.level.402201238" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.728208463" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.822175479" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -Wno-non-virtual-dtor" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.pic.789458310" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="true" valueType="boolean"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1411521665" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1478695635" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
+								<option id="gnu.c.compiler.option.include.paths.1537950918" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include"/>
+									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/src}&quot;"/>
+								</option>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1525190377" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.2066898600" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.864788286" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
+									<listOptionValue builtIn="false" value="BUILDING_FEDTIME"/>
+									<listOptionValue builtIn="false" value="RTI_USES_STD_FSTREAM"/>
+									<listOptionValue builtIn="false" value="RTI_DISABLE_WARNINGS"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1277900364" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="codebase/src/cpp/ieee1516e/src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="portico.org.eclipse.cdt.msvc.projectType.dll.997918259" name="Shared Library" projectType="org.eclipse.cdt.msvc.projectType.dll"/>
@@ -248,6 +347,9 @@
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.554976421;org.eclipse.cdt.msvc.dll.debug.554976421.;org.eclipse.cdt.msvc.cl.dll.release.327246943;org.eclipse.cdt.msvc.cl.inputType.742594351">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547.;cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.1705684220;cdt.managedbuild.tool.gnu.cpp.compiler.input.1411521665">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.;cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1061133066;cdt.managedbuild.tool.gnu.c.compiler.input.1179114575">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
@@ -272,6 +374,9 @@
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.;org.eclipse.cdt.msvc.cl.c.dll.debug.1054843827;org.eclipse.cdt.msvc.cl.inputType.c.2137202718">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547.;cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1478695635;cdt.managedbuild.tool.gnu.c.compiler.input.1277900364">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>

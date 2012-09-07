@@ -42,7 +42,16 @@
 	<property name="test13.build.dir"          location="${cpp.build.dir}/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
-	
+
+	<!-- ==== IEEE-1516e Interface Properties ==== -->
+	<!-- source -->
+	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
+	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
+
+	<!-- ieee1516e build -->
+	<property name="ieee1516e.build.dir"       location="${cpp.build.dir}/ieee1516e"/>
+	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
+	<property name="ieee1516e.obj.dir"         location="${ieee1516e.build.dir}/obj"/>
 
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
@@ -146,6 +155,34 @@
 			<library path="${ng6.complete.dir}" libs="RTI-NG"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpp-unix>
+	</target>
+
+	<!-- ==================================== -->
+	<!--            1516e Interface           -->
+	<!-- ==================================== -->
+	<target name="compile.ieee1516e">
+		<cpp-unix outfile="rti1516e"
+		          outdir="${ieee1516e.build.dir}"
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs="-dynamiclib">
+			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}"/>
+			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${jdk.home}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlink...</echo>
+		<exec executable="ln" dir="${ieee1516e.complete.dir}" failonerror="true">
+			<arg line="-sf ./librti1516e.dylib ./librti1516e.jnilib"/>
+		</exec>
 	</target>
 
 	<!-- ================================================================================= -->
