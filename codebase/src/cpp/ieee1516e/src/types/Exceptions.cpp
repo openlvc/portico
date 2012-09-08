@@ -13,6 +13,7 @@
  *
  */
 #include "common.h"
+#include "RTI/encoding/EncodingExceptions.h"
 
 IEEE1516E_NS_START
 
@@ -112,6 +113,7 @@ EXCEPTION_BODY(NoRequestToEnableTimeConstrainedWasPending)
 EXCEPTION_BODY(RequestForTimeRegulationPending)
 EXCEPTION_BODY(NoRequestToEnableTimeRegulationWasPending)
 EXCEPTION_BODY(NoFederateWillingToAcquireAttribute)
+EXCEPTION_BODY(EncoderException)
 EXCEPTION_BODY(ErrorReadingFDD)
 EXCEPTION_BODY(ErrorReadingMIM)
 EXCEPTION_BODY(FederateAlreadyExecutionMember)

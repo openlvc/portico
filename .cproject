@@ -226,7 +226,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="jni/|services/|utils/|common.h|globals.cpp|types/AttributeHandleSet.cpp|types/AttributeHandleSet.h|types/AttributeHandleValuePairSet.cpp|types/AttributeHandleValuePairSet.h|types/Factories.cpp|types/FederateHandleSet.cpp|types/FederateHandleSet.h|types/GenericHandleValuePair.cpp|types/GenericHandleValuePair.h|types/ParameterHandleValuePairSet.cpp|types/ParameterHandleValuePairSet.h|types/Region.cpp|types/Region.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/src"/>
+						<entry excluding="types/AttributeHandleSet.cpp|types/ParameterHandleValuePairSet.h|types/GenericHandleValuePair.h|utils/|types/AttributeHandleSet.h|types/AttributeHandleValuePairSet.h|types/Factories.cpp|rtiamb|types/FederateHandleSet.cpp|types/FederateHandleSet.h|globals.cpp|types/Region.h|types/ParameterHandleValuePairSet.cpp|types/GenericHandleValuePair.cpp|types/Region.cpp|types/AttributeHandleValuePairSet.cpp|common.h|jni/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -234,7 +234,13 @@
 		</cconfiguration>
 		<cconfiguration id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.1963862547" moduleId="org.eclipse.cdt.core.settings" name="(ieee1516e macosx) librti1516e.dylib">
-				<externalSettings/>
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ieee1516e macosx) librti1516e.dylib"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="RTI-NG" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -263,16 +269,16 @@
 								<option defaultValue="true" id="macosx.c.link.option.shared.1873438692" name="Shared (-dynamiclib)" superClass="macosx.c.link.option.shared" valueType="boolean"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1040709887" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
-								<option id="macosx.cpp.link.option.libs.1006816629" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs"/>
+								<option id="macosx.cpp.link.option.libs.1006816629" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs"/>
 								<option defaultValue="true" id="macosx.cpp.link.option.shared.1805618852" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.option.shared" valueType="boolean"/>
-								<option id="macosx.cpp.link.option.paths.489343096" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths"/>
+								<option id="macosx.cpp.link.option.paths.489343096" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.540471668" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.base.1959882752" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
-								<option id="gnu.both.asm.option.include.paths.1650129197" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1650129197" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include"/>
 									<listOptionValue builtIn="false" value="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/portico/codebase/src/cpp/ieee1516e/include}&quot;"/>
@@ -309,7 +315,7 @@
 								</option>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1525190377" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.2066898600" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.864788286" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.864788286" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
 									<listOptionValue builtIn="false" value="BUILDING_FEDTIME"/>
 									<listOptionValue builtIn="false" value="RTI_USES_STD_FSTREAM"/>

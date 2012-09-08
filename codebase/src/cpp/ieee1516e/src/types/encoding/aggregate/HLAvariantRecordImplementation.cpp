@@ -12,37 +12,29 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "common.h"
-#include "rtiamb/PorticoRtiAmbassador.h"
+#include "types/encoding/aggregate/HLAvariantRecordImplementation.h"
 
 IEEE1516E_NS_START
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
-RTIambassadorFactory::RTIambassadorFactory()
+HLAvariantRecordImplementation::HLAvariantRecordImplementation()
 {
+	
 }
 
-RTIambassadorFactory::~RTIambassadorFactory() throw ()
+HLAvariantRecordImplementation::~HLAvariantRecordImplementation()
 {
+	
 }
 
 //------------------------------------------------------------------------------------------
 //                                     INSTANCE METHODS
 //------------------------------------------------------------------------------------------
-std::auto_ptr<RTIambassador> RTIambassadorFactory::createRTIambassador() throw( RTIinternalError )
-{
-	return auto_ptr<RTIambassador>( new PORTICO1516E_NS::PorticoRtiAmbassador() );
-}
 
 //------------------------------------------------------------------------------------------
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------
-
-
-
-
-// 10.35
 
 IEEE1516E_NS_END
