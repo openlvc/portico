@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "services/PorticoRtiAmbassador.h"
+#include "rtiamb/PorticoRtiAmbassador.h"
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
