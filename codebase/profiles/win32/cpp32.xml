@@ -48,6 +48,15 @@
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
 
+	<!-- ==== IEEE-1516e Interface Properties ==== -->
+	<!-- source -->
+	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
+	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
+
+	<!-- ieee1516e build -->
+	<property name="ieee1516e.build.dir"       location="${cpp.build.dir}/ieee1516e"/>
+	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
+	<property name="ieee1516e.obj.dir"         location="${ieee1516e.build.dir}/obj"/>
 
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
@@ -181,6 +190,59 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<library path="${ng6.complete.dir}" libs="RTI-NG,FedTime"/>
 			<library path="${cppunit.lib.dir}" libs="cppunit"/>
+		</cpp-win32>
+	</target>
+
+	<!-- ==================================== -->
+	<!--          iee1516e Interface          -->
+	<!-- ==================================== -->
+	<target name="compile.ieee1516e">
+		<!-- Build the fedtime DLL -->
+<!--
+		<cpp-win32 outfile="libfedtime1516e" outdir="${ieee1516e.build.dir}">
+			<fileset dir="${ieee1516e.src.dir}">
+				<include name="types/time/**/*.cpp"/>
+				<include name="types/Exceptions.cpp"/>
+			</fileset>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_RTI"/> <! needed to ensure Exception.cpp stuff works >
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+-->
+		<!-- Build the main DLL -->
+<!--
+		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}">
+			<fileset dir="${ieee1516e.src.dir}">
+				<include name="**/*.cpp"/>
+				<exclude name="types/time/**/*.cpp"/>
+			</fileset>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_RTI"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="fedtime1516e"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+-->
+
+		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}">
+			<fileset dir="${ieee1516e.src.dir}">
+				<include name="**/*.cpp"/>
+			</fileset>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}"/>
+			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
 	</target>
 
