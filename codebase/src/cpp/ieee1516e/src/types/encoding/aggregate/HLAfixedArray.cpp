@@ -14,7 +14,6 @@
  */
 #include "common.h"
 #include "RTI/encoding/HLAfixedArray.h"
-#include "types/encoding/aggregate/HLAfixedArrayImplementation.h"
 
 IEEE1516E_NS_START
 
@@ -26,26 +25,22 @@ IEEE1516E_NS_START
 // A clone of the given element works as a prototype.
 HLAfixedArray::HLAfixedArray( const DataElement& protoType, size_t length )
 {
-	this->_impl = new HLAfixedArrayImplementation();
 }
 
 // Copy Constructor
 // Copied elements use internal memory
 HLAfixedArray::HLAfixedArray( const HLAfixedArray& rhs )
 {
-	this->_impl = new HLAfixedArrayImplementation();
 }
 
 // Destructor
 HLAfixedArray::~HLAfixedArray()
 {
-	delete this->_impl;
 }
 
 // Private: Default Constructor not allowed
 HLAfixedArray::HLAfixedArray()
 {
-	this->_impl = new HLAfixedArrayImplementation();
 }
 
 //------------------------------------------------------------------------------------------
@@ -54,7 +49,7 @@ HLAfixedArray::HLAfixedArray()
 // Return a new copy of the array
 std::auto_ptr<DataElement> HLAfixedArray::clone() const
 {
-	return auto_ptr<DataElement>( new HLAfixedArray() );
+	return auto_ptr<DataElement>( new HLAfixedArray(*this) );
 }
 
 // Encode this element into a new VariableLengthData

@@ -14,7 +14,6 @@
  */
 #include "common.h"
 #include "RTI/encoding/HLAfixedRecord.h"
-#include "types/encoding/aggregate/HLAfixedRecordImplementation.h"
 
 IEEE1516E_NS_START
 
@@ -24,19 +23,16 @@ IEEE1516E_NS_START
 // Default Constructor
 HLAfixedRecord::HLAfixedRecord()
 {
-	this->_impl = new HLAfixedRecordImplementation();
 }
 
 // Copy Constructor
 HLAfixedRecord::HLAfixedRecord( const HLAfixedRecord& rhs )
 {
-	this->_impl = new HLAfixedRecordImplementation();
 }
 
 // Destructor
 HLAfixedRecord::~HLAfixedRecord()
 {
-	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------

@@ -14,7 +14,6 @@
  */
 #include "common.h"
 #include "RTI/encoding/HLAvariantRecord.h"
-#include "types/encoding/aggregate/HLAvariantRecordImplementation.h"
 
 IEEE1516E_NS_START
 
@@ -25,26 +24,22 @@ IEEE1516E_NS_START
 // A clone of the given element acts to validate the discriminant type.
 HLAvariantRecord::HLAvariantRecord( const DataElement& discriminantPrototype )
 {
-	this->_impl = new HLAvariantRecordImplementation();
 }
 
 // Copy Constructor
 HLAvariantRecord::HLAvariantRecord( const HLAvariantRecord& rhs )
 {
-	this->_impl = new HLAvariantRecordImplementation();
 }
 
 // Destructor
 HLAvariantRecord::~HLAvariantRecord()
 {
-	delete this->_impl;
 }
 
 // Private
 // Default constructor not allowed
 HLAvariantRecord::HLAvariantRecord()
 {
-	this->_impl = new HLAvariantRecordImplementation();
 }
 
 //------------------------------------------------------------------------------------------

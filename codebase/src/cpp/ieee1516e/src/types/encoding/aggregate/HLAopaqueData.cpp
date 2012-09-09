@@ -14,7 +14,6 @@
  */
 #include "common.h"
 #include "RTI/encoding/HLAopaqueData.h"
-#include "types/encoding/aggregate/HLAopaqueDataImplementation.h"
 
 IEEE1516E_NS_START
 
@@ -25,14 +24,12 @@ IEEE1516E_NS_START
 // Uses internal memory
 HLAopaqueData::HLAopaqueData()
 {
-	this->_impl = new HLAopaqueDataImplementation();
 }
 
 // Constructor: Initial Value
 // Uses internal memory
 HLAopaqueData::HLAopaqueData( const Octet* inData, size_t dataSize )
 {
-	this->_impl = new HLAopaqueDataImplementation();
 }
 
 // Constructor: Use external memory with buffer and data of given lengths.
@@ -48,20 +45,17 @@ HLAopaqueData::HLAopaqueData( const Octet* inData, size_t dataSize )
 HLAopaqueData::HLAopaqueData( Octet** inData, size_t bufferSize, size_t dataSize )
 	throw( EncoderException )
 {
-	this->_impl = new HLAopaqueDataImplementation();
 }
 
 // Constructor: Copy
 // Uses internal memory
 HLAopaqueData::HLAopaqueData( const HLAopaqueData& rhs )
 {
-	this->_impl = new HLAopaqueDataImplementation();
 }
 
 // Caller is free to delete rhs.
 HLAopaqueData::~HLAopaqueData()
 {
-	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------

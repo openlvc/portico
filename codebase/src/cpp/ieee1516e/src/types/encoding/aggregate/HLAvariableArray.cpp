@@ -14,7 +14,6 @@
  */
 #include "common.h"
 #include "RTI/encoding/HLAvariableArray.h"
-#include "types/encoding/aggregate/HLAvariableArrayImplementation.h"
 
 IEEE1516E_NS_START
 
@@ -26,25 +25,21 @@ IEEE1516E_NS_START
 // A clone of the given element works as a seed.
 HLAvariableArray::HLAvariableArray( const DataElement& prototype )
 {
-	this->_impl = new HLAvariableArrayImplementation();
 }
 
 // Copy Constructor
 HLAvariableArray::HLAvariableArray( const HLAvariableArray& rhs )
 {
-	this->_impl = new HLAvariableArrayImplementation();
 }
 
 // Destructor
 HLAvariableArray::~HLAvariableArray()
 {
-	delete this->_impl;
 }
 
 // Private
 HLAvariableArray::HLAvariableArray()
 {
-	this->_impl = new HLAvariableArrayImplementation();
 }
 
 //------------------------------------------------------------------------------------------
