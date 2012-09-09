@@ -13,8 +13,7 @@
  *
  */
 #include "common.h"
-#include "types/time/HLAinteger64TimeImpl.h"
-#include "types/time/HLAinteger64IntervalImpl.h"
+#include "types/time/TimeImplementations.h"
 
 IEEE1516E_NS_START
 
@@ -23,22 +22,25 @@ IEEE1516E_NS_START
 //------------------------------------------------------------------------------------------
 HLAinteger64Interval::HLAinteger64Interval()
 {
-	this->_impl = new HLAinteger64IntervalImpl( 0.0 );
+	this->_impl = new HLAinteger64IntervalImpl();
 }
 
 HLAinteger64Interval::HLAinteger64Interval( Integer64 value )
 {
-	this->_impl = new HLAinteger64IntervalImpl( value );
+	this->_impl = new HLAinteger64IntervalImpl();
+	this->_impl->time = value;
 }
 
 HLAinteger64Interval::HLAinteger64Interval( const LogicalTimeInterval& rhs )
 {
-	this->_impl = new HLAinteger64IntervalImpl( ((HLAinteger64Interval)rhs)._impl->getValue() );
+	this->_impl = new HLAinteger64IntervalImpl();
+	this->_impl->time = ((HLAinteger64Interval)rhs)._impl->time;
 }
 
 HLAinteger64Interval::HLAinteger64Interval( const HLAinteger64Interval& rhs )
 {
-	this->_impl = new HLAinteger64IntervalImpl( rhs._impl->getValue() );
+	this->_impl = new HLAinteger64IntervalImpl();
+	this->_impl->time = rhs._impl->time;
 }
 
 // Destructor
@@ -52,24 +54,24 @@ HLAinteger64Interval::~HLAinteger64Interval() throw()
 //------------------------------------------------------------------------------------------
 Integer64 HLAinteger64Interval::getInterval() const
 {
-	return this->_impl->getValue();
+	return this->_impl->time;
 }
 
 void HLAinteger64Interval::setInterval( Integer64 value )
 {
-	this->_impl->setValue( value );
+	this->_impl->time = value;
 }
 
 HLAinteger64Interval& HLAinteger64Interval::operator=( const HLAinteger64Interval& value )
 	throw( InvalidLogicalTimeInterval )
 {
-	this->_impl->setValue( value._impl->getValue() );
+	this->_impl->time = value._impl->time;
 	return *this;
 }
 
 HLAinteger64Interval::operator Integer64() const
 {
-	return this->_impl->getValue();
+	return this->_impl->time;
 }
 
 ////////////////////////////////////////////////////////////
@@ -156,54 +158,52 @@ std::wstring HLAinteger64Interval::implementationName() const
 LogicalTimeInterval& HLAinteger64Interval::operator= ( const LogicalTimeInterval& value )
 	throw( InvalidLogicalTimeInterval )
 {
-	this->_impl->setValue( ((HLAinteger64Interval)value)._impl->getValue() );
+	this->_impl->time = ((HLAinteger64Interval)value).getInterval();
 	return *this;
 }
 
 LogicalTimeInterval& HLAinteger64Interval::operator+= ( const LogicalTimeInterval& addend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	Integer64 other = ((HLAinteger64Interval)addend).getInterval();
-	this->_impl->setValue( this->_impl->getValue() + other );
+	this->_impl->time += ((HLAinteger64Interval)addend).getInterval();
 	return *this;
 }
 
 LogicalTimeInterval& HLAinteger64Interval::operator-= ( const LogicalTimeInterval& subtrahend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	Integer64 other = ((HLAinteger64Interval)subtrahend).getInterval();
-	this->_impl->setValue( this->_impl->getValue() - other );
+	this->_impl->time -= ((HLAinteger64Interval)subtrahend).getInterval();
 	return *this;
 }
 
 bool HLAinteger64Interval::operator> ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->getValue() > ((HLAinteger64Interval)value)._impl->getValue();
+	return _impl->time > ((HLAinteger64Interval)value).getInterval();
 }
 
 bool HLAinteger64Interval::operator< ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->getValue() < ((HLAinteger64Interval)value)._impl->getValue();
+	return _impl->time < ((HLAinteger64Interval)value).getInterval();
 }
 
 bool HLAinteger64Interval::operator==( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->getValue() == ((HLAinteger64Interval)value)._impl->getValue();
+	return _impl->time == ((HLAinteger64Interval)value).getInterval();
 }
 
 bool HLAinteger64Interval::operator>=( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->getValue() >= ((HLAinteger64Interval)value)._impl->getValue();
+	return _impl->time >= ((HLAinteger64Interval)value).getInterval();
 }
 
 bool HLAinteger64Interval::operator<=( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->getValue() >= ((HLAinteger64Interval)value)._impl->getValue();
+	return _impl->time <= ((HLAinteger64Interval)value).getInterval();
 }
 
 // Set self to the difference between two LogicalTimes
@@ -211,9 +211,9 @@ void HLAinteger64Interval::setToDifference( const LogicalTime& minuend,
                                             const LogicalTime& subtrahend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTime )
 {
-	Integer64 one = ((HLAinteger64Time)minuend)._impl->getValue();
-	Integer64 two = ((HLAinteger64Time)subtrahend)._impl->getValue();
-	this->_impl->setValue( one - two );
+	Integer64 one = ((HLAinteger64Time)minuend).getTime();
+	Integer64 two = ((HLAinteger64Time)subtrahend).getTime();
+	this->_impl->time = (two - one);
 }
 
 //------------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@
  *
  */
 #include "common.h"
-#include "types/time/HLAinteger64TimeImpl.h"
+#include "types/time/TimeImplementations.h"
 
 IEEE1516E_NS_START
 
@@ -22,22 +22,24 @@ IEEE1516E_NS_START
 //------------------------------------------------------------------------------------------
 HLAinteger64Time::HLAinteger64Time()
 {
-	this->_impl = new HLAinteger64TimeImpl( 0.0 );
+	this->_impl = new HLAinteger64TimeImpl();
+	this->_impl->time = 0;
 }
 
 HLAinteger64Time::HLAinteger64Time( Integer64 value )
 {
-	this->_impl = new HLAinteger64TimeImpl( value );
+	this->_impl = new HLAinteger64TimeImpl();
+	this->_impl->time = value;
 }
 
 HLAinteger64Time::HLAinteger64Time( const LogicalTime& value )
 {
-	this->_impl = new HLAinteger64TimeImpl( ((HLAinteger64Time)value)._impl->getValue() );
+	this->_impl->time = ((HLAinteger64Time)value)._impl->time;
 }
 
 HLAinteger64Time::HLAinteger64Time( const HLAinteger64Time& value )
 {
-	this->_impl = new HLAinteger64TimeImpl( value._impl->getValue() );
+	this->_impl->time = value._impl->time;
 }
 
 HLAinteger64Time::~HLAinteger64Time() throw()
@@ -50,24 +52,24 @@ HLAinteger64Time::~HLAinteger64Time() throw()
 //------------------------------------------------------------------------------------------
 Integer64 HLAinteger64Time::getTime() const
 {
-	return this->_impl->getValue();
+	return this->_impl->time;
 }
 
 void HLAinteger64Time::setTime( Integer64 value )
 {
-	return this->_impl->setValue( value );
+	this->_impl->time = value;
 }
 
 HLAinteger64Time& HLAinteger64Time::operator= ( const HLAinteger64Time& rhs )
 	throw( InvalidLogicalTime )
 {
-	this->_impl->setValue( rhs._impl->getValue() );
+	this->_impl->time = rhs._impl->time;
 	return *this;
 }
 
 HLAinteger64Time::operator Integer64() const
 {
-	return this->_impl->getValue();
+	return this->_impl->time;
 }
 
 
@@ -154,7 +156,7 @@ std::wstring HLAinteger64Time::implementationName() const
 LogicalTime& HLAinteger64Time::operator= ( const LogicalTime& value )
 	throw( InvalidLogicalTime )
 {
-	this->_impl->setValue( ((HLAinteger64Time)value)._impl->getValue() );
+	this->_impl->time = ((HLAinteger64Time)value).getTime();
 	return *this;
 }
 
@@ -162,47 +164,45 @@ LogicalTime& HLAinteger64Time::operator= ( const LogicalTime& value )
 LogicalTime& HLAinteger64Time::operator+= ( const LogicalTimeInterval& addend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	Float64 other = ((HLAinteger64Interval)addend).getInterval();
-	this->_impl->setValue( this->_impl->getValue() + other );
+	this->_impl->time += ((HLAinteger64Interval)addend).getInterval();
 	return *this;
 }
 
 LogicalTime& HLAinteger64Time::operator-= ( const LogicalTimeInterval& subtrahend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	Float64 other = ((HLAinteger64Interval)subtrahend).getInterval();
-	this->_impl->setValue( this->_impl->getValue() - other );
+	this->_impl->time -= ((HLAinteger64Interval)subtrahend).getInterval();
 	return *this;
 }
 
 bool HLAinteger64Time::operator> ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->getValue() > ((HLAinteger64Time)value)._impl->getValue();
+	return _impl->time > ((HLAinteger64Time)value).getTime();
 }
 
 bool HLAinteger64Time::operator< ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->getValue() < ((HLAinteger64Time)value)._impl->getValue();
+	return _impl->time < ((HLAinteger64Time)value).getTime();
 }
 
 bool HLAinteger64Time::operator== ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->getValue() == ((HLAinteger64Time)value)._impl->getValue();
+	return _impl->time == ((HLAinteger64Time)value).getTime();
 }
 
 bool HLAinteger64Time::operator>= ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->getValue() >= ((HLAinteger64Time)value)._impl->getValue();
+	return _impl->time >= ((HLAinteger64Time)value).getTime();
 }
 
 bool HLAinteger64Time::operator<= ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->getValue() <= ((HLAinteger64Time)value)._impl->getValue();
+	return _impl->time <= ((HLAinteger64Time)value).getTime();
 }
 
 //------------------------------------------------------------------------------------------
