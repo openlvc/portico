@@ -24,6 +24,7 @@
 #elif defined(__APPLE__)
     #include <stdarg.h>
     #include <ctype.h>
+	#include <float.h>
 #else
     #include <stdarg.h>
     #include <ctype.h>

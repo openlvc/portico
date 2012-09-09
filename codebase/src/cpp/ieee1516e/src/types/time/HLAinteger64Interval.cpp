@@ -23,6 +23,7 @@ IEEE1516E_NS_START
 HLAinteger64Interval::HLAinteger64Interval()
 {
 	this->_impl = new HLAinteger64IntervalImpl();
+	this->_impl->time = 0;
 }
 
 HLAinteger64Interval::HLAinteger64Interval( Integer64 value )
@@ -90,12 +91,12 @@ bool HLAinteger64Interval::isZero() const
 
 void HLAinteger64Interval::setEpsilon()
 {
-	this->setInterval( 1 );
+	this->setInterval( HLA_TIME_INTEGER_MIN );
 }
 
 bool HLAinteger64Interval::isEpsilon() const
 {
-	return this->getInterval() == 1;
+	return this->getInterval() == HLA_TIME_INTEGER_MIN;
 }
 
 // Generates an encoded value that can be used to send

@@ -26,6 +26,10 @@ IEEE1516E_NS_START
 // standard headers will delegate. This header declares those types as
 // structs, defining their makeup.
 //
+
+//////////////////////////////////////////
+//////// Floating Point Time Base ////////
+//////////////////////////////////////////
 struct HLAfloat64TimeImpl
 {
 	Float64 time;
@@ -36,6 +40,9 @@ struct HLAfloat64IntervalImpl
 	Float64 time;
 };
 
+//////////////////////////////////////////
+////////// Integer Time Base /////////////
+//////////////////////////////////////////
 struct HLAinteger64TimeImpl
 {
 	Integer64 time;
@@ -45,6 +52,9 @@ struct HLAinteger64IntervalImpl
 {
 	Integer64 time;
 };
+
+#define HLA_TIME_INTEGER_MIN 0
+#define HLA_TIME_INTEGER_MAX LONG_MAX
 
 IEEE1516E_NS_END
 

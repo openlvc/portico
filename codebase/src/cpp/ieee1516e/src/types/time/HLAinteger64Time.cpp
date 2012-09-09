@@ -34,11 +34,13 @@ HLAinteger64Time::HLAinteger64Time( Integer64 value )
 
 HLAinteger64Time::HLAinteger64Time( const LogicalTime& value )
 {
+	this->_impl = new HLAinteger64TimeImpl();
 	this->_impl->time = ((HLAinteger64Time)value)._impl->time;
 }
 
 HLAinteger64Time::HLAinteger64Time( const HLAinteger64Time& value )
 {
+	this->_impl = new HLAinteger64TimeImpl();
 	this->_impl->time = value._impl->time;
 }
 
@@ -89,12 +91,12 @@ bool HLAinteger64Time::isInitial() const
 
 void HLAinteger64Time::setFinal()
 {
-	setTime( 0xFFFF );
+	setTime( HLA_TIME_INTEGER_MAX );
 }
 
 bool HLAinteger64Time::isFinal() const
 {
-	return getTime() == 0xFFFF;
+	return getTime() == HLA_TIME_INTEGER_MAX;
 }
 
 // Generates an encoded value that can be used to send
