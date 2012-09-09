@@ -226,7 +226,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="types/AttributeHandleSet.cpp|types/ParameterHandleValuePairSet.h|types/GenericHandleValuePair.h|utils/|types/AttributeHandleSet.h|types/AttributeHandleValuePairSet.h|types/Factories.cpp|rtiamb|types/FederateHandleSet.cpp|types/FederateHandleSet.h|globals.cpp|types/Region.h|types/ParameterHandleValuePairSet.cpp|types/GenericHandleValuePair.cpp|types/Region.cpp|types/AttributeHandleValuePairSet.cpp|common.h|jni/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/src"/>
+						<entry excluding="types/AttributeHandleSet.cpp|types/ParameterHandleValuePairSet.h|types/GenericHandleValuePair.h|utils/|types/AttributeHandleSet.h|types/AttributeHandleValuePairSet.h|types/Factories.cpp|rtiamb|types/FederateHandleSet.cpp|types/FederateHandleSet.h|globals.cpp|types/Region.h|types/ParameterHandleValuePairSet.cpp|types/Region.cpp|types/GenericHandleValuePair.cpp|types/AttributeHandleValuePairSet.cpp|common.h|jni/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
