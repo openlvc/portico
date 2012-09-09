@@ -40,6 +40,9 @@ struct HLAfloat64IntervalImpl
 	Float64 time;
 };
 
+#define HLA_TIME_FLOAT_MIN DBL_MIN
+#define HLA_TIME_FLOAT_MAX DBL_MAX
+
 //////////////////////////////////////////
 ////////// Integer Time Base /////////////
 //////////////////////////////////////////
