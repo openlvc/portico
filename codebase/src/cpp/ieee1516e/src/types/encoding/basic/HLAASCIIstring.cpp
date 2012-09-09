@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAASCIIstringImplementation
+{
+	std::string value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAASCIIstring::HLAASCIIstring()
 {
-	
+	this->_impl = new HLAASCIIstringImplementation();
+	this->_impl->value = std::string("");
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAASCIIstring::HLAASCIIstring( const std::string& inData )
 {
-	
+	this->_impl = new HLAASCIIstringImplementation();
+	this->_impl->value = std::string( inData );
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAASCIIstring::HLAASCIIstring( const std::string& inData )
 // A null value will construct instance to use internal memory.
 HLAASCIIstring::HLAASCIIstring( std::string* inData )
 {
-	
+	this->_impl = new HLAASCIIstringImplementation();
+	this->_impl->value = std::string( *inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAASCIIstring::HLAASCIIstring( const HLAASCIIstring& rhs )
 {
-	
+	this->_impl = new HLAASCIIstringImplementation();
+	this->_impl->value = std::string(rhs._impl->value);
 }
 
 HLAASCIIstring::~HLAASCIIstring()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAASCIIstring::~HLAASCIIstring()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAASCIIstring::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAASCIIstring() );
+	return std::auto_ptr<DataElement>( new HLAASCIIstring(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -139,13 +148,13 @@ void HLAASCIIstring::setDataPointer( std::string* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAASCIIstring::set( std::string inData )
 {
-	
+	this->_impl->value = std::string(inData);
 }
 
 // Get the value from encoded data.
 std::string HLAASCIIstring::get() const
 {
-	return std::string();
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ std::string HLAASCIIstring::get() const
 // Uses existing memory of this instance.
 HLAASCIIstring& HLAASCIIstring::operator= ( const HLAASCIIstring& rhs )
 {
+	this->_impl->value = std::string( rhs._impl->value );
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAASCIIstring& HLAASCIIstring::operator= ( const HLAASCIIstring& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAASCIIstring& HLAASCIIstring::operator= ( std::string rhs )
 {
+	this->_impl->value = std::string( rhs );
 	return *this;
 }
 

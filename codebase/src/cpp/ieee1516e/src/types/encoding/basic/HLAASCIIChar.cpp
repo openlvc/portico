@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAASCIIcharImplementation
+{
+	char value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,15 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAASCIIchar::HLAASCIIchar()
 {
-	
+	this->_impl = new HLAASCIIcharImplementation();
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAASCIIchar::HLAASCIIchar( const char& inData )
 {
-	
+	this->_impl = new HLAASCIIcharImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -49,12 +55,13 @@ HLAASCIIchar::HLAASCIIchar( char* inData )
 // Uses internal memory.
 HLAASCIIchar::HLAASCIIchar( const HLAASCIIchar& rhs )
 {
-	
+	this->_impl = new HLAASCIIcharImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAASCIIchar::~HLAASCIIchar()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +71,7 @@ HLAASCIIchar::~HLAASCIIchar()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAASCIIchar::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAASCIIchar() );
+	return std::auto_ptr<DataElement>( new HLAASCIIchar(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -139,13 +146,13 @@ void HLAASCIIchar::setDataPointer( char* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAASCIIchar::set( char inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 char HLAASCIIchar::get() const
 {
-	return (char)0;
+	return (char)this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +162,7 @@ char HLAASCIIchar::get() const
 // Uses existing memory of this instance.
 HLAASCIIchar& HLAASCIIchar::operator= ( const HLAASCIIchar& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +170,7 @@ HLAASCIIchar& HLAASCIIchar::operator= ( const HLAASCIIchar& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAASCIIchar& HLAASCIIchar::operator= ( char rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
