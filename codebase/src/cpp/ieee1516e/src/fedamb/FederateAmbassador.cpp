@@ -19,7 +19,7 @@
 //------------------------------------------------------------------------------------------
 IEEE1516E_NS_START
 
-FederateAmbassador::~FederateAmbassador()
+FederateAmbassador::~FederateAmbassador() throw()
 {
 	
 }
