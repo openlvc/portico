@@ -17,7 +17,7 @@
 
 PORTICO1516E_NS_START
 
-int Logger::globalLevel = Logger::UNSET;
+int Logger::globalLevel = Logger::LEVEL_UNSET;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS
@@ -26,7 +26,7 @@ int Logger::globalLevel = Logger::UNSET;
 Logger::Logger( std::string name )
 {
 	this->name = std::string(name);
-	this->level = Logger::ERROR;
+	this->level = Logger::LEVEL_ERROR;
 }
 
 Logger::~Logger()
@@ -49,7 +49,7 @@ std::string Logger::getName()
 
 void Logger::setLevel( int level )
 {
-	if( level >= Logger::OFF && level <= Logger::NOISY )
+	if( level >= Logger::LEVEL_OFF && level <= Logger::LEVEL_NOISY )
 	{
 		this->level = level;
 	}
@@ -91,7 +91,7 @@ void Logger::log( std::string level, std::string format, va_list args )
 //
 bool Logger::checkLevel( int messageLevel )
 {
-	if( Logger::globalLevel == Logger::UNSET )
+	if( Logger::globalLevel == Logger::LEVEL_UNSET )
 	{
 		if( messageLevel <= this->level )
 			return true;
@@ -114,7 +114,7 @@ void Logger::fatal( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::FATAL) )
+	if( !checkLevel(Logger::LEVEL_FATAL) )
 		return;
 
 	// start the var-arg stuff
@@ -129,7 +129,7 @@ void Logger::error( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::ERROR) )
+	if( !checkLevel(Logger::LEVEL_ERROR) )
 		return;
 
 	// start the var-arg stuff
@@ -145,7 +145,7 @@ void Logger::warn ( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::WARN) )
+	if( !checkLevel(Logger::LEVEL_WARN) )
 		return;
 
 	// start the var-arg stuff
@@ -161,7 +161,7 @@ void Logger::info ( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::INFO) )
+	if( !checkLevel(Logger::LEVEL_INFO) )
 		return;
 
 	// start the var-arg stuff
@@ -177,7 +177,7 @@ void Logger::debug( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::DEBUG) )
+	if( !checkLevel(Logger::LEVEL_DEBUG) )
 		return;
 
 	// start the var-arg stuff
@@ -193,7 +193,7 @@ void Logger::trace( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::TRACE) )
+	if( !checkLevel(Logger::LEVEL_TRACE) )
 		return;
 
 	// start the var-arg stuff
@@ -209,7 +209,7 @@ void Logger::noisy( std::string format, ... )
 {
 	// if the requested level is GREATER than the
 	// logger level (the threshold), don't print it
-	if( !checkLevel(Logger::NOISY) )
+	if( !checkLevel(Logger::LEVEL_NOISY) )
 		return;
 
 	// start the var-arg stuff
@@ -227,37 +227,37 @@ void Logger::noisy( std::string format, ... )
 
 bool Logger::isFatalEnabled()
 {
-	return checkLevel( Logger::FATAL );
+	return checkLevel( Logger::LEVEL_FATAL );
 }
 
 bool Logger::isErrorEnabled()
 {
-	return checkLevel( Logger::ERROR );
+	return checkLevel( Logger::LEVEL_ERROR );
 }
 
 bool Logger::isWarnEnabled()
 {
-	return checkLevel( Logger::WARN );
+	return checkLevel( Logger::LEVEL_WARN );
 }
 
 bool Logger::isInfoEnabled()
 {
-	return checkLevel( Logger::INFO );
+	return checkLevel( Logger::LEVEL_INFO );
 }
 
 bool Logger::isDebugEnabled()
 {
-	return checkLevel( Logger::DEBUG );
+	return checkLevel( Logger::LEVEL_DEBUG );
 }
 
 bool Logger::isTraceEnabled()
 {
-	return checkLevel( Logger::TRACE );
+	return checkLevel( Logger::LEVEL_TRACE );
 }
 
 bool Logger::isNoisyEnabled()
 {
-	return checkLevel( Logger::NOISY );
+	return checkLevel( Logger::LEVEL_NOISY );
 }
 
 //------------------------------------------------------------------------------------------
@@ -265,7 +265,7 @@ bool Logger::isNoisyEnabled()
 //------------------------------------------------------------------------------------------
 void Logger::setGlobalLevel( int level )
 {
-	if( level == Logger::UNSET || (level >= Logger::OFF && level <= Logger::NOISY) )
+	if( level == Logger::LEVEL_UNSET || (level >= Logger::LEVEL_OFF && level <= Logger::LEVEL_NOISY) )
 	{
 		Logger::globalLevel = level;
 	}
@@ -277,21 +277,21 @@ void Logger::setGlobalLevel( int level )
 void Logger::setGlobalLevel( std::string level )
 {
 	if( level.compare("NOISY") == 0 )
-		Logger::setGlobalLevel( Logger::NOISY );
+		Logger::setGlobalLevel( Logger::LEVEL_NOISY );
 	else if( level.compare("TRACE") == 0 )
-		Logger::setGlobalLevel( Logger::TRACE );
+		Logger::setGlobalLevel( Logger::LEVEL_TRACE );
 	else if( level.compare("DEBUG") == 0 )
-		Logger::setGlobalLevel( Logger::DEBUG );
+		Logger::setGlobalLevel( Logger::LEVEL_DEBUG );
 	else if( level.compare("INFO") == 0 )
-		Logger::setGlobalLevel( Logger::INFO );
+		Logger::setGlobalLevel( Logger::LEVEL_INFO );
 	else if( level.compare("WARN") == 0 )
-		Logger::setGlobalLevel( Logger::WARN );
+		Logger::setGlobalLevel( Logger::LEVEL_WARN );
 	else if( level.compare("ERROR") == 0 )
-		Logger::setGlobalLevel( Logger::ERROR );
+		Logger::setGlobalLevel( Logger::LEVEL_ERROR );
 	else if( level.compare("FATAL") == 0 )
-		Logger::setGlobalLevel( Logger::FATAL );
+		Logger::setGlobalLevel( Logger::LEVEL_FATAL );
 	else if( level.compare("OFF") == 0 )
-		Logger::setGlobalLevel( Logger::OFF );
+		Logger::setGlobalLevel( Logger::LEVEL_OFF );
 }
 
 int Logger::getGlobalLevel()

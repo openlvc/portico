@@ -20,7 +20,7 @@ PORTICO1516E_NS_START
 // Save and Restore Services ////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 // 4.16
-void PorticoRtiAmbassador::PorticoRtiAmbassador::requestFederationSave( const std::wstring& label )
+void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label )
 	throw( SaveInProgress,
 	       RestoreInProgress,
 	       FederateNotExecutionMember,

@@ -53,15 +53,15 @@ class Logger
 		// incoming message is logged at the INFO(5) level, it will be //
 		// discarded as 5 is not <= 3                                  //
 		/////////////////////////////////////////////////////////////////
-		static const int NOISY  = 8;  // undocumented ultra-verbose level
-		static const int TRACE  = 7;
-		static const int DEBUG  = 6;
-		static const int INFO   = 5;  // the default level
-		static const int WARN   = 4;
-		static const int ERROR  = 3;
-		static const int FATAL  = 2;
-		static const int OFF    = 1;
-		static const int UNSET  = -1; // the default global level
+		static const int LEVEL_NOISY  = 8;  // undocumented ultra-verbose level
+		static const int LEVEL_TRACE  = 7;
+		static const int LEVEL_DEBUG  = 6;
+		static const int LEVEL_INFO   = 5;  // the default level
+		static const int LEVEL_WARN   = 4;
+		static const int LEVEL_ERROR  = 3;
+		static const int LEVEL_FATAL  = 2;
+		static const int LEVEL_OFF    = 1;
+		static const int LEVEL_UNSET  = -1; // the default global level
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
