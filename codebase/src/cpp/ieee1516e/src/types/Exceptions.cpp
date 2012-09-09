@@ -42,13 +42,14 @@ Exception::~Exception()
 {	
 }
 
-//Exception::Exception( const Exception& rhs )
-//{
-//}
-//
-//Exception& Exception::operator= ( const Exception& rhs )
-//{
-//}
+Exception::Exception( const Exception& rhs )
+{
+}
+
+Exception& Exception::operator= ( const Exception& rhs )
+{
+	return *this;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // class: ? extends Exception (declared in RTI/Exception.h)                             //
