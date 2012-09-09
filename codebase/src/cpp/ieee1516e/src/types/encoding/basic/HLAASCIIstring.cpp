@@ -180,7 +180,7 @@ HLAASCIIstring& HLAASCIIstring::operator= ( std::string rhs )
 // Return value from encoded data.
 HLAASCIIstring::operator std::string() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

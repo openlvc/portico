@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAunicodeCharImplementation
+{
+	wchar_t value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAunicodeChar::HLAunicodeChar()
 {
-	
+	this->_impl = new HLAunicodeCharImplementation();
+	this->_impl->value = 0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAunicodeChar::HLAunicodeChar( const wchar_t& inData )
 {
-	
+	this->_impl = new HLAunicodeCharImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAunicodeChar::HLAunicodeChar( const wchar_t& inData )
 // A null value will construct instance to use internal memory.
 HLAunicodeChar::HLAunicodeChar( wchar_t* inData )
 {
-	
+	this->_impl = new HLAunicodeCharImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAunicodeChar::HLAunicodeChar( const HLAunicodeChar& rhs )
 {
-	
+	this->_impl = new HLAunicodeCharImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAunicodeChar::~HLAunicodeChar()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAunicodeChar::~HLAunicodeChar()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAunicodeChar::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAunicodeChar() );
+	return std::auto_ptr<DataElement>( new HLAunicodeChar(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -121,7 +130,7 @@ unsigned int HLAunicodeChar::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAunicodeChar::hash() const
 {
-	return 0;
+	return this->_impl->value;
 }
 
 // Change this instance to use supplied external memory.
@@ -139,13 +148,13 @@ void HLAunicodeChar::setDataPointer( wchar_t* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAunicodeChar::set( wchar_t inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 wchar_t HLAunicodeChar::get() const
 {
-	return (wchar_t)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ wchar_t HLAunicodeChar::get() const
 // Uses existing memory of this instance.
 HLAunicodeChar& HLAunicodeChar::operator= ( const HLAunicodeChar& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAunicodeChar& HLAunicodeChar::operator= ( const HLAunicodeChar& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAunicodeChar& HLAunicodeChar::operator= ( wchar_t rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAunicodeChar& HLAunicodeChar::operator= ( wchar_t rhs )
 // Return value from encoded data.
 HLAunicodeChar::operator wchar_t() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

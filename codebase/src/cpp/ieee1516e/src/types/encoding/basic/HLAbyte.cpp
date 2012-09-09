@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAbyteImplementation
+{
+	Integer8 value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAbyte::HLAbyte()
 {
-	
+	this->_impl = new HLAbyteImplementation();
+	this->_impl->value = 0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAbyte::HLAbyte( const Octet& inData )
 {
-	
+	this->_impl = new HLAbyteImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAbyte::HLAbyte( const Octet& inData )
 // A null value will construct instance to use internal memory.
 HLAbyte::HLAbyte( Octet* inData )
 {
-	
+	this->_impl = new HLAbyteImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAbyte::HLAbyte( const HLAbyte& rhs )
 {
-	
+	this->_impl = new HLAbyteImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAbyte::~HLAbyte()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAbyte::~HLAbyte()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAbyte::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAbyte() );
+	return std::auto_ptr<DataElement>( new HLAbyte(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -121,7 +130,7 @@ unsigned int HLAbyte::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAbyte::hash() const
 {
-	return 0;
+	return this->_impl->value;
 }
 
 // Change this instance to use supplied external memory.
@@ -139,13 +148,13 @@ void HLAbyte::setDataPointer( Octet* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAbyte::set( Octet inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 Octet HLAbyte::get() const
 {
-	return (Octet)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ Octet HLAbyte::get() const
 // Uses existing memory of this instance.
 HLAbyte& HLAbyte::operator= ( const HLAbyte& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAbyte& HLAbyte::operator= ( const HLAbyte& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAbyte& HLAbyte::operator= ( Octet rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAbyte& HLAbyte::operator= ( Octet rhs )
 // Return value from encoded data.
 HLAbyte::operator Octet() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

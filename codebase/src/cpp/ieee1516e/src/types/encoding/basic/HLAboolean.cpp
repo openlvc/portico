@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAbooleanImplementation
+{
+	bool value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAboolean::HLAboolean()
 {
-	
+	this->_impl = new HLAbooleanImplementation();
+	this->_impl->value = false;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAboolean::HLAboolean( const bool& inData )
 {
-	
+	this->_impl = new HLAbooleanImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAboolean::HLAboolean( const bool& inData )
 // A null value will construct instance to use internal memory.
 HLAboolean::HLAboolean( bool* inData )
 {
-	
+	this->_impl = new HLAbooleanImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAboolean::HLAboolean( const HLAboolean& rhs )
 {
-	
+	this->_impl = new HLAbooleanImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAboolean::~HLAboolean()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAboolean::~HLAboolean()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAboolean::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAboolean() );
+	return std::auto_ptr<DataElement>( new HLAboolean(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -121,7 +130,10 @@ unsigned int HLAboolean::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAboolean::hash() const
 {
-	return 0;
+	if( this->_impl->value )
+		return 0;
+	else
+		return 1;
 }
 
 // Change this instance to use supplied external memory.
@@ -139,13 +151,13 @@ void HLAboolean::setDataPointer( bool* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAboolean::set( bool inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 bool HLAboolean::get() const
 {
-	return (bool)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +167,7 @@ bool HLAboolean::get() const
 // Uses existing memory of this instance.
 HLAboolean& HLAboolean::operator= ( const HLAboolean& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +175,7 @@ HLAboolean& HLAboolean::operator= ( const HLAboolean& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAboolean& HLAboolean::operator= ( bool rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +183,7 @@ HLAboolean& HLAboolean::operator= ( bool rhs )
 // Return value from encoded data.
 HLAboolean::operator bool() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAoctetImplementation
+{
+	Octet value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAoctet::HLAoctet()
 {
-	
+	this->_impl = new HLAoctetImplementation();
+	this->_impl->value = 0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAoctet::HLAoctet( const Octet& inData )
 {
-	
+	this->_impl = new HLAoctetImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAoctet::HLAoctet( const Octet& inData )
 // A null value will construct instance to use internal memory.
 HLAoctet::HLAoctet( Octet* inData )
 {
-	
+	this->_impl = new HLAoctetImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAoctet::HLAoctet( const HLAoctet& rhs )
 {
-	
+	this->_impl = new HLAoctetImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAoctet::~HLAoctet()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAoctet::~HLAoctet()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAoctet::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAoctet() );
+	return std::auto_ptr<DataElement>( new HLAoctet(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -121,7 +130,7 @@ unsigned int HLAoctet::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAoctet::hash() const
 {
-	return 0;
+	return this->_impl->value;
 }
 
 // Change this instance to use supplied external memory.
@@ -139,13 +148,13 @@ void HLAoctet::setDataPointer( Octet* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAoctet::set( Octet inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 Octet HLAoctet::get() const
 {
-	return (Octet)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ Octet HLAoctet::get() const
 // Uses existing memory of this instance.
 HLAoctet& HLAoctet::operator= ( const HLAoctet& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAoctet& HLAoctet::operator= ( const HLAoctet& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAoctet& HLAoctet::operator= ( Octet rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAoctet& HLAoctet::operator= ( Octet rhs )
 // Return value from encoded data.
 HLAoctet::operator Octet() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

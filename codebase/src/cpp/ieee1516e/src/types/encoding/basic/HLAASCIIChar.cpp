@@ -30,6 +30,7 @@ struct HLAASCIIcharImplementation
 HLAASCIIchar::HLAASCIIchar()
 {
 	this->_impl = new HLAASCIIcharImplementation();
+	this->_impl->value = (char)0;
 }
 
 // Constructor: Initial Value
@@ -178,7 +179,7 @@ HLAASCIIchar& HLAASCIIchar::operator= ( char rhs )
 // Return value from encoded data.
 HLAASCIIchar::operator char() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

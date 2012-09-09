@@ -17,6 +17,10 @@
 
 IEEE1516E_NS_START
 
+struct HLAoctetPairBEImplementation
+{
+	OctetPair value;
+};
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +28,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAoctetPairBE::HLAoctetPairBE()
 {
-	
+	this->_impl = new HLAoctetPairBEImplementation();
+	this->_impl->value = OctetPair( 0, 0 );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAoctetPairBE::HLAoctetPairBE( const OctetPair& inData )
 {
-	
+	this->_impl = new HLAoctetPairBEImplementation();
+	this->_impl->value = OctetPair( inData );
 }
 
 // Constructor: External memory
@@ -42,19 +48,21 @@ HLAoctetPairBE::HLAoctetPairBE( const OctetPair& inData )
 // A null value will construct instance to use internal memory.
 HLAoctetPairBE::HLAoctetPairBE( OctetPair* inData )
 {
-	
+	this->_impl = new HLAoctetPairBEImplementation();
+	this->_impl->value = OctetPair( *inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAoctetPairBE::HLAoctetPairBE( const HLAoctetPairBE& rhs )
 {
-	
+	this->_impl = new HLAoctetPairBEImplementation();
+	this->_impl->value = OctetPair( rhs._impl->value );
 }
 
 HLAoctetPairBE::~HLAoctetPairBE()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +72,7 @@ HLAoctetPairBE::~HLAoctetPairBE()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAoctetPairBE::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAoctetPairBE() );
+	return std::auto_ptr<DataElement>( new HLAoctetPairBE(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -139,13 +147,13 @@ void HLAoctetPairBE::setDataPointer( OctetPair* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAoctetPairBE::set( OctetPair inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 OctetPair HLAoctetPairBE::get() const
 {
-	return OctetPair();
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +163,7 @@ OctetPair HLAoctetPairBE::get() const
 // Uses existing memory of this instance.
 HLAoctetPairBE& HLAoctetPairBE::operator= ( const HLAoctetPairBE& rhs )
 {
+	this->_impl->value = OctetPair( rhs._impl->value );
 	return *this;
 }
 
@@ -162,6 +171,7 @@ HLAoctetPairBE& HLAoctetPairBE::operator= ( const HLAoctetPairBE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAoctetPairBE& HLAoctetPairBE::operator= ( OctetPair rhs )
 {
+	this->_impl->value = OctetPair( rhs );
 	return *this;
 }
 
@@ -169,7 +179,7 @@ HLAoctetPairBE& HLAoctetPairBE::operator= ( OctetPair rhs )
 // Return value from encoded data.
 HLAoctetPairBE::operator OctetPair() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

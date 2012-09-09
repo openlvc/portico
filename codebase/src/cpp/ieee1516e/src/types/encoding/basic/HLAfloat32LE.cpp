@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAfloat32LEImplementation
+{
+	Float32 value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAfloat32LE::HLAfloat32LE()
 {
-	
+	this->_impl = new HLAfloat32LEImplementation;
+	this->_impl->value = 0.0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAfloat32LE::HLAfloat32LE( const float& inData )
 {
-	
+	this->_impl = new HLAfloat32LEImplementation;
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAfloat32LE::HLAfloat32LE( const float& inData )
 // A null value will construct instance to use internal memory.
 HLAfloat32LE::HLAfloat32LE( float* inData )
 {
-	
+	this->_impl = new HLAfloat32LEImplementation;
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAfloat32LE::HLAfloat32LE( const HLAfloat32LE& rhs )
 {
-	
+	this->_impl = new HLAfloat32LEImplementation;
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAfloat32LE::~HLAfloat32LE()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAfloat32LE::~HLAfloat32LE()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAfloat32LE::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAfloat32LE() );
+	return std::auto_ptr<DataElement>( new HLAfloat32LE(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -139,13 +148,13 @@ void HLAfloat32LE::setDataPointer( float* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAfloat32LE::set( float inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 float HLAfloat32LE::get() const
 {
-	return (float)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ float HLAfloat32LE::get() const
 // Uses existing memory of this instance.
 HLAfloat32LE& HLAfloat32LE::operator= ( const HLAfloat32LE& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAfloat32LE& HLAfloat32LE::operator= ( const HLAfloat32LE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAfloat32LE& HLAfloat32LE::operator= ( float rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAfloat32LE& HLAfloat32LE::operator= ( float rhs )
 // Return value from encoded data.
 HLAfloat32LE::operator float() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

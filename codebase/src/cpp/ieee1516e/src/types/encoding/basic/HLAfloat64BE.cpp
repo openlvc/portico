@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAfloat64BEImplementation
+{
+	Float64 value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAfloat64BE::HLAfloat64BE()
 {
-	
+	this->_impl = new HLAfloat64BEImplementation();
+	this->_impl->value = 0.0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAfloat64BE::HLAfloat64BE( const double& inData )
 {
-	
+	this->_impl = new HLAfloat64BEImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAfloat64BE::HLAfloat64BE( const double& inData )
 // A null value will construct instance to use internal memory.
 HLAfloat64BE::HLAfloat64BE( double* inData )
 {
-	
+	this->_impl = new HLAfloat64BEImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAfloat64BE::HLAfloat64BE( const HLAfloat64BE& rhs )
 {
-	
+	this->_impl = new HLAfloat64BEImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAfloat64BE::~HLAfloat64BE()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAfloat64BE::~HLAfloat64BE()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAfloat64BE::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAfloat64BE() );
+	return std::auto_ptr<DataElement>( new HLAfloat64BE(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -139,13 +148,13 @@ void HLAfloat64BE::setDataPointer( double* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAfloat64BE::set( double inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 double HLAfloat64BE::get() const
 {
-	return (double)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ double HLAfloat64BE::get() const
 // Uses existing memory of this instance.
 HLAfloat64BE& HLAfloat64BE::operator= ( const HLAfloat64BE& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAfloat64BE& HLAfloat64BE::operator= ( const HLAfloat64BE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAfloat64BE& HLAfloat64BE::operator= ( double rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAfloat64BE& HLAfloat64BE::operator= ( double rhs )
 // Return value from encoded data.
 HLAfloat64BE::operator double() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

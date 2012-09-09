@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAunicodeStringImplementation
+{
+	std::wstring value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAunicodeString::HLAunicodeString()
 {
-	
+	this->_impl = new HLAunicodeStringImplementation();
+	this->_impl->value = L"";
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAunicodeString::HLAunicodeString( const std::wstring& inData )
 {
-	
+	this->_impl = new HLAunicodeStringImplementation();
+	this->_impl->value = std::wstring( inData );
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAunicodeString::HLAunicodeString( const std::wstring& inData )
 // A null value will construct instance to use internal memory.
 HLAunicodeString::HLAunicodeString( std::wstring* inData )
 {
-	
+	this->_impl = new HLAunicodeStringImplementation();
+	this->_impl->value = std::wstring( *inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAunicodeString::HLAunicodeString( const HLAunicodeString& rhs )
 {
-	
+	this->_impl = new HLAunicodeStringImplementation();
+	this->_impl->value = std::wstring( rhs._impl->value );
 }
 
 HLAunicodeString::~HLAunicodeString()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAunicodeString::~HLAunicodeString()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAunicodeString::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAunicodeString() );
+	return std::auto_ptr<DataElement>( new HLAunicodeString(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -139,13 +148,13 @@ void HLAunicodeString::setDataPointer( std::wstring* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAunicodeString::set( std::wstring inData )
 {
-	
+	this->_impl->value = std::wstring( inData );
 }
 
 // Get the value from encoded data.
 std::wstring HLAunicodeString::get() const
 {
-	return std::wstring();
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ std::wstring HLAunicodeString::get() const
 // Uses existing memory of this instance.
 HLAunicodeString& HLAunicodeString::operator= ( const HLAunicodeString& rhs )
 {
+	this->_impl->value = std::wstring( rhs._impl->value );
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAunicodeString& HLAunicodeString::operator= ( const HLAunicodeString& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAunicodeString& HLAunicodeString::operator= ( std::wstring rhs )
 {
+	this->_impl->value = std::wstring( rhs );
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAunicodeString& HLAunicodeString::operator= ( std::wstring rhs )
 // Return value from encoded data.
 HLAunicodeString::operator std::wstring() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAinteger32BEImplementation
+{
+	Integer32 value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAinteger32BE::HLAinteger32BE()
 {
-	
+	this->_impl = new HLAinteger32BEImplementation();
+	this->_impl->value = 0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAinteger32BE::HLAinteger32BE( const Integer32& inData )
 {
-	
+	this->_impl = new HLAinteger32BEImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAinteger32BE::HLAinteger32BE( const Integer32& inData )
 // A null value will construct instance to use internal memory.
 HLAinteger32BE::HLAinteger32BE( Integer32* inData )
 {
-	
+	this->_impl = new HLAinteger32BEImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAinteger32BE::HLAinteger32BE( const HLAinteger32BE& rhs )
 {
-	
+	this->_impl = new HLAinteger32BEImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAinteger32BE::~HLAinteger32BE()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAinteger32BE::~HLAinteger32BE()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAinteger32BE::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAinteger32BE() );
+	return std::auto_ptr<DataElement>( new HLAinteger32BE(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -121,7 +130,7 @@ unsigned int HLAinteger32BE::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAinteger32BE::hash() const
 {
-	return 0;
+	return this->_impl->value;
 }
 
 // Change this instance to use supplied external memory.
@@ -139,13 +148,13 @@ void HLAinteger32BE::setDataPointer( Integer32* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAinteger32BE::set( Integer32 inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 Integer32 HLAinteger32BE::get() const
 {
-	return (Integer32)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ Integer32 HLAinteger32BE::get() const
 // Uses existing memory of this instance.
 HLAinteger32BE& HLAinteger32BE::operator= ( const HLAinteger32BE& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAinteger32BE& HLAinteger32BE::operator= ( const HLAinteger32BE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAinteger32BE& HLAinteger32BE::operator= ( Integer32 rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAinteger32BE& HLAinteger32BE::operator= ( Integer32 rhs )
 // Return value from encoded data.
 HLAinteger32BE::operator Integer32() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

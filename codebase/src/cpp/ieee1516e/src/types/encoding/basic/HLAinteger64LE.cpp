@@ -17,6 +17,11 @@
 
 IEEE1516E_NS_START
 
+struct HLAinteger64LEImplementation
+{
+	Integer64 value;
+};
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -24,14 +29,16 @@ IEEE1516E_NS_START
 // Uses internal memory.
 HLAinteger64LE::HLAinteger64LE()
 {
-	
+	this->_impl = new HLAinteger64LEImplementation();
+	this->_impl->value = 0;
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAinteger64LE::HLAinteger64LE( const Integer64& inData )
 {
-	
+	this->_impl = new HLAinteger64LEImplementation();
+	this->_impl->value = inData;
 }
 
 // Constructor: External memory
@@ -42,19 +49,21 @@ HLAinteger64LE::HLAinteger64LE( const Integer64& inData )
 // A null value will construct instance to use internal memory.
 HLAinteger64LE::HLAinteger64LE( Integer64* inData )
 {
-	
+	this->_impl = new HLAinteger64LEImplementation();
+	this->_impl->value = *inData;
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAinteger64LE::HLAinteger64LE( const HLAinteger64LE& rhs )
 {
-	
+	this->_impl = new HLAinteger64LEImplementation();
+	this->_impl->value = rhs._impl->value;
 }
 
 HLAinteger64LE::~HLAinteger64LE()
 {
-	
+	delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -64,7 +73,7 @@ HLAinteger64LE::~HLAinteger64LE()
 // Copy uses internal memory.
 std::auto_ptr<DataElement> HLAinteger64LE::clone() const
 {
-	return std::auto_ptr<DataElement>( new HLAinteger64LE() );
+	return std::auto_ptr<DataElement>( new HLAinteger64LE(*this) );
 }
 
 // Encode this element into a new VariableLengthData
@@ -121,7 +130,7 @@ unsigned int HLAinteger64LE::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAinteger64LE::hash() const
 {
-	return 0;
+	return this->_impl->value;
 }
 
 // Change this instance to use supplied external memory.
@@ -139,13 +148,13 @@ void HLAinteger64LE::setDataPointer( Integer64* inData )
 // If this element uses external memory, the memory will be modified.
 void HLAinteger64LE::set( Integer64 inData )
 {
-	
+	this->_impl->value = inData;
 }
 
 // Get the value from encoded data.
 Integer64 HLAinteger64LE::get() const
 {
-	return (Integer64)0;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------
@@ -155,6 +164,7 @@ Integer64 HLAinteger64LE::get() const
 // Uses existing memory of this instance.
 HLAinteger64LE& HLAinteger64LE::operator= ( const HLAinteger64LE& rhs )
 {
+	this->_impl->value = rhs._impl->value;
 	return *this;
 }
 
@@ -162,6 +172,7 @@ HLAinteger64LE& HLAinteger64LE::operator= ( const HLAinteger64LE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAinteger64LE& HLAinteger64LE::operator= ( Integer64 rhs )
 {
+	this->_impl->value = rhs;
 	return *this;
 }
 
@@ -169,7 +180,7 @@ HLAinteger64LE& HLAinteger64LE::operator= ( Integer64 rhs )
 // Return value from encoded data.
 HLAinteger64LE::operator Integer64() const
 {
-	return *this;
+	return this->_impl->value;
 }
 
 //------------------------------------------------------------------------------------------

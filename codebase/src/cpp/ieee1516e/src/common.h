@@ -59,6 +59,7 @@ using namespace rti1516e;
 // the HLA interface has defines for Integer8, 16, 32 and 64, but then
 // just goes and uses boring old "double" for floats. At least be consistent
 // with the naming!
+typedef float Float32;
 typedef double Float64;
 
 // defines for the portico namespace - I like this because it stands out a bit
