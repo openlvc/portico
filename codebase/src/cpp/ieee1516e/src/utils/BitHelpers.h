@@ -15,6 +15,8 @@
 #ifndef BITHELPERS_H_
 #define BITHELPERS_H_
 
+#include "common.h"
+
 PORTICO1516E_NS_START
 
 class BitHelpers
