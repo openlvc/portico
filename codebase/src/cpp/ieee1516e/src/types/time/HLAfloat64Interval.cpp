@@ -21,6 +21,7 @@ IEEE1516E_NS_START
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
 HLAfloat64Interval::HLAfloat64Interval()
+	: LogicalTimeInterval()
 {
 	this->_impl = new HLAfloat64IntervalImpl();
 	this->_impl->time = 0.0;
@@ -33,6 +34,7 @@ HLAfloat64Interval::HLAfloat64Interval( Float64 value )
 }
 
 HLAfloat64Interval::HLAfloat64Interval( const LogicalTimeInterval& rhs )
+	: LogicalTimeInterval( rhs )
 {
 	this->_impl = new HLAfloat64IntervalImpl();
 	this->_impl->time = ((HLAfloat64Interval)rhs)._impl->time;

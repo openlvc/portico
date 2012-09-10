@@ -21,6 +21,7 @@ IEEE1516E_NS_START
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
 HLAinteger64Time::HLAinteger64Time()
+	: LogicalTime()
 {
 	this->_impl = new HLAinteger64TimeImpl();
 	this->_impl->time = 0;
@@ -33,6 +34,7 @@ HLAinteger64Time::HLAinteger64Time( Integer64 value )
 }
 
 HLAinteger64Time::HLAinteger64Time( const LogicalTime& value )
+	: LogicalTime(value)
 {
 	this->_impl = new HLAinteger64TimeImpl();
 	this->_impl->time = ((HLAinteger64Time)value)._impl->time;
