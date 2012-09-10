@@ -22,7 +22,9 @@
 	<!-- ==== Basic Properties ==== -->
 	<property name="cpp.build.dir"             location="${build.dir}/cpp/macosx"/>
 
+	<!-- ============================================ -->
 	<!-- ==== NG6 and DLC13 Interface Properties ==== -->
+	<!-- ============================================ -->
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
@@ -43,16 +45,18 @@
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
 
+	<!-- ========================================= -->
 	<!-- ==== IEEE-1516e Interface Properties ==== -->
-	<!-- source -->
+	<!-- ========================================= -->
 	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
 	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
+	<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>
 
 	<!-- ieee1516e build -->
 	<property name="ieee1516e.build.dir"       location="${cpp.build.dir}/ieee1516e"/>
 	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
 	<property name="ieee1516e.obj.dir"         location="${ieee1516e.build.dir}/obj"/>
-
+	
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
 	<!-- =========================================================== -->
@@ -81,7 +85,7 @@
 	<target name="compile"
 	        extensionOf="master.compile"
 	        description="Compile the Portico C++ interfaces and Testing Suite for Mac OS X"
-	        depends="compile.ng6, compile.dlc13"/>
+	        depends="compile.ng6, compile.dlc13, compile.ieee1516e, compile.ieee1516e.example"/>
 
 	<!-- ==================================== -->
 	<!--            NGv6 Interface            -->
@@ -185,6 +189,26 @@
 		</exec>
 	</target>
 
+	<!-- ==================================== -->
+	<!--        1516e Example Federate        -->
+	<!-- ==================================== -->
+	<target name="compile.ieee1516e.example" depends="compile.ieee1516e">
+		<cpp-unix outfile="ieee1516e-example"
+		          outdir="${ieee1516e.build.dir}/ieee1516e-example"
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs=""
+		          type="executable">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e"/>
+			<library path="${jdk.home}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+	</target>
+
+
 	<!-- ================================================================================= -->
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
@@ -237,7 +261,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox, compile">
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox,compile">
 		<!-- ======= -->
 		<!-- Headers -->
 		<!-- ======= -->
@@ -246,6 +270,10 @@
 		<!-- copy the RTI headers over -->
 		<copy todir="${dist.sandbox.dir}/include">
 			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+		<mkdir dir="${dist.sandbox.dir}"/>
+		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
+			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 
 		<!-- ========= -->
@@ -261,12 +289,17 @@
 			         includes="**/*"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>
+			<fileset dir="${ieee1516e.complete.dir}"
+			         includes="**/*"
+			         excludes="**/history.xml"
+			         followsymlinks="false"/>
 		</copy>
 
 		<!-- macosx: link the dylib and jnilib -->
 		<echo>creating symlinks from dylibs to jnilibs</echo>
-		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/> <!-- ng6 -->
-		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>  <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/>   <!-- ng6 -->
+		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>    <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}" name="librti1516e"/> <!-- ieee1516e -->
 		
 		<!-- macosx/linux: chmod the dylib/so appropriately -->
 		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
@@ -275,11 +308,14 @@
 		<!-- Example Federates -->
 		<!-- ================= -->
 		<!-- copy across the example federates -->
-		<mkdir dir="${dist.examples.dir}/cpp"/>
 		<copy todir="${dist.examples.dir}/cpp">
 			<fileset dir="${cpp.src.dir}/examples">
 				<include name="**/*"/>
 			</fileset>
+		</copy>
+		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
 		<!-- chmod them -->
 		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
