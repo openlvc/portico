@@ -169,6 +169,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ieee1516e macosx) librti1516e.dylib"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/cpp-macosx-ieee1516e"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="rti1516e" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -215,6 +216,7 @@
 									<listOptionValue builtIn="false" value="${JAVA_HOME}/include/darwin"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/example}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.423874631" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
@@ -243,6 +245,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/ieee1516e/example"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="codebase/src/cpp/ieee1516e/src"/>
 					</sourceEntries>
 				</configuration>
@@ -257,11 +260,13 @@
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="(ng6 Win32) libFedTime.dll"/>
 		<configuration configurationName="(ng6 win32) libRTI-NG.dll"/>
+		<configuration configurationName="cpp-macosx-ieee1516e"/>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-macosx-ng6"/>
 		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>

@@ -38,9 +38,6 @@ using namespace std;
 #include <sstream>
 #include <string>
 
-// java native interface
-#include <jni.h>
-
 //////////////////////////////////////////
 ////////// HLA Standard Headers //////////
 //////////////////////////////////////////
@@ -62,15 +59,23 @@ using namespace rti1516e;
 typedef float Float32;
 typedef double Float64;
 
+// defines for the standard 1516e namespace
+#define IEEE1516E_NS rti1516e
+#define IEEE1516E_NS_START namespace IEEE1516E_NS {
+#define IEEE1516E_NS_END };
+
+//////////////////////////////////////////
+///////// Portico Releated Items /////////
+//////////////////////////////////////////
+
+// java native interface
+#include <jni.h>
+
 // defines for the portico namespace - I like this because it stands out a bit
 #define PORTICO1516E_NS portico1516e
 #define PORTICO1516E_NS_START namespace PORTICO1516E_NS {
 #define PORTICO1516E_NS_END };
 
-// defines for the standard 1516e namespace
-#define IEEE1516E_NS rti1516e
-#define IEEE1516E_NS_START namespace IEEE1516E_NS {
-#define IEEE1516E_NS_END };
 
 
 #endif /*PORTICO_CPP_HLA1516E_COMMON_H_*/

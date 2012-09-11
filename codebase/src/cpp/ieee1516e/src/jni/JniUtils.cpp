@@ -12,38 +12,34 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "rtiamb/PorticoRtiAmbassador.h"
+#include "jni/JniUtils.h"
+
+PORTICO1516E_NS_START
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
-PORTICO1516E_NS_START
 
-PorticoRtiAmbassador::PorticoRtiAmbassador() : IEEE1516E_NS::RTIambassador()
+//------------------------------------------------------------------------------------------
+//                                     INSTANCE METHODS
+//------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------
+//                                      STATIC METHODS
+//------------------------------------------------------------------------------------------
+string JniUtils::convert( JNIEnv *jnienv, jstring javaString )
 {
-	this->javarti = Runtime::getRuntime()->newRtiAmbassador();
+	const char *temp = jnienv->GetStringUTFChars( javaString, NULL );
+	string converted( temp );
+	jnienv->ReleaseStringUTFChars( javaString, temp );
+	return converted;
 }
 
-PorticoRtiAmbassador::~PorticoRtiAmbassador()
+string JniUtils::convertAndRelease( JNIEnv *jnienv, jstring javaString )
 {
-	Runtime::getRuntime()->removeRtiAmbassador( this->javarti );
+	string converted = JniUtils::convert( jnienv, javaString );
+	jnienv->DeleteLocalRef( javaString );
+	return converted;
 }
 
 PORTICO1516E_NS_END
-
-//------------------------------------------------------------------------------------------
-//                               STANDARD HEADER CONSTRUCTORS                                       
-//------------------------------------------------------------------------------------------
-IEEE1516E_NS_START
-
-RTIambassador::RTIambassador() throw()
-{
-	
-}
-
-RTIambassador::~RTIambassador()
-{
-	
-}
-
-IEEE1516E_NS_END

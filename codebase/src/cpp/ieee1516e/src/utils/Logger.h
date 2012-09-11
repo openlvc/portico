@@ -69,6 +69,7 @@ class Logger
 	private:
 		string name;
 		int level;
+		string prefix;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -83,6 +84,8 @@ class Logger
 	public:
 		void setName( std::string name );
 		std::string getName();
+		void setPrefix( std::string prefix ); // put on the front of each log message
+		std::string getPrefix();
 		
 		// note that this value will be ignored if the global level is set
 		void setLevel( int level );

@@ -46,7 +46,7 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	// 1. create the RTIambassador //
 	/////////////////////////////////
 	RTIambassadorFactory factory = RTIambassadorFactory();
-	this->rtiamb = factory.createRTIambassador().get();
+	this->rtiamb = factory.createRTIambassador().release();
 
 	///////////////////////////
 	// 2. connect to the RTI //
@@ -55,7 +55,7 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	this->fedamb = new ExampleFedAmb();
 	try
 	{
-		rtiamb->connect( *this->fedamb, HLA_EVOKED, L"" );
+		rtiamb->connect( *this->fedamb, HLA_EVOKED );
 	}
 	catch( ConnectionFailed& connectionFailed )
 	{

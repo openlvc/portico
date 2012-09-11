@@ -16,6 +16,8 @@
 #define PORTICORTIAMBASSADOR_H_
 
 #include "common.h"
+#include "jni/Runtime.h"
+#include "jni/JavaRTI.h"
 
 PORTICO1516E_NS_START
 
@@ -30,6 +32,7 @@ class PorticoRtiAmbassador : public RTIambassador
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
+		JavaRTI *javarti;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS

@@ -165,10 +165,9 @@
 	<!--            1516e Interface           -->
 	<!-- ==================================== -->
 	<target name="compile.ieee1516e">
-		<cpp-unix outfile="rti1516e"
+		<cpp-unix outfile="librti1516e.dylib"
 		          outdir="${ieee1516e.build.dir}"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		          linkerArgs="-dynamiclib">
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor">
 			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
@@ -192,6 +191,8 @@
 	<!-- ==================================== -->
 	<!--        1516e Example Federate        -->
 	<!-- ==================================== -->
+	<!-- Compiles the 1516e example federate. Doesn't do much except
+	     assure that we can actually compile and link it to Portico -->
 	<target name="compile.ieee1516e.example" depends="compile.ieee1516e">
 		<cpp-unix outfile="ieee1516e-example"
 		          outdir="${ieee1516e.build.dir}/ieee1516e-example"

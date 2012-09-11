@@ -12,38 +12,32 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "rtiamb/PorticoRtiAmbassador.h"
+#include "utils/StringUtils.h"
+#include <string>
+
+PORTICO1516E_NS_START
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
-PORTICO1516E_NS_START
 
-PorticoRtiAmbassador::PorticoRtiAmbassador() : IEEE1516E_NS::RTIambassador()
+//------------------------------------------------------------------------------------------
+//                                     INSTANCE METHODS
+//------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------
+//                                      STATIC METHODS
+//------------------------------------------------------------------------------------------
+std::wstring StringUtils::toWideString( std::string shortString )
 {
-	this->javarti = Runtime::getRuntime()->newRtiAmbassador();
+	std::wstring wideString;
+	return wideString.assign( shortString.begin(), shortString.end() );
 }
 
-PorticoRtiAmbassador::~PorticoRtiAmbassador()
+std::string StringUtils::toShortString( std::wstring wideString )
 {
-	Runtime::getRuntime()->removeRtiAmbassador( this->javarti );
+	std::string shortString;
+	return shortString.assign( wideString.begin(), wideString.end() );
 }
 
 PORTICO1516E_NS_END
-
-//------------------------------------------------------------------------------------------
-//                               STANDARD HEADER CONSTRUCTORS                                       
-//------------------------------------------------------------------------------------------
-IEEE1516E_NS_START
-
-RTIambassador::RTIambassador() throw()
-{
-	
-}
-
-RTIambassador::~RTIambassador()
-{
-	
-}
-
-IEEE1516E_NS_END

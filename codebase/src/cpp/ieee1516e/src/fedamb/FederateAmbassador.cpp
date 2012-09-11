@@ -19,6 +19,11 @@
 //------------------------------------------------------------------------------------------
 IEEE1516E_NS_START
 
+FederateAmbassador::FederateAmbassador() throw( FederateInternalError )
+{
+	
+}
+
 FederateAmbassador::~FederateAmbassador() throw()
 {
 	

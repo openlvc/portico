@@ -27,6 +27,7 @@ Logger::Logger( std::string name )
 {
 	this->name = std::string(name);
 	this->level = Logger::LEVEL_ERROR;
+	this->prefix = std::string("");
 }
 
 Logger::~Logger()
@@ -47,6 +48,16 @@ std::string Logger::getName()
 	return this->name;
 }
 
+void Logger::setPrefix( std::string prefix )
+{
+	this->prefix = std::string(prefix);
+}
+
+std::string Logger::getPrefix()
+{
+	return this->prefix;
+}
+
 void Logger::setLevel( int level )
 {
 	if( level >= Logger::LEVEL_OFF && level <= Logger::LEVEL_NOISY )
@@ -65,7 +76,7 @@ int Logger::getLevel()
 /////////////////////////////
 void Logger::log( std::string level, std::string message )
 {
-	std::cout << level << "[" << this->name << "] " << message << std::endl;
+	std::cout << level << "[" << this->name << "] " << prefix << message << std::endl;
 }
 
 void Logger::log( std::string level, std::string format, va_list args )
@@ -78,7 +89,7 @@ void Logger::log( std::string level, std::string format, va_list args )
 	// on windows: _vsnprintf_s( buffer, MAX_MSG_LENGTH, format.c_str(), args );
 
 	// print the message
-	std::cout << level << " [" << this->name << "] " << buffer << std::endl;
+	std::cout << level << " [" << this->name << "] " << prefix << buffer << std::endl;
 }
 
 //
