@@ -21,19 +21,31 @@
 // data so we can do useful things that the standard interface won't allow.
 //
 #define HANDLE_FRIEND_BODY(Type)                                 \
+Type Type##Friend::create( int32_t value )                       \
+{                                                                \
+	Type handle;                                                 \
+	handle._impl->value = value;                                 \
+	return handle;                                               \
+}                                                                \
 std::string Type##Friend::toString( Type* handle )               \
 {                                                                \
-	return handle->getImplementation()->toStdString();           \
+	std::stringstream ss;                                        \
+	ss << handle->_impl->value;                                  \
+	return ss.str();                                             \
 }                                                                \
                                                                  \
 std::string Type##Friend::toString( Type& handle )               \
 {                                                                \
-	return handle.getImplementation()->toStdString();            \
+	std::stringstream ss;                                        \
+	ss << handle._impl->value;                                   \
+	return ss.str();                                             \
 }                                                                \
                                                                  \
 std::string Type##Friend::toString( const Type& handle )         \
 {                                                                \
-	return handle.getImplementation()->toStdString();            \
+	std::stringstream ss;                                        \
+	ss << handle._impl->value;                                   \
+	return ss.str();                                             \
 }
 
 

@@ -12,11 +12,12 @@
  *   (that goes for your lawyer as well)
  *
  */
-#ifndef FEDERATEHANDLEFRIEND_H_
-#define FEDERATEHANDLEFRIEND_H_
+#ifndef HANDLEFRIENDS_H_
+#define HANDLEFRIENDS_H_
 
 #include "common.h"
-#include "HandleImplementations.h"
+#include "types/handles/HandleImplementations.h"
+
 
 //
 // Declare a friend class for each of the standard handle types. This will
@@ -27,6 +28,7 @@
 class Type##Friend                                             \
 {                                                              \
 	public:                                                    \
+		static Type create( int32_t value );                   \
 		static std::string toString( Type* handle );           \
 		static std::string toString( Type& handle );           \
 		static std::string toString( const Type& handle );     \
@@ -48,4 +50,4 @@ HANDLE_FRIEND_HEADER(RegionHandle)
 
 IEEE1516E_NS_END
 
-#endif /* FEDERATEHANDLEFRIEND_H_ */
+#endif /* HANDLEFRIENDS_H_ */

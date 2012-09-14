@@ -16,23 +16,18 @@
 #define HANDLEIMPLEMENTATIONS_H_
 
 #include "common.h"
-#include "types/handles/PorticoHandle.h"
 
 //
 // The macro in RTI/Handle.h declares each handle to have a member (_impl)
 // of type <HandleName>Implementation. They do this through the use of a
-// forward declaration of the class. The full declarations for each of these
-// types can be found below. They lean pretty much entirely on PorticoHandle
-// and the bodies are provided in HandleImplementations.cpp
+// forward declaration of the class. The macro below declares these as structs
+// in a stndard form.
 //
-#define HANDLE_IMPL_HEADER(Name)                                     \
-	class Name : public PORTICO1516E_NS::PorticoHandle               \
-	{                                                                \
-		public:                                                      \
-			Name();                                                  \
-			Name( int32_t handle );                                  \
-			Name( const VariableLengthData& encodedValue );          \
-	};
+#define HANDLE_IMPL_HEADER(Name)  \
+struct Name                       \
+{                                 \
+	int32_t value;                \
+};
 
 // expand the macro
 IEEE1516E_NS_START
