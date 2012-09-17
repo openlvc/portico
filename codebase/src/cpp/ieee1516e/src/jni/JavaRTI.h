@@ -48,6 +48,9 @@ class JavaRTI
 		JNIEnv* jnienv;
 		jclass  jproxyClass;
 		jobject jproxy;
+		
+		// federate ambassador to contact back for callbacks
+		FederateAmbassador *fedamb;
 
 	private:
 		// exception information

@@ -58,10 +58,18 @@ JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_ini
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    initiateFederateSave
- * Signature: (ILjava/lang/String;DJ)V
+ * Signature: (ILjava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_initiateFederateSave__ILjava_lang_String_2DJ
-  (JNIEnv *, jobject, jint, jstring, jdouble, jlong);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_initiateFederateSave__ILjava_lang_String_2D
+  (JNIEnv *, jobject, jint, jstring, jdouble);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    initiateFederateSave
+ * Signature: (ILjava/lang/String;J)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_initiateFederateSave__ILjava_lang_String_2J
+  (JNIEnv *, jobject, jint, jstring, jlong);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
@@ -242,18 +250,34 @@ JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_ref
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    reflectAttributeValues
- * Signature: (II[I[[B[BIIDJII[I)V
+ * Signature: (II[I[[B[BIIDII[I)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIDJII_3I
-  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jlong, jint, jint, jintArray);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIDII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jint, jint, jintArray);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    reflectAttributeValues
- * Signature: (II[I[[B[BIIDJIII[I)V
+ * Signature: (II[I[[B[BIIJII[I)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIDJIII_3I
-  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jlong, jint, jint, jint, jintArray);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIJII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jlong, jint, jint, jintArray);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    reflectAttributeValues
+ * Signature: (II[I[[B[BIIDIII[I)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIDIII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jint, jint, jint, jintArray);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    reflectAttributeValues
+ * Signature: (II[I[[B[BIIJIII[I)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIJIII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jlong, jint, jint, jint, jintArray);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
@@ -266,18 +290,34 @@ JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_rec
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    receiveInteraction
- * Signature: (II[I[[B[BIIDJII[I)V
+ * Signature: (II[I[[B[BIIDII[I)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_receiveInteraction__II_3I_3_3B_3BIIDJII_3I
-  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jlong, jint, jint, jintArray);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_receiveInteraction__II_3I_3_3B_3BIIDII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jint, jint, jintArray);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    receiveInteraction
- * Signature: (II[I[[B[BIIDJIII[I)V
+ * Signature: (II[I[[B[BIIJII[I)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_receiveInteraction__II_3I_3_3B_3BIIDJIII_3I
-  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jlong, jint, jint, jint, jintArray);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_receiveInteraction__II_3I_3_3B_3BIIJII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jlong, jint, jint, jintArray);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    receiveInteraction
+ * Signature: (II[I[[B[BIIDIII[I)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_receiveInteraction__II_3I_3_3B_3BIIDIII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jdouble, jint, jint, jint, jintArray);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    receiveInteraction
+ * Signature: (II[I[[B[BIIJIII[I)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_receiveInteraction__II_3I_3_3B_3BIIJIII_3I
+  (JNIEnv *, jobject, jint, jint, jintArray, jobjectArray, jbyteArray, jint, jint, jlong, jint, jint, jint, jintArray);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
@@ -290,18 +330,34 @@ JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_rem
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    removeObjectInstance
- * Signature: (II[BIDJII)V
+ * Signature: (II[BIDII)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_removeObjectInstance__II_3BIDJII
-  (JNIEnv *, jobject, jint, jint, jbyteArray, jint, jdouble, jlong, jint, jint);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_removeObjectInstance__II_3BIDII
+  (JNIEnv *, jobject, jint, jint, jbyteArray, jint, jdouble, jint, jint);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    removeObjectInstance
- * Signature: (II[BIDJIII)V
+ * Signature: (II[BIJII)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_removeObjectInstance__II_3BIDJIII
-  (JNIEnv *, jobject, jint, jint, jbyteArray, jint, jdouble, jlong, jint, jint, jint);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_removeObjectInstance__II_3BIJII
+  (JNIEnv *, jobject, jint, jint, jbyteArray, jint, jlong, jint, jint);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    removeObjectInstance
+ * Signature: (II[BIDIII)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_removeObjectInstance__II_3BIDIII
+  (JNIEnv *, jobject, jint, jint, jbyteArray, jint, jdouble, jint, jint, jint);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    removeObjectInstance
+ * Signature: (II[BIJIII)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_removeObjectInstance__II_3BIJIII
+  (JNIEnv *, jobject, jint, jint, jbyteArray, jint, jlong, jint, jint, jint);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
@@ -458,26 +514,50 @@ JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_att
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    timeRegulationEnabled
- * Signature: (IDJ)V
+ * Signature: (ID)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeRegulationEnabled
-  (JNIEnv *, jobject, jint, jdouble, jlong);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeRegulationEnabled__ID
+  (JNIEnv *, jobject, jint, jdouble);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    timeRegulationEnabled
+ * Signature: (IJ)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeRegulationEnabled__IJ
+  (JNIEnv *, jobject, jint, jlong);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    timeConstrainedEnabled
- * Signature: (IDJ)V
+ * Signature: (ID)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeConstrainedEnabled
-  (JNIEnv *, jobject, jint, jdouble, jlong);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeConstrainedEnabled__ID
+  (JNIEnv *, jobject, jint, jdouble);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    timeConstrainedEnabled
+ * Signature: (IJ)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeConstrainedEnabled__IJ
+  (JNIEnv *, jobject, jint, jlong);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
  * Method:    timeAdvanceGrant
- * Signature: (IDJ)V
+ * Signature: (ID)V
  */
-JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeAdvanceGrant
-  (JNIEnv *, jobject, jint, jdouble, jlong);
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeAdvanceGrant__ID
+  (JNIEnv *, jobject, jint, jdouble);
+
+/*
+ * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink
+ * Method:    timeAdvanceGrant
+ * Signature: (IJ)V
+ */
+JNIEXPORT void JNICALL Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_timeAdvanceGrant__IJ
+  (JNIEnv *, jobject, jint, jlong);
 
 /*
  * Class:     org_portico_impl_cpp1516e_FederateAmbassadorLink

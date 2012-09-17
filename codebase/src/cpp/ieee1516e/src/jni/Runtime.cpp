@@ -459,7 +459,7 @@ void Runtime::processRid() throw( RTIinternalError )
 	if( value != NULL )
 	{
 		// set the level on the logger
-		string loglevel = JniUtils::convertAndRelease( jnienv, value );
+		string loglevel = JniUtils::toStringAndRelease( jnienv, value );
 		logger->info( "Log Level from RID: %s", loglevel.c_str() );
 		Logger::setGlobalLevel( loglevel );
 	}

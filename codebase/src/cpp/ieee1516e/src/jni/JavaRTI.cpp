@@ -134,8 +134,8 @@ void JavaRTI::pushException( string exceptionName, string reason )
 	this->eReason.clear();
 
 	// store the new information
-	this->eName = exceptionName;
-	this->eReason = reason;
+	this->eName.assign( exceptionName );
+	this->eReason.assign( reason );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

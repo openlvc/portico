@@ -77,7 +77,8 @@ public class FederateAmbassadorLink
 	//4.12
 	public native void initiateFederateSave( int id, String label );
 
-	public native void initiateFederateSave( int id, String label, double doubleTime, long longTime );
+	public native void initiateFederateSave( int id, String label, double doubleTime );
+	public native void initiateFederateSave( int id, String label, long longTime );
 
 	// 4.15
 	public native void federationSaved( int id );
@@ -172,6 +173,9 @@ public class FederateAmbassadorLink
 	                                           int producingFederate,    //SupplementalReflectInfo
 	                                           int[] regionHandles );    //SupplementalReflectInfo
 
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
 	public native void reflectAttributeValues( int id,
 	                                           int theObject,
 	                                           int[] attributeHandles,   //intValueMap
@@ -180,7 +184,6 @@ public class FederateAmbassadorLink
 	                                           int sentOrdering,         //OrderType
 	                                           int theTransport,         //TransportationTypeHandle
 	                                           double doubleTime,        //LogicalTime     
-	                                           long longTime,            //LogicalTime
 	                                           int receivedOrdering,     //OrderType
 	                                           int producingFederate,    //SupplementalReflectInfo
 	                                           int[] regionHandles );    //SupplementalReflectInfo
@@ -192,7 +195,35 @@ public class FederateAmbassadorLink
 	                                           byte[] tag,
 	                                           int sentOrdering,         //OrderType
 	                                           int theTransport,         //TransportationTypeHandle
+	                                           long longTime,            //LogicalTime
+	                                           int receivedOrdering,     //OrderType
+	                                           int producingFederate,    //SupplementalReflectInfo
+	                                           int[] regionHandles );    //SupplementalReflectInfo
+
+	
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
+	public native void reflectAttributeValues( int id,
+	                                           int theObject,
+	                                           int[] attributeHandles,   //intValueMap
+	                                           byte[][] attributeValues, //intValueMap
+	                                           byte[] tag,
+	                                           int sentOrdering,         //OrderType
+	                                           int theTransport,         //TransportationTypeHandle
 	                                           double doubleTime,        //LogicalTime
+	                                           int receivedOrdering,     //OrderType
+	                                           int retractionHandle,
+	                                           int producingFederate,    //SupplementalReflectInfo
+	                                           int[] regionHandles );    //SupplementalReflectInfo
+
+	public native void reflectAttributeValues( int id,
+	                                           int theObject,
+	                                           int[] attributeHandles,   //intValueMap
+	                                           byte[][] attributeValues, //intValueMap
+	                                           byte[] tag,
+	                                           int sentOrdering,         //OrderType
+	                                           int theTransport,         //TransportationTypeHandle
 	                                           long longTime,            //LogicalTime
 	                                           int receivedOrdering,     //OrderType
 	                                           int retractionHandle,
@@ -217,6 +248,9 @@ public class FederateAmbassadorLink
 	                                       int producingFederate,        //SupplementalReceiveInfo
 	                                       int[] regionHandles );        //SupplementalReceiveInfo
 
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
 	public native void receiveInteraction( int id,
 	                                       int interactionClass,
 	                                       int[] parameterHandles,       //intValueMap
@@ -225,7 +259,6 @@ public class FederateAmbassadorLink
 	                                       int sentOrdering,             //OrderType
 	                                       int theTransport,             //TransportationTypeHandle
 	                                       double doubleTime,            //LogicalTime
-	                                       long longTime,                //LogicalTime
 	                                       int receivedOrdering,         //OrderType
 	                                       int producingFederate,        //SupplementalReceiveInfo
 	                                       int[] regionHandles );        //SupplementalReceiveInfo
@@ -237,7 +270,34 @@ public class FederateAmbassadorLink
 	                                       byte[] tag,
 	                                       int sentOrdering,             //OrderType
 	                                       int theTransport,             //TransportationTypeHandle
+	                                       long longTime,                //LogicalTime
+	                                       int receivedOrdering,         //OrderType
+	                                       int producingFederate,        //SupplementalReceiveInfo
+	                                       int[] regionHandles );        //SupplementalReceiveInfo
+
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
+	public native void receiveInteraction( int id,
+	                                       int interactionClass,
+	                                       int[] parameterHandles,       //intValueMap
+	                                       byte[][] parameterValues,     //intValueMap
+	                                       byte[] tag,
+	                                       int sentOrdering,             //OrderType
+	                                       int theTransport,             //TransportationTypeHandle
 	                                       double doubleTime,            //LogicalTime
+	                                       int receivedOrdering,         //OrderType
+	                                       int retractionHandle,
+	                                       int producingFederate,        //SupplementalReceiveInfo
+	                                       int[] regionHandles );        //SupplementalReceiveInfo
+
+	public native void receiveInteraction( int id,
+	                                       int interactionClass,
+	                                       int[] parameterHandles,       //intValueMap
+	                                       byte[][] parameterValues,     //intValueMap
+	                                       byte[] tag,
+	                                       int sentOrdering,             //OrderType
+	                                       int theTransport,             //TransportationTypeHandle
 	                                       long longTime,                //LogicalTime
 	                                       int receivedOrdering,         //OrderType
 	                                       int retractionHandle,
@@ -258,12 +318,14 @@ public class FederateAmbassadorLink
 	                                         int sentOrdering,           //OrderType
 	                                         int producingFederate );    //SupplementalRemoveInfo
 
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
 	public native void removeObjectInstance( int id,
 	                                         int theObject,
 	                                         byte[] tag,
 	                                         int sentOrdering,           //OrderType
 	                                         double doubleTime,          //LogicalTime
-	                                         long longTime,              //LogicalTime
 	                                         int receivedOrdering,       //OrderType
 	                                         int producingFederate );    //SupplementalRemoveInfo
 
@@ -271,12 +333,32 @@ public class FederateAmbassadorLink
 	                                         int theObject,
 	                                         byte[] tag,
 	                                         int sentOrdering,           //OrderType
+	                                         long longTime,              //LogicalTime
+	                                         int receivedOrdering,       //OrderType
+	                                         int producingFederate );    //SupplementalRemoveInfo
+
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
+	public native void removeObjectInstance( int id,
+	                                         int theObject,
+	                                         byte[] tag,
+	                                         int sentOrdering,           //OrderType
 	                                         double doubleTime,          //LogicalTime
+	                                         int receivedOrdering,       //OrderType
+	                                         int retractionHandle,
+	                                         int producingFederate );    //SupplementalRemoveInfo
+
+	public native void removeObjectInstance( int id,
+	                                         int theObject,
+	                                         byte[] tag,
+	                                         int sentOrdering,           //OrderType
 	                                         long longTime,              //LogicalTime
 	                                         int receivedOrdering,       //OrderType
 	                                         int retractionHandle,
 	                                         int producingFederate );    //SupplementalRemoveInfo
 
+	
 	// 6.15
 	public native void attributesInScope( int id, int theObject, int[] theAttributes );
 
@@ -366,14 +448,20 @@ public class FederateAmbassadorLink
 
 	public native void attributeIsOwnedByRTI( int id, int theObject, int theAttribute );
 
+	//////////////////////////////////////////////////////////
+	// due to time implementations we converts to two calls //
+	//////////////////////////////////////////////////////////
 	// 8.3
-	public native void timeRegulationEnabled( int id, double time, long longTime );
+	public native void timeRegulationEnabled( int id, double doubleTime );
+	public native void timeRegulationEnabled( int id, long longTime );
 
 	// 8.6
-	public native void timeConstrainedEnabled( int id, double time, long longTime );
+	public native void timeConstrainedEnabled( int id, double doubleTime );
+	public native void timeConstrainedEnabled( int id, long longTime );
 
 	// 8.13
-	public native void timeAdvanceGrant( int id, double theTime, long longTime );
+	public native void timeAdvanceGrant( int id, double doubleTime );
+	public native void timeAdvanceGrant( int id, long longTime );
 
 	// 8.22
 	public native void requestRetraction( int id, int theHandle );

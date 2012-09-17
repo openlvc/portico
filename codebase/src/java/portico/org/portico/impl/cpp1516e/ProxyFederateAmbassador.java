@@ -188,7 +188,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 
 	public void initiateFederateSave( String label, LogicalTime time ) throws FederateInternalError
 	{
-		link.initiateFederateSave( ambassadorId, label, toDouble(time), toLong(time) );
+		if( time instanceof HLAfloat64Time )
+			link.initiateFederateSave( ambassadorId, label, toDouble(time) );
+		else
+			link.initiateFederateSave( ambassadorId, label, toLong(time) );
 	}
 
 	// 4.15
@@ -432,19 +435,35 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			attributeValues[count] = theAttributes.get(handle);
 			count++;
 		}
-		
-		link.reflectAttributeValues( ambassadorId,
-		                             fromHandle(theObject),
-		                             attributeHandles,
-		                             attributeValues,
-		                             tag,
-		                             sentOrdering.ordinal(),
-		                             fromHandle(theTransport),
-		                             toDouble(theTime),
-		                             toLong(theTime),
-		                             receivedOrdering.ordinal(),
-		                             fromHandle(reflectInfo.getProducingFederate()),
-		                             convert(reflectInfo.getSentRegions()) );
+
+		if( theTime instanceof HLAfloat64Time )
+		{
+    		link.reflectAttributeValues( ambassadorId,
+    		                             fromHandle(theObject),
+    		                             attributeHandles,
+    		                             attributeValues,
+    		                             tag,
+    		                             sentOrdering.ordinal(),
+    		                             fromHandle(theTransport),
+    		                             toDouble(theTime),
+    		                             receivedOrdering.ordinal(),
+    		                             fromHandle(reflectInfo.getProducingFederate()),
+    		                             convert(reflectInfo.getSentRegions()) );
+		}
+		else
+		{
+    		link.reflectAttributeValues( ambassadorId,
+    		                             fromHandle(theObject),
+    		                             attributeHandles,
+    		                             attributeValues,
+    		                             tag,
+    		                             sentOrdering.ordinal(),
+    		                             fromHandle(theTransport),
+    		                             toLong(theTime),
+    		                             receivedOrdering.ordinal(),
+    		                             fromHandle(reflectInfo.getProducingFederate()),
+    		                             convert(reflectInfo.getSentRegions()) );
+		}
 	}
 
 	public void reflectAttributeValues( ObjectInstanceHandle theObject,
@@ -468,20 +487,37 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			attributeValues[count] = theAttributes.get(handle);
 			count++;
 		}
-		
-		link.reflectAttributeValues( ambassadorId,
-		                             fromHandle(theObject),
-		                             attributeHandles,
-		                             attributeValues,
-		                             tag,
-		                             sentOrdering.ordinal(),
-		                             fromHandle(theTransport),
-		                             toDouble(theTime),
-		                             toLong(theTime),
-		                             receivedOrdering.ordinal(),
-		                             fromHandle(retractionHandle),
-		                             fromHandle(reflectInfo.getProducingFederate()),
-		                             convert(reflectInfo.getSentRegions()) );
+
+		if( theTime instanceof HLAfloat64Time )
+		{
+        	link.reflectAttributeValues( ambassadorId,
+        	                             fromHandle(theObject),
+        	                             attributeHandles,
+        	                             attributeValues,
+        	                             tag,
+        	                             sentOrdering.ordinal(),
+        	                             fromHandle(theTransport),
+        	                             toDouble(theTime),
+        	                             receivedOrdering.ordinal(),
+        	                             fromHandle(retractionHandle),
+        	                             fromHandle(reflectInfo.getProducingFederate()),
+        	                             convert(reflectInfo.getSentRegions()) );
+		}
+		else
+		{
+        	link.reflectAttributeValues( ambassadorId,
+        	                             fromHandle(theObject),
+        	                             attributeHandles,
+        	                             attributeValues,
+        	                             tag,
+        	                             sentOrdering.ordinal(),
+        	                             fromHandle(theTransport),
+        	                             toLong(theTime),
+        	                             receivedOrdering.ordinal(),
+        	                             fromHandle(retractionHandle),
+        	                             fromHandle(reflectInfo.getProducingFederate()),
+        	                             convert(reflectInfo.getSentRegions()) );
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -506,7 +542,7 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			parameterValues[count] = theParameters.get(handle);
 			count++;
 		}
-		
+
 		link.receiveInteraction( ambassadorId,
 		                         fromHandle(interactionClass),
 		                         parameterHandles,
@@ -538,19 +574,35 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			parameterValues[count] = theParameters.get(handle);
 			count++;
 		}
-		
-		link.receiveInteraction( ambassadorId,
-		                         fromHandle(interactionClass),
-		                         parameterHandles,
-		                         parameterValues,
-		                         tag,
-		                         sentOrdering.ordinal(),
-		                         fromHandle(theTransport),
-		                         toDouble(theTime),
-		                         toLong(theTime),
-		                         receivedOrdering.ordinal(),
-		                         fromHandle(receiveInfo.getProducingFederate()),
-		                         convert(receiveInfo.getSentRegions()) );
+
+		if( theTime instanceof HLAfloat64Time )
+		{
+    		link.receiveInteraction( ambassadorId,
+    		                         fromHandle(interactionClass),
+    		                         parameterHandles,
+    		                         parameterValues,
+    		                         tag,
+    		                         sentOrdering.ordinal(),
+    		                         fromHandle(theTransport),
+    		                         toDouble(theTime),
+    		                         receivedOrdering.ordinal(),
+    		                         fromHandle(receiveInfo.getProducingFederate()),
+    		                         convert(receiveInfo.getSentRegions()) );
+		}
+		else
+		{
+    		link.receiveInteraction( ambassadorId,
+    		                         fromHandle(interactionClass),
+    		                         parameterHandles,
+    		                         parameterValues,
+    		                         tag,
+    		                         sentOrdering.ordinal(),
+    		                         fromHandle(theTransport),
+    		                         toLong(theTime),
+    		                         receivedOrdering.ordinal(),
+    		                         fromHandle(receiveInfo.getProducingFederate()),
+    		                         convert(receiveInfo.getSentRegions()) );
+		}
 	}
 
 	public void receiveInteraction( InteractionClassHandle interactionClass,
@@ -575,19 +627,36 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			count++;
 		}
 		
-		link.receiveInteraction( ambassadorId,
-		                         fromHandle(interactionClass),
-		                         parameterHandles,
-		                         parameterValues,
-		                         tag,
-		                         sentOrdering.ordinal(),
-		                         fromHandle(theTransport),
-		                         toDouble(theTime),
-		                         toLong(theTime),
-		                         receivedOrdering.ordinal(),
-		                         fromHandle(retractionHandle),
-		                         fromHandle(receiveInfo.getProducingFederate()),
-		                         convert(receiveInfo.getSentRegions()) );
+		if( theTime instanceof HLAfloat64Time )
+		{
+    		link.receiveInteraction( ambassadorId,
+    		                         fromHandle(interactionClass),
+    		                         parameterHandles,
+    		                         parameterValues,
+    		                         tag,
+    		                         sentOrdering.ordinal(),
+    		                         fromHandle(theTransport),
+    		                         toDouble(theTime),
+    		                         receivedOrdering.ordinal(),
+    		                         fromHandle(retractionHandle),
+    		                         fromHandle(receiveInfo.getProducingFederate()),
+    		                         convert(receiveInfo.getSentRegions()) );
+		}
+		else
+		{
+    		link.receiveInteraction( ambassadorId,
+    		                         fromHandle(interactionClass),
+    		                         parameterHandles,
+    		                         parameterValues,
+    		                         tag,
+    		                         sentOrdering.ordinal(),
+    		                         fromHandle(theTransport),
+    		                         toLong(theTime),
+    		                         receivedOrdering.ordinal(),
+    		                         fromHandle(retractionHandle),
+    		                         fromHandle(receiveInfo.getProducingFederate()),
+    		                         convert(receiveInfo.getSentRegions()) );
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -615,14 +684,26 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 	                                  SupplementalRemoveInfo removeInfo )
 	    throws FederateInternalError
 	{
+		if( theTime instanceof HLAfloat64Time )
+		{
 			link.removeObjectInstance( ambassadorId,
 			                           fromHandle(theObject),
 			                           tag,
 			                           sentOrdering.ordinal(),
 			                           toDouble(theTime),
+			                           receivedOrdering.ordinal(),
+			                           fromHandle(removeInfo.getProducingFederate()) );
+		}
+		else
+		{
+			link.removeObjectInstance( ambassadorId,
+			                           fromHandle(theObject),
+			                           tag,
+			                           sentOrdering.ordinal(),
 			                           toLong(theTime),
 			                           receivedOrdering.ordinal(),
 			                           fromHandle(removeInfo.getProducingFederate()) );
+		}
 	}
 
 	public void removeObjectInstance( ObjectInstanceHandle theObject,
@@ -634,15 +715,28 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 	                                  SupplementalRemoveInfo removeInfo )
 	    throws FederateInternalError
 	{
+		if( theTime instanceof HLAfloat64Time )
+		{
 			link.removeObjectInstance( ambassadorId,
 			                           fromHandle(theObject),
 			                           tag,
 			                           sentOrdering.ordinal(),
 			                           toDouble(theTime),
+			                           receivedOrdering.ordinal(),
+			                           fromHandle(retractionHandle),
+			                           fromHandle(removeInfo.getProducingFederate()) );
+		}
+		else
+		{
+			link.removeObjectInstance( ambassadorId,
+			                           fromHandle(theObject),
+			                           tag,
+			                           sentOrdering.ordinal(),
 			                           toLong(theTime),
 			                           receivedOrdering.ordinal(),
 			                           fromHandle(retractionHandle),
 			                           fromHandle(removeInfo.getProducingFederate()) );
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -850,19 +944,28 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 	// 8.3
 	public void timeRegulationEnabled( LogicalTime time ) throws FederateInternalError
 	{
-		link.timeRegulationEnabled( ambassadorId, toDouble(time), toLong(time) );
+		if( time instanceof HLAfloat64Time )
+			link.timeRegulationEnabled( ambassadorId, toDouble(time) );
+		else
+			link.timeRegulationEnabled( ambassadorId, toLong(time) );
 	}
 
 	// 8.6
 	public void timeConstrainedEnabled( LogicalTime time ) throws FederateInternalError
 	{
-		link.timeConstrainedEnabled( ambassadorId, toDouble(time), toLong(time) );
+		if( time instanceof HLAfloat64Time )
+			link.timeConstrainedEnabled( ambassadorId, toDouble(time) );
+		else
+			link.timeConstrainedEnabled( ambassadorId, toLong(time) );
 	}
 
 	// 8.13
 	public void timeAdvanceGrant( LogicalTime time ) throws FederateInternalError
 	{
-		link.timeAdvanceGrant( ambassadorId, toDouble(time), toLong(time) );
+		if( time instanceof HLAfloat64Time )
+			link.timeAdvanceGrant( ambassadorId, toDouble(time) );
+		else
+			link.timeAdvanceGrant( ambassadorId, toLong(time) );
 	}
 
 	// 8.22
