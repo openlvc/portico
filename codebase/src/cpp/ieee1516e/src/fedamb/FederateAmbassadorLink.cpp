@@ -13,7 +13,7 @@
  *
  */
 #include "common.h"
-#include "jni/org_portico_impl_cpp1516e_FederateAmbassadorLink.h"
+#include "fedamb/org_portico_impl_cpp1516e_FederateAmbassadorLink.h"
 #include "jni/JavaRTI.h"
 #include "jni/JniUtils.h"
 #include "jni/Runtime.h"
