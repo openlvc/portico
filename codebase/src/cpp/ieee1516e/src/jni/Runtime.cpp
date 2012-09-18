@@ -416,12 +416,12 @@ void Runtime::processRid() throw( RTIinternalError )
 	///////////////////////////////////
 	// use Java to load the RID file //
 	///////////////////////////////////
-	// find the proxy ambassador class
-	jclass proxyClass = jnienv->FindClass( "org/portico/impl/cpp13/ProxyRtiAmbassador" );
+	// Find the proxy ambassador class 
+	jclass proxyClass = jnienv->FindClass( "org/portico/impl/cpp1516e/ProxyRtiAmbassador" );
 	if( proxyClass == NULL )
 	{
 		logger->fatal( "Can't locate the org.portico.impl.cpp13.ProxyRtiAmbassador class" );
-		throw RTIinternalError(L"Can't locate org.portico.impl.cpp13.ProxyRtiAmbassador class");
+		throw RTIinternalError(L"Can't locate org.portico.impl.cpp1516e.ProxyRtiAmbassador class");
 	}
 
 	// find the parseCppRid method

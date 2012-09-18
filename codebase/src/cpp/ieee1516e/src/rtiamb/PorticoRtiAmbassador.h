@@ -33,6 +33,8 @@ class PorticoRtiAmbassador : public RTIambassador
 	//----------------------------------------------------------
 	private:
 		JavaRTI *javarti;
+		JNIEnv *jnienv; // cache locally for convenience
+		Logger *logger;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS

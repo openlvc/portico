@@ -16,6 +16,7 @@
 #include "jni/JniUtils.h"
 #include "types/handles/HandleImplementations.h"
 #include "types/handles/HandleFriends.h"
+#include "utils/StringUtils.h"
 
 PORTICO1516E_NS_START
 
@@ -66,6 +67,16 @@ set<wstring> JniUtils::toWideStringSet( JNIEnv *jnienv, jobjectArray stringArray
 	}
 	
 	return stringSet;
+}
+
+jstring JniUtils::fromString( JNIEnv *jnienv, string cstring )
+{
+	return jnienv->NewStringUTF( cstring.c_str() );
+}
+
+jstring JniUtils::fromWideString( JNIEnv *jnienv, wstring cstring )
+{
+	return jnienv->NewStringUTF( StringUtils::toShortString(cstring).c_str() );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,6 +248,18 @@ VariableLengthData JniUtils::toTag( JNIEnv *jnienv, jbyteArray jtag )
 	VariableLengthData data( (void*)buffer, size );
 	jnienv->ReleaseByteArrayElements( jtag, buffer, JNI_ABORT );
 	return data;
+}
+
+jstring JniUtils::fromCallbackModel( JNIEnv *jnienv, CallbackModel model )
+{
+	if( model == HLA_EVOKED )
+	{
+		return jnienv->NewStringUTF( "HLA_EVOKED" );
+	}
+	else
+	{
+		return jnienv->NewStringUTF( "HLA_IMMEDIATE" );
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

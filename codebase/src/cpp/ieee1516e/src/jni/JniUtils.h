@@ -42,6 +42,9 @@ class JniUtils
 		static string toStringAndRelease( JNIEnv *jnienv, jstring javaString );
 		static set<wstring> toWideStringSet( JNIEnv *jnienv, jobjectArray stringArray );
 		
+		static jstring fromString( JNIEnv *jnienv, string cstring );
+		static jstring fromWideString( JNIEnv *jnienv, wstring cstring );
+
 		///// handle conversions ////////////////////////////////////////////////////////////
 		static FederateHandle toFederateHandle( jint handle );
 		static ObjectClassHandle toObjectClassHandle( jint handle );
@@ -68,6 +71,8 @@ class JniUtils
 		
 		///// support and misc types ////////////////////////////////////////////////////////
 		static VariableLengthData toTag( JNIEnv *jnienv, jbyteArray jtag );
+		
+		static jstring fromCallbackModel( JNIEnv *jnienv, CallbackModel model );
 		
 		///// time conversion methods ///////////////////////////////////////////////////////
 		static MessageRetractionHandle toRetractionHandle( jint handle );
