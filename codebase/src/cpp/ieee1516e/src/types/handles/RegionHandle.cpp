@@ -128,6 +128,11 @@ bool RegionHandle::operator< ( RegionHandle const & rhs ) const
 	return this->_impl->value < rhs._impl->value;
 }
 
+std::wostream& operator<< ( std::wostream& stream, const RegionHandle& handle )
+{
+	return stream << handle.toString();
+}
+
 //------------------------------------------------------------------------------------------
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------

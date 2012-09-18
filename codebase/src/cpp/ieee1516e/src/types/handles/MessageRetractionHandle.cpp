@@ -128,6 +128,11 @@ bool MessageRetractionHandle::operator< ( MessageRetractionHandle const & rhs ) 
 	return this->_impl->value < rhs._impl->value;
 }
 
+std::wostream& operator<< ( std::wostream& stream, const MessageRetractionHandle& handle )
+{
+	return stream << handle.toString();
+}
+
 //------------------------------------------------------------------------------------------
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------

@@ -128,6 +128,11 @@ bool InteractionClassHandle::operator< ( InteractionClassHandle const & rhs ) co
 	return this->_impl->value < rhs._impl->value;
 }
 
+std::wostream& operator<< ( std::wostream& stream, const InteractionClassHandle& handle )
+{
+	return stream << handle.toString();
+}
+
 //------------------------------------------------------------------------------------------
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------

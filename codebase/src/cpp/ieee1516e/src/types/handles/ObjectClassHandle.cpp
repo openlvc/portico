@@ -128,6 +128,11 @@ bool ObjectClassHandle::operator< ( ObjectClassHandle const & rhs ) const
 	return this->_impl->value < rhs._impl->value;
 }
 
+std::wostream& operator<< ( std::wostream& stream, const ObjectClassHandle& handle )
+{
+	return stream << handle.toString();
+}
+
 //------------------------------------------------------------------------------------------
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------
