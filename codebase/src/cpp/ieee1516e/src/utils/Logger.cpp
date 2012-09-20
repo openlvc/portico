@@ -28,10 +28,13 @@ Logger::Logger( std::string name )
 	this->name = std::string(name);
 	this->level = Logger::LEVEL_ERROR;
 	this->prefix = std::string("");
+	
+	this->stringBuffer = new char[MAX_MSG_LENGTH];
 }
 
 Logger::~Logger()
 {
+	delete this->stringBuffer;
 }
 
 //------------------------------------------------------------------------------------------
@@ -84,12 +87,11 @@ void Logger::log( std::string level, std::string format, va_list args )
 	// turn the args into a single string
 	// http://www.cplusplus.com/reference/clibrary/cstdio/vsprintf.html
 	// vsNprintf will check to make sure it doesn't write more than a certain amount
-	char buffer[MAX_MSG_LENGTH];
-	vsnprintf( buffer, MAX_MSG_LENGTH, format.c_str(), args );
+	vsnprintf( stringBuffer, MAX_MSG_LENGTH, format.c_str(), args );
 	// on windows: _vsnprintf_s( buffer, MAX_MSG_LENGTH, format.c_str(), args );
 
 	// print the message
-	std::cout << level << " [" << this->name << "] " << prefix << buffer << std::endl;
+	std::cout << level << " [" << this->name << "] " << prefix << stringBuffer << std::endl;
 }
 
 //
@@ -313,7 +315,7 @@ int Logger::getGlobalLevel()
 ////////////////////////////////////////////////////////////////////////////
 //////////////////////// Set/Map Conversion Methods ////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-std::string toString( const AttributeHandleSet& theSet )
+std::string Logger::toString( const AttributeHandleSet& theSet )
 {
 	// want to return "{1, 2, 3, 4, 5}"
 	std::stringstream ss;
@@ -334,7 +336,7 @@ std::string toString( const AttributeHandleSet& theSet )
 	return ss.str();
 }
 
-std::string toString( const DimensionHandleSet& theSet )
+std::string Logger::toString( const DimensionHandleSet& theSet )
 {
 	// want to return "{1, 2, 3, 4, 5}"
 	std::stringstream ss;
@@ -355,7 +357,7 @@ std::string toString( const DimensionHandleSet& theSet )
 	return ss.str();
 }
 
-std::string toString( const FederateHandleSet& theSet )
+std::string Logger::toString( const FederateHandleSet& theSet )
 {
 	// want to return "{1, 2, 3, 4, 5}"
 	std::stringstream ss;
@@ -376,7 +378,7 @@ std::string toString( const FederateHandleSet& theSet )
 	return ss.str();
 }
 
-std::string toString( const ParameterHandleSet& theSet )
+std::string Logger::toString( const ParameterHandleSet& theSet )
 {
 	// want to return "{1, 2, 3, 4, 5}"
 	std::stringstream ss;
@@ -397,7 +399,7 @@ std::string toString( const ParameterHandleSet& theSet )
 	return ss.str();
 }
 
-std::string toString( const RegionHandleSet& theSet )
+std::string Logger::toString( const RegionHandleSet& theSet )
 {
 	// want to return "{1, 2, 3, 4, 5}"
 	std::stringstream ss;
@@ -418,7 +420,7 @@ std::string toString( const RegionHandleSet& theSet )
 	return ss.str();
 }
 
-std::string toString( const AttributeHandleValueMap& theMap )
+std::string Logger::toString( const AttributeHandleValueMap& theMap )
 {
 	// want to return "{1(4b), 2(8b), 3(1b)}"
 	std::stringstream ss;
@@ -442,7 +444,7 @@ std::string toString( const AttributeHandleValueMap& theMap )
 	return ss.str();
 }
 
-std::string toString( const ParameterHandleValueMap& theMap )
+std::string Logger::toString( const ParameterHandleValueMap& theMap )
 {
 	// want to return "{1(4b), 2(8b), 3(1b)}"
 	std::stringstream ss;
@@ -464,6 +466,42 @@ std::string toString( const ParameterHandleValueMap& theMap )
 	
 	ss << "}";
 	return ss.str();
+}
+
+std::wstring Logger::toWString( std::vector<std::wstring> values )
+{
+	wstringstream wss;
+	wss << L"{";
+	vector<wstring>::iterator iterator;
+	for( iterator = values.begin(); iterator != values.end(); /*iterator++ we do below*/ )
+	{
+		wss << (*iterator);
+		// check to see if the next is the last, don't print the
+		// separator if it is
+		if( (++iterator) != values.end() )
+			wss << L", ";
+	}
+	
+	wss << L"}";
+	return wss.str();
+}
+
+std::wstring Logger::toWString( std::set<std::wstring> values )
+{
+	wstringstream wss;
+	wss << L"{";
+	set<wstring>::iterator iterator;
+	for( iterator = values.begin(); iterator != values.end(); /*iterator++ we do below*/ )
+	{
+		wss << (*iterator);
+		// check to see if the next is the last, don't print the
+		// separator if it is
+		if( (++iterator) != values.end() )
+			wss << L", ";
+	}
+	
+	wss << L"}";
+	return wss.str();
 }
 
 PORTICO1516E_NS_END

@@ -13,6 +13,8 @@
  *
  */
 #include "rtiamb/PorticoRtiAmbassador.h"
+#include "jni/JniUtils.h"
+#include "utils/Logger.h"
 
 PORTICO1516E_NS_START
 
@@ -21,7 +23,7 @@ PORTICO1516E_NS_START
 /////////////////////////////////////////////////////////////////////////////////
 // 5.2
 void PorticoRtiAmbassador::publishObjectClassAttributes( ObjectClassHandle theClass,
-                                                         const AttributeHandleSet& attributeList )
+                                                         const AttributeHandleSet& attributes )
 	throw( AttributeNotDefined,
 	       ObjectClassNotDefined,
 	       SaveInProgress,
@@ -30,7 +32,27 @@ void PorticoRtiAmbassador::publishObjectClassAttributes( ObjectClassHandle theCl
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] publishObjectClassAttributes(): class=%ls, attributes=%s",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str() );
 	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
+	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
+
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->PUBLISH_OBJECT_CLASS,
+	                        jclassHandle,
+	                        jattributes );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jattributes );
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] publishObjectClassAttributes(): class=%ls, attributes=%s",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str() );
 }
 
 // 5.3
@@ -43,12 +65,25 @@ void PorticoRtiAmbassador::unpublishObjectClass( ObjectClassHandle theClass )
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->UNPUBLISH_OBJECT_CLASS,
+	                        jclassHandle );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
 }
 
 
 void PorticoRtiAmbassador::unpublishObjectClassAttributes( ObjectClassHandle theClass,
-                                                           const AttributeHandleSet& attributeList )
+                                                           const AttributeHandleSet& attributes )
 	throw( OwnershipAcquisitionPending,
 	       AttributeNotDefined,
 	       ObjectClassNotDefined,
@@ -58,11 +93,31 @@ void PorticoRtiAmbassador::unpublishObjectClassAttributes( ObjectClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
+	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->UNPUBLISH_OBJECT_CLASS_WITH_ATTRIBUTES,
+	                        jclassHandle,
+	                        jattributes );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jattributes );
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str() );
 }
 
 // 5.4
-void PorticoRtiAmbassador::publishInteractionClass( InteractionClassHandle theInteraction )
+void PorticoRtiAmbassador::publishInteractionClass( InteractionClassHandle theClass )
 	throw( InteractionClassNotDefined,
 	       SaveInProgress,
 	       RestoreInProgress,
@@ -70,11 +125,24 @@ void PorticoRtiAmbassador::publishInteractionClass( InteractionClassHandle theIn
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->PUBLISH_INTERACTION_CLASS,
+	                        jclassHandle );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
 }
 
 // 5.5
-void PorticoRtiAmbassador::unpublishInteractionClass( InteractionClassHandle theInteraction )
+void PorticoRtiAmbassador::unpublishInteractionClass( InteractionClassHandle theClass )
 	throw( InteractionClassNotDefined,
 	       SaveInProgress,
 	       RestoreInProgress,
@@ -82,15 +150,27 @@ void PorticoRtiAmbassador::unpublishInteractionClass( InteractionClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->UNPUBLISH_INTERACTION_CLASS,
+	                        jclassHandle );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
 }
 
 // 5.6
-void PorticoRtiAmbassador::subscribeObjectClassAttributes(
-	ObjectClassHandle theClass,
-	const AttributeHandleSet& attributeList,
-	bool active,
-	const std::wstring& updateRateDesignator )
+void PorticoRtiAmbassador::subscribeObjectClassAttributes( ObjectClassHandle theClass,
+                                                           const AttributeHandleSet& attributes,
+                                                           bool active,
+                                                           const std::wstring& updateRate )
 	throw( AttributeNotDefined,
 	       ObjectClassNotDefined,
 	       InvalidUpdateRateDesignator,
@@ -100,7 +180,65 @@ void PorticoRtiAmbassador::subscribeObjectClassAttributes(
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] subscribeObjectClassAttributes(): class=%ls, attributes=%s, active=%d, rate=%ls",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str(),
+	               active,
+	               updateRate.c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
+	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
+	jstring jrate = JniUtils::fromWideString( jnienv, updateRate );
 
+	// which method do we want to call!?
+	if( updateRate.compare(L"") == 0 )
+	{
+		if( active )
+		{
+			jnienv->CallVoidMethod( javarti->jproxy,
+			                        javarti->SUBSCRIBE_ATTRIBUTES,
+			                        jclassHandle,
+			                        jattributes );
+		}
+		else
+		{
+			jnienv->CallVoidMethod( javarti->jproxy,
+			                        javarti->SUBSCRIBE_ATTRIBUTES_PASSIVE,
+			                        jclassHandle,
+			                        jattributes );
+		}
+	}
+	else
+	{
+		if( active )
+		{
+			jnienv->CallVoidMethod( javarti->jproxy,
+			                        javarti->SUBSCRIBE_ATTRIBUTES_WITH_RATE,
+			                        jclassHandle,
+			                        jattributes,
+			                        jrate );
+		}
+		else
+		{
+			jnienv->CallVoidMethod( javarti->jproxy,
+			                        javarti->SUBSCRIBE_ATTRIBUTES_PASSIVE_WITH_RATE,
+			                        jclassHandle,
+			                        jattributes,
+			                        jrate );
+		}
+	}
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jattributes );
+	jnienv->DeleteLocalRef( jrate );
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] subscribeObjectClassAttributes(): class=%ls, attributes=%s, active=%d, rate=%ls",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str(),
+	               active,
+	               updateRate.c_str() );
 }
 
 // 5.7
@@ -112,11 +250,24 @@ void PorticoRtiAmbassador::unsubscribeObjectClass( ObjectClassHandle theClass )
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->UNSUBSCRIBE_OBJECT_CLASS,
+	                        jclassHandle );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
 }
 
 void PorticoRtiAmbassador::unsubscribeObjectClassAttributes( ObjectClassHandle theClass,
-                                                             const AttributeHandleSet& attributeList )
+                                                             const AttributeHandleSet& attributes )
 	throw( AttributeNotDefined,
 	       ObjectClassNotDefined,
 	       SaveInProgress,
@@ -125,7 +276,27 @@ void PorticoRtiAmbassador::unsubscribeObjectClassAttributes( ObjectClassHandle t
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
+	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->UNSUBSCRIBE_OBJECT_CLASS_WITH_ATTRIBUTES,
+	                        jclassHandle,
+	                        jattributes );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jattributes );
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
+	               theClass.toString().c_str(),
+	               Logger::toString(attributes).c_str() );
 }
 
 // 5.8
@@ -139,7 +310,26 @@ void PorticoRtiAmbassador::subscribeInteractionClass( InteractionClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] subscribeInteractionClass(): class=%ls, active=%d",
+	               theClass.toString().c_str(),
+	               active );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
 
+	// call the method
+	jmethodID method = javarti->SUBSCRIBE_INTERACTION_CLASS;
+	if( active == false )
+		method = javarti->SUBSCRIBE_INTERACTION_CLASS_PASSIVE;
+
+	jnienv->CallVoidMethod( javarti->jproxy, method, jclassHandle );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] subscribeInteractionClass(): class=%ls, active=%d",
+	              theClass.toString().c_str(),
+	              active );
 }
 
 // 5.9
@@ -151,7 +341,20 @@ void PorticoRtiAmbassador::unsubscribeInteractionClass( InteractionClassHandle t
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->debug( "[Starting] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
+	
+	// get java versions of the parameters
+	jint jclassHandle = JniUtils::fromHandle( theClass );
 
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->UNSUBSCRIBE_INTERACTION_CLASS,
+	                        jclassHandle );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	
+	logger->info( "[Finished] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
 }
 
 PORTICO1516E_NS_END

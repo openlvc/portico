@@ -39,6 +39,9 @@ class Runtime
 	//----------------------------------------------------------
 	private:
 		static Runtime* instance;
+	
+	public:
+		static jclass JCLASS_BYTE_ARRAY;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -81,6 +84,7 @@ class Runtime
 
 	private:
 		void initializeJVM() throw( RTIinternalError );
+		void cacheGlobalHandles() throw( RTIinternalError );
 		void attachToJVM() throw( RTIinternalError );
 		void detachFromJVM(); /* should not be called currently */
 

@@ -18,6 +18,7 @@ import hla.rti1516e.RegionHandle;
 import hla.rti1516e.RegionHandleSet;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class HLA1516eRegionHandleSet
        extends HashSet<RegionHandle>
@@ -34,6 +35,24 @@ public class HLA1516eRegionHandleSet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eRegionHandleSet()
+	{
+		super();
+	}
+	
+	public HLA1516eRegionHandleSet( Set<Integer> regions )
+	{
+		super( regions.size() );
+		for( Integer region : regions )
+			this.add( new HLA1516eHandle(region) );
+	}
+	
+	public HLA1516eRegionHandleSet( int[] regions )
+	{
+		super( regions.length );
+		for( int region : regions )
+			add( new HLA1516eHandle(region) );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

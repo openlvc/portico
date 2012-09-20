@@ -14,6 +14,7 @@
  */
 #include "common.h"
 #include "jni/JniUtils.h"
+#include "jni/Runtime.h"
 #include "types/handles/HandleImplementations.h"
 #include "types/handles/HandleFriends.h"
 #include "utils/StringUtils.h"
@@ -117,6 +118,46 @@ RegionHandle JniUtils::toRegionHandle( jint handle )
 	return RegionHandleFriend::create( handle );
 }
 
+jint JniUtils::fromHandle( FederateHandle handle )
+{
+	return FederateHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( ObjectClassHandle handle )
+{
+	return ObjectClassHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( ObjectInstanceHandle handle )
+{
+	return ObjectInstanceHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( AttributeHandle handle )
+{
+	return AttributeHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( InteractionClassHandle handle )
+{
+	return InteractionClassHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( ParameterHandle handle )
+{
+	return ParameterHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( RegionHandle handle )
+{
+	return RegionHandleFriend::getInt( handle );
+}
+
+jint JniUtils::fromHandle( MessageRetractionHandle handle )
+{
+	return MessageRetractionHandleFriend::getInt( handle );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// Set Conversion Methods ////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +169,9 @@ RegionHandle JniUtils::toRegionHandle( jint handle )
 // *How do I get the implementation into the handle!!?
 /////////////
 
-// set and map conversion methods
+/*
+ * Converts the provided jintArray into an AttributeHandleSet.
+ */
 AttributeHandleSet JniUtils::toAttributeSet( JNIEnv *jnienv, jintArray handles )
 {
 	// figure out how many elements we have to copy over
@@ -144,6 +187,9 @@ AttributeHandleSet JniUtils::toAttributeSet( JNIEnv *jnienv, jintArray handles )
 	return handleSet;
 }
 
+/*
+ * Converts the provided jintArray into an FederateHandleSet.
+ */
 FederateHandleSet JniUtils::toFederateSet( JNIEnv *jnienv, jintArray handles )
 {
 	// figure out how many elements we have to copy over
@@ -159,6 +205,13 @@ FederateHandleSet JniUtils::toFederateSet( JNIEnv *jnienv, jintArray handles )
 	return handleSet;
 }
 
+/*
+ * Converts the provided jintArray and jobjectArray into a single AttributeHandleValueMap.
+ * The int[] is expected to contain the handles, with the values for each handle held at
+ * the same index in the jobjectArray (a byte[][] from the Java side). This method will
+ * convert the handles into AttributeHandles and will wrap the values in VariableLengthData
+ * objects, storing them in the map before returning.
+ */
 AttributeHandleValueMap JniUtils::toAttributeValueMap( JNIEnv *jnienv,
                                                        jintArray handles,
                                                        jobjectArray values )
@@ -187,6 +240,13 @@ AttributeHandleValueMap JniUtils::toAttributeValueMap( JNIEnv *jnienv,
 	return valueMap;
 }
 
+/*
+ * Converts the provided jintArray and jobjectArray into a single ParameterHandleValueMap.
+ * The int[] is expected to contain the handles, with the values for each handle held at
+ * the same index in the jobjectArray (a byte[][] from the Java side). This method will
+ * convert the handles into ParameterHandles and will wrap the values in VariableLengthData
+ * objects, storing them in the map before returning.
+ */
 ParameterHandleValueMap JniUtils::toParameterValueMap( JNIEnv *jnienv,
                                                        jintArray handles,
                                                        jobjectArray values )
@@ -215,6 +275,9 @@ ParameterHandleValueMap JniUtils::toParameterValueMap( JNIEnv *jnienv,
 	return valueMap;
 }
 
+/*
+ * Converts the provided jintArray into an RegionHandleSet.
+ */
 RegionHandleSet JniUtils::toRegionSet( JNIEnv *jnienv, jintArray handles )
 {
 	jsize size = jnienv->GetArrayLength( handles );
@@ -231,35 +294,158 @@ RegionHandleSet JniUtils::toRegionSet( JNIEnv *jnienv, jintArray handles )
 	return regionSet;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// Support and Misc Type Conversion Methods ///////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
-VariableLengthData JniUtils::toTag( JNIEnv *jnienv, jbyteArray jtag )
+/**
+ * Takes the provided vector of wstring's and converts it into a String[] to be passed
+ * over the JNI boundary to Java.
+ * 
+ * NOTE: The caller is responsible for releasing the references held by the returned array
+ */
+jobjectArray JniUtils::fromVector( JNIEnv *jnienv, vector<wstring> stringVector )
 {
-	// if we don't have a tag, just return an empty byte[]
-	if( jtag == NULL )
-		return VariableLengthData();
-
-	// convert the tag
-	//   we assume that there is no null terminator
-	jsize size = jnienv->GetArrayLength( jtag );
-	jbyte *buffer = new jbyte[size];
-	jnienv->GetByteArrayElements( jtag, NULL );
-	VariableLengthData data( (void*)buffer, size );
-	jnienv->ReleaseByteArrayElements( jtag, buffer, JNI_ABORT );
-	return data;
+	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" );
+	jobjectArray array = jnienv->NewObjectArray( stringVector.size(), stringClass, 0 );
+	
+	int count = 0;
+	vector<wstring>::iterator iterator;
+	for( iterator = stringVector.begin(); iterator != stringVector.end(); iterator++ )
+	{
+		jstring temp = jnienv->NewString( (jchar*)(*iterator).c_str(), (*iterator).length() );
+		jnienv->SetObjectArrayElement( array, count, temp );
+		count++;
+	}
+	
+	return array;
 }
 
-jstring JniUtils::fromCallbackModel( JNIEnv *jnienv, CallbackModel model )
+/**
+ * Takes the provided set of wstring's and converts it into a String[] to be passed
+ * over the JNI boundary to Java.
+ * 
+ * NOTE: The caller is responsible for releasing the references held by the returned array
+ */
+jobjectArray JniUtils::fromSet( JNIEnv *jnienv, set<wstring> stringSet )
 {
-	if( model == HLA_EVOKED )
+	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" );
+	jobjectArray array = jnienv->NewObjectArray( stringSet.size(), stringClass, 0 );
+	
+	int count = 0;
+	set<wstring>::iterator iterator;
+	for( iterator = stringSet.begin(); iterator != stringSet.end(); iterator++ )
 	{
-		return jnienv->NewStringUTF( "HLA_EVOKED" );
+		jstring temp = jnienv->NewString( (jchar*)(*iterator).c_str(), (*iterator).length() );
+		jnienv->SetObjectArrayElement( array, count, temp );
+		count++;
 	}
-	else
+	
+	return array;
+}
+
+jintArray JniUtils::fromSet( JNIEnv *jnienv, AttributeHandleSet attributes )
+{
+	jintArray array = jnienv->NewIntArray( attributes.size() );
+	jint* content = jnienv->GetIntArrayElements( array, NULL );
+	int count = 0;
+	AttributeHandleSet::iterator iterator;
+	for( iterator = attributes.begin(); iterator != attributes.end(); iterator++ )
 	{
-		return jnienv->NewStringUTF( "HLA_IMMEDIATE" );
+		content[count] = AttributeHandleFriend::getInt( (AttributeHandle&)*iterator );
 	}
+
+	jnienv->ReleaseIntArrayElements( array, content, 0 );
+	return array;
+}
+
+jintArray JniUtils::fromSet( JNIEnv *jnienv, FederateHandleSet federates )
+{
+	jintArray array = jnienv->NewIntArray( federates.size() );
+	jint* content = jnienv->GetIntArrayElements( array, NULL );
+	int count = 0;
+	FederateHandleSet::iterator iterator;
+	for( iterator = federates.begin(); iterator != federates.end(); iterator++ )
+	{
+		content[count] = FederateHandleFriend::getInt( (FederateHandle&)*iterator );
+	}
+
+	jnienv->ReleaseIntArrayElements( array, content, 0 );
+	return array;
+}
+
+/**
+ * Convert the given AttributeHandleValueMap into a HVPS, which itself has two elements:
+ * a jintArray representing the handle in the map, and a jobjectArray representing the
+ * various values in the map. This will put the values in a form we can pass over the
+ * JNI boundary.
+ */
+HVPS JniUtils::fromMap( JNIEnv *jnienv, AttributeHandleValueMap values )
+{
+	// create the struct to hold the values
+	HVPS hvps = HVPS();
+	hvps.handles = jnienv->NewIntArray( values.size() );
+	hvps.values  = jnienv->NewObjectArray( values.size(), Runtime::JCLASS_BYTE_ARRAY, 0 );
+
+	// get references to the array contents as JNI requires
+	jint *handlesContent = jnienv->GetIntArrayElements( hvps.handles, NULL );
+
+	// loop through all values in the map and put them into the appropriate location
+	AttributeHandleValueMap::iterator iterator;
+	int i = 0;
+	for( iterator = values.begin(); iterator != values.end(); iterator++, i++ )
+	{
+		// get the AttributeHandle
+		handlesContent[i] = JniUtils::fromHandle( (*iterator).first );
+	
+		// get the value and convert it into a byte[]
+		VariableLengthData data = (*iterator).second;
+		jbyteArray tempArray = jnienv->NewByteArray( data.size() );
+		jnienv->SetByteArrayRegion( tempArray, 0, data.size(), (jbyte*)data.data() );
+		jnienv->SetObjectArrayElement( hvps.values, i, tempArray );
+		jnienv->DeleteLocalRef( tempArray );
+	}
+
+	// release the handles array contents pointer
+	jnienv->ReleaseIntArrayElements( hvps.handles, handlesContent, 0 );
+
+	// return the result
+	return hvps;
+}
+
+/**
+ * Convert the given ParameterHandleValueMap into a HVPS, which itself has two elements:
+ * a jintArray representing the handle in the map, and a jobjectArray representing the
+ * various values in the map. This will put the values in a form we can pass over the
+ * JNI boundary.
+ */
+HVPS JniUtils::fromMap( JNIEnv *jnienv, ParameterHandleValueMap values )
+{
+	// create the struct to hold the values
+	HVPS hvps = HVPS();
+	hvps.handles = jnienv->NewIntArray( values.size() );
+	hvps.values  = jnienv->NewObjectArray( values.size(), Runtime::JCLASS_BYTE_ARRAY, 0 );
+
+	// get references to the array contents as JNI requires
+	jint *handlesContent = jnienv->GetIntArrayElements( hvps.handles, NULL );
+
+	// loop through all values in the map and put them into the appropriate location
+	ParameterHandleValueMap::iterator iterator;
+	int i = 0;
+	for( iterator = values.begin(); iterator != values.end(); iterator++, i++ )
+	{
+		// get the AttributeHandle
+		handlesContent[i] = JniUtils::fromHandle( (*iterator).first );
+	
+		// get the value and convert it into a byte[]
+		VariableLengthData data = (*iterator).second;
+		jbyteArray tempArray = jnienv->NewByteArray( data.size() );
+		jnienv->SetByteArrayRegion( tempArray, 0, data.size(), (jbyte*)data.data() );
+		jnienv->SetObjectArrayElement( hvps.values, i, tempArray );
+		jnienv->DeleteLocalRef( tempArray );
+	}
+
+	// release the handles array contents pointer
+	jnienv->ReleaseIntArrayElements( hvps.handles, handlesContent, 0 );
+
+	// return the result
+	return hvps;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,6 +454,55 @@ jstring JniUtils::fromCallbackModel( JNIEnv *jnienv, CallbackModel model )
 MessageRetractionHandle JniUtils::toRetractionHandle( jint handle )
 {
 	return MessageRetractionHandleFriend::create( handle );
+}
+
+/**
+ * Converts the provided logical time into a jdouble for transmission over the JNI boundary.
+ * This method will try and cast the type to a HLAfloat64Time, followed by a HLAinteger64Time
+ * in order to extract the underlying value. If the provided logical time isn't one of these
+ * two types, an InvalidLogicalTime is thrown
+ */
+jdouble JniUtils::fromTime( const LogicalTime& time ) throw( InvalidLogicalTime )
+{
+	if( time.implementationName().compare(L"HLAfloat64Time") == 0 )
+	{
+		return ((HLAfloat64Time)time).getTime();
+	}
+	else if( time.implementationName().compare(L"HLAinteger64Time") == 0 )
+	{
+		return (jdouble)((HLAinteger64Time)time).getTime();
+	}
+	else
+	{
+		JniUtils::logger->error( "Conversion failure [time]: Received unknown time type: %ls",
+		                         time.implementationName().c_str() );
+		throw InvalidLogicalTime( L"Portico only supports HLAfloat64Time and HLAinteger64Time" );
+	}
+}
+
+/**
+ * Converts the provided logical time interval into a jdouble for transmission over the JNI
+ * boundary. This method will try and cast the type to a HLAfloat64Interval, followed by a
+ * HLAinteger64Interval in order to extract the underlying value. If the provided logical time
+ * isn't one of these two types, an InvalidLookahead is thrown.
+ */
+jdouble JniUtils::fromInterval( const LogicalTimeInterval& interval )
+	throw( InvalidLookahead )
+{
+	if( interval.implementationName().compare(L"HLAfloat64Interval") == 0 )
+	{
+		return ((HLAfloat64Interval)interval).getInterval();
+	}
+	else if( interval.implementationName().compare(L"HLAinteger64Interval") == 0 )
+	{
+		return (jdouble)((HLAinteger64Interval)interval).getInterval();
+	}
+	else
+	{
+		JniUtils::logger->error( "Conversion failure [interval]: Received unknown type: %ls",
+		                         interval.implementationName().c_str() );
+		throw InvalidLookahead( L"Portico only supports HLAfloat64Interval and HLAinteger64Interval" );
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -634,6 +869,26 @@ FederationExecutionInformationVector JniUtils::toFedInformationVector( JNIEnv *j
 	return fedVector;
 }
 
+VariableLengthData JniUtils::toTag( JNIEnv *jnienv, jbyteArray jtag )
+{
+	// if we don't have a tag, just return an empty byte[]
+	if( jtag == NULL )
+		return VariableLengthData();
+
+	// convert the tag
+	//   we assume that there is no null terminator
+	jsize size = jnienv->GetArrayLength( jtag );
+	jbyte *buffer = new jbyte[size];
+	jnienv->GetByteArrayElements( jtag, NULL );
+	VariableLengthData data( (void*)buffer, size );
+	jnienv->ReleaseByteArrayElements( jtag, buffer, JNI_ABORT );
+	return data;
+}
+
+/**
+ * Map the provided int to a OrderType enumerated value, logging an error if we don't
+ * know what value to provide for the given int (defaults to OrderType::RECEIVE).
+ */
 OrderType JniUtils::toOrder( jint type )
 {
 	if( type == 1 )
@@ -654,6 +909,10 @@ OrderType JniUtils::toOrder( jint type )
 	}
 }
 
+/**
+ * Map the provided int to a TransportationType enumerated value, logging an error if we don't
+ * know what value to provide for the given int (defaults to TransportationType::BEST_EFFORT).
+ */
 TransportationType JniUtils::toTransport( jint type )
 {
 	if( type == 1 )
@@ -672,6 +931,138 @@ TransportationType JniUtils::toTransport( jint type )
 		JniUtils::logger->error( "Defaulting to BEST_EFFORT" );
 		return BEST_EFFORT;
 	}
+}
+
+ResignAction JniUtils::toResignAction( JNIEnv *jnienv, jstring action )
+{
+	string actionString = JniUtils::toString( jnienv, action );
+	if( actionString.compare("NO_ACTION") == 0 )
+	{
+		return NO_ACTION;
+	}
+	else if( actionString.compare("DELETE_OBJECTS") == 0 )
+	{
+		return DELETE_OBJECTS;
+	}
+	else if( actionString.compare("DELETE_OBJECTS_THEN_DIVEST") == 0 )
+	{
+		return DELETE_OBJECTS_THEN_DIVEST;
+	}
+	else if( actionString.compare("UNCONDITIONALLY_DIVEST_ATTRIBUTES") == 0 )
+	{
+		return UNCONDITIONALLY_DIVEST_ATTRIBUTES;
+	}
+	else if( actionString.compare("CANCEL_PENDING_OWNERSHIP_ACQUISITIONS") == 0 )
+	{
+		return CANCEL_PENDING_OWNERSHIP_ACQUISITIONS;
+	}
+	else if( actionString.compare("CANCEL_THEN_DELETE_THEN_DIVEST") == 0 )
+	{
+		return CANCEL_THEN_DELETE_THEN_DIVEST;
+	}
+	else
+	{
+		JniUtils::logger->error( "Conversion failure [%s]: received unknown value from Java: %s",
+		                         "ResignAction",
+		                         actionString.c_str() );
+		JniUtils::logger->error( "Defaulting to NO_ACTION" );
+		return NO_ACTION;
+	}
+}
+
+jbyteArray JniUtils::fromTag( JNIEnv *jnienv, VariableLengthData tag )
+{
+	// create the byte[] and populate it with the tag data
+	//   strip the null terminator because it won't be there for Java-federates
+	//   we have to manually add and remove it to keep consistent with Java
+	jbyteArray jtag = jnienv->NewByteArray( tag.size() );
+	jnienv->SetByteArrayRegion( jtag, 0, tag.size(), (jbyte*)tag.data() );
+	return jtag;
+}
+
+jstring JniUtils::fromOrder( JNIEnv *jnienv, OrderType order )
+{
+	if( order == TIMESTAMP )
+	{
+		return jnienv->NewStringUTF( "TIMESTAMP" );
+	}
+	else
+	{
+		return jnienv->NewStringUTF( "RECEIVE" );
+	}
+}
+
+jstring JniUtils::fromTransport( JNIEnv *jnienv, TransportationType transport )
+{
+	if( transport == BEST_EFFORT )
+	{
+		return jnienv->NewStringUTF( "BEST_EFFORT" );
+	}
+	else
+	{
+		return jnienv->NewStringUTF( "RELIABLE" );
+	}
+}
+
+jstring JniUtils::fromCallbackModel( JNIEnv *jnienv, CallbackModel model )
+{
+	if( model == HLA_EVOKED )
+	{
+		return jnienv->NewStringUTF( "HLA_EVOKED" );
+	}
+	else
+	{
+		return jnienv->NewStringUTF( "HLA_IMMEDIATE" );
+	}
+}
+
+jstring JniUtils::fromResignAction( JNIEnv *jnienv, ResignAction action )
+{
+	switch( action )
+	{
+		case NO_ACTION:
+			return jnienv->NewStringUTF( "NO_ACTION" );
+			break;
+		case DELETE_OBJECTS:
+			return jnienv->NewStringUTF( "DELETE_OBJECTS" );
+			break;
+		case DELETE_OBJECTS_THEN_DIVEST:
+			return jnienv->NewStringUTF( "DELETE_OBJECTS_THEN_DIVEST" );
+			break;
+		case UNCONDITIONALLY_DIVEST_ATTRIBUTES:
+			return jnienv->NewStringUTF( "UNCONDITIONALLY_DIVEST_ATTRIBUTES" );
+			break;
+		case CANCEL_PENDING_OWNERSHIP_ACQUISITIONS:
+			return jnienv->NewStringUTF( "CANCEL_PENDING_OWNERSHIP_ACQUISITIONS" );
+			break;
+		case CANCEL_THEN_DELETE_THEN_DIVEST:
+			return jnienv->NewStringUTF( "CANCEL_THEN_DELETE_THEN_DIVEST" );
+			break;
+		default:
+			return jnienv->NewStringUTF( "NO_ACTION" );
+	}
+}
+
+/**
+ * Loops through the provided array and calls DeleteLocalRef for each of the contained
+ * elements before deleting the local reference for the array itself
+ */
+void JniUtils::deleteJniArray( JNIEnv *jnienv, jobjectArray array )
+{
+	jsize size = jnienv->GetArrayLength( array );
+	for( int i = 0; i < size; i++ )
+		jnienv->DeleteLocalRef( jnienv->GetObjectArrayElement(array,i) );
+	
+	jnienv->DeleteLocalRef( array );
+}
+
+/**
+ * Loops through the HVPS and releases the contains array's contents.
+ */
+void JniUtils::deleteHVPS( JNIEnv *jnienv, HVPS hvps )
+{
+	jnienv->DeleteLocalRef( hvps.handles );
+	JniUtils::deleteJniArray( jnienv, hvps.values );
 }
 
 PORTICO1516E_NS_END

@@ -16,17 +16,34 @@ package org.portico.impl.cpp1516e;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Properties;
 
+import hla.rti1516e.CallbackModel;
+import hla.rti1516e.FederateHandle;
+import hla.rti1516e.MessageRetractionReturn;
+import hla.rti1516e.ObjectClassHandle;
+import hla.rti1516e.ObjectInstanceHandle;
+import hla.rti1516e.OrderType;
+import hla.rti1516e.ResignAction;
+import hla.rti1516e.TimeQueryReturn;
+import hla.rti1516e.exceptions.AlreadyConnected;
 import hla.rti1516e.exceptions.RTIinternalError;
 
 import org.apache.log4j.Logger;
 import org.portico.impl.hla1516e.Rti1516eAmbassador;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
+import org.portico.impl.hla1516e.types.HLA1516eDimensionHandleSet;
+import org.portico.impl.hla1516e.types.HLA1516eFederateHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
+import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSet;
+import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
+import org.portico.impl.hla1516e.types.time.DoubleTime;
+import org.portico.impl.hla1516e.types.time.DoubleTimeInterval;
 
 /**
  * This class is provided as the simplified JNI link to C++ code in the interface binding.
@@ -87,7 +104,7 @@ public class ProxyRtiAmbassador
 		this.rtiamb = new Rti1516eAmbassador();
 
 		// fetch the LRC logger so that we have somewhere to notify of our events
-		this.logger = Logger.getLogger( "portico.c++" );
+		this.logger = Logger.getLogger( "portico.cpp" );
 		this.logger.debug( "C++ ProxyRtiAmbassador.class created (java-side)" );
 
 		// load the C++ libraries
@@ -150,23 +167,56 @@ public class ProxyRtiAmbassador
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////// Federation Management Services //////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// 4.2
 	public void connect( String callbackModel )
 	{
-logger.error( "connect("+callbackModel+")" );
+		if( this.fedamb != null )
+			ExceptionManager.pushException( this.id, new AlreadyConnected("Already Connected") );
+		
+		try
+		{
+			logger.trace( "connect() called" );
+			this.fedamb = new ProxyFederateAmbassador( this.id );
+			this.rtiamb.connect( this.fedamb, CallbackModel.valueOf(callbackModel) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 4.3
 	public void disconnect()
 	{
-		
+		try
+		{
+			logger.trace( "disconnect() called" );
+			this.rtiamb.disconnect();
+			
+			// remove our federate ambassador reference
+			this.fedamb = null;
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	//4.5
 	public void createFederationExecution( String federationName, String fomModule, String timeName )
 	{
-		logger.error( "createFederationExecution(1)" );
+		try
+		{
+			logger.trace( "createFederationExecution() called" );
+			URL[] modules = new URL[]{ new URL(fomModule) };
+			rtiamb.createFederationExecution( federationName, modules, timeName );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	//4.5
@@ -174,7 +224,21 @@ logger.error( "connect("+callbackModel+")" );
 	                                       String[] fomModules,
 	                                       String timeName )
 	{
-		logger.error( "createFederationExecution(2)" );
+		try
+		{
+			logger.trace( "createFederationExecution() called" );
+			
+			// create an array of the modules to load
+			URL[] modules = new URL[fomModules.length];
+			for( int i = 0; i < fomModules.length; i++ )
+				modules[i] = new URL( fomModules[i] );
+				
+			rtiamb.createFederationExecution( federationName, modules, timeName );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	//4.5
@@ -183,62 +247,131 @@ logger.error( "connect("+callbackModel+")" );
 	                                              String mimModule,
 	                                              String timeName )
 	{
-		logger.error( "createFederationExecution(3)" );
+		try
+		{
+			logger.trace( "createFederationExecution() called" );
+			
+			// create an array of the modules to load
+			URL[] modules = new URL[fomModules.length];
+			for( int i = 0; i < fomModules.length; i++ )
+				modules[i] = new URL( fomModules[i] );
+			
+			rtiamb.createFederationExecution( federationName, modules, new URL(mimModule), timeName );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	//4.6
 	public void destroyFederationExecution( String federationName )
 	{
-		
+		try
+		{
+			logger.trace( "destroyFederationExecution() called" );
+			rtiamb.destroyFederationExecution( federationName );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 4.7
 	public void listFederationExecutions()
 	{
-		
-	}
-
-	//4.9
-	public int joinFederationExecution( String federateName,
-	                                    String federateType,
-	                                    String federationName,
-	                                    String[] additionalFomModules )
-	{
-		return 1;
+		try
+		{
+			logger.trace( "listFederationExecutions() called" );
+			rtiamb.listFederationExecutions();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}		
 	}
 
 	//4.9
 	public int joinFederationExecution( String federateType,
 	                                    String federationName,
-	                                    String[] additionalFomModules )
+	                                    String[] fomModules )
 	{
-		return 1;
+		try
+		{
+			logger.trace( "joinFederationExecution() called" );
+			
+			// create an array of the modules to load
+			URL[] modules = new URL[fomModules.length];
+			for( int i = 0; i < fomModules.length; i++ )
+				modules[i] = new URL( fomModules[i] );
+			
+			FederateHandle handle =
+				rtiamb.joinFederationExecution( federateType, federationName, modules );
+			
+			return HLA1516eHandle.fromHandle( handle );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	//4.9
 	public int joinFederationExecution( String federateName,
 	                                    String federateType,
-	                                    String federationName )
+	                                    String federationName,
+	                                    String[] fomModules )
 	{
-		return 1;	
-	}
-
-	//4.9
-	public int joinFederationExecution( String federateType, String federationName )
-	{
-		return 1;
+		try
+		{
+			logger.trace( "joinFederationExecution() called" );
+			
+			// create an array of the modules to load
+			URL[] modules = new URL[fomModules.length];
+			for( int i = 0; i < fomModules.length; i++ )
+				modules[i] = new URL( fomModules[i] );
+			
+			FederateHandle handle = rtiamb.joinFederationExecution( federateName,
+			                                                        federateType,
+			                                                        federationName,
+			                                                        modules );
+			
+			return HLA1516eHandle.fromHandle( handle );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	//4.10
 	public void resignFederationExecution( String resignAction )
 	{
-		
+		try
+		{
+			logger.trace( "resignFederationExecution() called" );
+			rtiamb.resignFederationExecution( ResignAction.valueOf(resignAction) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	//4.11
 	public void registerFederationSynchronizationPoint( String label, byte[] tag )
 	{
-		
+		try
+		{
+			rtiamb.registerFederationSynchronizationPoint( label, tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	//4.11
@@ -246,91 +379,199 @@ logger.error( "connect("+callbackModel+")" );
 	                                                    byte[]tag,
 	                                                    int[] synchronizationSet )
 	{
-		
+		try
+		{
+			rtiamb.registerFederationSynchronizationPoint( 
+			    label,
+			    tag,
+			    new HLA1516eFederateHandleSet(synchronizationSet) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	//4.14
 	public void synchronizationPointAchieved( String label )
 	{
-		
+		try
+		{
+			rtiamb.synchronizationPointAchieved( label );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	//4.14
 	public void synchronizationPointAchieved( String label, boolean wasSuccessful )
 	{
-		
+		try
+		{
+			rtiamb.synchronizationPointAchieved( label, wasSuccessful );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 4.16
 	public void requestFederationSave( String label )
 	{
-		
+		try
+		{
+			rtiamb.requestFederationSave( label );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.16
 	public void requestFederationSave( String label, double theTime )
 	{
-		
+		try
+		{
+			rtiamb.requestFederationSave( label, new DoubleTime(theTime) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.18
 	public void federateSaveBegun()
 	{
-		
+		try
+		{
+			rtiamb.federateSaveBegun();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.19
 	public void federateSaveComplete()
 	{
-		
+		try
+		{
+			rtiamb.federateSaveComplete();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.19
 	public void federateSaveNotComplete()
 	{
-		
+		try
+		{
+			rtiamb.federateSaveNotComplete();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.21
 	public void abortFederationSave()
 	{
-		
+		try
+		{
+			rtiamb.abortFederationSave();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.22
 	public void queryFederationSaveStatus()
 	{
-		
+		try
+		{
+			rtiamb.queryFederationSaveStatus();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.24
 	public void requestFederationRestore( String label )
 	{
-		
+		try
+		{
+			rtiamb.requestFederationRestore( label );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.28
 	public void federateRestoreComplete()
 	{
-		
+		try
+		{
+			rtiamb.federateRestoreComplete();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.28
 	public void federateRestoreNotComplete()
 	{
-		
+		try
+		{
+			rtiamb.federateRestoreNotComplete();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.30
 	public void abortFederationRestore()
 	{
-		
+		try
+		{
+			rtiamb.abortFederationRestore();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	
 	}
 
 	// 4.31
 	public void queryFederationRestoreStatus()
 	{
-		
+		try
+		{
+			rtiamb.queryFederationRestoreStatus();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 
@@ -339,90 +580,196 @@ logger.error( "connect("+callbackModel+")" );
 	/////////////////////////////////////
 
 	// 5.2
-	public void publishObjectClassAttributes( int theClass, int[] attributeList )
+	public void publishObjectClassAttributes( int theClass, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.publishObjectClassAttributes( new HLA1516eHandle(theClass),
+			                                     new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.3
 	public void unpublishObjectClass( int theClass )
 	{
-		
+		try
+		{
+			rtiamb.unpublishObjectClass( new HLA1516eHandle(theClass) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
-
 	// 5.3
-	public void unpublishObjectClassAttributes( int theClass, int[] attributeList )
+	public void unpublishObjectClassAttributes( int theClass, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.unpublishObjectClassAttributes( new HLA1516eHandle(theClass),
+			                                       new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.4
 	public void publishInteractionClass( int theInteraction )
 	{
-		
+		try
+		{
+			rtiamb.publishInteractionClass( new HLA1516eHandle(theInteraction) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.5
 	public void unpublishInteractionClass( int theInteraction )
 	{
-		
+		try
+		{
+			rtiamb.unpublishInteractionClass( new HLA1516eHandle(theInteraction) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.6
-	public void subscribeObjectClassAttributes( int theClass, int[] attributeList )
+	public void subscribeObjectClassAttributes( int theClass, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.subscribeObjectClassAttributes( new HLA1516eHandle(theClass),
+			                                       new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.6
 	public void subscribeObjectClassAttributes( int theClass, int[] attributes, String updateRate )
 	{
-		
+		try
+		{
+			rtiamb.subscribeObjectClassAttributes( new HLA1516eHandle(theClass),
+			                                       new HLA1516eAttributeHandleSet(attributes),
+			                                       updateRate );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.6
 	public void subscribeObjectClassAttributesPassively( int theClass, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.subscribeObjectClassAttributesPassively( new HLA1516eHandle(theClass),
+			                                                new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.6
 	public void subscribeObjectClassAttributesPassively( int theClass,
-	                                                     int[] attributeList,
+	                                                     int[] attributes,
 	                                                     String updateRate )
 	{
-		
+		try
+		{
+			rtiamb.subscribeObjectClassAttributesPassively( new HLA1516eHandle(theClass),
+			                                                new HLA1516eAttributeHandleSet(attributes),
+			                                                updateRate );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.7
 	public void unsubscribeObjectClass( int theClass )
 	{
-		
+		try
+		{
+			rtiamb.unsubscribeObjectClass( new HLA1516eHandle(theClass) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.7
-	public void unsubscribeObjectClassAttributes( int theClass, int[] attributeList )
+	public void unsubscribeObjectClassAttributes( int theClass, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.unsubscribeObjectClassAttributes( new HLA1516eHandle(theClass),
+			                                         new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.8
 	public void subscribeInteractionClass( int theClass )
 	{
-		
+		try
+		{
+			rtiamb.subscribeInteractionClass( new HLA1516eHandle(theClass) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.8
 	public void subscribeInteractionClassPassively( int theClass )
 	{
-		
+		try
+		{
+			rtiamb.subscribeInteractionClassPassively( new HLA1516eHandle(theClass) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 5.9
 	public void unsubscribeInteractionClass( int theClass )
 	{
-		
+		try
+		{
+			rtiamb.unsubscribeInteractionClass( new HLA1516eHandle(theClass) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	////////////////////////////////
@@ -432,37 +779,91 @@ logger.error( "connect("+callbackModel+")" );
 	// 6.2
 	public void reserveObjectInstanceName( String objectName )
 	{
-		
+		try
+		{
+			rtiamb.reserveObjectInstanceName( objectName );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.4
 	public void releaseObjectInstanceName( String objectName )
 	{
-		
+		try
+		{
+			rtiamb.releaseObjectInstanceName( objectName );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.5
 	public void reserveMultipleObjectInstanceName( String[] objectNames )
 	{
-		
+		try
+		{
+			HashSet<String> set = new HashSet<String>();
+			for( String temp : objectNames )
+				set.add( temp );
+			
+			rtiamb.reserveMultipleObjectInstanceName( set );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.7
 	public void releaseMultipleObjectInstanceName( String[] objectNames )
 	{
-		
+		try
+		{
+			HashSet<String> set = new HashSet<String>();
+			for( String temp : objectNames )
+				set.add( temp );
+			
+			rtiamb.releaseMultipleObjectInstanceName( set );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.8
-	int registerObjectInstance( int theClass )
+	public int registerObjectInstance( int theClass )
 	{
-		return 1;
+		try
+		{
+			HLA1516eHandle classHandle = new HLA1516eHandle( theClass );
+			return HLA1516eHandle.fromHandle( rtiamb.registerObjectInstance(classHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 6.8
-	int registerObjectInstance( int theClass, String objectName )
+	public int registerObjectInstance( int theClass, String objectName )
 	{
-		return 1;
+		try
+		{
+			HLA1516eHandle classHandle = new HLA1516eHandle( theClass );
+			return HLA1516eHandle.fromHandle( rtiamb.registerObjectInstance(classHandle,objectName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 6.10
@@ -471,17 +872,46 @@ logger.error( "connect("+callbackModel+")" );
 	                                   byte[][] values,
 	                                   byte[] tag )
 	{
-		
+		try
+		{
+			HLA1516eAttributeHandleValueMap attributeValues = new HLA1516eAttributeHandleValueMap();
+			for( int i = 0; i < attributes.length; i++ )
+				attributeValues.put( new HLA1516eHandle(attributes[i]), values[i] );
+
+			rtiamb.updateAttributeValues( new HLA1516eHandle(theObject), attributeValues, tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.10
-	int updateAttributeValues( int theObject,
-	                           int[] attributes,
-	                           byte[][] values,
-	                           byte[] tag,
-	                           double theTime )
+	public int updateAttributeValues( int theObject,
+	                                  int[] attributes,
+	                                  byte[][] values,
+	                                  byte[] tag,
+	                                  double theTime )
 	{
-		return 1;
+		try
+		{
+			HLA1516eHandle objectHandle = new HLA1516eHandle( theObject );
+			HLA1516eAttributeHandleValueMap attributeValues = new HLA1516eAttributeHandleValueMap();
+			DoubleTime time = new DoubleTime( theTime );
+			for( int i = 0; i < attributes.length; i++ )
+				attributeValues.put( new HLA1516eHandle(attributes[i]), values[i] );
+
+			MessageRetractionReturn result = rtiamb.updateAttributeValues( objectHandle,
+			                                                               attributeValues,
+			                                                               tag,
+			                                                               time );
+			return HLA1516eHandle.fromHandle( result.handle );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 6.12
@@ -490,35 +920,90 @@ logger.error( "connect("+callbackModel+")" );
 	                             byte[][] values,
 	                             byte[] tag )
 	{
-		
+		try
+		{
+			HLA1516eParameterHandleValueMap parameterValues = new HLA1516eParameterHandleValueMap();
+			for( int i = 0; i < parameters.length; i++ )
+				parameterValues.put( new HLA1516eHandle(parameters[i]), values[i] );
+
+			rtiamb.sendInteraction( new HLA1516eHandle(theInteraction), parameterValues, tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.12
-	int sendInteraction( int theInteraction,
-	                     int[] parameters,
-	                     byte[][] values,
-	                     byte[] tag,
-	                     double time )
+	public int sendInteraction( int theInteraction,
+	                            int[] parameters,
+	                            byte[][] values,
+	                            byte[] tag,
+	                            double theTime )
 	{
-		return 1;
+		try
+		{
+			HLA1516eHandle classHandle = new HLA1516eHandle( theInteraction );
+			HLA1516eParameterHandleValueMap parameterValues = new HLA1516eParameterHandleValueMap();
+			DoubleTime time = new DoubleTime( theTime );
+			for( int i = 0; i < parameters.length; i++ )
+				parameterValues.put( new HLA1516eHandle(parameters[i]), values[i] );
+
+			MessageRetractionReturn result = rtiamb.sendInteraction( classHandle,
+			                                                         parameterValues,
+			                                                         tag,
+			                                                         time );
+
+			return HLA1516eHandle.fromHandle( result.handle );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 6.14
 	public void deleteObjectInstance( int objectHandle, byte[] tag )
 	{
-		
+		try
+		{
+			rtiamb.deleteObjectInstance( new HLA1516eHandle(objectHandle), tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.14
-	int deleteObjectInstance( int objectHandle, byte[] tag, double time )
+	public int deleteObjectInstance( int objectHandle, byte[] tag, double theTime )
 	{
-		return 1;
+		try
+		{
+			DoubleTime time = new DoubleTime( theTime );
+			HLA1516eHandle handle = new HLA1516eHandle( objectHandle );
+			MessageRetractionReturn result = rtiamb.deleteObjectInstance( handle, tag, time );
+			return HLA1516eHandle.fromHandle( result.handle );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 6.16
 	public void localDeleteObjectInstance( int objectHandle )
 	{
-		
+		try
+		{
+			rtiamb.localDeleteObjectInstance( new HLA1516eHandle(objectHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.19
@@ -526,13 +1011,33 @@ logger.error( "connect("+callbackModel+")" );
 	                                         int[] attributes,
 	                                         byte[] tag )
 	{
-		
+		try
+		{
+			ObjectInstanceHandle objectHandle = (ObjectInstanceHandle)new HLA1516eHandle(theObject);
+			rtiamb.requestAttributeValueUpdate( objectHandle,
+			                                    new HLA1516eAttributeHandleSet(attributes),
+			                                    tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.19
 	public void requestAttributeValueUpdateClass( int theClass, int[] attributes, byte[] tag )
 	{
-		
+		try
+		{
+			ObjectClassHandle classHandle = (ObjectClassHandle)new HLA1516eHandle(theClass);
+			rtiamb.requestAttributeValueUpdate( classHandle,
+			                                    new HLA1516eAttributeHandleSet(attributes),
+			                                    tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.23
@@ -540,25 +1045,60 @@ logger.error( "connect("+callbackModel+")" );
 	                                                      int[] theAttributes,
 	                                                      String transport )
 	{
-		
+		try
+		{
+			rtiamb.requestAttributeTransportationTypeChange(
+			    new HLA1516eHandle(theObject),
+			    new HLA1516eAttributeHandleSet(theAttributes),
+			    HLA1516eTransportationTypeHandleFactory.fromString(transport) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.25
-	public void queryAttributeTransportationType( int theObject, int[] theAttribute )
+	public void queryAttributeTransportationType( int theObject, int theAttribute )
 	{
-		
+		try
+		{
+			rtiamb.queryAttributeTransportationType( new HLA1516eHandle(theObject),
+			                                         new HLA1516eHandle(theAttribute) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.27
 	public void requestInteractionTransportationTypeChange( int theClass, String transport )
 	{
-		
+		try
+		{
+			rtiamb.requestInteractionTransportationTypeChange(
+			    new HLA1516eHandle(theClass),
+			    HLA1516eTransportationTypeHandleFactory.fromString(transport) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 6.29
 	public void queryInteractionTransportationType( int theFederate, int interactionClass )
 	{
-		
+		try
+		{
+			rtiamb.queryInteractionTransportationType( new HLA1516eHandle(theFederate),
+			                                           new HLA1516eHandle(interactionClass) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	///////////////////////////////////
@@ -568,7 +1108,15 @@ logger.error( "connect("+callbackModel+")" );
 	// 7.2
 	public void unconditionalAttributeOwnershipDivestiture( int theObject, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.unconditionalAttributeOwnershipDivestiture( new HLA1516eHandle(theObject),
+			                                                   new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.3
@@ -576,35 +1124,78 @@ logger.error( "connect("+callbackModel+")" );
 	                                                     int[] attributes,
 	                                                     byte[] tag )
 	{
-		
+		try
+		{
+			rtiamb.negotiatedAttributeOwnershipDivestiture( new HLA1516eHandle(theObject),
+			                                                new HLA1516eAttributeHandleSet(attributes),
+			                                                tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.6
 	public void confirmDivestiture( int theObject, int[] attributes, byte[] tag )
 	{
-		
+		try
+		{
+			rtiamb.confirmDivestiture( new HLA1516eHandle(theObject),
+			                           new HLA1516eAttributeHandleSet(attributes),
+			                           tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.8
 	public void attributeOwnershipAcquisition( int theObject, int[] attributes, byte[] tag )
 	{
-		
+		try
+		{
+			rtiamb.attributeOwnershipAcquisition( new HLA1516eHandle(theObject),
+			                                      new HLA1516eAttributeHandleSet(attributes),
+			                                      tag );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.9
 	public void attributeOwnershipAcquisitionIfAvailable( int theObject, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.attributeOwnershipAcquisitionIfAvailable( new HLA1516eHandle(theObject),
+			                                                 new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.12
 	public void attributeOwnershipReleaseDenied( int theObject, int[] theAttributes )
 	{
-		
+		try
+		{
+			rtiamb.attributeOwnershipReleaseDenied( new HLA1516eHandle(theObject),
+			                                        new HLA1516eAttributeHandleSet(theAttributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.13
-	int[] attributeOwnershipDivestitureIfWanted( int theObject, int[] attributes )
+	public int[] attributeOwnershipDivestitureIfWanted( int theObject, int[] attributes )
 	{
 		return null;
 	}
@@ -612,25 +1203,58 @@ logger.error( "connect("+callbackModel+")" );
 	// 7.14
 	public void cancelNegotiatedAttributeOwnershipDivestiture( int theObject, int[] attributes )
 	{
-		
+		try
+		{
+			rtiamb.cancelNegotiatedAttributeOwnershipDivestiture( new HLA1516eHandle(theObject),
+			                                                      new HLA1516eAttributeHandleSet(attributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.15
 	public void cancelAttributeOwnershipAcquisition( int theObject, int[] theAttributes )
 	{
-		
+		try
+		{
+			rtiamb.cancelAttributeOwnershipAcquisition( new HLA1516eHandle(theObject),
+			                                            new HLA1516eAttributeHandleSet(theAttributes) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.17
-	public void queryAttributeOwnership( int theObject, int[] theAttribute )
+	public void queryAttributeOwnership( int theObject, int theAttribute )
 	{
-		
+		try
+		{
+			rtiamb.queryAttributeOwnership( new HLA1516eHandle(theObject),
+			                                new HLA1516eHandle(theAttribute) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 7.19
-	boolean isAttributeOwnedByFederate( int theObject, int[] theAttribute )
+	public boolean isAttributeOwnedByFederate( int theObject, int theAttribute )
 	{
-		return false;
+		try
+		{
+			return rtiamb.isAttributeOwnedByFederate( new HLA1516eHandle(theObject),
+			                                          new HLA1516eHandle(theAttribute) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return false;
+		}
 	}
 
 	//////////////////////////////
@@ -640,115 +1264,263 @@ logger.error( "connect("+callbackModel+")" );
 	// 8.2
 	public void enableTimeRegulation( double theLookahead )
 	{
-		
+		try
+		{
+			rtiamb.enableTimeRegulation( new DoubleTimeInterval(theLookahead) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.4
 	public void disableTimeRegulation()
 	{
-		
+		try
+		{
+			rtiamb.disableTimeRegulation();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.5
 	public void enableTimeConstrained()
 	{
-		
+		try
+		{
+			rtiamb.enableTimeConstrained();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.7
 	public void disableTimeConstrained()
 	{
-		
+		try
+		{
+			rtiamb.disableTimeConstrained();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 	
 	// 8.8
 	public void timeAdvanceRequest( double theTime )
 	{
-		
+		try
+		{
+			rtiamb.timeAdvanceRequest( new DoubleTime(theTime) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.9
 	public void timeAdvanceRequestAvailable( double theTime )
 	{
-		
+		try
+		{
+			rtiamb.timeAdvanceRequestAvailable( new DoubleTime(theTime) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.10
 	public void nextMessageRequest( double theTime )
 	{
-		
+		try
+		{
+			rtiamb.nextMessageRequest( new DoubleTime(theTime) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.11
 	public void nextMessageRequestAvailable( double theTime )
 	{
-		
+		try
+		{
+			rtiamb.nextMessageRequestAvailable( new DoubleTime(theTime) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.12
 	public void flushQueueRequest( double theTime )
 	{
-		
+		try
+		{
+			rtiamb.flushQueueRequest( new DoubleTime(theTime) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.14
 	public void enableAsynchronousDelivery()
 	{
-		
+		try
+		{
+			rtiamb.enableAsynchronousDelivery();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.15
 	public void disableAsynchronousDelivery()
 	{
-		
+		try
+		{
+			rtiamb.disableAsynchronousDelivery();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.16
-	boolean queryGALT()
+	public double queryGALT()
 	{
-		return false;
+		try
+		{
+			TimeQueryReturn result = rtiamb.queryGALT();
+			if( result.timeIsValid )
+				return ((DoubleTime)result.time).getTime();
+			else
+				return -1.0;
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1.0;
+		}
 	}
 	
 	// 8.17
 	public double queryLogicalTime()
 	{
-		return 0.0;
+		try
+		{
+			return ((DoubleTime)rtiamb.queryLogicalTime()).getTime();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1.0;
+		}
 	}
 
 	// 8.18
-	public boolean queryLITS()
+	public double queryLITS()
 	{
-		return false;
+		try
+		{
+			TimeQueryReturn result = rtiamb.queryLITS();
+			if( result.timeIsValid )
+				return ((DoubleTime)result.time).getTime();
+			else
+				return -1.0;
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1.0;
+		}
 	}
 
 	// 8.19
 	public void modifyLookahead( double theLookahead )
 	{
-		
+		try
+		{
+			rtiamb.modifyLookahead( new DoubleTimeInterval(theLookahead) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.20
 	public double queryLookahead()
 	{
-		return 0.0;
+		try
+		{
+			return ((DoubleTime)rtiamb.queryLogicalTime()).getTime();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1.0;
+		}
 	}
 
 	// 8.21
 	public void retract( int theHandle )
 	{
-		
+		try
+		{
+			rtiamb.retract( new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.23
-	public void changeAttributeOrderType( int theObject, int[] attributes, int orderType )
+	public void changeAttributeOrderType( int theObject, int[] attributes, String orderType )
 	{
-		
+		try
+		{
+			rtiamb.changeAttributeOrderType( new HLA1516eHandle(theObject),
+			                                 new HLA1516eAttributeHandleSet(attributes),
+			                                 OrderType.valueOf(orderType) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 8.24
-	public void changeInteractionOrderType( int theClass, int orderType )
+	public void changeInteractionOrderType( int theClass, String orderType )
 	{
-		
+		try
+		{
+			rtiamb.changeInteractionOrderType( new HLA1516eHandle(theClass),
+			                                 OrderType.valueOf(orderType) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	//////////////////////////////////
@@ -756,36 +1528,61 @@ logger.error( "connect("+callbackModel+")" );
 	//////////////////////////////////
 
 	// 9.2
-	int createRegion( int[] dimensions )
+	public int createRegion( int[] dimensions )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle(
+			           rtiamb.createRegion(new HLA1516eDimensionHandleSet(dimensions)) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 9.3
 	public void commitRegionModifications( int[] regions )
 	{
-		
+		try
+		{
+			rtiamb.commitRegionModifications( new HLA1516eRegionHandleSet(regions) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 9.4
 	public void deleteRegion( int theRegion )
 	{
-		
+		try
+		{
+			rtiamb.deleteRegion( new HLA1516eHandle(theRegion) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	//9.5
-	int registerObjectInstanceWithRegions( int theClass, int[] attributes, int[] regions )
+	public int registerObjectInstanceWithRegions( int theClass, int[] attributes, int[] regions )
 	{
-		return 1;
+		notSupported( "registerObjectInstanceWithRegions()" );
+		return -1;
 	}
 
 	//9.5
-	int registerObjectInstanceWithRegions( int theClass,
-	                                       int[] attributes,
-	                                       int[] regions,
-	                                       String objectName )
+	public int registerObjectInstanceWithRegions( int theClass,
+	                                              int[] attributes,
+	                                              int[] regions,
+	                                              String objectName )
 	{
-		return 1;
+		notSupported( "registerObjectInstanceWithRegions()" );
+		return -1;
 	}
 
 	// 9.6
@@ -793,7 +1590,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                        int[] attributes,
 	                                        int[] regions )
 	{
-		
+		notSupported( "associateRegionsForUpdates()" );
 	}
 
 	// 9.7
@@ -801,7 +1598,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                          int[] attributes,
 	                                          int[] regions )
 	{
-		
+		notSupported( "unassociateRegionsForUpdates()" );
 	}
 
 	// 9.8
@@ -809,7 +1606,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                                       int[] attributes,
 	                                                       int[] regions )
 	{
-		
+		notSupported( "subscribeObjectClassAttributesWithRegions()" );
 	}
 
 	// 9.8
@@ -818,7 +1615,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                                       int[] regions,
 	                                                       String updateRate )
 	{
-		
+		notSupported( "subscribeObjectClassAttributesWithRegions()" );
 	}
 
 	// 9.8
@@ -826,7 +1623,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                                                int[] attributes,
 	                                                                int[] regions )
 	{
-		
+		notSupported( "subscribeObjectClassAttributesPassivelyWithRegions()" );
 	}
 
 	// 9.8
@@ -835,7 +1632,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                                                int[] regions,
 	                                                                String updateRate )
 	{
-		
+		notSupported( "subscribeObjectClassAttributesPassivelyWithRegions()" );
 	}
 
 	// 9.9
@@ -843,25 +1640,25 @@ logger.error( "connect("+callbackModel+")" );
 	                                                         int[] attributes,
 	                                                         int[] regions )
 	{
-		
+		notSupported( "unsubscribeObjectClassAttributesWithRegions()" );
 	}
 
 	// 9.10
 	public void subscribeInteractionClassWithRegions( int theClass, int[] regions )
 	{
-		
+		notSupported( "subscribeInteractionClassWithRegions()" );
 	}
 
 	// 9.10
 	public void subscribeInteractionClassPassivelyWithRegions( int theClass, int[] regions )
 	{
-		
+		notSupported( "subscribeInteractionClassPassivelyWithRegions()" );
 	}
 
 	// 9.11
 	public void unsubscribeInteractionClassWithRegions( int theClass, int[] regions )
 	{
-		
+		notSupported( "unsubscribeInteractionClassWithRegions()" );
 	}
 
 	//9.12
@@ -870,18 +1667,19 @@ logger.error( "connect("+callbackModel+")" );
 	                                        byte[][] regions,
 	                                        byte[] tag )
 	{
-		
+		notSupported( "sendInteractionWithRegions()" );
 	}
 
 	//9.12
-	int sendInteractionWithRegions( int theInteraction,
-	                                int[] parameters,
-	                                byte[][] values,
-	                                int[] regions,
-	                                byte[] tag,
-	                                double time )
+	public int sendInteractionWithRegions( int theInteraction,
+	                                       int[] parameters,
+	                                       byte[][] values,
+	                                       int[] regions,
+	                                       byte[] tag,
+	                                       double time )
 	{
-		return 1;
+		notSupported( "sendInteractionWithRegions()" );
+		return -1;
 	}
 
 	// 9.13
@@ -890,7 +1688,7 @@ logger.error( "connect("+callbackModel+")" );
 	                                                    int[] regions,
 	                                                    byte[] tag )
 	{
-		
+		notSupported( "requestAttributeValueUpdateWithRegions()" );
 	}
 
 	//////////////////////////
@@ -898,173 +1696,290 @@ logger.error( "connect("+callbackModel+")" );
 	//////////////////////////
 
 	// 10.2
-	String getAutomaticResignDirective()
+	public String getAutomaticResignDirective()
 	{
-		return "NO_ACTION";
+		try
+		{
+			return rtiamb.getAutomaticResignDirective().toString();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
-
 
 	// 10.3
 	public void setAutomaticResignDirective( String resignAction )
 	{
-		
+		try
+		{
+			rtiamb.setAutomaticResignDirective( ResignAction.valueOf(resignAction) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.4
-	int getFederateHandle( String theName )
+	public int getFederateHandle( String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getFederateHandle(theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 
 	// 10.5
-	String getFederateName( int theHandle )
+	public String getFederateName( int theHandle )
 	{
-		return "";
+		try
+		{
+			return rtiamb.getFederateName( new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	// 10.6
-	int getObjectClassHandle( String theName )
+	public int getObjectClassHandle( String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getObjectClassHandle(theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.7
-	String getObjectClassName( int theHandle )
+	public String getObjectClassName( int theHandle )
 	{
-		return "";
+		try
+		{
+			return rtiamb.getObjectClassName( new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	// 10.8
-	int getKnownObjectClassHandle( int theObject )
+	public int getKnownObjectClassHandle( int theObject )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getKnownObjectClassHandle(new HLA1516eHandle(theObject)) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.9
-	int getObjectInstanceHandle( String theName )
+	public int getObjectInstanceHandle( String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getObjectInstanceHandle(theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.10
-	String getObjectInstanceName( int theHandle )
+	public String getObjectInstanceName( int theHandle )
 	{
-		return "";
+		try
+		{
+			return rtiamb.getObjectInstanceName( new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	// 10.11
-	int getAttributeHandle( int whichClass, String theName )
+	public int getAttributeHandle( int whichClass, String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getAttributeHandle(new HLA1516eHandle(whichClass),
+			                                                            theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.12
-	String getAttributeName( int whichClass, int theHandle )
+	public String getAttributeName( int whichClass, int theHandle )
 	{
-		return "";
+		try
+		{
+			return rtiamb.getAttributeName( new HLA1516eHandle(whichClass),
+			                                new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	// 10.13
-	double getUpdateRateValue( String updateRateDesignator )
+	public double getUpdateRateValue( String updateRateDesignator )
 	{
 		return 0.0;
 	}
 
 	// 10.14
-	double getUpdateRateValueForAttribute( int theObject, int theAttribute )
+	public double getUpdateRateValueForAttribute( int theObject, int theAttribute )
 	{
 		return 0.0;
 	}
 
 	// 10.15
-	int getInteractionClassHandle( String theName )
+	public int getInteractionClassHandle( String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getInteractionClassHandle(theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.16
-	String getInteractionClassName( int theHandle )
+	public String getInteractionClassName( int theHandle )
 	{
-		return "";
+		try
+		{
+			return rtiamb.getInteractionClassName( new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	// 10.17
-	int getParameterHandle( int whichClass, String theName )
+	public int getParameterHandle( int whichClass, String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle(
+			    rtiamb.getParameterHandle(new HLA1516eHandle(whichClass), theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.18
-	String getParameterName( int whichClass, int theHandle )
+	public String getParameterName( int whichClass, int theHandle )
 	{
-		return  "";
-	}
-
-	// 10.19
-	String getOrderType( String theName )
-	{
-		return "";
-	}
-
-	// 10.20
-	String getOrderName( String theType )
-	{
-		return "";
-	}
-
-	// 10.21
-	String getTransportationTypeHandle( String theName )
-	{
-		return "";
-	}
-
-	// 10.22
-	String getTransportationTypeName( String theHandle )
-	{
-		return "";
+		try
+		{
+			return rtiamb.getParameterName( new HLA1516eHandle(whichClass),
+			                                new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	// 10.23
-	int[] getAvailableDimensionsForClassAttribute( int whichClass, int theHandle )
+	public int[] getAvailableDimensionsForClassAttribute( int whichClass, int theHandle )
 	{
 		return null;
 	}
 
 	// 10.24
-	int[] getAvailableDimensionsForInteractionClass( int theHandle )
+	public int[] getAvailableDimensionsForInteractionClass( int theHandle )
 	{
 		return null;
 	}
 
 	// 10.25
-	int getDimensionHandle( String theName )
+	public int getDimensionHandle( String theName )
 	{
-		return 1;
+		try
+		{
+			return HLA1516eHandle.fromHandle( rtiamb.getDimensionHandle(theName) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return -1;
+		}
 	}
 
 	// 10.26
-	String getDimensionName( int theHandle )
+	public String getDimensionName( int theHandle )
 	{
-		return "";
+		try
+		{
+			return rtiamb.getDimensionName( new HLA1516eHandle(theHandle) );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKOWN";
+		}
 	}
 
 	// 10.27
-	long getDimensionUpperBound( int theHandle )
+	public long getDimensionUpperBound( int theHandle )
 	{
+		notSupported( "getDimensionUpperBound()" );
 		return 1;
 	}
 
 	// 10.28
-	int[] getDimensionHandleSet( int region )
+	public int[] getDimensionHandleSet( int region )
 	{
+		notSupported( "getDimensionHandleSet()" );
 		return new int[]{};
 	}
 
 	// 10.29
 	// RangeBounds => long[2]{ upper, lower }
-	long[] getRangeBounds( int region, int dimension )
+	public long[] getRangeBounds( int region, int dimension )
 	{
+		notSupported( "getRangeBounds()" );
 		return new long[]{ 1, 1 };
 	}
 
@@ -1072,7 +1987,7 @@ logger.error( "connect("+callbackModel+")" );
 	// int, int, RangeBounds
 	public void setRangeBounds( int region, int dimension, long upperBound, long lowerBound )
 	{
-		
+		notSupported( "setRangeBounds()" );
 	}
 
 	// 10.31
@@ -1090,80 +2005,169 @@ logger.error( "connect("+callbackModel+")" );
 	// 10.33
 	public void enableObjectClassRelevanceAdvisorySwitch()
 	{
-		
+		try
+		{
+			rtiamb.enableObjectClassRelevanceAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.34
 	public void disableObjectClassRelevanceAdvisorySwitch()
 	{
-		
+		try
+		{
+			rtiamb.disableObjectClassRelevanceAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.35
 	public void enableAttributeRelevanceAdvisorySwitch()
 	{
-		
+		try
+		{
+			rtiamb.enableAttributeRelevanceAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.36
 	public void disableAttributeRelevanceAdvisorySwitch()
 	{
-		
+		try
+		{
+			rtiamb.disableAttributeRelevanceAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.37
 	public void enableAttributeScopeAdvisorySwitch()
 	{
-		
-	}
+		try
+		{
+			rtiamb.enableAttributeScopeAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	}
 
 	// 10.38
 	public void disableAttributeScopeAdvisorySwitch()
 	{
-		
-	}
+		try
+		{
+			rtiamb.disableAttributeScopeAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	}
 
 	// 10.39
 	public void enableInteractionRelevanceAdvisorySwitch()
 	{
-		
-	}
+		try
+		{
+			rtiamb.enableInteractionRelevanceAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}	}
 
 	// 10.40
 	public void disableInteractionRelevanceAdvisorySwitch()
 	{
-		
+		try
+		{
+			rtiamb.disableInteractionRelevanceAdvisorySwitch();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.41
-	boolean evokeCallback( double minSeconds )
+	public boolean evokeCallback( double minSeconds )
 	{
-logger.error( "evokeCallback("+minSeconds+")" );
-		return false;
+		try
+		{
+			return rtiamb.evokeCallback( minSeconds );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return false;
+		}
 	}
 
 	// 10.42
-	boolean evokeMultipleCallbacks( double minSeconds, double maxSeconds )
+	public boolean evokeMultipleCallbacks( double minSeconds, double maxSeconds )
 	{
-logger.error( "evokeMultipleCallbacks("+minSeconds+","+maxSeconds+")" );
-		return false;
+		try
+		{
+			return rtiamb.evokeMultipleCallbacks( minSeconds, maxSeconds );
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return false;
+		}
 	}
 
 	// 10.43
 	public void enableCallbacks()
 	{
-		
+		try
+		{
+			rtiamb.enableCallbacks();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	// 10.44
 	public void disableCallbacks()
 	{
-		
+		try
+		{
+			rtiamb.disableCallbacks();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+		}
 	}
 
 	public String getHLAversion()
 	{
-		return null;
+		try
+		{
+			return rtiamb.getHLAversion();
+		}
+		catch( Exception e )
+		{
+			ExceptionManager.pushException( this.id, e );
+			return "UNKNOWN";
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -1277,6 +2281,11 @@ logger.error( "evokeMultipleCallbacks("+minSeconds+","+maxSeconds+")" );
 		logger.error( "Fatal error: RTI_HOME not set and librti1516e.so not on library path" );
 		logger.error( "Make sure $RTI_HOME is set and/or $RTI_HOME%/lib is on you LD_LIBRARY_PATH" );
 		throw new RTIinternalError( "RTI_HOME not set and librti1516e.so not on library path" );
+	}
+
+	private void notSupported( String name )
+	{
+		logger.warn( "Method "+name+" is not yet supported by the C++ interface" );
 	}
 
 	//----------------------------------------------------------

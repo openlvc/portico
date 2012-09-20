@@ -97,8 +97,6 @@ class JavaRTI
 	// Method ID Cache Variables
 	//----------------------------------------------------------
 	public: // public for easy accessibility
-		jclass BYTE_ARRAY;
-
 		// federation management
 		jmethodID CONNECT;
 		jmethodID DISCONNECT;
@@ -108,9 +106,7 @@ class JavaRTI
 		jmethodID DESTROY_FEDERATION;
 		jmethodID LIST_FEDERATIONS;
 		jmethodID JOIN_FEDERATION;
-		jmethodID JOIN_FEDERATION_NAME_AND_TYPE;
-		jmethodID JOIN_FEDERATION_TYPE_AND_MODULES;
-		jmethodID JOIN_FEDERATION_NAME_AND_TYPE_AND_MODULES;
+		jmethodID JOIN_FEDERATION_WITH_NAME;
 		jmethodID RESIGN_FEDERATION;
 		
 		jmethodID REGISTER_FEDERATION_SYNC;
@@ -243,11 +239,6 @@ class JavaRTI
 		jmethodID GET_PARAMETER_HANDLE;
 		jmethodID GET_PARAMETER_NAME;
 
-		jmethodID GET_ORDER_TYPE;
-		jmethodID GET_ORDER_NAME;
-		jmethodID GET_TRANSPORT_TYPE;
-		jmethodID GET_TRANSPORT_NAME;
-		
 		jmethodID GET_DIMENSIONS_FOR_CLASS_ATTRIBUTE;
 		jmethodID GET_DIMENSIONS_FOR_INTERACTION_CLASS;
 		jmethodID GET_DIMENSION_HANDLE;

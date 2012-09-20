@@ -29,6 +29,7 @@ class Type##Friend                                             \
 {                                                              \
 	public:                                                    \
 		static Type create( int32_t value );                   \
+		static int32_t getInt( Type& handle );                 \
 		static std::string toString( Type* handle );           \
 		static std::string toString( Type& handle );           \
 		static std::string toString( const Type& handle );     \

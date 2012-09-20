@@ -13,6 +13,8 @@
  *
  */
 #include "rtiamb/PorticoRtiAmbassador.h"
+#include "jni/JniUtils.h"
+#include "utils/Logger.h"
 
 PORTICO1516E_NS_START
 
@@ -25,7 +27,16 @@ ResignAction PorticoRtiAmbassador::getAutomaticResignDirective()
     	   NotConnected,
     	   RTIinternalError )
 {
-	return NO_ACTION;
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_AUTO_RESIGN_DIRECTIVE );
+
+	// clean up and run the exception check
+	ResignAction action = JniUtils::toResignAction( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	
+	return action;
 }
 
 // 10.3
@@ -35,7 +46,17 @@ void PorticoRtiAmbassador::setAutomaticResignDirective( ResignAction resignActio
            NotConnected,
            RTIinternalError )
 {
+	// convert the parameters to java types
+	jstring jaction = JniUtils::fromResignAction( jnienv, resignAction );
 	
+	// call the method
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->SET_AUTO_RESIGN_DIRECTIVE,
+	                        jaction );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jaction );
+	javarti->exceptionCheck();
 }
 
 // 10.4
@@ -45,7 +66,18 @@ FederateHandle PorticoRtiAmbassador::getFederateHandle( const std::wstring& theN
            NotConnected,
            RTIinternalError )
 {
-	return FederateHandle();
+	// convert the parameters to java types
+	jstring jname = JniUtils::fromWideString( jnienv, theName );
+	
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_FEDERATE_HANDLE,
+	                                     jname );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jname );
+	javarti->exceptionCheck();
+	return JniUtils::toFederateHandle( result );
 }
 
 // 10.5
@@ -56,7 +88,19 @@ std::wstring PorticoRtiAmbassador::getFederateName( FederateHandle theHandle )
            NotConnected,
            RTIinternalError )
 {
-	return L"";
+	// convert the parameters to java types
+	jint jhandle = JniUtils::fromHandle( theHandle );
+	
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_FEDERATE_NAME,
+	                                                    jhandle );
+
+	// clean up and run the exception check
+	wstring name = JniUtils::toWideString( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	return name;
 }
 
 // 10.6
@@ -66,7 +110,18 @@ ObjectClassHandle PorticoRtiAmbassador::getObjectClassHandle( const std::wstring
            NotConnected,
            RTIinternalError )
 {
-	return ObjectClassHandle();
+	// convert the parameters to java types
+	jstring jname = JniUtils::fromWideString( jnienv, theName );
+	
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_OBJECT_CLASS_HANDLE,
+	                                     jname );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jname );
+	javarti->exceptionCheck();
+	return JniUtils::toObjectClassHandle( result );
 }
 
 // 10.7
@@ -76,7 +131,19 @@ std::wstring PorticoRtiAmbassador::getObjectClassName( ObjectClassHandle theHand
            NotConnected,
            RTIinternalError )
 {
-	return L"";
+	// convert the parameters to java types
+	jint jhandle = JniUtils::fromHandle( theHandle );
+	
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_OBJECT_CLASS_NAME,
+	                                                    jhandle );
+
+	// clean up and run the exception check
+	wstring name = JniUtils::toWideString( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	return name;
 }
 
 // 10.8
@@ -86,7 +153,14 @@ ObjectClassHandle PorticoRtiAmbassador::getKnownObjectClassHandle( ObjectInstanc
            NotConnected,
            RTIinternalError )
 {
-	return ObjectClassHandle();
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_KNOWN_OBJECT_CLASS_HANDLE,
+	                                     JniUtils::fromHandle(theObject) );
+
+	// clean up and run the exception check
+	javarti->exceptionCheck();
+	return JniUtils::toObjectClassHandle( result );
 }
 
 // 10.9
@@ -96,7 +170,18 @@ ObjectInstanceHandle PorticoRtiAmbassador::getObjectInstanceHandle( const std::w
            NotConnected,
            RTIinternalError )
 {
-	return ObjectInstanceHandle();
+	// convert the parameters to java types
+	jstring jname = JniUtils::fromWideString( jnienv, theName );
+	
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_OBJECT_INSTANCE_HANDLE,
+	                                     jname );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jname );
+	javarti->exceptionCheck();
+	return JniUtils::toObjectHandle( result );
 }
 
 // 10.10
@@ -106,7 +191,19 @@ std::wstring PorticoRtiAmbassador::getObjectInstanceName( ObjectInstanceHandle t
            NotConnected,
            RTIinternalError )
 {
-	return L"";
+	// convert the parameters to java types
+	jint jhandle = JniUtils::fromHandle( theHandle );
+	
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_OBJECT_INSTANCE_NAME,
+	                                                    jhandle );
+
+	// clean up and run the exception check
+	wstring name = JniUtils::toWideString( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	return name;
 }
 
 // 10.11
@@ -118,7 +215,20 @@ AttributeHandle PorticoRtiAmbassador::getAttributeHandle( ObjectClassHandle whic
 	       NotConnected,
 	       RTIinternalError )
 {
-	return AttributeHandle();
+	// convert the parameters to java types
+	jint jclassHandle = JniUtils::fromHandle( whichClass );
+	jstring jname = JniUtils::fromWideString( jnienv, name );
+	
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_ATTRIBUTE_HANDLE,
+	                                     jclassHandle,
+	                                     jname );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jname );
+	javarti->exceptionCheck();
+	return JniUtils::toAttributeHandle( result );
 }
 
 // 10.12
@@ -131,7 +241,21 @@ std::wstring PorticoRtiAmbassador::getAttributeName( ObjectClassHandle whichClas
 	       NotConnected,
 	       RTIinternalError )
 {
-	return L"";
+	// convert the parameters to java types
+	jint jclassHandle = JniUtils::fromHandle( whichClass );
+	jint jhandle = JniUtils::fromHandle( theHandle );
+	
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_ATTRIBUTE_NAME,
+	                                                    jclassHandle,
+	                                                    jhandle );
+
+	// clean up and run the exception check
+	wstring name = JniUtils::toWideString( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	return name;
 }
 
 // 10.13
@@ -141,6 +265,7 @@ double PorticoRtiAmbassador::getUpdateRateValue( const std::wstring& updateRateD
            NotConnected,
            RTIinternalError )
 {
+	logger->error( "[Not Implemented] getUpdateRateValue()" );
 	return 0.0;
 }
 
@@ -153,6 +278,7 @@ double PorticoRtiAmbassador::getUpdateRateValueForAttribute( ObjectInstanceHandl
 	       NotConnected,
 	       RTIinternalError )
 {
+	logger->error( "[Not Implemented] getUpdateRateValueForAttribute()" );
 	return 0.0;
 }
 
@@ -163,7 +289,18 @@ InteractionClassHandle PorticoRtiAmbassador::getInteractionClassHandle( const st
            NotConnected,
            RTIinternalError )
 {
-	return InteractionClassHandle();
+	// convert the parameters to java types
+	jstring jname = JniUtils::fromWideString( jnienv, theName );
+	
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_INTERACTION_CLASS_HANDLE,
+	                                     jname );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jname );
+	javarti->exceptionCheck();
+	return JniUtils::toInteractionClassHandle( result );
 }
 
 // 10.16
@@ -173,7 +310,19 @@ std::wstring PorticoRtiAmbassador::getInteractionClassName( InteractionClassHand
            NotConnected,
            RTIinternalError )
 {
-	return L"";
+	// convert the parameters to java types
+	jint jhandle = JniUtils::fromHandle( theHandle );
+	
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_INTERACTION_CLASS_NAME,
+	                                                    jhandle );
+
+	// clean up and run the exception check
+	wstring name = JniUtils::toWideString( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	return name;
 }
 
 // 10.17
@@ -185,7 +334,20 @@ ParameterHandle PorticoRtiAmbassador::getParameterHandle( InteractionClassHandle
 	       NotConnected,
 	       RTIinternalError )
 {
-	return ParameterHandle();
+	// convert the parameters to java types
+	jint jclassHandle = JniUtils::fromHandle( whichClass );
+	jstring jname = JniUtils::fromWideString( jnienv, theName );
+	
+	// call the method
+	jint result = jnienv->CallIntMethod( javarti->jproxy,
+	                                     javarti->GET_PARAMETER_HANDLE,
+	                                     jclassHandle,
+	                                     jname );
+
+	// clean up and run the exception check
+	jnienv->DeleteLocalRef( jname );
+	javarti->exceptionCheck();
+	return JniUtils::toParameterHandle( result );
 }
 
 // 10.18
@@ -198,7 +360,21 @@ std::wstring PorticoRtiAmbassador::getParameterName( InteractionClassHandle whic
 	       NotConnected,
 	       RTIinternalError )
 {
-	return L"";
+	// convert the parameters to java types
+	jint jclassHandle = JniUtils::fromHandle( whichClass );
+	jint jhandle = JniUtils::fromHandle( theHandle );
+	
+	// call the method
+	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                    javarti->GET_PARAMETER_NAME,
+	                                                    jclassHandle,
+	                                                    jhandle );
+
+	// clean up and run the exception check
+	wstring name = JniUtils::toWideString( jnienv, result );
+	jnienv->DeleteLocalRef( result );
+	javarti->exceptionCheck();
+	return name;
 }
 
 // 10.19
@@ -208,7 +384,12 @@ OrderType PorticoRtiAmbassador::getOrderType( const std::wstring& orderName )
            NotConnected,
            RTIinternalError )
 {
-	return RECEIVE;
+	if( orderName.compare(L"RECEIVE") == 0 )
+		return RECEIVE;
+	else if( orderName.compare(L"TIMESTAMP") == 0 )
+		return TIMESTAMP;
+	else
+		return RECEIVE; // default to receive		
 }
 
 // 10.20
@@ -218,7 +399,15 @@ std::wstring PorticoRtiAmbassador::getOrderName( OrderType orderType )
            NotConnected,
            RTIinternalError )
 {
-	return L"";
+	switch( orderType )
+	{
+		case RECEIVE:
+			return L"RECEIVE";
+		case TIMESTAMP:
+			return L"TIMESTAMP";
+		default:
+			return L"RECEIVE";
+	}
 }
 
 // 10.21
@@ -228,7 +417,12 @@ TransportationType PorticoRtiAmbassador::getTransportationType( const std::wstri
            NotConnected,
            RTIinternalError )
 {
-	return BEST_EFFORT;
+	if( transportName.compare(L"BEST_EFFORT") == 0 )
+		return BEST_EFFORT;
+	else if( transportName.compare(L"RELIABLE") == 0 )
+		return RELIABLE;
+	else
+		return BEST_EFFORT; // default to best effort
 }
 
 // 10.22
@@ -238,7 +432,15 @@ std::wstring PorticoRtiAmbassador::getTransportationName( TransportationType tra
            NotConnected,
            RTIinternalError )
 {
-	return L"";
+	switch( transportType )
+	{
+		case BEST_EFFORT:
+			return L"BEST_EFFORT";
+		case RELIABLE:
+			return L"RELIABLE";
+		default:
+			return L"BEST_EFFORT";
+	}
 }
 
 // 10.23
@@ -252,6 +454,7 @@ throw( AttributeNotDefined,
 	   NotConnected,
 	   RTIinternalError )
 {
+	logger->error( "[Not Implemented] getAvailableDimensionsForClassAttribute()" );
 	return DimensionHandleSet();
 }
 
@@ -263,6 +466,7 @@ PorticoRtiAmbassador::getAvailableDimensionsForInteractionClass( InteractionClas
            NotConnected,
            RTIinternalError )
 {
+	logger->error( "[Not Implemented] getAvailableDimensionsForInteractionClass()" );
 	return DimensionHandleSet();
 }
 
@@ -273,6 +477,7 @@ DimensionHandle PorticoRtiAmbassador::getDimensionHandle( const std::wstring& th
            NotConnected,
            RTIinternalError )
 {
+	logger->error( "[Not Implemented] getDimensionHandle()" );
 	return DimensionHandle();
 }
 
@@ -283,6 +488,7 @@ std::wstring PorticoRtiAmbassador::getDimensionName( DimensionHandle theHandle )
            NotConnected,
            RTIinternalError )
 {
+	logger->error( "[Not Implemented] getDimensionHandle()" );
 	return L"";
 }
 
@@ -293,6 +499,7 @@ unsigned long PorticoRtiAmbassador::getDimensionUpperBound( DimensionHandle theH
            NotConnected,
            RTIinternalError )
 {
+	logger->error( "[Not Implemented] getDimensionHandle()" );
 	return 1;
 }
 
@@ -305,6 +512,7 @@ DimensionHandleSet PorticoRtiAmbassador::getDimensionHandleSet( RegionHandle reg
            NotConnected,
            RTIinternalError )
 {
+	logger->error( "[Not Implemented] getDimensionHandleSet()" );
 	return DimensionHandleSet();
 }
 
@@ -319,6 +527,7 @@ RangeBounds PorticoRtiAmbassador::getRangeBounds( RegionHandle regionHandle,
 		   NotConnected,
 		   RTIinternalError )
 {
+	logger->error( "[Not Implemented] getRangeBounds()" );
 	return RangeBounds();
 }
 
@@ -336,7 +545,7 @@ void PorticoRtiAmbassador::setRangeBounds( RegionHandle regionHandle,
 	       NotConnected,
 	       RTIinternalError )
 {
-	
+	logger->error( "[Not Implemented] getRangeBounds()" );
 }
 
 // 10.31
@@ -346,7 +555,7 @@ unsigned long PorticoRtiAmbassador::normalizeFederateHandle( FederateHandle theF
            NotConnected,
            RTIinternalError )
 {
-	return 1;
+	return JniUtils::fromHandle( theFederateHandle );
 }
 
 // 10.32
@@ -356,7 +565,17 @@ unsigned long PorticoRtiAmbassador::normalizeServiceGroup( ServiceGroup theServi
            NotConnected,
            RTIinternalError )
 {
-	return 1;
+	switch( theServiceGroup )
+	{
+		case FEDERATION_MANAGEMENT: return 1;
+		case DECLARATION_MANAGEMENT: return 2;
+		case OBJECT_MANAGEMENT: return 3;
+		case OWNERSHIP_MANAGEMENT: return 4;
+		case TIME_MANAGEMENT: return 5;
+		case DATA_DISTRIBUTION_MANAGEMENT: return 6;
+		case SUPPORT_SERVICES: return 7;
+		default: return 100;
+	}
 }
 
 // 10.33
@@ -368,7 +587,8 @@ void PorticoRtiAmbassador::enableObjectClassRelevanceAdvisorySwitch()
 	       NotConnected,
 	       RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->ENABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
 }
 
 // 10.34
@@ -380,7 +600,8 @@ void PorticoRtiAmbassador::disableObjectClassRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->DISABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
 }
 
 // 10.35
@@ -392,7 +613,9 @@ void PorticoRtiAmbassador::enableAttributeRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->ENABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
+
 }
 
 // 10.36
@@ -404,7 +627,9 @@ void PorticoRtiAmbassador::disableAttributeRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->DISABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
+
 }
 
 // 10.37
@@ -416,7 +641,9 @@ void PorticoRtiAmbassador::enableAttributeScopeAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->ENABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
+
 }
 
 // 10.38
@@ -428,7 +655,8 @@ void PorticoRtiAmbassador::disableAttributeScopeAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->DISABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
 }
 
 // 10.39
@@ -440,7 +668,8 @@ void PorticoRtiAmbassador::enableInteractionRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->ENABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
 }
 
 // 10.40
@@ -452,21 +681,27 @@ void PorticoRtiAmbassador::disableInteractionRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->DISABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
 }
 
 // 10.41
 bool PorticoRtiAmbassador::evokeCallback( double minSeconds )
     throw( CallNotAllowedFromWithinCallback, RTIinternalError )
 {
-	return false;
+	return jnienv->CallBooleanMethod( javarti->jproxy,
+	                                  javarti->EVOKE_CALLBACK,
+	                                  minSeconds );
 }
 
 // 10.42
 bool PorticoRtiAmbassador::evokeMultipleCallbacks( double minSeconds, double maxSeconds )
 	throw( CallNotAllowedFromWithinCallback, RTIinternalError )
 {
-	return false;
+	return jnienv->CallBooleanMethod( javarti->jproxy,
+	                                  javarti->EVOKE_MULTIPLE_CALLBACKS,
+	                                  minSeconds,
+	                                  maxSeconds );
 }
 
 // 10.43
@@ -475,7 +710,8 @@ void PorticoRtiAmbassador::enableCallbacks()
 	       RestoreInProgress,
 	       RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->ENABLE_CALLBACKS );
 }
 
 // 10.44
@@ -484,7 +720,8 @@ void PorticoRtiAmbassador::disableCallbacks()
 	       RestoreInProgress,
 	       RTIinternalError )
 {
-	
+	jnienv->CallVoidMethod( javarti->jproxy,
+	                        javarti->DISABLE_CALLBACKS );
 }
 
 PORTICO1516E_NS_END

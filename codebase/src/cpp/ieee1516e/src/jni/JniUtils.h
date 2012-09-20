@@ -20,6 +20,13 @@
 
 PORTICO1516E_NS_START
 
+// this struct will hold handle value pair-set data
+struct HVPS
+{
+	jintArray    handles; // int[]
+	jobjectArray values;  // byte[][]
+};
+
 /**
  * A set of utility methods to make the handling of common JNI tasks a little less
  * painful than it typically is.
@@ -53,13 +60,20 @@ class JniUtils
 		static InteractionClassHandle toInteractionClassHandle( jint handle );
 		static ParameterHandle toParameterHandle( jint handle );
 		static RegionHandle toRegionHandle( jint handle );
-		
-		static OrderType toOrder( jint type );
-		static TransportationType toTransport( jint type );
+
+		static jint fromHandle( FederateHandle handle );
+		static jint fromHandle( ObjectClassHandle handle );
+		static jint fromHandle( ObjectInstanceHandle handle );
+		static jint fromHandle( AttributeHandle handle );
+		static jint fromHandle( InteractionClassHandle handle );
+		static jint fromHandle( ParameterHandle handle );
+		static jint fromHandle( RegionHandle handle );
+		static jint fromHandle( MessageRetractionHandle handle );
 
 		///// set and map conversion methods ////////////////////////////////////////////////
 		static AttributeHandleSet toAttributeSet( JNIEnv *jnienv, jintArray handles );
 		static FederateHandleSet toFederateSet( JNIEnv *jnienv, jintArray handles );
+		static RegionHandleSet toRegionSet( JNIEnv *jnienv, jintArray handles );
 		static AttributeHandleValueMap toAttributeValueMap( JNIEnv *jnienv,
 		                                                    jintArray handles,
 		                                                    jobjectArray values );
@@ -67,15 +81,24 @@ class JniUtils
 		                                                    jintArray handles,
 		                                                    jobjectArray values );
 		
-		static RegionHandleSet toRegionSet( JNIEnv *jnienv, jintArray handles );
-		
-		///// support and misc types ////////////////////////////////////////////////////////
-		static VariableLengthData toTag( JNIEnv *jnienv, jbyteArray jtag );
-		
-		static jstring fromCallbackModel( JNIEnv *jnienv, CallbackModel model );
-		
+		// convert into JNI format
+		// note: caller responsible for releasing references held in return array
+		static jobjectArray fromVector( JNIEnv *jnienv, vector<wstring> stringVector );
+		static jobjectArray fromSet( JNIEnv *jnienv, set<wstring> stringSet );
+		static jintArray fromSet( JNIEnv *jnienv, AttributeHandleSet attributes );
+		static jintArray fromSet( JNIEnv *jnienv, FederateHandleSet federates );
+		static HVPS fromMap( JNIEnv *jnienv, AttributeHandleValueMap values );
+		static HVPS fromMap( JNIEnv *jnienv, ParameterHandleValueMap values );
+
 		///// time conversion methods ///////////////////////////////////////////////////////
 		static MessageRetractionHandle toRetractionHandle( jint handle );
+		
+		// covert to JNI type
+		// Converts times to jdoubles. Times must be of standard types HLAfloat64Time/Interval or
+		// HLAinteger64Time/Interaval or an exception will be thrown
+		static jdouble fromTime( const LogicalTime& time ) throw( InvalidLogicalTime );
+		static jdouble fromInterval( const LogicalTimeInterval& interval )
+			throw( InvalidLookahead );
 		
 		///// synchronization helpers ///////////////////////////////////////////////////////
 		static SynchronizationPointFailureReason toSyncPointFailureReason( JNIEnv *jnienv,
@@ -113,6 +136,20 @@ class JniUtils
 		///// misc //////////////////////////////////////////////////////////////////////////
 		static FederationExecutionInformationVector
 			toFedInformationVector( JNIEnv *jnienv, jobjectArray fedNames, jobjectArray timeNames );
+		static VariableLengthData toTag( JNIEnv *jnienv, jbyteArray jtag );
+		static OrderType toOrder( jint type );
+		static TransportationType toTransport( jint type );
+		static ResignAction toResignAction( JNIEnv *jnienv, jstring action );
+		
+		static jbyteArray fromTag( JNIEnv *jnienv, VariableLengthData data );
+		static jstring fromOrder( JNIEnv *jnienv, OrderType order );
+		static jstring fromTransport( JNIEnv *jnienv, TransportationType transport );
+		static jstring fromCallbackModel( JNIEnv *jnienv, CallbackModel model );
+		static jstring fromResignAction( JNIEnv *jnienv, ResignAction action );
+		
+		// loop through the provided array and release all references it contains
+		static void deleteJniArray( JNIEnv *jnienv, jobjectArray array );
+		static void deleteHVPS( JNIEnv *jnienv, HVPS hvps );
 };
 
 PORTICO1516E_NS_END

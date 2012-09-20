@@ -15,7 +15,7 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#include "../common.h"
+#include "common.h"
 
 #define MAX_MSG_LENGTH 4096
 
@@ -33,6 +33,9 @@ PORTICO1516E_NS_START
  *   logger.warn( "This will be printed" );
  *   logger.info( "This will be printed" );
  *   logger.debug( "This will not be printed" );
+ * 
+ * NOTE: The methods of this class are NOT thread safe. Calling them at the same time from
+ *       separate threads will cause issues.
  */
 class Logger
 {
@@ -70,6 +73,9 @@ class Logger
 		string name;
 		int level;
 		string prefix;
+		
+		// used to dump format strings into before printing them in log messages
+		char *stringBuffer;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -137,6 +143,8 @@ class Logger
 		static std::string toString( const AttributeHandleValueMap& theMap );
 		static std::string toString( const ParameterHandleValueMap& theMap );
 
+		static std::wstring toWString( std::vector<std::wstring> values );
+		static std::wstring toWString( std::set<std::wstring> values );
 };
 
 PORTICO1516E_NS_END

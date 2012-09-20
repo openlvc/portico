@@ -19,6 +19,7 @@ PORTICO1516E_NS_START
 
 // initialize our singleton - we'll lazy load it
 Runtime* Runtime::instance = NULL;
+jclass Runtime::JCLASS_BYTE_ARRAY = 0;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -50,6 +51,7 @@ Runtime::Runtime() throw( RTIinternalError )
 
 	// fire up the JVM and process the RID file
 	this->initializeJVM();
+	this->cacheGlobalHandles();
 	this->processRid();
 }
 
@@ -383,6 +385,15 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	paths.second = libraryPath.str();
 	
 	return paths;
+}
+
+/*
+ * We use various JNI class references throughout the life of the VM. The role of this
+ * method is to cache them in statics so that they're easily accessible to all.
+ */
+void Runtime::cacheGlobalHandles() throw( RTIinternalError )
+{
+	Runtime::JCLASS_BYTE_ARRAY = jnienv->FindClass( "[B" );
 }
 
 /*

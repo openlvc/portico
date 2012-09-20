@@ -27,6 +27,12 @@ Type Type##Friend::create( int32_t value )                       \
 	handle._impl->value = value;                                 \
 	return handle;                                               \
 }                                                                \
+                                                                 \
+int32_t Type##Friend::getInt( Type& handle )                     \
+{                                                                \
+	return handle._impl->value;                                  \
+}                                                                \
+                                                                 \
 std::string Type##Friend::toString( Type* handle )               \
 {                                                                \
 	std::stringstream ss;                                        \

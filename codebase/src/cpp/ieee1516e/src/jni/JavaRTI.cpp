@@ -201,10 +201,6 @@ void JavaRTI::initialize() throw( RTIinternalError )
 		exceptionCheck();
 	}
 
-	// cache the jclass for byte[] //
-	BYTE_ARRAY = jnienv->FindClass( "[B" );
-	BYTE_ARRAY = (jclass)jnienv->NewGlobalRef( BYTE_ARRAY );
-
 	logger->info( "Initialized new JavaRTI (rti-%d)", this->id );
 }
 
@@ -263,10 +259,8 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &CREATE_FEDERATION_WITH_MIM, "createFederationExecutionWithMIM", "(Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" );
 	cacheMethod( &DESTROY_FEDERATION, "destroyFederationExecution", "(Ljava/lang/String;)V" );
 	cacheMethod( &LIST_FEDERATIONS, "listFederationExecutions", "()V" );
-	cacheMethod( &JOIN_FEDERATION, "joinFederationExecution", "(Ljava/lang/String;Ljava/lang/String;)I" );
-	cacheMethod( &JOIN_FEDERATION_NAME_AND_TYPE, "joinFederationExecution", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I" );
-	cacheMethod( &JOIN_FEDERATION_TYPE_AND_MODULES, "joinFederationExecution", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)I" );
-	cacheMethod( &JOIN_FEDERATION_NAME_AND_TYPE_AND_MODULES, "joinFederationExecution", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)I" );
+	cacheMethod( &JOIN_FEDERATION, "joinFederationExecution", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)I" );
+	cacheMethod( &JOIN_FEDERATION_WITH_NAME, "joinFederationExecution", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)I" );
 	cacheMethod( &RESIGN_FEDERATION, "resignFederationExecution", "(Ljava/lang/String;)V" );
 	
 	cacheMethod( &REGISTER_FEDERATION_SYNC, "registerFederationSynchronizationPoint", "(Ljava/lang/String;[B)V" );
@@ -319,7 +313,7 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &REQUEST_OBJECT_ATTRIBUTE_VALUE_UPDATE, "requestAttributeValueUpdate", "(I[I[B)V" );
 	cacheMethod( &REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE, "requestAttributeValueUpdate", "(I[I[B)V" );
 	cacheMethod( &REQUEST_ATTRIBUTE_TRANSPORT_CHANGE, "requestAttributeTransportationTypeChange", "(I[ILjava/lang/String;)V" );
-	cacheMethod( &QUERY_ATTRIBUTE_TRANSPORT_TYPE, "queryAttributeTransportationType", "(I[I)V" );
+	cacheMethod( &QUERY_ATTRIBUTE_TRANSPORT_TYPE, "queryAttributeTransportationType", "(II)V" );
 	cacheMethod( &REQUEST_INTERACTION_TRANSPORT_CHANGE, "requestInteractionTransportationTypeChange", "(ILjava/lang/String;)V" );
 	cacheMethod( &QUERY_INTERACTION_TRANSPORT_TYPE, "queryInteractionTransportationType", "(II)V" );
 
@@ -334,7 +328,7 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &CANCEL_NEGOTIATED_DIVEST, "cancelNegotiatedAttributeOwnershipDivestiture", "(I[I)V" );
 	cacheMethod( &CANCEL_OWNERSHIP_ACQUISITION, "cancelAttributeOwnershipAcquisition", "(I[I)V" );
 	cacheMethod( &QUERY_ATTRIBUTE_OWNERSHIP, "queryAttributeOwnership", "(I[I)V" );
-	cacheMethod( &IS_ATTRIBUTE_OWNED_BY_FEDERATE, "isAttributeOwnedByFederate", "(I[I)Z" );
+	cacheMethod( &IS_ATTRIBUTE_OWNED_BY_FEDERATE, "isAttributeOwnedByFederate", "(II)Z" );
 
 	// time management
 	cacheMethod( &ENABLE_TIME_REGULATION, "enableTimeRegulation", "(D)V" );
@@ -348,14 +342,14 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &FLUSH_QUEUE_REQUEST, "flushQueueRequest", "(D)V" );
 	cacheMethod( &ENABLE_ASYNCHRONOUS_DELIVERY, "enableAsynchronousDelivery", "()V" );
 	cacheMethod( &DISABLE_ASYNCHRONOUS_DELIVERY, "disableAsynchronousDelivery", "()V" );
-	cacheMethod( &QUERY_GALT, "queryGALT", "()Z" );
+	cacheMethod( &QUERY_GALT, "queryGALT", "()D" );
 	cacheMethod( &QUERY_TIME, "queryLogicalTime", "()D" );
-	cacheMethod( &QUERY_LITS, "queryLITS", "()Z" );
+	cacheMethod( &QUERY_LITS, "queryLITS", "()D" );
 	cacheMethod( &MODIFY_LOOKAHEAD, "modifyLookahead", "(D)V" );
 	cacheMethod( &QUERY_LOOKAHEAD, "queryLookahead", "()D" );
 	cacheMethod( &RETRACT, "retract", "(I)V" );
-	cacheMethod( &CHANGE_ATTRIBUTE_ORDER_TYPE, "changeAttributeOrderType", "(I[II)V" );
-	cacheMethod( &CHANGE_INTERACTION_ORDER_TYPE, "changeInteractionOrderType", "(II)V" );
+	cacheMethod( &CHANGE_ATTRIBUTE_ORDER_TYPE, "changeAttributeOrderType", "(I[ILjava/lang/String;)V" );
+	cacheMethod( &CHANGE_INTERACTION_ORDER_TYPE, "changeInteractionOrderType", "(ILjava/lang/String;)V" );
 
 	// data distribution management
 	// Note supported as yet
@@ -399,11 +393,6 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &GET_PARAMETER_HANDLE, "getParameterHandle", "(ILjava/lang/String;)I" );
 	cacheMethod( &GET_PARAMETER_NAME, "getParameterName", "(II)Ljava/lang/String;" );
 
-	cacheMethod( &GET_ORDER_TYPE, "getOrderType", "(Ljava/lang/String;)Ljava/lang/String;" );
-	cacheMethod( &GET_ORDER_NAME, "getOrderName", "(Ljava/lang/String;)Ljava/lang/String;" );
-	cacheMethod( &GET_TRANSPORT_TYPE, "getTransportationTypeHandle", "(Ljava/lang/String;)Ljava/lang/String;" );
-	cacheMethod( &GET_TRANSPORT_NAME, "getTransportationTypeName", "(Ljava/lang/String;)Ljava/lang/String;" );
-	
 	cacheMethod( &GET_DIMENSIONS_FOR_CLASS_ATTRIBUTE, "getAvailableDimensionsForClassAttribute", "(II)[I" );
 	cacheMethod( &GET_DIMENSIONS_FOR_INTERACTION_CLASS, "getAvailableDimensionsForInteractionClass", "(I)[I" );
 	cacheMethod( &GET_DIMENSION_HANDLE, "getDimensionHandle", "(Ljava/lang/String;)I" );

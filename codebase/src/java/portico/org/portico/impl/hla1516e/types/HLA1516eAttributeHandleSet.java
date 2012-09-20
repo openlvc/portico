@@ -43,9 +43,16 @@ public class HLA1516eAttributeHandleSet
 	
 	public HLA1516eAttributeHandleSet( Set<Integer> attributes )
 	{
-		this();
+		super( attributes.size() );
 		for( Integer attribute : attributes )
 			this.add( new HLA1516eHandle(attribute) );
+	}
+	
+	public HLA1516eAttributeHandleSet( int[] attributes )
+	{
+		super( attributes.length );
+		for( int attribute : attributes )
+			add( new HLA1516eHandle(attribute) );
 	}
 
 	//----------------------------------------------------------
