@@ -74,12 +74,13 @@ void ExampleFedAmb::announceSynchronizationPoint( const std::wstring& label,
 		this->isAnnounced = true;
 }
 
-void ExampleFedAmb::federationSynchronized( const std::wstring& label )
+void ExampleFedAmb::federationSynchronized( const std::wstring& label,
+                                            const FederateHandleSet& failedSet )
 	throw( FederateInternalError )
 {
 	wcout << L"Federation Synchronized: " << label << endl;
 	if( label.compare(L"ReadyToRun") == 0 )
-		this->isAnnounced = true;
+		this->isReadyToRun = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

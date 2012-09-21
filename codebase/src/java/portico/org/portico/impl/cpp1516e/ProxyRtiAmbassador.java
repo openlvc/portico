@@ -17,6 +17,7 @@ package org.portico.impl.cpp1516e;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Properties;
@@ -210,8 +211,9 @@ public class ProxyRtiAmbassador
 		try
 		{
 			logger.trace( "createFederationExecution() called" );
-			URL[] modules = new URL[]{ new URL(fomModule) };
-			rtiamb.createFederationExecution( federationName, modules, timeName );
+			File fom = new File( fomModule );
+			//URL[] modules = new URL[]{ fom.toURI().toURL() };
+			rtiamb.createFederationExecution( federationName, fom.toURI().toURL() );
 		}
 		catch( Exception e )
 		{
@@ -647,41 +649,21 @@ public class ProxyRtiAmbassador
 	}
 
 	// 5.6
-	public void subscribeObjectClassAttributes( int theClass, int[] attributes )
-	{
-		try
-		{
-			rtiamb.subscribeObjectClassAttributes( new HLA1516eHandle(theClass),
-			                                       new HLA1516eAttributeHandleSet(attributes) );
-		}
-		catch( Exception e )
-		{
-			ExceptionManager.pushException( this.id, e );
-		}
-	}
-
-	// 5.6
 	public void subscribeObjectClassAttributes( int theClass, int[] attributes, String updateRate )
 	{
 		try
 		{
-			rtiamb.subscribeObjectClassAttributes( new HLA1516eHandle(theClass),
-			                                       new HLA1516eAttributeHandleSet(attributes),
-			                                       updateRate );
-		}
-		catch( Exception e )
-		{
-			ExceptionManager.pushException( this.id, e );
-		}
-	}
-
-	// 5.6
-	public void subscribeObjectClassAttributesPassively( int theClass, int[] attributes )
-	{
-		try
-		{
-			rtiamb.subscribeObjectClassAttributesPassively( new HLA1516eHandle(theClass),
-			                                                new HLA1516eAttributeHandleSet(attributes) );
+			if( updateRate.equals("") )
+			{
+				rtiamb.subscribeObjectClassAttributes( new HLA1516eHandle(theClass),
+				                                       new HLA1516eAttributeHandleSet(attributes) );
+			}
+			else
+			{
+				rtiamb.subscribeObjectClassAttributes( new HLA1516eHandle(theClass),
+				                                       new HLA1516eAttributeHandleSet(attributes),
+				                                       updateRate );
+			}
 		}
 		catch( Exception e )
 		{
@@ -696,9 +678,19 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.subscribeObjectClassAttributesPassively( new HLA1516eHandle(theClass),
-			                                                new HLA1516eAttributeHandleSet(attributes),
-			                                                updateRate );
+			if( updateRate.equals("") )
+			{
+    			rtiamb.subscribeObjectClassAttributesPassively(
+    			    new HLA1516eHandle(theClass),
+    			    new HLA1516eAttributeHandleSet(attributes) );
+			}
+			else
+			{
+    			rtiamb.subscribeObjectClassAttributesPassively(
+    			    new HLA1516eHandle(theClass),
+    			    new HLA1516eAttributeHandleSet(attributes),
+    			    updateRate );
+			}
 		}
 		catch( Exception e )
 		{

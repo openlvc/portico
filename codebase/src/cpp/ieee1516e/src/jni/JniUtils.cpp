@@ -307,11 +307,10 @@ jobjectArray JniUtils::fromVector( JNIEnv *jnienv, vector<wstring> stringVector 
 	
 	int count = 0;
 	vector<wstring>::iterator iterator;
-	for( iterator = stringVector.begin(); iterator != stringVector.end(); iterator++ )
+	for( iterator = stringVector.begin(); iterator != stringVector.end(); iterator++, count++ )
 	{
 		jstring temp = jnienv->NewString( (jchar*)(*iterator).c_str(), (*iterator).length() );
 		jnienv->SetObjectArrayElement( array, count, temp );
-		count++;
 	}
 	
 	return array;
@@ -330,11 +329,10 @@ jobjectArray JniUtils::fromSet( JNIEnv *jnienv, set<wstring> stringSet )
 	
 	int count = 0;
 	set<wstring>::iterator iterator;
-	for( iterator = stringSet.begin(); iterator != stringSet.end(); iterator++ )
+	for( iterator = stringSet.begin(); iterator != stringSet.end(); iterator++, count++ )
 	{
 		jstring temp = jnienv->NewString( (jchar*)(*iterator).c_str(), (*iterator).length() );
 		jnienv->SetObjectArrayElement( array, count, temp );
-		count++;
 	}
 	
 	return array;
@@ -346,7 +344,7 @@ jintArray JniUtils::fromSet( JNIEnv *jnienv, AttributeHandleSet attributes )
 	jint* content = jnienv->GetIntArrayElements( array, NULL );
 	int count = 0;
 	AttributeHandleSet::iterator iterator;
-	for( iterator = attributes.begin(); iterator != attributes.end(); iterator++ )
+	for( iterator = attributes.begin(); iterator != attributes.end(); iterator++, count++ )
 	{
 		content[count] = AttributeHandleFriend::getInt( (AttributeHandle&)*iterator );
 	}
@@ -361,7 +359,7 @@ jintArray JniUtils::fromSet( JNIEnv *jnienv, FederateHandleSet federates )
 	jint* content = jnienv->GetIntArrayElements( array, NULL );
 	int count = 0;
 	FederateHandleSet::iterator iterator;
-	for( iterator = federates.begin(); iterator != federates.end(); iterator++ )
+	for( iterator = federates.begin(); iterator != federates.end(); iterator++, count++ )
 	{
 		content[count] = FederateHandleFriend::getInt( (FederateHandle&)*iterator );
 	}
@@ -466,11 +464,11 @@ jdouble JniUtils::fromTime( const LogicalTime& time ) throw( InvalidLogicalTime 
 {
 	if( time.implementationName().compare(L"HLAfloat64Time") == 0 )
 	{
-		return ((HLAfloat64Time)time).getTime();
+		return ((HLAfloat64Time&)time).getTime();
 	}
 	else if( time.implementationName().compare(L"HLAinteger64Time") == 0 )
 	{
-		return (jdouble)((HLAinteger64Time)time).getTime();
+		return (jdouble)((HLAinteger64Time&)time).getTime();
 	}
 	else
 	{
@@ -491,11 +489,11 @@ jdouble JniUtils::fromInterval( const LogicalTimeInterval& interval )
 {
 	if( interval.implementationName().compare(L"HLAfloat64Interval") == 0 )
 	{
-		return ((HLAfloat64Interval)interval).getInterval();
+		return ((HLAfloat64Interval&)interval).getInterval();
 	}
 	else if( interval.implementationName().compare(L"HLAinteger64Interval") == 0 )
 	{
-		return (jdouble)((HLAinteger64Interval)interval).getInterval();
+		return (jdouble)((HLAinteger64Interval&)interval).getInterval();
 	}
 	else
 	{

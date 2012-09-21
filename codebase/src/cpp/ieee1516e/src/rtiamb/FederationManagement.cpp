@@ -80,7 +80,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(): name=%ls, fedfile=%ls, time=%ls",
+	logger->debug( "[Starting] createFederationExecution(federation,fom): name=%ls, fedfile=%ls, time=%ls",
 	               federationName.c_str(),
 	               fomModule.c_str(),
 	               timeImplementation.c_str() );
@@ -103,7 +103,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 	jnienv->DeleteLocalRef( jtime );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution(): name=%ls", federationName.c_str() );
+	logger->info( "[Finished] createFederationExecution(federation,fom): name=%ls", federationName.c_str() );
 }
 
 void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federationName,
@@ -117,7 +117,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(): name=%ls, fedfiles=%ls, time=%ls",
+	logger->debug( "[Starting] createFederationExecution(federation,modules): name=%ls, fedfiles=%ls, time=%ls",
 	               federationName.c_str(),
 	               Logger::toWString(fomModules).c_str(),
 	               timeImplementation.c_str() );
@@ -140,7 +140,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 	JniUtils::deleteJniArray( jnienv, jfoms );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution() name=%ls", federationName.c_str() );
+	logger->info( "[Finished] createFederationExecution(federation,modules) name=%ls", federationName.c_str() );
 }
 
 void PorticoRtiAmbassador::createFederationExecutionWithMIM(
@@ -159,7 +159,7 @@ void PorticoRtiAmbassador::createFederationExecutionWithMIM(
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(): name=%ls, fedfiles=%ls, mim=%ls, time=%ls",
+	logger->debug( "[Starting] createFederationExecution(federation,modules,mim): name=%ls, fedfiles=%ls, mim=%ls, time=%ls",
 	               federationName.c_str(),
 	               Logger::toWString(fomModules).c_str(),
 	               mimModule.c_str(),
@@ -186,7 +186,7 @@ void PorticoRtiAmbassador::createFederationExecutionWithMIM(
 	jnienv->DeleteLocalRef( jtime );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution() name=%ls", federationName.c_str() );
+	logger->info( "[Finished] createFederationExecution(federation,modules,mim) name=%ls", federationName.c_str() );
 }
 
 // 4.6

@@ -286,10 +286,8 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &UNPUBLISH_OBJECT_CLASS_WITH_ATTRIBUTES, "publishObjectClassAttributes", "(I[I)V" );
 	cacheMethod( &PUBLISH_INTERACTION_CLASS, "publishInteractionClass", "(I)V" );
 	cacheMethod( &UNPUBLISH_INTERACTION_CLASS, "unpublishInteractionClass", "(I)V" );
-	cacheMethod( &SUBSCRIBE_ATTRIBUTES, "subscribeObjectClassAttributes", "(I[I)V" );
-	cacheMethod( &SUBSCRIBE_ATTRIBUTES_WITH_RATE, "subscribeObjectClassAttributes", "(I[ILjava/lang/String;)V" );
-	cacheMethod( &SUBSCRIBE_ATTRIBUTES_PASSIVE, "subscribeObjectClassAttributesPassively", "(I[I)V" );
-	cacheMethod( &SUBSCRIBE_ATTRIBUTES_PASSIVE_WITH_RATE, "subscribeObjectClassAttributesPassively", "(I[ILjava/lang/String;)V" );
+	cacheMethod( &SUBSCRIBE_ATTRIBUTES, "subscribeObjectClassAttributes", "(I[ILjava/lang/String;)V" );
+	cacheMethod( &SUBSCRIBE_ATTRIBUTES_PASSIVE, "subscribeObjectClassAttributesPassively", "(I[ILjava/lang/String;)V" );
 	cacheMethod( &UNSUBSCRIBE_OBJECT_CLASS, "unsubscribeObjectClass", "(I)V" );
 	cacheMethod( &UNSUBSCRIBE_OBJECT_CLASS_WITH_ATTRIBUTES, "unsubscribeObjectClassAttributes", "(I[I)V" );
 	cacheMethod( &SUBSCRIBE_INTERACTION_CLASS, "subscribeInteractionClass", "(I)V" );
@@ -327,7 +325,7 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( &ATTRIBUTE_DIVEST_IF_WANTED, "attributeOwnershipDivestitureIfWanted", "(I[I)[I" );
 	cacheMethod( &CANCEL_NEGOTIATED_DIVEST, "cancelNegotiatedAttributeOwnershipDivestiture", "(I[I)V" );
 	cacheMethod( &CANCEL_OWNERSHIP_ACQUISITION, "cancelAttributeOwnershipAcquisition", "(I[I)V" );
-	cacheMethod( &QUERY_ATTRIBUTE_OWNERSHIP, "queryAttributeOwnership", "(I[I)V" );
+	cacheMethod( &QUERY_ATTRIBUTE_OWNERSHIP, "queryAttributeOwnership", "(II)V" );
 	cacheMethod( &IS_ATTRIBUTE_OWNED_BY_FEDERATE, "isAttributeOwnedByFederate", "(II)Z" );
 
 	// time management

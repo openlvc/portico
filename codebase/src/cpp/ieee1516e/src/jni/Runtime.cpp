@@ -30,13 +30,7 @@ Runtime::Runtime() throw( RTIinternalError )
 	// If it exists, set the global level of the Logger to the identified level.
 	char *value = getenv( "PORTICO_DEBUG" );
 	if( value != NULL )
-	{
 		Logger::setGlobalLevel( value );
-	}
-	else
-	{
-		Logger::setGlobalLevel( "NOISY" ); // just for debugging right now
-	}
 
 	// get us a logger to work with
 	this->logger = new Logger( "c++" );

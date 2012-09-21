@@ -173,6 +173,7 @@ void ExceptionHacks::checkAndThrow( string name, string reason )
 	else
 	{
 		std::cout << "ERROR [exception-hacks]: Unknown Exception: " << name << std::endl;
+		throw RTIinternalError( StringUtils::toWideString(reason) );
 	}
 }
 

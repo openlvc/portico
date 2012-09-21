@@ -54,7 +54,8 @@ class ExampleFedAmb : public NullFederateAmbassador
 		                                           const VariableLengthData& tag )
 			throw( FederateInternalError );
 
-		virtual void federationSynchronized( const std::wstring& label )
+		virtual void federationSynchronized( const std::wstring& label,
+		                                     const FederateHandleSet& failedSet )
 			throw( FederateInternalError );
 		
 		//////////////////////////

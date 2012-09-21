@@ -523,7 +523,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	// 4.9
 	public FederateHandle joinFederationExecution( String federateName,
 	                                               String federateType,
-	                                               String federationExecutionName,
+	                                               String federationName,
 	                                               URL[] additionalFomModules )
 	    throws CouldNotCreateLogicalTimeFactory,
 	           FederateNameAlreadyInUse,
@@ -538,13 +538,15 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution(name,type,federation,modules[])" );
-		return null;
+		logger.warn( "joinFederationExecution(name,type,federation,modules): "+
+		             "Not fully supported, modules ignored" );
+
+		return joinFederationExecution( federateName, federateType, federationName );
 	}
 
 	// 4.9
 	public FederateHandle joinFederationExecution( String federateType,
-	                                               String federationExecutionName,
+	                                               String federationName,
 	                                               URL[] additionalFomModules )
 	    throws CouldNotCreateLogicalTimeFactory,
 	           FederationExecutionDoesNotExist,
@@ -558,8 +560,10 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution(type,federation,modules[])" );
-		return null;
+		logger.warn( "joinFederationExecution(type,federation,modules): Not fully supported, "+
+		             "modules ignored" );
+
+		return joinFederationExecution( federateType, federationName );
 	}
 
 	// 4.9
@@ -636,8 +640,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	}
 
 	// 4.9
-	public FederateHandle joinFederationExecution( String federateType,
-	                                               String federationExecutionName )
+	public FederateHandle joinFederationExecution( String federateType, String federationName )
 	    throws CouldNotCreateLogicalTimeFactory,
 	           FederationExecutionDoesNotExist,
 	           SaveInProgress,
@@ -647,8 +650,14 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		featureNotSupported( "joinFederationExecution(type,federation)" );
-		return null;
+		try
+		{
+			return joinFederationExecution( federateType, federateType, federationName );
+		}
+		catch( FederateNameAlreadyInUse niu )
+		{
+			throw new RTIinternalError( niu.getMessage(), niu );
+		}
 	}
 
 	// 4.10
@@ -2065,7 +2074,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		if( response.isError() == false )
 		{
 			// everything went fine!
-			return null;
+			return new MessageRetractionReturn( true, new HLA1516eHandle(0) );
 		}
 		else
 		{
@@ -2219,7 +2228,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		if( response.isError() == false )
 		{
 			// everything went fine!
-			return null;
+			return new MessageRetractionReturn( true, new HLA1516eHandle(0) );
 		}
 		else
 		{
@@ -2362,7 +2371,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		if( response.isError() == false )
 		{
 			// everything went fine!
-			return null;
+			return new MessageRetractionReturn( true, new HLA1516eHandle(0) );
 		}
 		else
 		{

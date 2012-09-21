@@ -192,41 +192,21 @@ void PorticoRtiAmbassador::subscribeObjectClassAttributes( ObjectClassHandle the
 	jstring jrate = JniUtils::fromWideString( jnienv, updateRate );
 
 	// which method do we want to call!?
-	if( updateRate.compare(L"") == 0 )
+	if( active )
 	{
-		if( active )
-		{
-			jnienv->CallVoidMethod( javarti->jproxy,
-			                        javarti->SUBSCRIBE_ATTRIBUTES,
-			                        jclassHandle,
-			                        jattributes );
-		}
-		else
-		{
-			jnienv->CallVoidMethod( javarti->jproxy,
-			                        javarti->SUBSCRIBE_ATTRIBUTES_PASSIVE,
-			                        jclassHandle,
-			                        jattributes );
-		}
+		jnienv->CallVoidMethod( javarti->jproxy,
+								javarti->SUBSCRIBE_ATTRIBUTES,
+								jclassHandle,
+								jattributes,
+								jrate );
 	}
 	else
 	{
-		if( active )
-		{
-			jnienv->CallVoidMethod( javarti->jproxy,
-			                        javarti->SUBSCRIBE_ATTRIBUTES_WITH_RATE,
-			                        jclassHandle,
-			                        jattributes,
-			                        jrate );
-		}
-		else
-		{
-			jnienv->CallVoidMethod( javarti->jproxy,
-			                        javarti->SUBSCRIBE_ATTRIBUTES_PASSIVE_WITH_RATE,
-			                        jclassHandle,
-			                        jattributes,
-			                        jrate );
-		}
+		jnienv->CallVoidMethod( javarti->jproxy,
+								javarti->SUBSCRIBE_ATTRIBUTES_PASSIVE,
+								jclassHandle,
+								jattributes,
+								jrate );
 	}
 
 	// clean up and run the exception check

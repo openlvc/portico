@@ -36,7 +36,8 @@ VariableLengthData::VariableLengthData( const VariableLengthData& rhs )
 
 VariableLengthData::~VariableLengthData()
 {
-	delete this->_impl;
+	if( this->_impl != NULL )
+		delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
