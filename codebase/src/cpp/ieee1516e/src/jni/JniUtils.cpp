@@ -224,14 +224,19 @@ AttributeHandleValueMap JniUtils::toAttributeValueMap( JNIEnv *jnienv,
 	jint *content = jnienv->GetIntArrayElements( handles, NULL );
 	for( int i = 0; i < size; ++i )
 	{
-		// get the byte[] value
-		jbyteArray value = (jbyteArray)jnienv->GetObjectArrayElement( values, i );
-		jsize valueSize = jnienv->GetArrayLength( value );
-		jbyte valueBuffer[valueSize];
-		jnienv->GetByteArrayRegion( value, 0, valueSize, valueBuffer );
+		// get the byte[] at the appropriate location in the values byte[][]
+		jbyteArray jarray = (jbyteArray)jnienv->GetObjectArrayElement( values, i );
 
-		// store the byte[] in a VariableLengthData
-		VariableLengthData data( (void*)valueBuffer, valueSize );
+		// get a reference to the java byte[] data. Have to use GetElements as GetRegion copies.
+		// we don't want to do a copy because the VariableLengthData constructor will do that.
+		jbyte *byteArrayContents = jnienv->GetByteArrayElements( jarray, NULL );
+		
+		// dump the contents into a VariableLengthData (which will copy)
+		jsize jarraySize = jnienv->GetArrayLength( jarray );
+		VariableLengthData data( (void*)byteArrayContents, jarraySize );
+		jnienv->ReleaseByteArrayElements( jarray, byteArrayContents, JNI_ABORT );
+		
+		// put the data into the map for return
 		AttributeHandle handle = AttributeHandleFriend::create( content[i] );
 		valueMap[handle] = data;
 	}
@@ -259,14 +264,19 @@ ParameterHandleValueMap JniUtils::toParameterValueMap( JNIEnv *jnienv,
 	jint *content = jnienv->GetIntArrayElements( handles, NULL );
 	for( int i = 0; i < size; ++i )
 	{
-		// get the byte[] value
-		jbyteArray value = (jbyteArray)jnienv->GetObjectArrayElement( values, i );
-		jsize valueSize = jnienv->GetArrayLength( value );
-		jbyte valueBuffer[valueSize];
-		jnienv->GetByteArrayRegion( value, 0, valueSize, valueBuffer );
+		// get the byte[] at the appropriate location in the values byte[][]
+		jbyteArray jarray = (jbyteArray)jnienv->GetObjectArrayElement( values, i );
 
-		// store the byte[] in a VariableLengthData
-		VariableLengthData data( (void*)valueBuffer, valueSize );
+		// get a reference to the java byte[] data. Have to use GetElements as GetRegion copies.
+		// we don't want to do a copy because the VariableLengthData constructor will do that.
+		jbyte *byteArrayContents = jnienv->GetByteArrayElements( jarray, NULL );
+		
+		// dump the contents into a VariableLengthData (which will copy)
+		jsize jarraySize = jnienv->GetArrayLength( jarray );
+		VariableLengthData data( (void*)byteArrayContents, jarraySize );
+		jnienv->ReleaseByteArrayElements( jarray, byteArrayContents, JNI_ABORT );
+		
+		// put the data into the map for return
 		ParameterHandle handle = ParameterHandleFriend::create( content[i] );
 		valueMap[handle] = data;
 	}
@@ -302,7 +312,7 @@ RegionHandleSet JniUtils::toRegionSet( JNIEnv *jnienv, jintArray handles )
  */
 jobjectArray JniUtils::fromVector( JNIEnv *jnienv, vector<wstring> stringVector )
 {
-	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" );
+	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" ); //FIXME cache this handle!!
 	jobjectArray array = jnienv->NewObjectArray( stringVector.size(), stringClass, 0 );
 	
 	int count = 0;
@@ -324,7 +334,7 @@ jobjectArray JniUtils::fromVector( JNIEnv *jnienv, vector<wstring> stringVector 
  */
 jobjectArray JniUtils::fromSet( JNIEnv *jnienv, set<wstring> stringSet )
 {
-	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" );
+	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" ); //TODO cache meeee!!!!
 	jobjectArray array = jnienv->NewObjectArray( stringSet.size(), stringClass, 0 );
 	
 	int count = 0;
@@ -381,7 +391,7 @@ HVPS JniUtils::fromMap( JNIEnv *jnienv, AttributeHandleValueMap values )
 	hvps.handles = jnienv->NewIntArray( values.size() );
 	hvps.values  = jnienv->NewObjectArray( values.size(), Runtime::JCLASS_BYTE_ARRAY, 0 );
 
-	// get references to the array contents as JNI requires
+	// get a reference to the underlying memory for the int[] so we can dump stuff in there
 	jint *handlesContent = jnienv->GetIntArrayElements( hvps.handles, NULL );
 
 	// loop through all values in the map and put them into the appropriate location
@@ -389,13 +399,15 @@ HVPS JniUtils::fromMap( JNIEnv *jnienv, AttributeHandleValueMap values )
 	int i = 0;
 	for( iterator = values.begin(); iterator != values.end(); iterator++, i++ )
 	{
-		// get the AttributeHandle
+		// fetch the underlying int that backs the handle
 		handlesContent[i] = JniUtils::fromHandle( (*iterator).first );
 	
-		// get the value and convert it into a byte[]
+		// get the underyling byte[] data associated with the handle
+		// we use SetByteArrayRegion as it will copy the contents
 		VariableLengthData data = (*iterator).second;
 		jbyteArray tempArray = jnienv->NewByteArray( data.size() );
 		jnienv->SetByteArrayRegion( tempArray, 0, data.size(), (jbyte*)data.data() );
+		// stuff the byte[] for the handle into the bigger byte[][]
 		jnienv->SetObjectArrayElement( hvps.values, i, tempArray );
 		jnienv->DeleteLocalRef( tempArray );
 	}
@@ -420,7 +432,7 @@ HVPS JniUtils::fromMap( JNIEnv *jnienv, ParameterHandleValueMap values )
 	hvps.handles = jnienv->NewIntArray( values.size() );
 	hvps.values  = jnienv->NewObjectArray( values.size(), Runtime::JCLASS_BYTE_ARRAY, 0 );
 
-	// get references to the array contents as JNI requires
+	// get a reference to the underlying memory for the int[] so we can dump stuff in there
 	jint *handlesContent = jnienv->GetIntArrayElements( hvps.handles, NULL );
 
 	// loop through all values in the map and put them into the appropriate location
@@ -428,13 +440,15 @@ HVPS JniUtils::fromMap( JNIEnv *jnienv, ParameterHandleValueMap values )
 	int i = 0;
 	for( iterator = values.begin(); iterator != values.end(); iterator++, i++ )
 	{
-		// get the AttributeHandle
+		// fetch the underlying int that backs the handle
 		handlesContent[i] = JniUtils::fromHandle( (*iterator).first );
 	
-		// get the value and convert it into a byte[]
+		// get the underyling byte[] data associated with the handle
+		// we use SetByteArrayRegion as it will copy the contents
 		VariableLengthData data = (*iterator).second;
 		jbyteArray tempArray = jnienv->NewByteArray( data.size() );
 		jnienv->SetByteArrayRegion( tempArray, 0, data.size(), (jbyte*)data.data() );
+		// stuff the byte[] for the handle into the bigger byte[][]
 		jnienv->SetObjectArrayElement( hvps.values, i, tempArray );
 		jnienv->DeleteLocalRef( tempArray );
 	}
