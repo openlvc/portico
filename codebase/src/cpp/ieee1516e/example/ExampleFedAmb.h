@@ -16,7 +16,6 @@
 #define EXAMPLEFEDAMB_H_
 
 #include <string>
-#include <RTI/RTI1516.h>
 #include <RTI/NullFederateAmbassador.h>
 
 using namespace rti1516e; // because we get sick of typing it all the time!
