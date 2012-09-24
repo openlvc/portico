@@ -39,7 +39,7 @@ rem ############################################
 rem ### (target) clean #########################
 rem ############################################
 :clean
-echo "deleting example federate executable and left over logs"
+echo Deleting example federate executable and left over logs
 del *.obj
 del main.exe
 rd /S /Q logs
@@ -49,8 +49,8 @@ goto finish
 ### (target) compile #######################
 ############################################
 :compile
-echo "compiling example federate"
-cl /I"%RTI_HOME%\include\ng6" /DRTI_USES_STD_FSTREAM /GX main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\libRTI-NG.lib" "%RTI_HOME%\lib\libFedTime.lib"
+echo Compiling example federate
+cl /I"%RTI_HOME%\include\ieee1516e" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\librti1516e.lib" "%RTI_HOME%\lib\libfedtime1516e.lib"
 goto finish
 
 ############################################

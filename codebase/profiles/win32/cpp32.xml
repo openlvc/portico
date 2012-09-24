@@ -88,7 +88,7 @@
 	<target name="compile"
 	        extensionOf="master.compile"
 	        description="Compile the Portico C++ interfaces and Testing Suite for Win32 VC10"
-	        depends="compile.ng6, compile.dlc13"/>
+	        depends="compile.ng6, compile.dlc13, compile.ieee1516e"/>
 
 	<!-- ==================================== -->
 	<!--            NGv6 Interface            -->
@@ -303,8 +303,13 @@
 		<mkdir dir="${dist.sandbox.dir}/include"/>
 
 		<!-- copy the RTI headers over -->
+		<!-- hla13 headers -->
 		<copy todir="${dist.sandbox.dir}/include">
 			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+		<!-- ieee1516e headers -->
+		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
+			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 
 		<!-- ========= -->
@@ -337,6 +342,11 @@
 			<fileset dir="${cpp.src.dir}/examples">
 				<include name="**/*"/>
 			</fileset>
+		</copy>
+		<!-- copy across the ieee1516e example federate -->
+		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
 	</target>
 

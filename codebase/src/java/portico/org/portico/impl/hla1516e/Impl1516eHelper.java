@@ -160,7 +160,7 @@ public class Impl1516eHelper implements ISpecHelper
 	public void checkConnected() throws NotConnected
 	{
 		if( this.fedamb == null )
-			throw new NotConnected("");
+			throw new NotConnected( "Federate has not yet called connect()" );
 	}
 
 	/**
