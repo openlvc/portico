@@ -160,7 +160,7 @@ const Octet* HLAopaqueData::get() const
 // Value returned is from encoded data.
 HLAopaqueData::operator const Octet*() const
 {
-	return *this;
+	return NULL;
 }
 
 //------------------------------------------------------------------------------------------
