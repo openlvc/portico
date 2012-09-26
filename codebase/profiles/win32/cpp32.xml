@@ -48,10 +48,12 @@
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
 
+	<!-- ========================================= -->
 	<!-- ==== IEEE-1516e Interface Properties ==== -->
-	<!-- source -->
+	<!-- ========================================= -->
 	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
 	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
+	<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>
 
 	<!-- ieee1516e build -->
 	<property name="ieee1516e.build.dir"       location="${cpp.build.dir}/ieee1516e"/>
@@ -86,7 +88,7 @@
 	<target name="compile"
 	        extensionOf="master.compile"
 	        description="Compile the Portico C++ interfaces and Testing Suite for Win32 VC10"
-	        depends="compile.ng6, compile.dlc13"/>
+	        depends="compile.ng6, compile.dlc13, compile.ieee1516e"/>
 
 	<!-- ==================================== -->
 	<!--            NGv6 Interface            -->
@@ -194,54 +196,52 @@
 	</target>
 
 	<!-- ==================================== -->
-	<!--          iee1516e Interface          -->
+	<!--         IEEE-1516e Interface         -->
 	<!-- ==================================== -->
 	<target name="compile.ieee1516e">
-		<!-- Build the fedtime DLL -->
-<!--
-		<cpp-win32 outfile="libfedtime1516e" outdir="${ieee1516e.build.dir}">
-			<fileset dir="${ieee1516e.src.dir}">
-				<include name="types/time/**/*.cpp"/>
-				<include name="types/Exceptions.cpp"/>
-			</fileset>
-			<includepath path="${ieee1516e.include.dir}"/>
-			<includepath path="${ieee1516e.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
-			<define name="BUILDING_RTI"/> <! needed to ensure Exception.cpp stuff works >
-			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
-		</cpp-win32>
--->
 		<!-- Build the main DLL -->
-<!--
 		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}">
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="**/*.cpp"/>
-				<exclude name="types/time/**/*.cpp"/>
+				<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
 			</fileset>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
 			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
 			<define name="BUILDING_RTI"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
-			<library path="${ieee1516e.build.dir}/complete" libs="fedtime1516e"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
--->
 
-		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}">
+		<!-- Build the fedtime DLL -->
+		<cpp-win32 outfile="libfedtime1516e" outdir="${ieee1516e.build.dir}">
+			<!-- Filesets and other settings -->
 			<fileset dir="${ieee1516e.src.dir}">
-				<include name="**/*.cpp"/>
+				<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
 			</fileset>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
 			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
-			<define name="BUILDING_RTI"/>
+			<!--<define name="BUILDING_RTI"/> - needed to ensure Exception.cpp stuff works -->
 			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e"/>
+			<library path="${jdk.home}/lib" libs="jvm"/>
+		</cpp-win32>
+	</target>
+
+	<!-- ==================================== -->
+	<!--      IEEE-1516e Example Federate     -->
+	<!-- ==================================== -->
+	<!-- Compiles the 1516e example federate. Doesn't do much except
+	     assure that we can actually compile and link it to Portico -->
+	<target name="compile.ieee1516e.example" depends="compile.ieee1516e">
+		<cpp-win32 outfile="ieee1516e-example"
+		           outdir="${ieee1516e.build.dir}/ieee1516e-example"
+		           type="executable">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e,fedtime1516e"/>
 			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
 	</target>
@@ -303,20 +303,25 @@
 		<mkdir dir="${dist.sandbox.dir}/include"/>
 
 		<!-- copy the RTI headers over -->
+		<!-- hla13 headers -->
 		<copy todir="${dist.sandbox.dir}/include">
 			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+		<!-- ieee1516e headers -->
+		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
+			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 
 		<!-- ========= -->
 		<!-- Libraries -->
 		<!-- ========= -->
-		<!-- copy the Portico C++ NGv6 and DLC 1.3 libraries -->
+		<!-- copy the Portico C++ libraries -->
 		<copy todir="${dist.lib.dir}">
 			<fileset dir="${ng6.complete.dir}"
 			         includes="**/*.lib,**/*.dll"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>
-			<fileset dir="${dlc13.complete.dir}"
+			<fileset dir="${ieee1516e.complete.dir}"
 			         includes="**/*.lib,**/*.dll"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>
@@ -337,6 +342,11 @@
 			<fileset dir="${cpp.src.dir}/examples">
 				<include name="**/*"/>
 			</fileset>
+		</copy>
+		<!-- copy across the ieee1516e example federate -->
+		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
 	</target>
 

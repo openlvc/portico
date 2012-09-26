@@ -18,6 +18,7 @@
 #include "ExampleFedAmb.h"
 #include "RTI/RTI1516.h"
 using namespace rti1516e;
+using namespace std;
 
 #define READY_TO_RUN L"ReadyToRun"
 
