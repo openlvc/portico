@@ -20,6 +20,7 @@ PORTICO1516E_NS_START
 // initialize our singleton - we'll lazy load it
 Runtime* Runtime::instance = NULL;
 jclass Runtime::JCLASS_BYTE_ARRAY = 0;
+jclass Runtime::JCLASS_STRING_ARRAY = 0;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -387,7 +388,21 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
  */
 void Runtime::cacheGlobalHandles() throw( RTIinternalError )
 {
-	Runtime::JCLASS_BYTE_ARRAY = jnienv->FindClass( "[B" );
+	jclass byteArray = jnienv->FindClass( "[B" );
+	Runtime::JCLASS_BYTE_ARRAY = (jclass)jnienv->NewGlobalRef( byteArray );
+	jnienv->DeleteLocalRef( byteArray ); // now that we have the global ref, we don't need this
+	if( Runtime::JCLASS_BYTE_ARRAY == NULL )
+	{
+		throw RTIinternalError( L"RTI initialization error: Failed while caching byte[] JNI reference" );
+	}
+	
+	jclass stringArray = jnienv->FindClass( "[Ljava/lang/String;" );
+	Runtime::JCLASS_STRING_ARRAY = (jclass)jnienv->NewGlobalRef( stringArray );
+	jnienv->DeleteLocalRef( stringArray );
+	if( Runtime::JCLASS_STRING_ARRAY == NULL )
+	{
+		throw RTIinternalError( L"RTI initialization error: Failed while caching String[] JNI reference" );
+	}
 }
 
 /*

@@ -160,6 +160,11 @@ void JavaRTI::initialize() throw( RTIinternalError )
 	//////////////////////////////////////////////////////////////
 	// find the ProxyRtiAmbassador class //
 	this->jproxyClass = jnienv->FindClass( "org/portico/impl/cpp1516e/ProxyRtiAmbassador" );
+	if( jproxyClass != NULL )
+	{
+		// mark the object as a global reference so that the GC doesn't suck it up on us
+		this->jproxyClass = (jclass)jnienv->NewGlobalRef( this->jproxyClass );
+	}
 	if( jproxyClass == NULL )
 	{
 		logger->fatal( "Can't locate: org.portico.impl.cpp1516e.ProxyRtiAmbassador" );

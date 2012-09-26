@@ -52,9 +52,7 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -O1 -fPIC -I$RTI_HOME/include/ieee1516e \
-	    -DRTI_USES_STD_FSTREAM \
-		-lrti1516e -L$RTI_HOME/lib \
+	g++ -g -fPIC -I$RTI_HOME/include/ieee1516e -lrti1516e -L$RTI_HOME/lib \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
 	exit;	
 fi

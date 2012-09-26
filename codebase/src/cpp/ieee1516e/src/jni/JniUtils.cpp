@@ -312,8 +312,10 @@ RegionHandleSet JniUtils::toRegionSet( JNIEnv *jnienv, jintArray handles )
  */
 jobjectArray JniUtils::fromVector( JNIEnv *jnienv, vector<wstring> stringVector )
 {
-	jclass stringClass = jnienv->FindClass( "[Ljava/lang/String;" ); //FIXME cache this handle!!
-	jobjectArray array = jnienv->NewObjectArray( stringVector.size(), stringClass, 0 );
+	// create the array into which we'll dump the string contents
+	jobjectArray array = jnienv->NewObjectArray( stringVector.size(),
+	                                             Runtime::JCLASS_STRING_ARRAY,
+	                                             0 );
 	
 	int count = 0;
 	vector<wstring>::iterator iterator;
