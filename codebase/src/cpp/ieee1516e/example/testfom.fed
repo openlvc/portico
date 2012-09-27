@@ -1,0 +1,311 @@
+;; A comment in the test file, just to show I'm cool ;;
+(FED
+  (Federation Portico-Test)
+  (FEDversion v1.3)
+  (spaces
+    (space TestSpace
+      (dimension TestDimension)
+    )
+    (space OtherSpace
+      (dimension OtherDimension)
+    )
+  )
+  ;; This is a comment, blah, blah
+  (objects 
+    (class ObjectRoot 
+      (attribute privilegeToDelete reliable timestamp)
+      (class RTIprivate)
+      (class A
+        (attribute aa reliable timestamp TestSpace) ;; more comments!
+        (attribute ab reliable timestamp TestSpace)
+        (attribute ac reliable timestamp TestSpace)
+        (class B
+	        (attribute ba reliable timestamp TestSpace)
+	        (attribute bb reliable timestamp TestSpace)
+	        (attribute bc reliable timestamp TestSpace)
+        )
+      )
+      (class BestEffortTest
+        (attribute blah best_effort timestamp)
+      )
+      (class Manager
+        (class Federation
+          (attribute FederationName reliable receive)
+          (attribute FederatesInFederation reliable receive)
+          (attribute RTIversion reliable receive)
+          (attribute FEDid reliable receive)
+          (attribute LastSaveName reliable receive)
+          (attribute LastSaveTime reliable receive)
+          (attribute NextSaveName reliable receive)
+          (attribute NextSaveTime reliable receive)
+        )
+        (class Federate
+          (attribute FederateHandle reliable receive)
+          (attribute FederateType reliable receive)
+          (attribute FederateHost reliable receive)
+          (attribute RTIversion reliable receive)
+          (attribute FEDid reliable receive)
+          (attribute TimeConstrained reliable receive)
+          (attribute TimeRegulating reliable receive)
+          (attribute AsynchronousDelivery reliable receive)
+          (attribute FederateState reliable receive)
+          (attribute TimeManagerState reliable receive)
+          (attribute FederateTime reliable receive)
+          (attribute Lookahead reliable receive)
+          (attribute LBTS reliable receive)
+          (attribute MinNextEventTime reliable receive)
+          (attribute ROlength reliable receive)
+          (attribute TSOlength reliable receive)
+          (attribute ReflectionsReceived reliable receive)
+          (attribute UpdatesSent reliable receive)
+          (attribute InteractionsReceived reliable receive)
+          (attribute InteractionsSent reliable receive)
+          (attribute ObjectsOwned reliable receive)
+          (attribute ObjectsUpdated reliable receive)
+          (attribute ObjectsReflected reliable receive)
+        )
+      )
+    )
+  )
+  (interactions 
+    (class InteractionRoot reliable timestamp
+      (class RTIprivate reliable timestamp)
+      (class X reliable timestamp TestSpace
+        (parameter xa)
+        (parameter xb)
+        (parameter xc)
+        (class Y reliable timestamp ;; note the absence of any space definition
+          (parameter ya)
+          (parameter yb)
+          (parameter yc)
+          (class Z reliable timestamp TestSpace
+            (parameter za)
+            (parameter zb)
+            (parameter zc)
+          )
+        )
+      )
+      (class DDM-Test reliable timestamp TestSpace
+        (parameter ddm-parameter)
+      )
+      (class Manager reliable receive
+        (class Federate reliable receive
+          (parameter Federate)
+          (class Request reliable receive
+            (class RequestPublications reliable receive
+            )
+            (class RequestSubscriptions reliable receive
+            )
+            (class RequestObjectsOwned reliable receive
+            )
+            (class RequestObjectsUpdated reliable receive
+            )
+            (class RequestObjectsReflected reliable receive
+            )
+            (class RequestUpdatesSent reliable receive
+            )
+            (class RequestInteractionsSent reliable receive
+            )
+            (class RequestReflectionsReceived reliable receive
+            )
+            (class RequestInteractionsReceived reliable receive
+            )
+            (class RequestObjectInformation reliable receive
+              (parameter ObjectInstance)
+            )
+          )
+          (class Report reliable receive
+            (class ReportObjectPublication reliable receive
+              (parameter NumberOfClasses)
+              (parameter ObjectClass)
+              (parameter AttributeList)
+            )
+            (class ReportObjectSubscription reliable receive
+              (parameter NumberOfClasses)
+              (parameter ObjectClass)
+              (parameter Active)
+              (parameter AttributeList)
+            )
+            (class ReportInteractionPublication reliable receive
+              (parameter InteractionClassList)
+            )
+            (class ReportInteractionSubscription reliable receive
+              (parameter InteractionClassList)
+            )
+            (class ReportObjectsOwned reliable receive
+              (parameter ObjectCounts)
+            )
+            (class ReportObjectsUpdated reliable receive
+              (parameter ObjectCounts)
+            )
+            (class ReportObjectsReflected reliable receive
+              (parameter ObjectCounts)
+            )
+            (class ReportUpdatesSent reliable receive
+              (parameter TransportationType)
+              (parameter UpdateCounts)
+            )
+            (class ReportReflectionsReceived reliable receive
+              (parameter TransportationType)
+              (parameter ReflectCounts)
+            )
+            (class ReportInteractionsSent reliable receive
+              (parameter TransportationType)
+              (parameter InteractionCounts)
+            )
+            (class ReportInteractionsReceived reliable receive
+              (parameter TransportationType)
+              (parameter InteractionCounts)
+            )
+            (class ReportObjectInformation reliable receive
+              (parameter ObjectInstance)
+              (parameter OwnedAttributeList)
+              (parameter RegisteredClass)
+              (parameter KnownClass)
+            )
+            (class Alert reliable receive
+              (parameter AlertSeverity)
+              (parameter AlertDescription)
+              (parameter AlertID)
+            )
+            (class ReportServiceInvocation reliable receive
+              (parameter Service)
+              (parameter Initiator)
+              (parameter SuccessIndicator)
+              (parameter SuppliedArgument1)
+              (parameter SuppliedArgument2)
+              (parameter SuppliedArgument3)
+              (parameter SuppliedArgument4)
+              (parameter SuppliedArgument5)
+              (parameter ReturnedArgument)
+              (parameter ExceptionDescription)
+              (parameter ExceptionID)
+            )
+          )
+          (class Adjust reliable receive
+            (class SetTiming reliable receive
+              (parameter ReportPeriod)
+            )
+            (class ModifyAttributeState reliable receive
+              (parameter ObjectInstance)
+              (parameter Attribute)
+              (parameter AttributeState)
+            )
+            (class SetServiceReporting reliable receive
+              (parameter ReportingState)
+            )
+            (class SetExceptionLogging reliable receive
+              (parameter LoggingState)
+            )
+          )
+          (class Service reliable receive
+            (class ResignFederationExecution reliable receive
+              (parameter ResignAction)
+            )
+            (class SynchronizationPointAchieved reliable receive
+              (parameter Label)
+            )
+            (class FederateSaveBegun reliable receive
+            )
+            (class FederateSaveComplete reliable receive
+              (parameter SuccessIndicator)
+            )
+            (class FederateRestoreComplete reliable receive
+              (parameter SuccessIndicator)
+            )
+            (class PublishObjectClass reliable receive
+              (parameter ObjectClass)
+              (parameter AttributeList)
+            )
+            (class UnpublishObjectClass reliable receive
+              (parameter ObjectClass)
+            )
+            (class PublishInteractionClass reliable receive
+              (parameter InteractionClass)
+            )
+            (class UnpublishInteractionClass reliable receive
+              (parameter InteractionClass)
+            )
+            (class SubscribeObjectClassAttributes reliable receive
+              (parameter ObjectClass)
+              (parameter AttributeList)
+              (parameter Active)
+            )
+            (class UnsubscribeObjectClass reliable receive
+              (parameter ObjectClass)
+            )
+            (class SubscribeInteractionClass reliable receive
+              (parameter InteractionClass)
+              (parameter Active)
+            )
+            (class UnsubscribeInteractionClass reliable receive
+              (parameter InteractionClass)
+            )
+            (class DeleteObjectInstance reliable receive
+              (parameter ObjectInstance)
+              (parameter Tag)
+              (parameter FederationTime)
+            )
+            (class LocalDeleteObjectInstance reliable receive
+              (parameter ObjectInstance)
+            )
+            (class ChangeAttributeTransportationType reliable receive
+              (parameter ObjectInstance)
+              (parameter AttributeList)
+              (parameter TransportationType)
+            )
+            (class ChangeAttributeOrderType reliable receive
+              (parameter ObjectInstance)
+              (parameter AttributeList)
+              (parameter OrderingType)
+            )
+            (class ChangeInteractionTransportationType reliable receive
+              (parameter InteractionClass)
+              (parameter TransportationType)
+            )
+            (class ChangeInteractionOrderType reliable receive
+              (parameter InteractionClass)
+              (parameter OrderingType)
+            )
+            (class UnconditionalAttributeOwnershipDivestiture reliable receive
+              (parameter ObjectInstance)
+              (parameter AttributeList)
+            )
+            (class EnableTimeRegulation reliable receive
+              (parameter FederationTime)
+              (parameter Lookahead)
+            )
+            (class DisableTimeRegulation reliable receive
+            )
+            (class EnableTimeConstrained reliable receive
+            )
+            (class DisableTimeConstrained reliable receive
+            )
+            (class EnableAsynchronousDelivery reliable receive
+            )
+            (class DisableAsynchronousDelivery reliable receive
+            )
+            (class ModifyLookahead reliable receive
+              (parameter Lookahead)
+            )
+            (class TimeAdvanceRequest reliable receive
+              (parameter FederationTime)
+            )
+            (class TimeAdvanceRequestAvailable reliable receive
+              (parameter FederationTime)
+            )
+            (class NextEventRequest reliable receive
+              (parameter FederationTime)
+            )
+            (class NextEventRequestAvailable reliable receive
+              (parameter FederationTime)
+            )
+            (class FlushQueueRequest reliable receive
+              (parameter FederationTime)
+            )
+          )
+        )
+      )
+    )
+  )
+)

@@ -55,9 +55,16 @@ public class HLA1516eTransportationTypeHandleFactory implements TransportationTy
 	{
 		return HLA1516eTransportationTypeHandleFactory.BEST_EFFORT;
 	}
-
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static TransportationTypeHandle fromString( String string )
+	{
+		if( string.equals("BEST_EFFORT") )
+			return BEST_EFFORT;
+		else
+			return RELIABLE;
+	}
 
 }

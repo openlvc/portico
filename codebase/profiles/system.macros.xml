@@ -298,7 +298,9 @@
 		<attribute name="compilerArgs"
 		           description="arg list passed directly to compiler"
 		           default="-g -O2 -fPIC -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing"/>
-		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+		<attribute name="linkerArgs"
+		           description="args passed to linker"
+		           default="-install_name @rpath/@{outfile}"/>
 
 		<!-- Child Elements -->
 		<element name="body"

@@ -14,7 +14,7 @@
  */
 #include "common.h"
 
-HLA::FedTime* RTI::FedTimeFactory::makeZero() throw (HLA::MemoryExhausted)
+HLA::FedTime* HLA::FedTimeFactory::makeZero() throw (HLA::MemoryExhausted)
 {
 	RTIfedTime* theTime = new RTIfedTime();
 	theTime->setZero();
