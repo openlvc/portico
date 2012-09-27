@@ -292,7 +292,6 @@
 			<!-- extract the deps for the one-jar style distribution -->
 			<unjar dest="${onejar.dir}">
 				<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
-				<patternset includes="**/*.class"/>
 			</unjar>
 		</else>
 		</if>
