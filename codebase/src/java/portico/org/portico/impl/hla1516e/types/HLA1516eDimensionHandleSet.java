@@ -18,6 +18,7 @@ import hla.rti1516e.DimensionHandle;
 import hla.rti1516e.DimensionHandleSet;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class HLA1516eDimensionHandleSet
        extends HashSet<DimensionHandle>
@@ -34,6 +35,24 @@ public class HLA1516eDimensionHandleSet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eDimensionHandleSet()
+	{
+		super();
+	}
+	
+	public HLA1516eDimensionHandleSet( Set<Integer> dimensions )
+	{
+		super( dimensions.size() );
+		for( Integer dimension : dimensions )
+			this.add( new HLA1516eHandle(dimension) );
+	}
+	
+	public HLA1516eDimensionHandleSet( int[] dimensions )
+	{
+		super( dimensions.length );
+		for( int dimension : dimensions )
+			add( new HLA1516eHandle(dimension) );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

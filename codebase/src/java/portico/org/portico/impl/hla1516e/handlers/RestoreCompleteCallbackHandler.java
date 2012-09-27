@@ -26,7 +26,7 @@ import org.portico.utils.messaging.MessageHandler;
  * Generates federationRestored() & federationNotRestored() callbacks to a HLA 1.3 compliant
  * federate ambassador
  */
-@MessageHandler(modules="lrc13-callback",
+@MessageHandler(modules="lrc1516e-callback",
                 keywords= {"lrc1516e"},
                 sinks="incoming",
                 priority=3,

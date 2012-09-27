@@ -105,6 +105,9 @@
 	<property name="dist.dir"               location="dist"/>
 	<property name="dist.sandbox.dir"       location="${dist.dir}/${dist.name}"/>
 	<property name="dist.lib.dir"           location="${dist.sandbox.dir}/lib"/>
+	<property name="dist.bin.dir"           location="${dist.sandbox.dir}/bin"/>
+	<property name="dist.etc.dir"           location="${dist.sandbox.dir}/etc"/>
+	<property name="dist.include.dir"       location="${dist.sandbox.dir}/include"/>
 	<property name="dist.examples.dir"      location="${dist.sandbox.dir}/examples"/>
 	<property name="dist.zip.file"          location="${dist.dir}/${dist.name}-${platform}.zip"/>
 	<property name="dist.tgz.file"          location="${dist.dir}/${dist.name}-${platform}.tar.gz"/>

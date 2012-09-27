@@ -19,6 +19,7 @@ import hla.rti1516e.FederateHandleSet;
 import hla.rti1516e.exceptions.RTIinternalError;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class HLA1516eFederateHandleSet
        extends HashSet<FederateHandle>
@@ -35,6 +36,24 @@ public class HLA1516eFederateHandleSet
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public HLA1516eFederateHandleSet()
+	{
+		super();
+	}
+	
+	public HLA1516eFederateHandleSet( Set<Integer> attributes )
+	{
+		super( attributes.size() );
+		for( Integer attribute : attributes )
+			this.add( new HLA1516eHandle(attribute) );
+	}
+	
+	public HLA1516eFederateHandleSet( int[] attributes )
+	{
+		super( attributes.length );
+		for( int attribute : attributes )
+			add( new HLA1516eHandle(attribute) );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
