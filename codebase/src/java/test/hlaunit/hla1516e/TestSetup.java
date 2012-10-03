@@ -82,7 +82,7 @@ public class TestSetup
 		}
 		catch( Exception e )
 		{
-			Assert.fail( "Couldn't created RTIambassador: " + e.getMessage(), e );
+			Assert.fail( "Couldn't create RTIambassador: " + e.getMessage(), e );
 			return null;
 		}
 	}
