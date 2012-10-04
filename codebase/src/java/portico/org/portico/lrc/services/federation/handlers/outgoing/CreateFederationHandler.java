@@ -20,12 +20,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JErrorReadingFED;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.utils.messaging.MessageContext;
@@ -62,8 +65,13 @@ public class CreateFederationHandler extends LRCMessageHandler
 	{
 		CreateFederation request = context.getRequest( CreateFederation.class, this );
 		
-		// try and parse the fed file
-		request.setModel( parseFed(request.getFedFileLocation()) );
+		// try and parse each of the fed files that we have
+		List<ObjectModel> foms = new ArrayList<ObjectModel>();
+		for( URL module : request.getFomModules() )
+			foms.add( parseFed(module) );
+		
+		// merge all the modules together and store the grand unified fom!
+		request.setModel( ModelMerger.merge(foms) );
 		
 		// check that we don't have a null name
 		if( request.getFederationName() == null )
@@ -78,12 +86,15 @@ public class CreateFederationHandler extends LRCMessageHandler
 	
 	/**
 	 * This method will check what format the fed file is in and then will parse it into an
-	 * {@link ObjectModel} or throw an exception if there is a problem. This will work on *either*
-	 * HLA 1.3 fed files or IEEE1516 XML-based fed files. Thus, both types are supported through
-	 * either interface.
+	 * {@link ObjectModel} or throw an exception if there is a problem. This will work with
+	 * either HLA 1.3 files, IEEE1516-2000 XML-based files or IEEE1516e-2010 XML-based files. 
+	 * Thus, both types are supported through either interface.
 	 */
 	private ObjectModel parseFed( URL fedLocation ) throws Exception
 	{
+		//////////////////////////////////////////////
+		// validate file exists and open to peek at // 
+		//////////////////////////////////////////////
 		try
 		{
     		// make sure the file exists
@@ -110,31 +121,50 @@ public class CreateFederationHandler extends LRCMessageHandler
 		{
 			throw new JCouldNotOpenFED( e.getMessage(), e );
 		}
-		
-		boolean hla13 = true;
+
+		/////////////////////////////////////////////////////////////////////////
+		// read the first few lines into a buffer so we can use them to figure //
+		// out whether we are 1516 or 1516e                                    //
+		/////////////////////////////////////////////////////////////////////////
+		StringBuilder builder = new StringBuilder();
 		try
 		{
-			// read the first few characters from the location, if it is an XML file, use the
-			// 1516 parser, otherwise use the OMT format parser
+			// read the first few lines from the location into the buffer
 			InputStream stream = fedLocation.openStream();
 			BufferedReader reader = new BufferedReader( new InputStreamReader(stream) );
-			String line = reader.readLine();
-			while( line.trim().equals("") ) // ignore non-interesting lines
-				line = reader.readLine();
-			
-			if( line.startsWith("<?xml") )
-				hla13 = false;
+			for( int i = 0; i < 5; i++ )
+			{
+				String line = reader.readLine();
+				// ignore non-interesting lines or comment lines
+				while( line.trim().equals("") || line.trim().startsWith("<!") )
+					line = reader.readLine();
+				
+				builder.append( line );
+			}
 		}
 		catch( Exception e )
 		{
 			throw new JErrorReadingFED( e.getMessage(), e );
 		}
 		
-		if( hla13 )
+		// direct the FOM to the approrpiate parser
+		String fomheader = builder.toString();
+		if( fomheader.startsWith("<?xml") == false )
 		{
-			// parse with HLA 1.3 parser
+			// parse with the HLA 1.3 parser
 			logger.debug( "Parsing FED file (format=hla13): " + fedLocation );
 			return org.portico.impl.hla13.fomparser.FOM.parseFOM( fedLocation );
+		}
+
+		////////////////////////////////////////////////////
+		// parse the FOM with the approrpiate 1516 parser //
+		////////////////////////////////////////////////////
+		// we must have one of the 1516 types, but which?
+		if( fomheader.contains("IEEE1516-2010") || fomheader.contains("<modelIdentification>") )
+		{
+			// if its a 1516-2010 (Evolved) FOM
+			logger.debug( "Parsing FED file (format=ieee1516e): " + fedLocation );
+			return org.portico.impl.hla1516e.fomparser.FOM.parseFOM( fedLocation );
 		}
 		else
 		{

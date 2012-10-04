@@ -14,7 +14,27 @@
  */
 package org.portico.lrc.model;
 
+import org.portico.lrc.compat.JErrorReadingFED;
+
 /**
  * Enumeration representing the order property of various FOM elements 
  */
-public enum Order { TIMESTAMP, RECEIVE };
+public enum Order
+{
+	TIMESTAMP,
+	RECEIVE;
+
+	/**
+	 * If the provided string matches (ignoring case) the name of either
+	 * order type, that type is returned. Otherwise an exception is thrown
+	 */
+	public static Order fromFomString( String fomString ) throws JErrorReadingFED
+	{
+		if( fomString.equalsIgnoreCase("timestamp") )
+			return TIMESTAMP;
+		else if( fomString.equalsIgnoreCase("receive") )
+			return RECEIVE;
+		else
+			throw new JErrorReadingFED( "Unsupported Order found: "+fomString );
+	}
+};

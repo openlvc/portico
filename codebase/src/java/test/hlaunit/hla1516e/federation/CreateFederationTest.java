@@ -72,14 +72,21 @@ public class CreateFederationTest extends Abstract1516eTest
 		super.afterClass();
 	}
 	
-	//////////////////////////////////////////
-	// TEST: (valid) testCreateFederation() //
-	//////////////////////////////////////////
+	// The list below contains all the 1516e createFederation overloads
+	//  * createFederation( String, URL )
+	//  * createFederation( String, URL[] )
+	//  * createFederation( String, URL[], URL mim )
+	//  * createFederation( String, URL[], String time )
+	//  * createFederation( String, URL[], URL mim, String time )
+	
+	//////////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithSingleModule() //
+	//////////////////////////////////////////////////////////
 	@Test
-	public void testCreateFederation()
+	public void testCreateFederationWithSingleModule()
 	{
 		// create a link to the FOM //
-		URL fom = ClassLoader.getSystemResource( "fom/testfom.xml" );
+		URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" );
 		
 		// try and create a valid federation //
 		try
@@ -106,7 +113,33 @@ public class CreateFederationTest extends Abstract1516eTest
 			Assert.fail( "Wrong exception while testing creation of existing federation", e );
 		}
 	}
-	
+
+	/////////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithManyModules() //
+	/////////////////////////////////////////////////////////
+	@Test(groups="temp")
+	public void testCreateFederationWithManyModules()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Could not create valid federation", e );
+		}
+	}
+
 	////////////////////////////////////////////////////////
 	// TEST: testCreateFederationWithInvalidFomLocation() //
 	////////////////////////////////////////////////////////

@@ -17,4 +17,21 @@ package org.portico.lrc.model;
 /**
  * Enumeration representing the transport of the various FOM types 
  */
-public enum Transport { RELIABLE, BEST_EFFORT };
+public enum Transport
+{
+	RELIABLE,
+	BEST_EFFORT;
+
+	/**
+	 * If the given FOM string is "HLAreliable", RELIABLE is returned. If it is "HLAbestEffort"
+	 * then BEST_ERRORT is returned. If the type is not known, we just use best effort as Portico
+	 * basically ignores the transport type anyway.
+	 */
+	public static Transport fromFomString( String fomString )
+	{
+		if( fomString.equalsIgnoreCase("HLAreliable") )
+			return RELIABLE;
+		else
+			return BEST_EFFORT;
+	}
+};

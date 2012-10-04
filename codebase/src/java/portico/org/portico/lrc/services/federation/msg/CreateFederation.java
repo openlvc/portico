@@ -15,6 +15,8 @@
 package org.portico.lrc.services.federation.msg;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
@@ -35,16 +37,16 @@ public class CreateFederation extends PorticoMessage
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String federationName;
-	private transient URL fedfile;
+	private transient List<URL> fomModules;
 	private ObjectModel objectModel;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-
 	public CreateFederation()
 	{
 		super();
+		this.fomModules = new ArrayList<URL>();
 	}
 	
 	public CreateFederation( String federationName, ObjectModel model )
@@ -58,7 +60,15 @@ public class CreateFederation extends PorticoMessage
 	{
 		this();
 		this.federationName = federationName;
-		this.fedfile = fedfileLocation;
+		this.fomModules.add( fedfileLocation );
+	}
+	
+	public CreateFederation( String federationName, URL[] fomModules )
+	{
+		this();
+		this.federationName = federationName;
+		for( URL module : fomModules )
+			this.fomModules.add( module );
 	}
 
 	//----------------------------------------------------------
@@ -84,14 +94,9 @@ public class CreateFederation extends PorticoMessage
 		return this.objectModel;
 	}
 	
-	public URL getFedFileLocation()
+	public List<URL> getFomModules()
 	{
-		return this.fedfile;
-	}
-	
-	public void setFedFileLocation( URL fedFileLocation )
-	{
-		this.fedfile = fedFileLocation;
+		return this.fomModules;
 	}
 
 	//----------------------------------------------------------

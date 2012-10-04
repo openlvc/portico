@@ -375,7 +375,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
 		// attempt to parse the FOM //
-		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
+		CreateFederation request = new CreateFederation( executionName, fomModules );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
