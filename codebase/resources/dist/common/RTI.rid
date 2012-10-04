@@ -134,7 +134,7 @@
 #        implementations are provided with Portico: "jgroups" (default) and "jvm". If you have
 #        a different binding, you can specify the fully-qualified name of the class that implements
 #        IConnection (e.g. an alternate way to specify the default JGroups communications binding
-#        would be "org.portico.bindings.jgroups.LrcConnection")
+#        would be "org.portico.bindings.jgroups.JGroupsConnection")
 #        DEFAULT = jgroups
 #
 # portico.connection = jgroups

@@ -103,6 +103,11 @@ public class Impl1516eHelper implements ISpecHelper
 		return this.state;
 	}
 	
+	public LRC getLrc()
+	{
+		return this.lrc;
+	}
+
 	public ObjectModel getFOM()
 	{
 		return this.state.getFOM();

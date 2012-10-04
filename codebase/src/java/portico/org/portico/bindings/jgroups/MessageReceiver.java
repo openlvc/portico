@@ -1,5 +1,5 @@
 /*
- *   Copyright 2009 The Portico Project
+ *   Copyright 2012 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -23,10 +23,12 @@ import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
 
 /**
- * Default implementation of {@link JGReceiver} that passes all incoming messages into the
- * message queue of the associated {@link LRC}.
+ * This class is designed route incoming messages to the approrpiate location. If the
+ * connection represents a joined federate, this class will have a reference to the
+ * LRC and will route all incoming messages there. If this associated connection has
+ * not joined the federation yet, all messages will be dropped.
  */
-public class KernelRoutingJGReceiver implements JGReceiver
+public class MessageReceiver
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -41,21 +43,30 @@ public class KernelRoutingJGReceiver implements JGReceiver
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public KernelRoutingJGReceiver( LRC lrc )
+	public MessageReceiver()
 	{
-		this.lrc = lrc;
-		this.logger = lrc.getLrcLogger();
+		this.lrc = null;
+		this.logger = Logger.getLogger( "portico.lrc.jgroups" );
 	}
-	
+
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	public void setWrapper( ChannelWrapper wrapper )
+	public void linkToLRC( LRC lrc )
 	{
+		this.lrc = lrc;
+	}
+	
+	public void unlink()
+	{
+		this.lrc = null;
 	}
 
 	public void receiveAsynchronous( Message message )
 	{
+		if( this.lrc == null )
+			return; // ignore
+		
 		try
 		{
     		// fetch the payload from the message
@@ -71,7 +82,7 @@ public class KernelRoutingJGReceiver implements JGReceiver
 		}
 		catch( Exception e )
 		{
-			logger.error( "Error processing receive message: " + e.getMessage(), e );
+			logger.error( "Error processing received message: " + e.getMessage(), e );
 		}
 	}
 	
@@ -82,6 +93,9 @@ public class KernelRoutingJGReceiver implements JGReceiver
 	 */
 	public Object receiveSynchronous( Message message )
 	{
+		if( this.lrc == null )
+			return null; // ignore
+
 		try
 		{
 			// fetch the payload from the message

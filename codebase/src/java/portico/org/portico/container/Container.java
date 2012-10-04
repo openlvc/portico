@@ -118,6 +118,29 @@ public class Container
 		// stop the daemons
 		this.daemonManager.stopDaemons();
 	}
+
+	/**
+	 * Shutdown all the active LRCs with extreme prejudice. This is really only used by the
+	 * testing framework which has to clean up all LRCs to avoid connection resource leaks
+	 * at the end of each test.
+	 */
+	public void killLrcs()
+	{
+		for( LRC lrc : activeLrcs.values() )
+		{
+			try
+			{
+				lrc.stopLrc();
+				this.daemonManager.notifyLrcDestroyed( lrc );
+			}
+			catch( Exception e )
+			{
+				logger.error( "Received exception while terminating LRC" );
+			}
+		}
+		
+		this.activeLrcs.clear();
+	}
 	
 	/**
 	 * Get a list of all locations on the user plugin path. This can include the user specified

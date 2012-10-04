@@ -1,59 +1,132 @@
-<config>
-    <UDP mcast_addr="${portico.jgroups.udp.address:228.10.10.10}"
+<config xmlns="urn:org:jgroups"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/JGroups-3.1.xsd">
+
+    <UDP bind_addr="${portico.jgroups.udp.bindAddress:GLOBAL}"
+         bind_interface_str="${portico.jgroups.udp.nic:}"
+         receive_on_all_interfaces="${portico.jgroups.debug.receiveOnAll:}"
+         mcast_group_addr="${portico.jgroups.udp.address:228.10.10.10}"
          mcast_port="${portico.jgroups.udp.port:20913}"
-		 bind_addr="${portico.jgroups.udp.bindAddress:}"
-		 receive_interfaces="${portico.jgroups.udp.receiveInterfaces:}"
-		 send_interfaces="${portico.jgroups.udp.sendInterfaces:}"
-         tos="8"
-         ucast_recv_buf_size="20000000"
-         ucast_send_buf_size="640000"
-         mcast_recv_buf_size="${portico.jgroups.udp.receiveBuffer:25000000}"
-         mcast_send_buf_size="${portico.jgroups.udp.sendBuffer:640000}"
+         mcast_recv_buf_size="${portico.jgroups.udp.receiveBuffer:8M}"
+         mcast_send_buf_size="${portico.jgroups.udp.sendBuffer:640K}"
+         ucast_recv_buf_size="8M"
+         ucast_send_buf_size="640K"
          loopback="true"
          discard_incompatible_packets="true"
+         log_discard_msgs="${portico.jgroups.debug.logDicarded:false}"
+         
          enable_bundling="${portico.jgroups.bundling:true}"
-         max_bundle_size="${portico.jgroups.bundling.maxSize:63000}"
+         max_bundle_size="${portico.jgroups.bundling.maxSize:63K}"
          max_bundle_timeout="${portico.jgroups.bundling.maxTime:25}"
-         use_incoming_packet_handler="true"
-         ip_ttl="${portico.jgroups.udp.ip_ttl:2}"
-         enable_diagnostics="${portico.jgroups.udp.diagnostics:false}"
-         thread_naming_pattern="cl"
-         use_concurrent_stack="true"
+
+         timer_type="new"
+         timer.min_threads="1"
+         timer.max_threads="10"
+         timer.keep_alive_time="3000"
+         timer.queue_max_size="500"
+
          thread_pool.enabled="true"
          thread_pool.min_threads="2"
          thread_pool.max_threads="8"
          thread_pool.keep_alive_time="5000"
          thread_pool.queue_enabled="true"
-         thread_pool.queue_max_size="1000"
+         thread_pool.queue_max_size="10000"
          thread_pool.rejection_policy="Run"
+
          oob_thread_pool.enabled="true"
          oob_thread_pool.min_threads="1"
-         oob_thread_pool.max_threads="8"
+         oob_thread_pool.max_threads="1"
          oob_thread_pool.keep_alive_time="5000"
-         oob_thread_pool.queue_enabled="false"
+         oob_thread_pool.queue_enabled="true"
          oob_thread_pool.queue_max_size="100"
-         oob_thread_pool.rejection_policy="Run"/>
-    <PING timeout="2000" break_on_coord_rsp="true"/>
-    <!--<FD_SOCK/>-->
+         oob_thread_pool.rejection_policy="Run"
+    />
+
+    <!-- Discovery protocol. Timeout of 5 seconds, with a random stagger of
+         100ms applied to ensure people don't all fire up at once -->
+    <PING timeout="5000"
+          stagger_timeout="100"
+          num_initial_members="1"
+          break_on_coord_rsp="true"/>
+
+    <!-- When federations go rouge, merge them back together. This will really
+         get hairy if they've got differnet FOMs, as merging state can cause all
+         sorts of pain I don't want to think about, so we just don't do it. I'd
+         expect to see all sorts of ObjectClassNotKnown errors and the like from
+         diverging FOMs in this case, but it's an edge case, so who cares, right? -->
+    <MERGE3 max_interval="30000" min_interval="10000"/>
+
+    <!-- Detect when a federate has gone tits-up with a simple heartbeat algorithm.
+         We can turn on countMessages which will treat all messages received from a
+         federate as a heartbeat, but this add overhead and apparently isn't
+         recommended. Leave it off for now -->
     <FD_ALL interval="${portico.jgroups.fd.interval:3000}"
-            timeout="${portico.jgroups.fd.timeout:7000}"/>
-    <!--<FD timeout="${portico.jgroups.fd.timeout:10000}" max_tries="5" shun="true"/>-->
+            timeout="${portico.jgroups.fd.timeout:8500}"
+            msg_counts_as_heartbeat="${portico.jgroups.fd.countMessages:false}"/>
+
+    <!-- More failure detection. This one has a ring of TCP sockets where
+         neighbours link up and catch when the socket closes. Not sure if
+         this is a good things or not for our federation, but let's say yes
+         for now and disable it later if we want -->
+    <!--<FD_SOCK/>-->
+
+    <!-- When we think we have a dead federate, as determined by the FD protocols,
+         we need to finally verify this. VERIFY_SUSPECT will ping the suspect,
+         waiting at most timeout millis before giving up and calling it dead -->
     <VERIFY_SUSPECT timeout="1500"/>
+
+    <!-- Used internally to block threads during state transfer -->
     <BARRIER/>
-    <pbcast.NAKACK use_stats_for_retransmission="false"
-                   exponential_backoff="150"
-                   use_mcast_xmit="true"
-                   gc_lag="0"
-                   retransmit_timeout="50,300,600,1200"
-                   discard_delivered_msgs="true"/>
-    <UNICAST timeout="300,600,1200"/>
-    <pbcast.STABLE stability_delay="1000" desired_avg_gossip="50000" max_bytes="1000000"/>
-    <VIEW_SYNC avg_send_interval="60000"/>
-    <pbcast.GMS print_local_addr="false" join_timeout="3000" shun="false" view_bundling="true"/>
-    <FC max_credits="${portico.jgroups.flow.credits:1000000}"
-        min_threshold="${portico.jgroups.flow.threshold:0.50}"/>
-    <FRAG2 frag_size="62464"/>
-    <!--pbcast.STREAMING_STATE_TRANSFER /-->
+
+    <!-- NAKACK2 provides the reliable, ordered properties to our comms -->
+    <pbcast.NAKACK2 xmit_interval="1000"
+                    xmit_table_num_rows="100"
+                    xmit_table_msgs_per_row="2000"
+                    xmit_table_max_compaction_time="30000"
+                    max_msg_batch_size="500"
+                    use_mcast_xmit="true"
+                    discard_delivered_msgs="true"/>
+
+    <!-- UNICAST2 delivers reliable and ordered messaging for unicast UDP messages -->
+    <UNICAST2 max_bytes="20M"
+              xmit_table_num_rows="100"
+              xmit_table_msgs_per_row="1000"
+              xmit_table_max_compaction_time="30000"
+              max_msg_batch_size="500"/>
+
+    <!-- RSVP causes message send with the RSVP header to block the sending call
+         until all recipients have acknowledged they got it. If ack_on_delivery
+         is set true, an ACK is only be sent after the message has been processed -->
+    <RSVP ack_on_delivery="true" throw_exception_on_timeout="true"/>
+
+    <!-- The STABLE protocol helps ensure only the minimum number of messages are
+         kept around in case they are needed for retransmission.  -->
+    <pbcast.STABLE max_bytes="4M"
+                   stability_delay="2000"
+                   desired_avg_gossip="60000"
+                   cap="0.1"/>
+
+    <!-- GMS provides generation Group Memebership Services, handling group join
+         requests, view updates and changes and anything membership related -->
+    <pbcast.GMS print_local_addr="true"
+                join_timeout="${portico.jgroups.gms.jointimeout:3000}"
+                view_bundling="true"
+                max_bundling_time="1000"
+                merge_timeout="5000"
+                resume_task_timeout="15000"/>
+
+    <!-- Flow control prevents any single sender overwhelming slower receivers
+         with messages which could cause them to be dropped -->
+    <UFC max_credits="4M" min_threshold="0.4"/>
+    <MFC max_credits="4M" min_threshold="0.4"/>
+
+    <!-- FRAG2 breaks up large messages into smaller sizes so they can be send in chunks -->
+    <FRAG2 frag_size="60k"/>
+
+    <!-- Handles streaming state transfer when applications join a channel -->
     <pbcast.STATE_TRANSFER/>
-    <!-- pbcast.FLUSH  /-->
+
+    <!-- FLUSH forces all group members to send all pending messages prior to
+         some event such as the joining of a new member -->
+    <pbcast.FLUSH retry_timeout="3000"/>
 </config>
