@@ -17,7 +17,6 @@ package org.portico.impl.cpp1516e;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Properties;
