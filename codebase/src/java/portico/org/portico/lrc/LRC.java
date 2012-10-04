@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.portico.bindings.IConnection;
-import org.portico.bindings.jgroups.LrcConnection;
+import org.portico.bindings.jgroups.JGroupsConnection;
 import org.portico.bindings.jvm.JVMConnection;
 import org.portico.container.Container;
 import org.portico.impl.HLAVersion;
@@ -119,6 +119,7 @@ public class LRC
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	protected Logger logger;
+	private boolean isStarted;
 	
 	// Messaging Infrastructure Information //
 	protected MessageSink outgoing;
@@ -204,7 +205,7 @@ public class LRC
 		logger.info( "LRC initialized (HLA version: "+specHelper.getHlaVersion()+")" );
 		
 		// now that we're ready, open the connection so that we can start processing messages
-		logger.info( "Opening LrcConnection" );
+		logger.info( "Opening LRC Connection" );
 		startLrc();
 	}
 	
@@ -286,7 +287,7 @@ public class LRC
 	 * provided. Currently supported aliases are:
 	 * <ul>
 	 *   <li>"jvm" for {@link JVMConnection}</li>
-	 *   <li>"jgroups" for {@link org.portico.bindings.jgroups.LrcConnection JGroups Connection}
+	 *   <li>"jgroups" for {@link org.portico.bindings.jgroups.JGroupsConnection JGroups Connection}
 	 *       (the default)</li>
 	 * </ul>
 	 * 
@@ -305,7 +306,7 @@ public class LRC
 		if( property.equalsIgnoreCase("jvm") )
 			return JVMConnection.class;
 		else if( property.equalsIgnoreCase("jgroups") )
-			return LrcConnection.class;
+			return JGroupsConnection.class;
 		
 		// we don't have one of the aliases, try and find the class and load it
 		logger.trace( "Trying to load connection class: " + property );
@@ -333,16 +334,6 @@ public class LRC
 	 */
 	public void reinitialize()
 	{
-		try
-		{
-			// disconnect the connection
-			this.connection.disconnect();
-		}
-		catch( JRTIinternalError jrtie )
-		{
-			logger.error( "Error while reinitializing LRC: "+jrtie.getMessage(), jrtie );
-		}
-		
 		// reinitialize the state
 		state.reinitialize();
 		
@@ -356,6 +347,9 @@ public class LRC
 	 */
 	public void startLrc()
 	{
+		if( this.isStarted() )
+			return;
+		
 		try
 		{
 			this.connection.connect();
@@ -365,6 +359,8 @@ public class LRC
 			logger.error( "Error starting LRC: " + rtie.getMessage(), rtie );
 			throw new RuntimeException( rtie );
 		}
+		
+		this.isStarted = true;
 	}
 	
 	/**
@@ -373,6 +369,9 @@ public class LRC
 	 */
 	public void stopLrc()
 	{
+		if( this.isStarted() == false )
+			return;
+
 		try
 		{
 			this.connection.disconnect();
@@ -382,6 +381,13 @@ public class LRC
 			logger.error( "Error stopping LRC: " + rtie.getMessage(), rtie );
 			throw new RuntimeException( rtie );
 		}
+		
+		this.isStarted = false;
+	}
+
+	public boolean isStarted()
+	{
+		return this.isStarted;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////

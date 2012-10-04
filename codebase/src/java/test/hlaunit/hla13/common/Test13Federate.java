@@ -55,6 +55,10 @@ public class Test13Federate
 	//----------------------------------------------------------
 	public static Set<Test13Federate> TICKSET = new HashSet<Test13Federate>();
 
+	/** Set of all active federates - added here on construction so we can destroy with
+	    the {@link #killActiveFederates()} method at the end of a test class. */
+	private static Set<Test13Federate> ACTIVE_FEDERATES = new HashSet<Test13Federate>();
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
@@ -86,6 +90,8 @@ public class Test13Federate
 		this.rtiamb = TestSetup.createRTIambassador();
 		this.fedamb = new Test13FederateAmbassador( this );
 		this.saveData = new HashMap<String,byte[]>();
+		
+		Test13Federate.ACTIVE_FEDERATES.add( this );
 	}
 
 	//----------------------------------------------------------
@@ -2874,4 +2880,13 @@ public class Test13Federate
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static void killActiveFederates()
+	{
+		for( Test13Federate federate : ACTIVE_FEDERATES )
+		{
+			((Rti13Ambassador)federate.rtiamb).getHelper().getLrc().stopLrc();
+		}
+		
+		ACTIVE_FEDERATES.clear();
+	}
 }

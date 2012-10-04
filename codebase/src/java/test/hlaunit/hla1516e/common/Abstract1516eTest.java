@@ -65,6 +65,7 @@ public abstract class Abstract1516eTest
 	protected void afterClass()
 	{
 		this.defaultFederate.quickDisconnect();
+		TestFederate.killActiveFederates();
 	}
 	
 	protected void expectedException( Class<?>... expected )

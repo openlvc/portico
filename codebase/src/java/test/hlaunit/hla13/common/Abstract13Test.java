@@ -73,6 +73,7 @@ public abstract class Abstract13Test
 	
 	protected void afterClass()
 	{
+		Test13Federate.killActiveFederates();
 	}
 	
 	protected void expectedException( Class<?>... expected )

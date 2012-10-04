@@ -54,7 +54,7 @@
 	     for a library can be changed in a single spot. The properties should be used
 	     when defining paths and the like later in the build file -->
 	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
-	<property name="jgroups.dir"           location="${lib.dir}/jgroups/JGroups-2.8.0.GA.bin"/>
+	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-3.2.0-beta1"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
 	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
 
