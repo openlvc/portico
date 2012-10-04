@@ -16,7 +16,7 @@ package hlaunit;
 
 import java.io.File;
 
-import org.portico.bindings.jgroups.JGProperties;
+import org.portico.bindings.jgroups.JGroupsProperties;
 import org.portico.bindings.jvm.JVMConnection;
 import org.portico.lrc.PorticoConstants;
 import org.portico.utils.logging.Log4jConfigurator;
@@ -96,8 +96,14 @@ public class CommonSetup
 			{
 				// set the system property that contains the connection implementation
 				System.setProperty( PorticoConstants.PROPERTY_CONNECTION,
-				                    "org.portico.bindings.jgroups.LrcConnection" );
-				TIMEOUT = (JGProperties.RESPONSE_TIMEOUT*2);
+				                    "org.portico.bindings.jgroups.JGroupsConnection" );
+				TIMEOUT = 100;
+
+				// set the system property to reduce the jgroups GMS discovery timeout
+				// this can take a while and really slows the tests down, but seeing as
+				// we're running everything off the same machine, there is little worry
+				// about needing a bigger timeout to discover an active group
+				System.setProperty( JGroupsProperties.PROP_JGROUPS_GMS_TIMEOUT, "100" );
 			}
 			else if( binding.equals("ptalk") )
 			{

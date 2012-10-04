@@ -192,7 +192,8 @@ public class PorticoConstants
 	public static final long CONNECTION_INFINITE_TIMEOUT = 0;
 	
 	/** The default connection implementation class */
-	public static final String CONNECTION_DEFAULT_IMPL = "org.portico.bindings.jgroups.LrcConnection";
+	public static final String CONNECTION_DEFAULT_IMPL =
+		"org.portico.bindings.jgroups.JGroupsConnection";
 	
 	//////////////////////////////////////////////
 	///////// Portico TCP Property Names /////////

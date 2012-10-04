@@ -1,5 +1,5 @@
 /*
- *   Copyright 2008 The Portico Project
+ *   Copyright 2012 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -18,8 +18,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.portico.bindings.ConnectedRoster;
+import org.portico.bindings.jgroups.channel.FederationManifest;
 import org.portico.lrc.model.ObjectModel;
 
+/**
+ * Portico bindings each have to provide an implementation of the {@link ConnectedRoster}
+ * interface so that the framework can access membership information in a connection-neutral
+ * manner. This class provides that implementation for the JGroups binding, wrapping
+ * information from a {@link FederationManifest}.
+ */
 public class JGroupsRoster implements ConnectedRoster
 {
 	//----------------------------------------------------------

@@ -16,7 +16,9 @@ package hlaunit.hla1516e.common;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.portico.impl.hla1516e.Rti1516eAmbassador;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
@@ -46,6 +48,9 @@ public class TestFederate
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	/** Set of all active federates - added here on construction so we can destroy with
+	    the {@link #killActiveFederates()} method at the end of a test class. */
+	private static Set<TestFederate> ACTIVE_FEDERATES = new HashSet<TestFederate>();
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -76,6 +81,8 @@ public class TestFederate
 		this.simpleName = this.test.getClass().getSimpleName();
 		this.rtiamb = TestSetup.createRTIambassador();
 		this.fedamb = new TestFederateAmbassador( this );
+		
+		ACTIVE_FEDERATES.add( this );
 	}
 
 	//----------------------------------------------------------
@@ -1531,5 +1538,13 @@ public class TestFederate
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-
+	public static void killActiveFederates()
+	{
+		for( TestFederate federate : ACTIVE_FEDERATES )
+		{
+			((Rti1516eAmbassador)federate.rtiamb).getHelper().getLrc().stopLrc();
+		}
+		
+		ACTIVE_FEDERATES.clear();
+	}
 }
