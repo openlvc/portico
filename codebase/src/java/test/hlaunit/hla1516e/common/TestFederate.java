@@ -37,6 +37,7 @@ import hla.rti1516e.ResignAction;
 import hla.rti1516e.RTIambassador;
 import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
+import hla.rti1516e.exceptions.NameNotFound;
 import hlaunit.hla1516e.TestSetup;
 
 /**
@@ -817,7 +818,30 @@ public class TestFederate
 			return -1;
 		}
 	}
-	
+
+	/**
+	 * Ensure that when we try and fetch the class handle with the given name that it is
+	 * missing from the FOM (as shown by the throwing of a NameNotFound exception). If we
+	 * are able to get the handle, or a different exception is thrown, fail the test.
+	 */
+	public void quickOCHandleMissing( String classname )
+	{
+		try
+		{
+			rtiamb.getObjectClassHandle( classname );
+			Assert.fail( "Expected exception while getting invalid handle for class: "+classname );
+		}
+		catch( NameNotFound nnf )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Wrong exception while getting invalid class handle. Received ["+
+			             e.getClass().getSimpleName()+"] but expected [NameNotFound]", e );
+		}
+	}
+
 	/**
 	 * This method is roughly the same as {@link #quickOCHandle(String)}, except that it is for 
 	 * an attribute handle (rather than a class handle)
@@ -854,7 +878,39 @@ public class TestFederate
 			return -1;
 		}
 	}
-	
+
+	/**
+	 * Ensure that when we try and fetch the attribute handle with the given name that it is
+	 * missing from the FOM (as shown by the throwing of a NameNotFound exception). If we are
+	 * able to successfully fetch the handle, or a different exception is thrown, fail the test.
+	 * <p/>
+	 * Note that the class MUST be present. If we get an exception trying to fetch the class,
+	 * that will also fail the test, but it is not the failure we want.
+	 */
+	public void quickACHandleMissing( String className, String attributeName )
+	{
+		// get the object class handle first
+		int classHandle = quickOCHandle( className );
+		
+		try
+		{
+			rtiamb.getAttributeHandle( TypeFactory.getObjectClassHandle(classHandle),
+			                           attributeName );
+
+			Assert.fail( "Expected exception while getting invalid handle for attribute: "+
+			             className+"."+attributeName );
+		}
+		catch( NameNotFound nnf )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Wrong exception while getting invalid attribute handle. Received ["+
+			             e.getClass().getSimpleName()+"] but expected [NameNotFound]", e );
+		}
+	}
+
 	/**
 	 * This method fetches the class handle for the interaction class of the given name. If there
 	 * is an exception while this is happening, Assert.fail() is used to kill the test.
@@ -869,6 +925,30 @@ public class TestFederate
 		{
 			Assert.fail( "Exception while fecthing interaction handle for [" + className + "]", e );
 			return -1;
+		}
+	}
+
+	/**
+	 * Ensure that when we try and fetch the interaction handle with the given name that it
+	 * is missing from the FOM (as shown by the throwing of a NameNotFound exception). If we
+	 * are able to get the handle, or a different exception is thrown, fail the test.
+	 */
+	public void quickICHandleMissing( String classname )
+	{
+		try
+		{
+			rtiamb.getObjectClassHandle( classname );
+			Assert.fail( "Expected exception while getting invalid handle for interaciton: "+
+			             classname );
+		}
+		catch( NameNotFound nnf )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Wrong exception while getting invalid interaction handle. Received ["+
+			             e.getClass().getSimpleName()+"] but expected [NameNotFound]", e );
 		}
 	}
 
@@ -889,6 +969,38 @@ public class TestFederate
 			Assert.fail( "Exception while fetching parameter handle for [" + paramName +
 			             "] of class [" + className + "]", e );
 			return -1;
+		}
+	}
+
+	/**
+	 * Ensure that when we try and fetch the parameter handle with the given name that it is
+	 * missing from the FOM (as shown by the throwing of a NameNotFound exception). If we are
+	 * able to successfully fetch the handle, or a different exception is thrown, fail the test.
+	 * <p/>
+	 * Note that the class MUST be present. If we get an exception trying to fetch the class,
+	 * that will also fail the test, but it is not the failure we want.
+	 */
+	public void quickPCHandleMissing( String className, String parameterName )
+	{
+		// get the object class handle first
+		int classHandle = quickICHandle( className );
+		
+		try
+		{
+			rtiamb.getParameterHandle( TypeFactory.getInteractionHandle(classHandle),
+			                           parameterName );
+
+			Assert.fail( "Expected exception while getting invalid handle for parameter: "+
+			             className+"."+parameterName );
+		}
+		catch( NameNotFound nnf )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Wrong exception while getting invalid parameter handle. Received ["+
+			             e.getClass().getSimpleName()+"] but expected [NameNotFound]", e );
 		}
 	}
 

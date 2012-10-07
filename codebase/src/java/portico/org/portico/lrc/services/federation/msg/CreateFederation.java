@@ -70,6 +70,13 @@ public class CreateFederation extends PorticoMessage
 		for( URL module : fomModules )
 			this.fomModules.add( module );
 	}
+	
+	public CreateFederation( String federationName, List<URL> fomModules )
+	{
+		this();
+		this.federationName = federationName;
+		this.fomModules.addAll( fomModules );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

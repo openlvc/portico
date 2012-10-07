@@ -63,6 +63,7 @@ public class CreateFederationTest extends Abstract1516eTest
 	@AfterMethod(alwaysRun=true)
 	public void afterMethod()
 	{
+		defaultFederate.quickResignTolerant();
 		defaultFederate.quickDestroyTolerant( defaultFederate.simpleName );
 	}
 	
@@ -71,19 +72,34 @@ public class CreateFederationTest extends Abstract1516eTest
 	{
 		super.afterClass();
 	}
+
+	//////////////////////////////////////////////////////////////////////////////
+	// IEEE-1516e specifies a number of createFederationOverloads. The tests    //
+	// are split up based on each overload in order to keep them in some sense  //
+	// and order. Some overloads just call into others, so some of the testing  //
+	// is redundant, but still important in detecting regressions incase we     //
+	// have to split some of those implementations out on their own.            //
+	//                                                                          //
+	// The list below contains all the 1516e createFederation overloads         //
+	//    * createFederation( String, URL )                                     //
+	//    * createFederation( String, URL[] )                                   //
+	//    * createFederation( String, URL[], URL mim )                          //
+	//    * createFederation( String, URL[], String time )                      //
+	//    * createFederation( String, URL[], URL mim, String time )             //
+	//                                                                          //
+	//////////////////////////////////////////////////////////////////////////////
+
+	// TODO: Add tests for NotConnected
 	
-	// The list below contains all the 1516e createFederation overloads
-	//  * createFederation( String, URL )
-	//  * createFederation( String, URL[] )
-	//  * createFederation( String, URL[], URL mim )
-	//  * createFederation( String, URL[], String time )
-	//  * createFederation( String, URL[], URL mim, String time )
+	//////////////////////////////////////////////////////////////////////////////
+	// createFederationExecution( String, URL ) //////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
 	
-	//////////////////////////////////////////////////////////
-	// TEST: (valid) testCreateFederationWithSingleModule() //
-	//////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithSingleFom() //
+	///////////////////////////////////////////////////////
 	@Test
-	public void testCreateFederationWithSingleModule()
+	public void testCreateFederationWithSingleFom()
 	{
 		// create a link to the FOM //
 		URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" );
@@ -111,32 +127,6 @@ public class CreateFederationTest extends Abstract1516eTest
 		catch( Exception e )
 		{
 			Assert.fail( "Wrong exception while testing creation of existing federation", e );
-		}
-	}
-
-	/////////////////////////////////////////////////////////
-	// TEST: (valid) testCreateFederationWithManyModules() //
-	/////////////////////////////////////////////////////////
-	@Test(groups="temp")
-	public void testCreateFederationWithManyModules()
-	{
-		// create a link to the FOM //
-		URL[] modules = new URL[]{
-			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
-			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
-			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
-			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
-			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
-		};
-		
-		// try and create a valid federation //
-		try
-		{
-			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
-		}
-		catch( Exception e )
-		{
-			Assert.fail( "Could not create valid federation", e );
 		}
 	}
 
@@ -231,6 +221,67 @@ public class CreateFederationTest extends Abstract1516eTest
 			Assert.fail( "Wrong exception while testing create with create with invalid name", e );
 		}
 	}
+
+	//////////////////////////////////////////////////////////////////////////////
+	// createFederationExecution( String, URL[] ) ////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithModules() //
+	//////////////////////////////// ////////////////////
+	@Test(groups="temp")
+	public void testCreateFederationWithModules()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Could not create valid federation", e );
+		}
+
+		// quickly join so that we can query the RTIambassador for handle information
+		// to validate that the FOMs got merged successfully and everything is present.
+		defaultFederate.quickJoin();
+
+		// validate that the merged object model contains all the right pieces
+		// classes from RestaurantProcess.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransations.FoodServed" );
+		
+		// classes from RestaurantFood.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		
+		// classes from RestaurantDrinks.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Drink.Coffee" );
+		
+		// classes from RestaurantSoup.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
+	}
+
+	//////////////////////////////////////////////////////////////////////////////
+	// createFederationExecution( String, URL[], Mim ) ///////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////////
+	// createFederationExecution( String, URL[], TimeType ) //////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////////
+	// createFederationExecution( String, URL[], MIM, TimeType ) /////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
