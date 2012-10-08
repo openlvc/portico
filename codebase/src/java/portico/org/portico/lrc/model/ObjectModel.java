@@ -52,6 +52,8 @@ public class ObjectModel implements Serializable
 	//----------------------------------------------------------
 	private int handle = MAX_MOM_HANDLE;
 	
+	private String filename;
+
 	private HLAVersion version;
 	private boolean locked;
 	private Map<Integer,OCMetadata> oclasses;
@@ -92,6 +94,17 @@ public class ObjectModel implements Serializable
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	
+	public void setFileName( String name )
+	{
+		this.filename = name;
+	}
+	
+	public String getFileName()
+	{
+		return this.filename;
+	}
+
 	/////////////////////////////////////////////////////////////
 	/////////////////////// Space Methods ///////////////////////
 	/////////////////////////////////////////////////////////////
@@ -530,6 +543,7 @@ public class ObjectModel implements Serializable
 		
 		// add it
 		this.iclasses.put( ic.getHandle(), ic );
+		ic.setModel( this );
 	}
 	
 	/**

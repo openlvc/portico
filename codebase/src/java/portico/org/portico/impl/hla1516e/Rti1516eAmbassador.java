@@ -72,6 +72,7 @@ import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JFederationTimeAlreadyPassed;
+import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JInteractionClassNotDefined;
 import org.portico.lrc.compat.JInteractionClassNotPublished;
 import org.portico.lrc.compat.JInteractionClassNotSubscribed;
@@ -269,6 +270,10 @@ public class Rti1516eAmbassador implements RTIambassador
 			{
 				throw new FederationExecutionAlreadyExists( theException );
 			}
+			else if( theException instanceof JInconsistentFDD )
+			{
+				throw new InconsistentFDD( theException );
+			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{
 				throw new CouldNotOpenFDD( theException );
@@ -320,6 +325,10 @@ public class Rti1516eAmbassador implements RTIambassador
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
 				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JInconsistentFDD )
+			{
+				throw new InconsistentFDD( theException );
 			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{
@@ -381,6 +390,10 @@ public class Rti1516eAmbassador implements RTIambassador
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
 				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JInconsistentFDD )
+			{
+				throw new InconsistentFDD( theException );
 			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{

@@ -70,7 +70,25 @@ public class PCMetadata implements Serializable
 	{
 		this.container = container;
 	}
-	
+
+	/**
+	 * @return true if the other object is another {@link PCMetadata} and has the same name.
+	 *         False otherwise.
+	 */
+	public boolean equals( Object other )
+	{
+		if( other instanceof PCMetadata )
+		{
+			PCMetadata otherMetadata = (PCMetadata)other;
+			if( name.equals(otherMetadata.name) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

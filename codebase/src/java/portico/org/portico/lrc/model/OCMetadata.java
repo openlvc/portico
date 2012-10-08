@@ -70,6 +70,24 @@ public class OCMetadata implements Serializable
 	{
 		return this.children;
 	}
+
+	/**
+	 * Find the child object class with the given name (local part only, not
+	 * qualified). If there is no class with that name, null is returned.
+	 * 
+	 * @param name The local name of the child class to find
+	 * @return The child class of this class with the given name, or null if one doesn't exist
+	 */
+	public OCMetadata getChildType( String name )
+	{
+		for( OCMetadata child : this.children )
+		{
+			if( child.getLocalName().equals(name) )
+				return child;
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * Creates a new instance of this type with an {@link ACInstance} for each attribute. The
@@ -279,6 +297,21 @@ public class OCMetadata implements Serializable
 	{
 		return this.attributes.get( handle );
 	}
+
+	/**
+	 * Get the locally declared attribute (not inherited) of the given handle and return it. If
+	 * there is no such attribute with that handle, return null. 
+	 */
+	public ACMetadata getDeclaredAttribute( String name )
+	{
+		for( ACMetadata attribute : attributes.values() )
+		{
+			if( attribute.getName().equals(name) )
+				return attribute;
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * Get the available attribute (inherited included) of this class for the given handle. If
@@ -381,6 +414,15 @@ public class OCMetadata implements Serializable
 			return parent.hasAttribute( handle );
 		else
 			return false;
+	}
+
+	/**
+	 * @return The number of attributes declared in this class alone (no inherited or
+	 *         child class attributes counted).
+	 */
+	public int getDeclaredAttributeCount()
+	{
+		return attributes.size();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -508,6 +550,49 @@ public class OCMetadata implements Serializable
 			return getQualifiedName();
 		else
 			return "" + this.handle;
+	}
+
+	/**
+	 * Returns true if this metadata type equals the provided one, false otherwise.
+	 * <p/>
+	 * In determining equality, the contains attributes are checked to ensure they
+	 * are all present in each class, and if not, null is returned. Child classes
+	 * are not considered (hence the shallow part).
+	 * <p/>
+	 * Only local settings are tested, this does not include parent types, child types,
+	 * or trasient values like handles.
+	 * 
+	 * @param other The object to compare equivalence with.
+	 * @return True if they are equal, false otherwise
+	 */
+	public boolean shallowEquals( OCMetadata other )
+	{
+		if( other == null )
+			return false;
+		
+		if( name.equals(other.name) == false )
+			return false;
+
+		// check to make sure we have the same number of attributes so as to rule out
+		// any situation where the other class is a superset of us (which would pass the
+		// test in the loop below falsely)
+		if( attributes.size() != other.attributes.size() )
+			return false;
+
+		// loop through all our attributes to make sure the other type has them all
+		for( ACMetadata localAttribute : attributes.values() )
+		{
+			// find the attribute with the same name in the other class
+			ACMetadata otherAttribute = other.getDeclaredAttribute( localAttribute.getName() );
+			if( otherAttribute == null )
+				return false;
+			
+			if( localAttribute.equals(otherAttribute) == false )
+				return false;
+		}
+		
+		// everything looks good!
+		return true;
 	}
 
 	//----------------------------------------------------------

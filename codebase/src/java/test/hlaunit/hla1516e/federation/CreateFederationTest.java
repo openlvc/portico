@@ -258,7 +258,7 @@ public class CreateFederationTest extends Abstract1516eTest
 		// validate that the merged object model contains all the right pieces
 		// classes from RestaurantProcess.xml
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
-		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransations.FoodServed" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
 		
 		// classes from RestaurantFood.xml
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
