@@ -76,7 +76,17 @@ public class ACMetadata implements Serializable
 	{
 		return this.handle;
 	}
-	
+
+	/**
+	 * Changes the handle of this class. To prevent external tampering, this
+	 * is marked as protected and should not be called by anything except the
+	 * model merger.
+	 */
+	protected void setHandle( int handle )
+	{
+		this.handle = handle;
+	}
+
 	public Order getOrder()
 	{
 		return this.order;

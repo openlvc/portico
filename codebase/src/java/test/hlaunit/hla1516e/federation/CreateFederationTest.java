@@ -19,6 +19,7 @@ import java.net.URL;
 import hla.rti1516e.exceptions.CouldNotOpenFDD;
 import hla.rti1516e.exceptions.ErrorReadingFDD;
 import hla.rti1516e.exceptions.FederationExecutionAlreadyExists;
+import hla.rti1516e.exceptions.InconsistentFDD;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.hla1516e.common.Abstract1516eTest;
 
@@ -228,8 +229,8 @@ public class CreateFederationTest extends Abstract1516eTest
 
 	/////////////////////////////////////////////////////
 	// TEST: (valid) testCreateFederationWithModules() //
-	//////////////////////////////// ////////////////////
-	@Test(groups="temp")
+	/////////////////////////////////////////////////////
+	@Test
 	public void testCreateFederationWithModules()
 	{
 		// create a link to the FOM //
@@ -270,18 +271,212 @@ public class CreateFederationTest extends Abstract1516eTest
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
 	}
 
+	////////////////////////////////////////////////////////////////////////////
+	// TEST: testCreateFederationWithModulesAndNonEquivalentObjectHierarchy() //
+	////////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesAndNonEquivalentObjectHierarchy()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/non-equiv/NonEquivalentMIM-Objects.xml" )
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
+			Assert.fail( "Expected exception when merging modules with non-equivalent hierarchies" );
+		}
+		catch( InconsistentFDD ifdd )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			unexpectedException( "Merging modules with non-equivalent object hierarchies", e );
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////
+	// TEST: testCreateFederationWithModulesAndNonEquivalentInteractionHierarchy() //
+	/////////////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesAndNonEquivalentInteractionHierarchy()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/non-equiv/NonEquivalentMIM-Interactions.xml" )
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
+			Assert.fail( "Expected exception when merging modules with non-equivalent hierarchies" );
+		}
+		catch( InconsistentFDD ifdd )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			unexpectedException( "Merging modules with non-equivalent interaction hierarchies", e );
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////////
 	// createFederationExecution( String, URL[], Mim ) ///////////////////////////
 	//////////////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithModulesAndMim() //
+	///////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesAndMim()
+	{
+		// create a link to the FOM //
+		URL mim = ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" );
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName,
+			                                                  modules,
+			                                                  mim );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Could not create valid federation", e );
+		}
+
+		// quickly join so that we can query the RTIambassador for handle information
+		// to validate that the FOMs got merged successfully and everything is present.
+		defaultFederate.quickJoin();
+
+		// validate that the merged object model contains all the right pieces
+		// classes from RestaurantProcess.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		
+		// classes from RestaurantFood.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		
+		// classes from RestaurantDrinks.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Drink.Coffee" );
+		
+		// classes from RestaurantSoup.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
+	}
 
 	//////////////////////////////////////////////////////////////////////////////
 	// createFederationExecution( String, URL[], TimeType ) //////////////////////
 	//////////////////////////////////////////////////////////////////////////////
 
+	////////////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithModulesAndTime() //
+	////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesAndTime()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName,
+			                                                  modules,
+			                                                  "HLAfloat64Time" );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Could not create valid federation", e );
+		}
+
+		// quickly join so that we can query the RTIambassador for handle information
+		// to validate that the FOMs got merged successfully and everything is present.
+		defaultFederate.quickJoin();
+
+		// validate that the merged object model contains all the right pieces
+		// classes from RestaurantProcess.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		
+		// classes from RestaurantFood.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		
+		// classes from RestaurantDrinks.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Drink.Coffee" );
+		
+		// classes from RestaurantSoup.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
+	}
+
 	//////////////////////////////////////////////////////////////////////////////
 	// createFederationExecution( String, URL[], MIM, TimeType ) /////////////////
 	//////////////////////////////////////////////////////////////////////////////
 
+	///////////////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFederationWithModulesMimAndTime() //
+	///////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesMimAndTime()
+	{
+		// create a link to the FOM //
+		URL mim = ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" );
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName,
+			                                                  modules,
+			                                                  mim, 
+			                                                  "HLAfloat64Time");
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Could not create valid federation", e );
+		}
+
+		// quickly join so that we can query the RTIambassador for handle information
+		// to validate that the FOMs got merged successfully and everything is present.
+		defaultFederate.quickJoin();
+
+		// validate that the merged object model contains all the right pieces
+		// classes from RestaurantProcess.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		
+		// classes from RestaurantFood.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		
+		// classes from RestaurantDrinks.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Drink.Coffee" );
+		
+		// classes from RestaurantSoup.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

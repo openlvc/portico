@@ -135,6 +135,11 @@ public class FOM
 	private OCMetadata extractObjects( Element objectsElement ) throws JErrorReadingFED
 	{
 		Element objectRootElement = getFirstChildElement( objectsElement, "objectClass" );
+		if( objectRootElement == null )
+		{
+			// no objects to process... OK, must be an extension module
+			return null;
+		}
 		
 		// validate that we have an object root
 		String name = getChildValue( objectRootElement, "name" );
@@ -214,7 +219,12 @@ public class FOM
 	private ICMetadata extractInteractions( Element element ) throws JErrorReadingFED
 	{
 		Element interactionRootElement = getFirstChildElement( element, "interactionClass" );
-		
+		if( interactionRootElement == null )
+		{
+			// no interactions to process... OK, must be an extension module
+			return null;
+		}
+
 		// validate that we have an interaction root
 		String name = getChildValue( interactionRootElement, "name" );
 		if( name.equals("HLAinteractionRoot") == false )

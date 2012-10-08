@@ -124,7 +124,7 @@ public class ModelMerger
 		{
 			// the extension type is not scaffolding and isn't equal to the base type :(
 			throw new JInconsistentFDD( "Class "+base.getQualifiedName()+
-			                            " redeclared but not equal of scaffolding" );
+			                            " redeclared but not equivalent and not scaffolding" );
 		}
 
 		// check to see if there are any types in the extension that can be inserted into the base
@@ -138,9 +138,7 @@ public class ModelMerger
 			if( baseChild == null )
 			{
 				logger.trace( "Merging class ["+extensionChild.getQualifiedName()+"]" );
-				//copyIntoModel( base.getModel(), base, extensionChild );
-				extensionChild.setParent( base );
-				insertObjectClass( base.getModel(), extensionChild );
+				mergeIntoModel( base.getModel(), base, extensionChild );
 			}
 			else
 			{
@@ -150,19 +148,38 @@ public class ModelMerger
 		}
 	}
 
-//	private void copyIntoModel( ObjectModel model, OCMetadata parent, OCMetadata child )
-//	{
-//		logger.trace( "   -> Inserting class ["+child.getQualifiedName()+"]" );		
-//	}
-	
-	private void insertObjectClass( ObjectModel model, OCMetadata child )
+	/**
+	 * Copies the child object class into the provided model, linking it up with the given parent.
+	 * This method reinitializes all the handles associated with the class so as to avoid handle
+	 * clash problems when merging from two already parsed FOMs (handles sadly assigned at parse
+	 * time, meaning we will most likely get clashes).
+	 * <p/>
+	 * This method will also recuse through all children doing the same thing.
+	 * 
+	 * @param model The model to insert the child into
+	 * @param parent The parent the child will be linked to
+	 * @param child The child that should be inserted into the model
+	 */
+	private void mergeIntoModel( ObjectModel model, OCMetadata parent, OCMetadata child )
 	{
 		logger.trace( "   -> Inserting class ["+child.getQualifiedName()+"]" );
+
+		// link us in with the new parent
+		child.setParent( parent );
+
+		// reset the handles for the child and all its attributes
+		child.setHandle( model.generateHandle() );
+		for( ACMetadata attribute : child.getDeclaredAttributes() )
+			attribute.setHandle( model.generateHandle() );
+		
+		// add the class to the model
 		model.addObjectClass( child );
 		
-		// look through all childen and link them in with their new model as well
-		for( OCMetadata grandchild : child.getChildTypes() )
-			insertObjectClass( model, grandchild );
+		// repeat this process for all the children's children
+		// make copy of grandchildren to avoid ConcurrentModificationException during processing
+		Set<OCMetadata> grandchildren = new HashSet<OCMetadata>( child.getChildTypes() ); 
+		for( OCMetadata grandchild : grandchildren )
+			mergeIntoModel( model, child, grandchild );
 	}
 
 	/**
@@ -197,7 +214,7 @@ public class ModelMerger
 		{
 			// the extension type is not scaffolding and isn't equal to the base type :(
 			throw new JInconsistentFDD( "Class "+base.getQualifiedName()+
-			                            " redeclared but not equal of scaffolding" );
+			                            " redeclared but not equivalent and not scaffolding" );
 		}
 		
 		// check to see if there are any types in the extension that can be inserted into the base
@@ -209,8 +226,7 @@ public class ModelMerger
 			if( baseChild == null )
 			{
 				logger.trace( "Merging in class ["+extensionChild.getQualifiedName()+"]" );
-				extensionChild.setParent( base );
-				insertInteractionClass( base.getModel(), extensionChild );
+				mergeIntoModel( base.getModel(), base, extensionChild );
 			}
 			else
 			{
@@ -220,16 +236,39 @@ public class ModelMerger
 		}
 	}
 
-	private void insertInteractionClass( ObjectModel model, ICMetadata child )
+	/**
+	 * Copies the child object class into the provided model, linking it up with the given parent.
+	 * This method reinitializes all the handles associated with the class so as to avoid handle
+	 * clash problems when merging from two already parsed FOMs (handles sadly assigned at parse
+	 * time, meaning we will most likely get clashes).
+	 * <p/>
+	 * This method will also recuse through all children doing the same thing.
+	 * 
+	 * @param model The model to insert the child into
+	 * @param parent The parent the child will be linked to
+	 * @param child The child that should be inserted into the model
+	 */
+	private void mergeIntoModel( ObjectModel model, ICMetadata parent, ICMetadata child )
 	{
 		logger.trace( "   -> Inserting class ["+child.getQualifiedName()+"]" );
+
+		// link us in with the new parent
+		child.setParent( parent );
+
+		// reset the handles for the child and all its attributes
+		child.setHandle( model.generateHandle() );
+		for( PCMetadata parameter : child.getDeclaredParameters() )
+			parameter.setHandle( model.generateHandle() );
+		
+		// add the class to the model
 		model.addInteractionClass( child );
 		
-		// look through all childen and link them in with their new model as well
-		for( ICMetadata grandchild : child.getChildTypes() )
-			insertInteractionClass( model, grandchild );
+		// repeat this process for all the children's children
+		// make copy of grandchildren to avoid ConcurrentModificationException during processing
+		Set<ICMetadata> grandchildren = new HashSet<ICMetadata>( child.getChildTypes() ); 
+		for( ICMetadata grandchild : grandchildren )
+			mergeIntoModel( model, child, grandchild );
 	}
-
 	
 	private ObjectModel validate( ObjectModel model )
 	{

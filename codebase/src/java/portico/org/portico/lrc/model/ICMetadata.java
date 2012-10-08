@@ -278,6 +278,16 @@ public class ICMetadata implements Serializable
 	}
 
 	/**
+	 * Changes the handle of this class. To prevent external tampering, this
+	 * is marked as protected and should not be called by anything except the
+	 * model merger.
+	 */
+	protected void setHandle( int handle )
+	{
+		this.handle = handle;
+	}
+
+	/**
 	 * Get the local portion of the interaction class name. For example, if the qualified name was
 	 * "InteractionRoot.Surface.Start", the local name would be "Start". Note that the name this
 	 * class should be given on creation IS its local name only (not its fully qualified version)

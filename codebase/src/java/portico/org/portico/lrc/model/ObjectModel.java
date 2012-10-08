@@ -683,7 +683,7 @@ public class ObjectModel implements Serializable
 		return new Dimension( name, generateHandle() );
 	}
 
-	private synchronized int generateHandle()
+	protected synchronized int generateHandle()
 	{
 		return ++handle;
 	}
