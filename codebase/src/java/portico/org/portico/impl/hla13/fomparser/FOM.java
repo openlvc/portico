@@ -36,7 +36,9 @@ public class FOM implements FOMConstants
 			throw new JCouldNotOpenFED( "Error opening [" + fom + "]: " + e.getMessage() );
 		}
 
-		return parseFOM( istream );
+		ObjectModel model = parseFOM( istream );
+		model.setFileName( fom.toString() );
+		return model;
 	}
 
 	public static ObjectModel parseFOM( InputStream istream ) throws JCouldNotOpenFED,

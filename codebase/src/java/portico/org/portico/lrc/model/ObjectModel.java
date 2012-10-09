@@ -52,6 +52,8 @@ public class ObjectModel implements Serializable
 	//----------------------------------------------------------
 	private int handle = MAX_MOM_HANDLE;
 	
+	private String filename;
+
 	private HLAVersion version;
 	private boolean locked;
 	private Map<Integer,OCMetadata> oclasses;
@@ -92,6 +94,17 @@ public class ObjectModel implements Serializable
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	
+	public void setFileName( String name )
+	{
+		this.filename = name;
+	}
+	
+	public String getFileName()
+	{
+		return this.filename;
+	}
+
 	/////////////////////////////////////////////////////////////
 	/////////////////////// Space Methods ///////////////////////
 	/////////////////////////////////////////////////////////////
@@ -530,6 +543,7 @@ public class ObjectModel implements Serializable
 		
 		// add it
 		this.iclasses.put( ic.getHandle(), ic );
+		ic.setModel( this );
 	}
 	
 	/**
@@ -669,7 +683,7 @@ public class ObjectModel implements Serializable
 		return new Dimension( name, generateHandle() );
 	}
 
-	private synchronized int generateHandle()
+	protected synchronized int generateHandle()
 	{
 		return ++handle;
 	}
@@ -700,7 +714,9 @@ public class ObjectModel implements Serializable
 	public static void mommify( ObjectModel model )
 	{
 		// let the abomonation begin //
-		model.unlock();
+		boolean wasLocked = model.locked;
+		if( wasLocked )
+			model.unlock();
 		
 		/////////////////////////////////////////////////////////////
 		// remove any MOM stuff that currently exists in the model //
@@ -737,7 +753,8 @@ public class ObjectModel implements Serializable
 		Mom.insertMomHierarchy( model );
 		
 		// lock the model again //
-		model.lock();
+		if( wasLocked )
+			model.lock();
 	}
 	
 }

@@ -27,6 +27,7 @@ import org.portico.lrc.compat.JSynchronizationLabelNotAnnounced;
 import org.portico.lrc.compat.JTimeAdvanceAlreadyInProgress;
 import org.portico.lrc.management.Federate;
 import org.portico.lrc.management.Federation;
+import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.notifications.INotificationListener;
 import org.portico.lrc.notifications.NullNotificationListener;
@@ -47,6 +48,7 @@ import org.portico.lrc.services.time.data.TimeStatus;
 
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -274,6 +276,10 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		timeManager.joinedFederation( remoteHandle, federateStatus.getTimeStatus() );
 		saveManager.joinedFederation( remoteHandle );
 		restoreManager.joinedFederation( remoteHandle );
+
+		// merge in additional FOM modules if we have them
+		if( federateStatus.hasAdditionalFomModules() )
+			mergeAdditionalFomModules( federateStatus.getAdditionalFomModules(), remoteName );
 	}
 
 	/**
@@ -295,6 +301,34 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		Federate federate = this.federation.removeFederate( federateHandle );
 		if( federate != null )
 			momManager.federateResignedFederation( federate );
+	}
+
+	/**
+	 * When an IEEE-1516e federate joins a federation, it can optionally provide an additional
+	 * set of FOM modules. This method handles the merging of additional modules into the existing
+	 * FOM. It is presumed that the merge has been validated before the RoleCall is sent out.
+	 * 
+	 * @param modules The new modules to merge in
+	 * @param remoteFederate The federate that joined with the new modules
+	 */
+	private void mergeAdditionalFomModules( List<ObjectModel> modules, String remoteFederate )
+	{
+		theLRC.logger.debug( "Merging "+modules.size()+" additional FOM modules from ["+
+		                     remoteFederate+"]" );
+
+		try
+		{
+			modules.add( 0, this.fom );
+			this.fom.unlock();
+			this.fom = ModelMerger.merge( modules );
+			this.fom.lock();
+		}
+		catch( Exception e )
+		{
+			theLRC.logger.error( "Failed to merge additional FOM modules from remote federate ["+
+			                     remoteFederate+"]: "+e.getMessage(), e );
+			theLRC.logger.error( "Continuing in the hope that problems are limited" );
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////

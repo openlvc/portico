@@ -18,9 +18,12 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.time.data.TimeStatus;
 import org.portico.utils.messaging.PorticoMessage;
 
@@ -52,6 +55,8 @@ public class RoleCall extends PorticoMessage implements Externalizable
 	private HashMap<String,byte[]> syncPointTags;
 	private HashMap<String,Boolean> syncPointStatus; // label/whether federate has acheived it or not
 
+	private List<ObjectModel> additionalModules; // populated in 1516e only
+
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -75,6 +80,9 @@ public class RoleCall extends PorticoMessage implements Externalizable
 		this.syncPointStatus = new HashMap<String,Boolean>();
 		this.syncPointTags = new HashMap<String,byte[]>();
 		setImmediateProcessingFlag( true );
+
+		// set in 1516e when the joining federate has provided additional modules
+		this.additionalModules = new ArrayList<ObjectModel>();
 	}
 
 	//----------------------------------------------------------
@@ -129,6 +137,26 @@ public class RoleCall extends PorticoMessage implements Externalizable
 		return true;
 	}
 	
+	public void addAdditionalFomModule( ObjectModel model )
+	{
+		this.additionalModules.add( model );
+	}
+	
+	public void addAdditionalFomModules( List<ObjectModel> modules )
+	{
+		this.additionalModules.addAll( modules );
+	}
+	
+	public List<ObjectModel> getAdditionalFomModules()
+	{
+		return this.additionalModules;
+	}
+
+	public boolean hasAdditionalFomModules()
+	{
+		return !this.additionalModules.isEmpty();
+	}
+
 	/////////////////////////////////////////////////////////////
 	/////////////////// Serialization Methods ///////////////////
 	/////////////////////////////////////////////////////////////
@@ -149,6 +177,11 @@ public class RoleCall extends PorticoMessage implements Externalizable
 		if( exists )
 			this.syncPointTags = (HashMap<String,byte[]>)input.readObject();
 
+		exists = input.readBoolean();
+		if( exists )
+			this.additionalModules = (ArrayList<ObjectModel>)input.readObject();
+		else
+			this.additionalModules = new ArrayList<ObjectModel>(); // empty list
 	}
 	
 	public void writeExternal( ObjectOutput output ) throws IOException
@@ -178,6 +211,16 @@ public class RoleCall extends PorticoMessage implements Externalizable
 		{
 			output.writeBoolean( true );
 			output.writeObject( this.syncPointTags );
+		}
+		
+		if( this.additionalModules == null || this.additionalModules.isEmpty() )
+		{
+			output.writeBoolean( false );
+		}
+		else
+		{
+			output.writeBoolean( true );
+			output.writeObject( this.additionalModules );
 		}
 	}
 

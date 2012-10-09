@@ -14,6 +14,8 @@
  */
 package hlaunit.hla1516e.federation;
 
+import java.net.URL;
+
 import hla.rti1516e.exceptions.FederateAlreadyExecutionMember;
 import hla.rti1516e.exceptions.FederationExecutionDoesNotExist;
 import hla.rti1516e.exceptions.RTIinternalError;
@@ -37,6 +39,7 @@ public class JoinFederationTest extends Abstract1516eTest
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private TestFederate secondFederate;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -49,6 +52,8 @@ public class JoinFederationTest extends Abstract1516eTest
 	public void beforeClass()
 	{
 		super.beforeClass();
+		this.secondFederate = new TestFederate( "secondFederate", this );
+		this.secondFederate.quickConnect();
 	}
 
 	@BeforeMethod(alwaysRun=true)
@@ -61,14 +66,36 @@ public class JoinFederationTest extends Abstract1516eTest
 	@AfterMethod(alwaysRun=true)
 	public void afterMethod()
 	{
+		defaultFederate.quickResignTolerant();
+		secondFederate.quickResignTolerant();
 		defaultFederate.quickDestroy();
 	}
 
 	@AfterClass(alwaysRun=true)
 	public void afterClass()
 	{
+		secondFederate.quickDisconnect();
 		super.afterClass();
 	}
+	
+	//////////////////////////////////////////////////////////////////////////////
+	// IEEE-1516e specifies a number of joinFederation overloads. The tests     //
+	// are split up based on each overload in order to keep them in some sense  //
+	// and order. Some overloads just call into others, so some of the testing  //
+	// is redundant, but still important in detecting regressions incase we     //
+	// have to split some of those implementations out on their own.            //
+	//                                                                          //
+	// The list below contains all the 1516e createFederation overloads         //
+	//    * joinFederationExecution( Type, Federation )                         //
+	//    * joinFederationExecution( Name, Type, Federation )                   //
+	//    * joinFederationExecution( Type, Federation, URL[] )                  //
+	//    * joinFederationExecution( Name, Type, Federation, URL[] )            //
+	//                                                                          //
+	//////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// joinFederation( Type, Federation ) //////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
 	
 	////////////////////////////////////////
 	// TEST: (valid) testJoinFederation() //
@@ -79,8 +106,7 @@ public class JoinFederationTest extends Abstract1516eTest
 		try
 		{
 			// try and join a federation //
-			defaultFederate.rtiamb.joinFederationExecution( defaultFederate.federateName,
-			                                                defaultFederate.federateType,
+			defaultFederate.rtiamb.joinFederationExecution( defaultFederate.federateType,
 			                                                defaultFederate.simpleName );
 		}
 		catch( Exception e )
@@ -93,7 +119,6 @@ public class JoinFederationTest extends Abstract1516eTest
 			defaultFederate.quickResign();
 		}
 	}
-	
 	
 	///////////////////////////////////////////////////////
 	// TEST: testJoinFederationWhereFederateNameExists() //
@@ -256,6 +281,143 @@ public class JoinFederationTest extends Abstract1516eTest
 		{
 			defaultFederate.quickResign();
 		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// joinFederation( Type, Name, Federation ) ////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////
+	// TEST: (valid) testJoinFederation() //
+	////////////////////////////////////////
+	@Test
+	public void testJoinFederationWithNameAndType()
+	{
+		try
+		{
+			// try and join a federation //
+			defaultFederate.rtiamb.joinFederationExecution( defaultFederate.federateName,
+			                                                defaultFederate.federateType,
+			                                                defaultFederate.simpleName );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Failed while testing a valid join request", e );
+		}
+		finally
+		{
+			// clean up for the next test //
+			defaultFederate.quickResign();
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// joinFederation( Type, Federation, URL[] ) ///////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////
+	// TEST: (valid) testJoinFederationWithTypeAndModules() //
+	//////////////////////////////////////////////////////////
+	@Test
+	public void testJoinFederationWithTypeAndModules()
+	{
+		// join the base federate to the federation
+		defaultFederate.quickJoin();
+
+		// validate that we don't have any information about the model the second federate
+		// will add when it joins
+		defaultFederate.quickOCHandleMissing( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandleMissing( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		defaultFederate.quickOCHandleMissing( "HLAobjectRoot.Food.SideDish.Corn" );
+
+		try
+		{
+			// try and join a federation with mode modules
+			URL[] modules = new URL[]{
+			    ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			    ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			};
+
+			secondFederate.rtiamb.joinFederationExecution( secondFederate.federateName,
+			                                               secondFederate.simpleName,
+			                                               modules );
+		}
+		catch( Exception e )
+		{
+			// clean up for the next test //
+			defaultFederate.quickResign();
+			secondFederate.quickResignTolerant();
+			Assert.fail( "Failed while testing a valid join request with modules", e );
+		}
+		
+		defaultFederate.quickTick();
+		secondFederate.quickTick();
+		
+		// validate that the default federate now fetch information about the extended FOM
+		// classes from RestaurantProcess.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		secondFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		secondFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		
+		// classes from RestaurantFood.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		secondFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// joinFederation( Name, Type, Federation, URL[] ) /////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////
+	// TEST: (valid) testJoinFederationWithNameTypeAndModules() //
+	//////////////////////////////////////////////////////////////
+	@Test
+	public void testJoinFederationWithNameTypeAndModules()
+	{
+		// join the base federate to the federation
+		defaultFederate.quickJoin();
+
+		// validate that we don't have any information about the model the second federate
+		// will add when it joins
+		defaultFederate.quickOCHandleMissing( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandleMissing( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		defaultFederate.quickOCHandleMissing( "HLAobjectRoot.Food.SideDish.Corn" );
+
+		try
+		{
+			// try and join a federation with mode modules
+			URL[] modules = new URL[]{
+			    ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			    ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			};
+
+			secondFederate.rtiamb.joinFederationExecution( secondFederate.federateName,
+			                                               secondFederate.federateName,
+			                                               secondFederate.simpleName,
+			                                               modules );
+		}
+		catch( Exception e )
+		{
+			// clean up for the next test //
+			defaultFederate.quickResign();
+			secondFederate.quickResignTolerant();
+			Assert.fail( "Failed while testing a valid join request with modules", e );
+		}
+		
+		defaultFederate.quickTick();
+		secondFederate.quickTick();
+		
+		// validate that the default federate now fetch information about the extended FOM
+		// classes from RestaurantProcess.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		secondFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		secondFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		
+		// classes from RestaurantFood.xml
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		secondFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
 	}
 	
 	//----------------------------------------------------------

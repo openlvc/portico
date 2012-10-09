@@ -14,6 +14,10 @@
  */
 package org.portico.lrc.services.federation.msg;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
 
@@ -29,6 +33,9 @@ public class JoinFederation extends PorticoMessage
 	//----------------------------------------------------------
 	private String federateName;
 	private String federationName;
+	private List<ObjectModel> joinModules; // parsed version of object FOM modules below
+
+	private transient List<URL> fomModules;
 	private transient ObjectModel fom;
 
 	//----------------------------------------------------------
@@ -39,6 +46,8 @@ public class JoinFederation extends PorticoMessage
 	{
 		super();
 		this.setImmediateProcessingFlag( true );
+		this.joinModules = new ArrayList<ObjectModel>();
+		this.fomModules = new ArrayList<URL>();
 	}
 
 	public JoinFederation( String federationName, String federateName )
@@ -46,6 +55,16 @@ public class JoinFederation extends PorticoMessage
 		this();
 		this.federateName = federateName;
 		this.federationName = federationName;
+	}
+	
+	public JoinFederation( String federationName, String federateName, URL[] fomModules )
+	{
+		this( federationName, federateName );
+		if( fomModules != null )
+		{
+    		for( URL module : fomModules )
+    			this.fomModules.add( module );
+		}
 	}
 
 	//----------------------------------------------------------
@@ -72,6 +91,28 @@ public class JoinFederation extends PorticoMessage
 		this.federationName = federationName;
 	}
 	
+	@Override
+	public boolean isImmediateProcessingRequired()
+	{
+		return true;
+	}
+
+	/**
+	 * Returns a list of all the FOM modules that this federate is trying to join with.
+	 */
+	public List<ObjectModel> getJoinModules()
+	{
+		return this.joinModules;
+	}
+	
+	public void addJoinModule( ObjectModel module )
+	{
+		this.joinModules.add( module );
+	}
+	
+	//////////////////////////////////////////////////
+	/// Transient Properties /////////////////////////
+	//////////////////////////////////////////////////	
 	public ObjectModel getFOM()
 	{
 		return this.fom;
@@ -82,10 +123,9 @@ public class JoinFederation extends PorticoMessage
 		this.fom = fom;
 	}
 	
-	@Override
-	public boolean isImmediateProcessingRequired()
+	public List<URL> getFomModules()
 	{
-		return true;
+		return this.fomModules;
 	}
 
 	//----------------------------------------------------------

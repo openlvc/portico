@@ -38,9 +38,10 @@
 	<property name="test.fileLogLevel"        value="OFF"/>
 
 	<!-- ==== Example Federate Properties ==== -->
-	<property name="examples.src.dir"         location="${java.src.dir}/examples"/>
-	<property name="examples.build.dir"       location="${build.dir}/examples"/>
-<!--<property name="java.examples.dist.dir"   location="${dist.examples.dir}/java"/>-->
+	<property name="examples.hla13.dir"             location="${java.src.dir}/examples/hla13"/>
+	<property name="examples.hla13.classes.dir"     location="${java.build.dir}/examples/hla13"/>
+	<property name="examples.ieee1516e.dir"         location="${java.src.dir}/examples/ieee1516e"/>
+	<property name="examples.ieee1516e.classes.dir" location="${java.build.dir}/examples/ieee1516e"/>
 
 	<!-- ==== Onejar Related Properties ==== -->
 	<!-- To provide a single jar, we extract all deps here and copy them into the portico jar -->
@@ -106,25 +107,40 @@
 	<!--                                  Compile Targets                                  -->
 	<!-- ================================================================================= -->
 	<!-- 
-	     The parent compilation target. This will compile all the core Portico RTI code,
-	     the HLA Java interfaces and the full Java test suite.
+	     Local compilation extension point for all Java targets. Each Java compilation target
+	     should declare itself an extension of this point to link into the main build.
 	-->
-	<target name="compile"
-	        extensionOf="master.compile"
-	        description="Compile the core Portico RTI, HLA Java interfaces and Java test suite"
-	        depends="compile.portico, compile.tests"/>
+	<extension-point name="compile"
+	                 extensionOf="master.compile"
+	                 description="Compile the core RTI, HLA interfaces, Java test suite and examples"/>
 
 	<!-- compile the main production code -->	
-	<target name="compile.portico">
+	<target name="compile.portico" extensionOf="compile">
 		<java-compile srcdir="${portico.src.dir}"
 		              outdir="${portico.classes.dir}"
 		              classpath="compile.classpath"/>
 	</target>
 
 	<!-- compile the hlaunit test suite code -->
-	<target name="compile.tests" depends="compile.portico">
+	<target name="compile.tests" extensionOf="compile" depends="compile.portico">
 		<java-compile srcdir="${test.src.dir}"
 		              outdir="${test.classes.dir}"
+		              classpath="test.classpath"/>
+	</target>
+
+	<!-- Compiles the HLA 1.3 example federate. Doesn't do much except
+	     assure that the code can compile without errors -->
+	<target name="compile.examples.hla13" extensionOf="compile" depends="compile.portico">
+		<java-compile srcdir="${examples.hla13.dir}/src"
+		              outdir="${examples.hla13.classes.dir}"
+		              classpath="test.classpath"/>
+	</target>
+
+	<!-- Compiles the IEEE-1516e example federate. Doesn't do much except
+	     assure that the code can compile without errors -->
+	<target name="compile.examples.ieee1516e" extensionOf="compile" depends="compile.portico">
+		<java-compile srcdir="${examples.ieee1516e.dir}/src"
+		              outdir="${examples.ieee1516e.classes.dir}"
 		              classpath="test.classpath"/>
 	</target>
 
@@ -220,13 +236,17 @@
 		<!-- ================= -->
 		<!-- Example Federates -->
 		<!-- ================= -->
-		<!-- copy across the example federates -->
-		<mkdir dir="${dist.examples.dir}/java"/>
-		<copy todir="${dist.examples.dir}/java">
-			<fileset dir="${examples.src.dir}">
-				<include name="**/*"/>
-			</fileset>
+		<!-- copy across the HLA1.3 example federate -->
+		<mkdir dir="${dist.examples.dir}/java/hla13"/>
+		<copy todir="${dist.examples.dir}/java/hla13">
+			<fileset dir="${examples.hla13.dir}" includes="**/*"/>
 		</copy>
+		<!-- copy across the IEEE-1516e example federate -->
+		<mkdir dir="${dist.examples.dir}/java/ieee1516e"/>
+		<copy todir="${dist.examples.dir}/java/ieee1516e">
+			<fileset dir="${examples.ieee1516e.dir}" includes="**/*"/>
+		</copy>
+
 		<chmod dir="${dist.examples.dir}" perm="777" includes="**/*.sh"/>
 		
 		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->

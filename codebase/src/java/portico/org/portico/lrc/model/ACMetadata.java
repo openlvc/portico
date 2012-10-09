@@ -76,7 +76,17 @@ public class ACMetadata implements Serializable
 	{
 		return this.handle;
 	}
-	
+
+	/**
+	 * Changes the handle of this class. To prevent external tampering, this
+	 * is marked as protected and should not be called by anything except the
+	 * model merger.
+	 */
+	protected void setHandle( int handle )
+	{
+		this.handle = handle;
+	}
+
 	public Order getOrder()
 	{
 		return this.order;
@@ -126,7 +136,33 @@ public class ACMetadata implements Serializable
 	{
 		this.container = container;
 	}
+
+	/**
+	 * @return true if the other object is another {@link ACMetadata} and has the same
+	 *         name, order and transport. False otherwise.
+	 */
+	public boolean equals( Object other )
+	{
+		if( other instanceof ACMetadata )
+		{
+			ACMetadata otherMetadata = (ACMetadata)other;
+			if( name.equals(otherMetadata.name) &&
+				order.equals(otherMetadata.order) &&
+				transport.equals(otherMetadata.transport) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 	
+	@Override
+	public String toString()
+	{
+		return this.name;
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
