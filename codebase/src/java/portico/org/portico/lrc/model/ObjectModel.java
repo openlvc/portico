@@ -714,7 +714,9 @@ public class ObjectModel implements Serializable
 	public static void mommify( ObjectModel model )
 	{
 		// let the abomonation begin //
-		model.unlock();
+		boolean wasLocked = model.locked;
+		if( wasLocked )
+			model.unlock();
 		
 		/////////////////////////////////////////////////////////////
 		// remove any MOM stuff that currently exists in the model //
@@ -751,7 +753,8 @@ public class ObjectModel implements Serializable
 		Mom.insertMomHierarchy( model );
 		
 		// lock the model again //
-		model.lock();
+		if( wasLocked )
+			model.lock();
 	}
 	
 }

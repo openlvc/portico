@@ -64,6 +64,9 @@ public class CreateFederationHandler extends LRCMessageHandler
 		for( URL module : request.getFomModules() )
 			foms.add( FomParser.parse(module) );
 		
+		// check to make sure we have the standard MIM as well - if not, load it
+		validateStandardMimPresent( foms );
+		
 		// merge all the modules together and store the grand unified fom!
 		request.setModel( ModelMerger.merge(foms) );
 		
@@ -76,6 +79,26 @@ public class CreateFederationHandler extends LRCMessageHandler
 		connection.createFederation( request );
 		context.success();
 		logger.info( "SUCCESS Created federation execution [" + request.getFederationName() + "]" );
+	}
+
+	private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
+	{
+		boolean found = false;
+		for( ObjectModel model : foms )
+		{
+			if( model.getPrivilegeToDelete() != -1 )
+			{
+				found = true;
+				break;
+			}
+		}
+		
+		if( found == false )
+		{
+			logger.debug( "Standard MIM not present - adding it" );
+			URL mim = ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
+			foms.add( 0, FomParser.parse(mim) );
+		}
 	}
 
 	//----------------------------------------------------------

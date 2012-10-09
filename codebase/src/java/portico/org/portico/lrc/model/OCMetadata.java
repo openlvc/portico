@@ -557,9 +557,9 @@ public class OCMetadata implements Serializable
 	public String toString()
 	{
 		if( PorticoConstants.USE_Q_NAMES )
-			return getQualifiedName();
+			return getQualifiedName() + " " + this.getAllAttributes();
 		else
-			return "" + this.handle;
+			return "" + this.handle + " " + this.getAllAttributes();
 	}
 
 	/**

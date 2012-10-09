@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="codebase/src/java/portico"/>
+	<classpathentry kind="src" path="codebase/src/java/examples/ieee1516e/src"/>
+	<classpathentry kind="src" path="codebase/src/java/examples/hla13/src"/>
 	<classpathentry kind="src" path="codebase/src/java/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="codebase/resources/test-data"/>

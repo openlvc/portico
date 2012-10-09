@@ -230,7 +230,7 @@ public class CreateFederationTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////
 	// TEST: (valid) testCreateFederationWithModules() //
 	/////////////////////////////////////////////////////
-	@Test
+	@Test(groups="temp")
 	public void testCreateFederationWithModules()
 	{
 		// create a link to the FOM //
@@ -266,6 +266,10 @@ public class CreateFederationTest extends Abstract1516eTest
 		
 		// classes from RestaurantDrinks.xml
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Drink.Coffee" );
+		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Drink.Soda" );
+		// get attributes - one declared in this FOM, the other inherted and declared in food FOM
+		defaultFederate.quickACHandle( "HLAobjectRoot.Food.Drink.Soda", "Flavor" );     // declared
+		defaultFederate.quickACHandle( "HLAobjectRoot.Food.Drink.Soda", "NumberCups" ); // inherited
 		
 		// classes from RestaurantSoup.xml
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );

@@ -178,7 +178,13 @@ public class ModelMerger
 		// reset the handles for the child and all its attributes
 		child.setHandle( model.generateHandle() );
 		for( ACMetadata attribute : child.getDeclaredAttributes() )
+		{
+			// remove the child under the old handle
+			child.removeAttribute( attribute.getHandle() );
+			// set the new handle on the attribute and re-add the child
 			attribute.setHandle( model.generateHandle() );
+			child.addAttribute( attribute );
+		}
 		
 		// add the class to the model
 		model.addObjectClass( child );
@@ -263,11 +269,17 @@ public class ModelMerger
 		// link us in with the new parent
 		child.setParent( parent );
 
-		// reset the handles for the child and all its attributes
+		// reset the handles for the child and all its parameters
 		child.setHandle( model.generateHandle() );
 		for( PCMetadata parameter : child.getDeclaredParameters() )
+		{
+			// remove the child under the old handle
+			child.removeParameter( parameter.getHandle() );
+			// set the new handle on the parameter and re-add the child
 			parameter.setHandle( model.generateHandle() );
-		
+			child.addParameter( parameter );
+		}
+
 		// add the class to the model
 		model.addInteractionClass( child );
 		
@@ -277,8 +289,12 @@ public class ModelMerger
 		for( ICMetadata grandchild : grandchildren )
 			mergeIntoModel( model, child, grandchild );
 	}
-	
-	private ObjectModel validate( ObjectModel model )
+
+	/**
+	 * This method make sure that once all the modules are combined that the standard MIM
+	 * types are present. If they're not, they will be merged in.
+	 */
+	private ObjectModel validate( ObjectModel model ) throws JInconsistentFDD
 	{
 		// ensure that HLAobjectRoot is present
 		// ensure that HLAinteractionRoot is present

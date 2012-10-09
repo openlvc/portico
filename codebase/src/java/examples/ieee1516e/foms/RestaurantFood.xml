@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objectModel xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 http://standards.ieee.org/downloads/1516/1516.2-2010/IEEE1516-DIF-2010.xsd" xmlns="http://standards.ieee.org/IEEE1516-2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelIdentification>
+        <name>RestaurantFood</name>
+        <type>FOM</type>
+        <version>3.0</version>
+        <modificationDate>2010-09-09</modificationDate>
+        <securityClassification>Unclassified</securityClassification>
+        <releaseRestriction>Other organizations not related to Federated Foods</releaseRestriction>
+        <purpose>To define a food module for a restaurant federation</purpose>
+        <applicationDomain>Restaurant operations</applicationDomain>
+        <description>Food for the modular restaurant.</description>
+        <useLimitation>Derived models must reference this document</useLimitation>
+        <useHistory>Originally used as an example in the DoD HLA 1.3 specification</useHistory>
+        <useHistory>Used as an example in the HLA IEEE1516.2-2000 specification</useHistory>
+        <useHistory>Used as an example in the HLA IEEE1516.2-2010 specification after conversion to a FOM module (MIM information stripped out)</useHistory>
+        <keyword>
+            <taxonomy>Food Service Industry Taxonomy</taxonomy>
+            <keywordValue>Restaurant</keywordValue>
+        </keyword>
+        <keyword>
+            <taxonomy>Food Service Industry Taxonomy</taxonomy>
+            <keywordValue>Menu</keywordValue>
+        </keyword>
+        <keyword>
+            <taxonomy>Food Service Industry Taxonomy</taxonomy>
+            <keywordValue>Waiter</keywordValue>
+        </keyword>
+        <poc>
+            <pocType>Sponsor</pocType>
+            <pocName>Mr. Joseph Doe</pocName>
+            <pocOrg>Joe's Place</pocOrg>
+            <pocTelephone>1-977-555-1234</pocTelephone>
+            <pocEmail>doej@fedfoods.com</pocEmail>
+        </poc>
+        <poc>
+            <pocType>Author</pocType>
+            <pocName>Mr. Sven Swede</pocName>
+            <pocOrg>Federated Foods</pocOrg>
+        </poc>
+        <reference>
+            <type>HTML document</type>
+            <identification>www.fedfoods.com/restsim.html</identification>
+        </reference>
+        <reference>
+            <type>Federation Agreements</type>
+            <identification>www.fedfoods.com/restsimAgreement.pdf</identification>
+        </reference>
+        <reference>
+            <type>Dependency</type>
+            <identification>RestaurantProcesses</identification>
+        </reference>
+        <other>See Mobil International Restaurant Guide for more information</other>
+        <glyph alt="Restaurant" width="32" height="32" type="GIF">R0lGODlhIAAgAKIAAAAAAP///wD//8DAwICAgP///wAAAAAAACH5BAEAAAUALAAAAAAgACAAAAOrGLLc/nCpSKu9mIXNu//eA47kJpbgMHznALxESRBq6GzEq69fPtAxzimne/E4PuBPeAsQi4COKzdzdYZQI7LouzYDWUDQqaPaGhwX9PgUs764dWAqPnrRIzURdcrv+HA9ZYB4IESHJX0eiE92dxqCbnFab4VbL4uDZ5AcRY5gmkyFapQfXI8SG6d+oS1FKKQAPFilJKSinDMoHjUmgbskisDBGcXGx2jIFwEJADs=</glyph>
+    </modelIdentification>
+    <objects>
+        <objectClass>
+            <name>HLAobjectRoot</name>
+            <objectClass>
+                <name>Food</name>
+                <sharing>Subscribe</sharing>
+                <semantics>Products served at the restaurant</semantics>
+                <objectClass>
+                    <name>MainCourse</name>
+                    <sharing>PublishSubscribe</sharing>
+                    <semantics>Principal dish</semantics>
+                </objectClass>
+                <objectClass>
+                    <name>Drink</name>
+                    <sharing>Subscribe</sharing>
+                    <semantics>Liquid accompanyment to meal</semantics>
+                    <attribute>
+                        <name>NumberCups</name>
+                        <dataType>DrinkCount</dataType>
+                        <updateType>Conditional</updateType>
+                        <updateCondition>Customer request</updateCondition>
+                        <ownership>NoTransfer</ownership>
+                        <sharing>PublishSubscribe</sharing>
+                        <dimensions>
+                            <dimension>BarQuantity</dimension>
+                        </dimensions>
+                        <transportation>HLAreliable</transportation>
+                        <order>TimeStamp</order>
+                        <semantics>Number of drinks</semantics>
+                    </attribute>
+                </objectClass>
+                <objectClass>
+                    <name>Appetizers</name>
+                    <sharing>Subscribe</sharing>
+                    <semantics>Portion served before main course</semantics>
+                    <objectClass>
+                        <name>Soup</name>
+                        <sharing>Subscribe</sharing>
+                        <semantics>Soup course</semantics>
+                    </objectClass>
+                    <objectClass>
+                        <name>Nachos</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Nachos</semantics>
+                    </objectClass>
+                </objectClass>
+                <objectClass>
+                    <name>Entree</name>
+                    <sharing>Subscribe</sharing>
+                    <semantics>Principal dish</semantics>
+                    <objectClass>
+                        <name>Beef</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Beef entree</semantics>
+                    </objectClass>
+                    <objectClass>
+                        <name>Chicken</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Chicken entree</semantics>
+                    </objectClass>
+                    <objectClass>
+                        <name>Seafood</name>
+                        <sharing>Subscribe</sharing>
+                        <semantics>Seafood entree</semantics>
+                        <objectClass>
+                            <name>Fish</name>
+                            <sharing>PublishSubscribe</sharing>
+                            <semantics>Fish of the day</semantics>
+                        </objectClass>
+                        <objectClass>
+                            <name>Shrimp</name>
+                            <sharing>PublishSubscribe</sharing>
+                            <semantics>Shrimp scampi</semantics>
+                        </objectClass>
+                        <objectClass>
+                            <name>Lobster</name>
+                            <sharing>PublishSubscribe</sharing>
+                            <semantics>Lobster thermador</semantics>
+                        </objectClass>
+                    </objectClass>
+                    <objectClass>
+                        <name>Pasta</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Pasta entree</semantics>
+                    </objectClass>
+                </objectClass>
+                <objectClass>
+                    <name>SideDish</name>
+                    <sharing>Subscribe</sharing>
+                    <semantics>ala carte dishes</semantics>
+                    <objectClass>
+                        <name>Corn</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Corn side dish</semantics>
+                    </objectClass>
+                    <objectClass>
+                        <name>Broccoli</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Broccoli side dish</semantics>
+                    </objectClass>
+                    <objectClass>
+                        <name>BakedPotato</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Baked potato side dish</semantics>
+                    </objectClass>
+                </objectClass>
+                <objectClass>
+                    <name>Dessert</name>
+                    <sharing>Subscribe</sharing>
+                    <semantics>Deserts</semantics>
+                    <objectClass>
+                        <name>Cake</name>
+                        <sharing>PublishSubscribe</sharing>
+                        <semantics>Cake dessert</semantics>
+                    </objectClass>
+                    <objectClass>
+                        <name>IceCream</name>
+                        <sharing>Subscribe</sharing>
+                        <semantics>Ice cream dessert</semantics>
+                        <objectClass>
+                            <name>Chocolate</name>
+                            <sharing>PublishSubscribe</sharing>
+                            <semantics>Chocolate ice cream</semantics>
+                        </objectClass>
+                        <objectClass>
+                            <name>Vanilla</name>
+                            <sharing>PublishSubscribe</sharing>
+                            <semantics>vanilla ice cream</semantics>
+                        </objectClass>
+                    </objectClass>
+                </objectClass>
+            </objectClass>
+        </objectClass>
+    </objects>
+    <dimensions>
+        <dimension>
+            <name>SodaFlavor</name>
+            <dataType>FlavorType</dataType>
+            <upperBound>3</upperBound>
+            <normalization>linearEnumerated (Flavor, [Cola, Orange, RootBeer])</normalization>
+            <value>[0..3)</value>
+        </dimension>
+        <dimension>
+            <name>BarQuantity</name>
+            <dataType>DrinkCount</dataType>
+            <upperBound>25</upperBound>
+            <normalization>linear (NumberCups, 1, 25)</normalization>
+            <value>[0)</value>
+        </dimension>
+        <dimension>
+            <name>WaiterId</name>
+            <dataType>EmplId</dataType>
+            <upperBound>20</upperBound>
+            <normalization>linear (WaiterId, 1, 20)</normalization>
+            <value>Excluded</value>
+        </dimension>
+    </dimensions>
+    <tags>
+        <updateReflectTag>
+            <dataType>NA</dataType>
+            <semantics>NA</semantics>
+        </updateReflectTag>
+        <sendReceiveTag>
+            <dataType>NA</dataType>
+            <semantics>NA</semantics>
+        </sendReceiveTag>
+        <deleteRemoveTag>
+            <dataType>HLAASCIIstring</dataType>
+            <semantics>Reason for deletion</semantics>
+        </deleteRemoveTag>
+        <divestitureRequestTag>
+            <dataType>NA</dataType>
+            <semantics>NA</semantics>
+        </divestitureRequestTag>
+        <divestitureCompletionTag>
+            <dataType>NA</dataType>
+            <semantics>NA</semantics>
+        </divestitureCompletionTag>
+        <acquisitionRequestTag>
+            <dataType>NA</dataType>
+            <semantics>NA</semantics>
+        </acquisitionRequestTag>
+        <requestUpdateTag>
+            <dataType>NA</dataType>
+            <semantics>NA</semantics>
+        </requestUpdateTag>
+    </tags>
+    <dataTypes>
+        <simpleDataTypes>
+            <simpleData>
+                <name>DrinkCount</name>
+                <representation>UnsignedShort</representation>
+                <units>Cups</units>
+                <resolution>1</resolution>
+                <accuracy>Perfect</accuracy>
+                <semantics>Measure of number of drinks</semantics>
+            </simpleData>
+        </simpleDataTypes>
+    </dataTypes>
+    <notes/>
+</objectModel>
