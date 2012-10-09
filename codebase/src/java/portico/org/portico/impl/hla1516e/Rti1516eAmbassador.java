@@ -497,16 +497,9 @@ public class Rti1516eAmbassador implements RTIambassador
 	}
 
 	// 4.9
-	public FederateHandle joinFederationExecution( String federateName,
-	                                               String federateType,
-	                                               String federationName,
-	                                               URL[] additionalFomModules )
+	public FederateHandle joinFederationExecution( String federateType, String federationName )
 	    throws CouldNotCreateLogicalTimeFactory,
-	           FederateNameAlreadyInUse,
 	           FederationExecutionDoesNotExist,
-	           InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
 	           SaveInProgress,
 	           RestoreInProgress,
 	           FederateAlreadyExecutionMember,
@@ -514,32 +507,16 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		logger.warn( "joinFederationExecution(name,type,federation,modules): "+
-		             "Not fully supported, modules ignored" );
-
-		return joinFederationExecution( federateName, federateType, federationName );
-	}
-
-	// 4.9
-	public FederateHandle joinFederationExecution( String federateType,
-	                                               String federationName,
-	                                               URL[] additionalFomModules )
-	    throws CouldNotCreateLogicalTimeFactory,
-	           FederationExecutionDoesNotExist,
-	           InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
-	           SaveInProgress,
-	           RestoreInProgress,
-	           FederateAlreadyExecutionMember,
-	           NotConnected,
-	           CallNotAllowedFromWithinCallback,
-	           RTIinternalError
-	{
-		logger.warn( "joinFederationExecution(type,federation,modules): Not fully supported, "+
-		             "modules ignored" );
-
-		return joinFederationExecution( federateType, federationName );
+		// this method just passes off the request to the (String,String,String) overload
+		// using the federate name as the federate type
+		try
+		{
+			return joinFederationExecution( federateType, federateType, federationName );
+		}
+		catch( FederateNameAlreadyInUse niu )
+		{
+			throw new RTIinternalError( niu.getMessage(), niu );
+		}
 	}
 
 	// 4.9
@@ -556,6 +533,79 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
+		try
+		{
+			return joinFederationExecution( federateName, federateType, federationName, null );
+		}
+		catch( CouldNotOpenFDD cnof )
+		{
+			// should not happen
+			logException( "joinFederationExecution", cnof );
+			return null;
+		}
+		catch( InconsistentFDD ifdd )
+		{
+			// should not happen
+			logException( "joinFederationExecution", ifdd );
+			return null;
+		}
+		catch( ErrorReadingFDD erf )
+		{
+			// should not happen
+			logException( "joinFederationExecution", erf );
+			return null;
+		}
+	}
+
+	// 4.9
+	public FederateHandle joinFederationExecution( String federateType,
+	                                               String federationName,
+	                                               URL[] fomModules )
+	    throws CouldNotCreateLogicalTimeFactory,
+	           FederationExecutionDoesNotExist,
+	           InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           SaveInProgress,
+	           RestoreInProgress,
+	           FederateAlreadyExecutionMember,
+	           NotConnected,
+	           CallNotAllowedFromWithinCallback,
+	           RTIinternalError
+	{
+		try
+		{
+			return joinFederationExecution( federateType,
+			                                federateType,
+			                                federationName,
+			                                fomModules );
+		}
+		catch( FederateNameAlreadyInUse fniu )
+		{
+			// should not happen
+			logException( "joinFederationExecution", fniu );
+			return null;
+		}
+	}
+
+	// 4.9
+	public FederateHandle joinFederationExecution( String federateName,
+	                                               String federateType,
+	                                               String federationName,
+	                                               URL[] fomModules )
+	    throws CouldNotCreateLogicalTimeFactory,
+	           FederateNameAlreadyInUse,
+	           FederationExecutionDoesNotExist,
+	           InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           SaveInProgress,
+	           RestoreInProgress,
+	           FederateAlreadyExecutionMember,
+	           NotConnected,
+	           CallNotAllowedFromWithinCallback,
+	           RTIinternalError
+	{
 		// 0. check the federate ambassador //
 		// If we don't have a federate ambassador, we haven't connected yet
 		if( helper.getFederateAmbassador() == null )
@@ -564,7 +614,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		JoinFederation request = new JoinFederation( federationName, federateName );
+		JoinFederation request = new JoinFederation( federationName, federateName, fomModules );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -612,27 +662,6 @@ public class Rti1516eAmbassador implements RTIambassador
 				logException( "joinFederationExecution", theException );
 				return null;
 			}
-		}
-	}
-
-	// 4.9
-	public FederateHandle joinFederationExecution( String federateType, String federationName )
-	    throws CouldNotCreateLogicalTimeFactory,
-	           FederationExecutionDoesNotExist,
-	           SaveInProgress,
-	           RestoreInProgress,
-	           FederateAlreadyExecutionMember,
-	           NotConnected,
-	           CallNotAllowedFromWithinCallback,
-	           RTIinternalError
-	{
-		try
-		{
-			return joinFederationExecution( federateType, federateType, federationName );
-		}
-		catch( FederateNameAlreadyInUse niu )
-		{
-			throw new RTIinternalError( niu.getMessage(), niu );
 		}
 	}
 

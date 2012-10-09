@@ -14,12 +14,18 @@
  */
 package org.portico.lrc.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.portico.lrc.compat.JInconsistentFDD;
+import org.portico.lrc.compat.JRTIinternalError;
 
 /**
  * This class provides the logic for merging multiple {@link ObjectModel}s together into a
@@ -43,7 +49,7 @@ public class ModelMerger
 	//----------------------------------------------------------
 	public ModelMerger()
 	{
-		this.logger = Logger.getLogger( "portico.lrc" );
+		this.logger = Logger.getLogger( "portico.lrc.merger" );
 	}
 
 	//----------------------------------------------------------
@@ -53,20 +59,22 @@ public class ModelMerger
 	 * Model merging is not supported at the moment. For now we just return the first module
 	 * in the list and ignore the others.
 	 */
-	private ObjectModel mergeModels( List<ObjectModel> models ) throws JInconsistentFDD
+	private ObjectModel mergeModels( List<ObjectModel> models )
+		throws JInconsistentFDD,
+		       JRTIinternalError
 	{
 		// if we only got one model, there's nothing to merge!
 		if( models.size() == 1 )
 			return validate( models.get(0) );
 
-		logger.debug( "Merging "+models.size()+" different FOM models" );
+		logger.trace( "Beginning merge of "+models.size()+" FOM models" );
 
 		// if we have more than two, loop until we're done
 		ObjectModel base = models.get(0);
 		for( int i = 1; i < models.size(); i++ )
 		{
-			ObjectModel current = models.get(i);
-			logger.debug( "Merging ["+current.getFileName()+"]" );
+			ObjectModel current = heavyCopy( models.get(i) );
+			logger.trace( "Merging ["+current.getFileName()+"] into ["+base.getFileName()+"]" );
 			base = merge( base, current );
 		}
 		
@@ -137,7 +145,7 @@ public class ModelMerger
 			OCMetadata baseChild = base.getChildType( extensionChild.getLocalName() );
 			if( baseChild == null )
 			{
-				logger.trace( "Merging class ["+extensionChild.getQualifiedName()+"]" );
+				logger.trace( "  Merging class ["+extensionChild.getQualifiedName()+"]" );
 				mergeIntoModel( base.getModel(), base, extensionChild );
 			}
 			else
@@ -225,7 +233,7 @@ public class ModelMerger
 			ICMetadata baseChild = base.getChildType( extensionChild.getLocalName() );
 			if( baseChild == null )
 			{
-				logger.trace( "Merging in class ["+extensionChild.getQualifiedName()+"]" );
+				logger.trace( "  Merging class ["+extensionChild.getQualifiedName()+"]" );
 				mergeIntoModel( base.getModel(), base, extensionChild );
 			}
 			else
@@ -277,15 +285,109 @@ public class ModelMerger
 		return model;
 	}
 
+	/**
+	 * This method makes a copy of the provided model in a very heavy-weight way. Basically it
+	 * serializes it to a byte[] and then reconstitutes it back into a brand new ObjectModel.
+	 * Inelegant, but simple and will do for now.
+	 */
+	private ObjectModel heavyCopy( ObjectModel model ) throws JRTIinternalError
+	{
+		try
+		{
+			// deflate
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream( baos );
+			oos.writeObject( model );
+			
+			byte[] bytes = baos.toByteArray();
+			
+			// inflate
+			ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
+			ObjectInputStream ois = new ObjectInputStream( bais );
+			return (ObjectModel)ois.readObject();
+		}
+		catch( Exception e )
+		{
+			throw new JRTIinternalError( "Error while cloning object models to ensure they merge:"+
+			                             e.getMessage(), e );
+		}
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 	/**
-	 * Model merging is not supported at the moment. For now we just return the first module
-	 * in the list and ignore the others.
+	 * From the given list, merge all subsequent object models into the first and return it. 
+	 * If any of the modules cannot be merged for any reason, throw a {@link JInconsistentFDD}
+	 * exception.
+	 * <p/>
+	 * Not that this method will ALTER the first model (merging everything else into it) but
+	 * not alter any of the subsequent models (copies of them will be made).
 	 */
-	public static ObjectModel merge( List<ObjectModel> models ) throws JInconsistentFDD
+	public static ObjectModel merge( List<ObjectModel> models )
+		throws JInconsistentFDD,
+		       JRTIinternalError
 	{
 		return new ModelMerger().mergeModels( models );
+	}
+
+	/**
+	 * Merges the provided extensions into the base. This will irrevocably alter the base but
+	 * will not change any of the extensions.
+	 */
+	public static ObjectModel merge( ObjectModel base, List<ObjectModel> extensions )
+		throws JInconsistentFDD,
+		       JRTIinternalError
+	{
+		ArrayList<ObjectModel> completeList = new ArrayList<ObjectModel>();
+		completeList.add( base );
+		completeList.addAll( extensions );
+		return ModelMerger.merge( completeList );
+	}
+
+	/**
+	 * This is the same as {@link #merge(List)} except that it doesn't make changes to ANY of
+	 * the provided models. Use this when you just want to validate that two models will infact
+	 * merge.
+	 * <p/>
+	 * This will merge the given extension modules into the provided base model
+	 */
+	public static void mergeDryRun( ObjectModel base, List<ObjectModel> extensions )
+		throws JInconsistentFDD,
+		       JRTIinternalError
+	{
+		ArrayList<ObjectModel> completeList = new ArrayList<ObjectModel>();
+		completeList.add( base );
+		completeList.addAll( extensions );
+
+		// first we create a copy of each object model
+		// we do this very crudely, by just pumping it down an object output stream and
+		// then back in an input stream. Yuk. I know.
+		// create the output stream with the given size (or resizable if -1 is provided)
+		List<ObjectModel> cloneList = new ArrayList<ObjectModel>();
+		try
+		{
+			// deflate
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream( baos );
+			for( ObjectModel temp : completeList )
+				oos.writeObject( temp );
+			
+			byte[] bytes = baos.toByteArray();
+			
+			// inflate
+			ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
+			ObjectInputStream ois = new ObjectInputStream( bais );
+			for( int i = 0; i < completeList.size(); i++ )
+				cloneList.add( (ObjectModel)ois.readObject() );
+		}
+		catch( Exception e )
+		{
+			throw new JRTIinternalError( "Error while cloning object models to ensure they merge:"+
+			                             e.getMessage(), e );
+		}
+
+		// run a merge on the clones to ensure it passes happily
+		ModelMerger.merge( cloneList );
 	}
 }

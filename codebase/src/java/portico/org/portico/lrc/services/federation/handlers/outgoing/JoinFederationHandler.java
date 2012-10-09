@@ -14,6 +14,7 @@
  */
 package org.portico.lrc.services.federation.handlers.outgoing;
 
+import java.net.URL;
 import java.util.Map;
 
 import org.portico.bindings.ConnectedRoster;
@@ -23,6 +24,7 @@ import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.services.federation.msg.JoinFederation;
 import org.portico.lrc.services.federation.msg.RoleCall;
+import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 
@@ -86,6 +88,16 @@ public class JoinFederationHandler extends LRCMessageHandler
 		// log the request and pass it on to the connection
 		logger.debug( "ATTEMPT Join federate ["+federate+"] to federation ["+federation+"]" );
 		
+		// parse any additional FOM modules and store back in the request for processing
+		if( request.getFomModules().size() > 0 )
+		{
+			for( URL fedLocation : request.getFomModules() )
+				request.addJoinModule( FomParser.parse(fedLocation) );
+			
+			// let people know what happened
+			logger.debug( "Parsed ["+request.getJoinModules().size()+"] additional FOM modules" );
+		}
+		
 		///////////////////////////////
 		// connect to the federation //
 		///////////////////////////////
@@ -112,6 +124,7 @@ public class JoinFederationHandler extends LRCMessageHandler
 		// broadcast out the notification so that other federates know we're in the federation
 		rolecall.setSourceFederate( federateHandle );
 		rolecall.setImmediateProcessingFlag( true );
+		rolecall.addAdditionalFomModules( request.getJoinModules() );
 		connection.broadcast( rolecall );
 		
 		// wait until we have gotten a RoleCall from everyone, this ensures we don't end
@@ -127,7 +140,7 @@ public class JoinFederationHandler extends LRCMessageHandler
 			while( lrcState.getKnownFederate(remoteHandle) == null )
 			{
 				// make sure we don't wait forever
-				if( millisSlept > 5000 )
+				if( millisSlept > 5000 ) // have to bump this up if debugging in Eclipse
 				{
 					throw new JRTIinternalError( "Waited 5 seconds for RoleCall from federate ["+
 					                             remoteHandle+
