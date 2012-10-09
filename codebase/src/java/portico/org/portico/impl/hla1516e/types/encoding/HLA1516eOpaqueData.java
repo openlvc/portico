@@ -22,8 +22,6 @@ import hla.rti1516e.encoding.HLAopaqueData;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.portico.utils.bithelpers.BitHelpers;
-
 public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaqueData
 {
 	//----------------------------------------------------------
@@ -133,43 +131,57 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	@Override
 	public final int getOctetBoundary()
 	{
-		return 4;
+		return 4 + value.length;
 	}
 
 	@Override
 	public final int getEncodedLength()
 	{
-		return 4+value.length;
+		return 4 + value.length;
 	}
 
 	@Override
 	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		byteWrapper.put( toByteArray() );
+		if( byteWrapper.remaining() < getEncodedLength() )
+			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
+		
+		byteWrapper.putInt( this.value.length );
+		byteWrapper.put( this.value );
 	}
 
 	@Override
 	public final byte[] toByteArray() throws EncoderException
 	{
-		byte[] buffer = new byte[4+value.length];
-		BitHelpers.putIntBE( value.length, buffer, 0 );
-		BitHelpers.putByteArray( value, buffer, 4 );
-		return buffer;
+		// Encode into a byte wrapper
+		ByteWrapper byteWrapper = new ByteWrapper( getEncodedLength() );
+		this.encode( byteWrapper );
+		
+		// Return underlying array
+		return byteWrapper.array();
 	}
 
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		int length = byteWrapper.getInt();
-		byte[] buffer = new byte[length];
-		byteWrapper.get( buffer );
+		try
+		{
+    		int length = byteWrapper.getInt();
+    		this.value = new byte[length];
+    		
+    		byteWrapper.get( this.value );
+		}
+		catch( ArrayIndexOutOfBoundsException aioobe )
+		{
+			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		}
 	}
 
 	@Override
 	public final void decode( byte[] bytes ) throws DecoderException
 	{
-		int length = BitHelpers.readIntBE( bytes, 0 );
-		this.value = BitHelpers.readByteArray( bytes, 4, length );
+		ByteWrapper byteWrapper = new ByteWrapper( bytes );
+		this.decode( byteWrapper );
 	}
 
 	//----------------------------------------------------------

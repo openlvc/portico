@@ -14,6 +14,8 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import org.portico.utils.bithelpers.BitHelpers;
+
 import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
@@ -24,23 +26,26 @@ public class HLA1516eBoolean extends HLA1516eDataElement implements HLAboolean
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-
+	private static final int HLAtrue = 0x01;
+	private static final int HLAfalse = 0x00;
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private boolean value;
+	private HLA1516eInteger32BE value;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public HLA1516eBoolean()
 	{
-		this.value = false;
+		this.value = new HLA1516eInteger32BE( HLAfalse );
 	}
 
 	public HLA1516eBoolean( boolean value )
 	{
-		this.value = value;
+		this();
+		this.setValue( value );
 	}
 
 	//----------------------------------------------------------
@@ -53,7 +58,7 @@ public class HLA1516eBoolean extends HLA1516eDataElement implements HLAboolean
 	 */
 	public boolean getValue()
 	{
-		return this.value;
+		return this.value.getValue() == HLAtrue;
 	}
 
 	/**
@@ -63,7 +68,8 @@ public class HLA1516eBoolean extends HLA1516eDataElement implements HLAboolean
 	 */
 	public void setValue( boolean value )
 	{
-		this.value = value;
+		int valueAsInt = value ? HLAtrue : HLAfalse;
+		this.value.setValue( valueAsInt );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -72,47 +78,48 @@ public class HLA1516eBoolean extends HLA1516eDataElement implements HLAboolean
 	@Override
 	public int getOctetBoundary()
 	{
-		return 1;
+		return this.value.getOctetBoundary();
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		if( this.value )
-			byteWrapper.put( 1 );
-		else
-			byteWrapper.put( 0 );
+		this.value.encode( byteWrapper );
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return 1;
+		return this.value.getEncodedLength();
 	}
 
 	@Override
 	public byte[] toByteArray() throws EncoderException
 	{
-		return this.value ? new byte[]{1} : new byte[]{0};
+		return this.value.toByteArray();
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		byte[] found = new byte[1];
-		byteWrapper.get( found );
-		decode( found );
+		this.value.decode( byteWrapper );
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		if( bytes[0] == 1 )
-			this.value = true;
-		else if( bytes[0] == 0 )
-			this.value = false;
-		else
-			throw new DecoderException("Only valid values for boolean are 0 and 1, found: "+bytes[0]);
+		try
+		{
+			int candidateValue = BitHelpers.readIntBE( bytes, 0 );
+			if( candidateValue == HLAtrue || candidateValue == HLAfalse )
+				this.value.setValue( candidateValue );
+			else
+				throw new DecoderException("Only valid values for boolean are 0 and 1, found: "+candidateValue);
+		}
+		catch( Exception e )
+		{
+			throw new DecoderException( e.getMessage(), e );
+		}
 	}
 
 	//----------------------------------------------------------

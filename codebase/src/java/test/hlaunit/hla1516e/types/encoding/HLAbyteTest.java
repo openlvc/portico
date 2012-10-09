@@ -23,12 +23,12 @@ import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.EncoderFactory;
-import hla.rti1516e.encoding.HLAASCIIchar;
+import hla.rti1516e.encoding.HLAbyte;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.hla1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAASCIIcharTest", "types", "encoding"} )
-public class HLAASCIIcharTest extends Abstract1516eTest
+@Test( sequential = true,groups = {"HLAbyteTest", "types", "encoding"} )
+public class HLAbyteTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -78,28 +78,28 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////
-	// TEST: testHLAASCIIcharCreate() //
+	// TEST: testHLAbyteCreate() //
 	////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharCreate()
+	public void testHLAbyteCreate()
 	{
 		// Default constructor
-		HLAASCIIchar defaultConstructor = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte defaultConstructor = this.encoderFactory.createHLAbyte();
 		Assert.assertNotNull( defaultConstructor );
 
 		// Value constructor
-		HLAASCIIchar valueConstructor = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAbyte valueConstructor = this.encoderFactory.createHLAbyte( (byte)0x41 );
 		Assert.assertNotNull( valueConstructor );
 		Assert.assertEquals( valueConstructor.getValue(), (byte)0x41 );
 	}
 
 	/////////////////////////////////////////
-	// TEST: testHLAASCIIcharGetSetValue() //
+	// TEST: testHLAbyteGetSetValue() //
 	/////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharGetSetValue()
+	public void testHLAbyteGetSetValue()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAbyte data = this.encoderFactory.createHLAbyte( (byte)0x41 );
 
 		// Get/Set valid values
 		data.setValue( (byte)0x42 );
@@ -109,22 +109,22 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	//////////////////////////////////////////////
-	// TEST: testHLAASCIIcharGetOctetBoundary() //
+	// TEST: testHLAbyteGetOctetBoundary() //
 	//////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharGetOctetBoundary()
+	public void testHLAbyteGetOctetBoundary()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte data = this.encoderFactory.createHLAbyte();
 		Assert.assertEquals( data.getOctetBoundary(), 1 );
 	}
 
 	//////////////////////////////////////////
-	// TEST: testHLAASCIIcharEncodeSingle() //
+	// TEST: testHLAbyteEncodeSingle() //
 	//////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharEncodeSingle()
+	public void testHLAbyteEncodeSingle()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAbyte data = this.encoderFactory.createHLAbyte( (byte)0x41 );
 
 		// Encode with a wrapper that is exactly the right size
 		int length = data.getEncodedLength();
@@ -157,14 +157,14 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	////////////////////////////////////////////
-	// TEST: testHLAASCIIcharEncodeMultiple() //
+	// TEST: testHLAbyteEncodeMultiple() //
 	////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharEncodeMultiple()
+	public void testHLAbyteEncodeMultiple()
 	{
-		HLAASCIIchar[] data = { this.encoderFactory.createHLAASCIIchar( (byte)0x41 ),
-		                        this.encoderFactory.createHLAASCIIchar( (byte)0x42 ),
-		                        this.encoderFactory.createHLAASCIIchar( (byte)0x43 ) };
+		HLAbyte[] data = { this.encoderFactory.createHLAbyte( (byte)0x41 ),
+		                        this.encoderFactory.createHLAbyte( (byte)0x42 ),
+		                        this.encoderFactory.createHLAbyte( (byte)0x43 ) };
 
 		// Encode with a wrapper that can contain up to 3 of this type
 		int length = data[0].getEncodedLength();
@@ -184,7 +184,7 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 
 		// Attempting to encode beyond the ByteWrapper's bounds should result in an EncoderException
-		HLAASCIIchar extra = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte extra = this.encoderFactory.createHLAbyte();
 		try
 		{
 			extra.encode( wrapper );
@@ -204,12 +204,12 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharEncodeEmptyWrapper() //
+	// TEST: testHLAbyteEncodeEmptyWrapper() //
 	////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharEncodeEmptyWrapper()
+	public void testHLAbyteEncodeEmptyWrapper()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte data = this.encoderFactory.createHLAbyte();
 		ByteWrapper emptyWrapper = new ByteWrapper();
 
 		try
@@ -231,22 +231,22 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	//////////////////////////////////////////////
-	// TEST: testHLAASCIIcharGetEncodedLength() //
+	// TEST: testHLAbyteGetEncodedLength() //
 	//////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharGetEncodedLength()
+	public void testHLAbyteGetEncodedLength()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte data = this.encoderFactory.createHLAbyte();
 		Assert.assertEquals( data.getEncodedLength(), 1 );
 	}
 
 	/////////////////////////////////////////
-	// TEST: testHLAASCIIcharToByteArray() //
+	// TEST: testHLAbyteToByteArray() //
 	/////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharToByteArray()
+	public void testHLAbyteToByteArray()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAbyte data = this.encoderFactory.createHLAbyte( (byte)0x41 );
 		byte[] asByteArray = data.toByteArray();
 
 		Assert.assertEquals( asByteArray.length, 1 );
@@ -254,16 +254,16 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	/////////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharDecodeByteWrapperSingle() //
+	// TEST: testHLAbyteDecodeByteWrapperSingle() //
 	/////////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteWrapperSingle()
+	public void testHLAbyteDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
 		ByteWrapper wrapper = new ByteWrapper( new byte[]{ (byte)0x41 } );
 
 		// Create the object to decode into
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x00 );
+		HLAbyte data = this.encoderFactory.createHLAbyte( (byte)0x00 );
 
 		try
 		{
@@ -275,7 +275,7 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		catch( Exception e )
 		{
 			// FAIL: not expecting an exception here
-			unexpectedException( "Decoding an HLAASCIIchar", e );
+			unexpectedException( "Decoding an HLAbyte", e );
 		}
 
 		// Attempting to decode another type should result in a DecoderException
@@ -298,10 +298,10 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	///////////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharDecodeByteWrapperMultiple() //
+	// TEST: testHLAbyteDecodeByteWrapperMultiple() //
 	///////////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteWrapperMultiple()
+	public void testHLAbyteDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
 		byte[] buffer = new byte[]{ (byte)0x41, (byte)0x42, (byte)0x43 };
@@ -313,7 +313,7 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 			for( int i = 0; i < 3; ++i )
 			{
 				// Create an object to decode into
-				HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x00 );
+				HLAbyte data = this.encoderFactory.createHLAbyte( (byte)0x00 );
 				data.decode( wrapper );
 
 				Assert.assertFalse( data.getValue() == (byte)0x00 );
@@ -322,13 +322,13 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 		catch( Exception e )
 		{
-			unexpectedException( "Decoding a HLAASCIIchar", e );
+			unexpectedException( "Decoding a HLAbyte", e );
 		}
 
 		// Attempting to decode another type should result in a DecoderException
 		try
 		{
-			HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+			HLAbyte data = this.encoderFactory.createHLAbyte();
 			data.decode( wrapper );
 
 			// FAIL: expected a DecoderException
@@ -346,12 +346,12 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	////////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharDecodeByteWrapperEmpty() //
+	// TEST: testHLAbyteDecodeByteWrapperEmpty() //
 	////////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteWrapperEmpty()
+	public void testHLAbyteDecodeByteWrapperEmpty()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte data = this.encoderFactory.createHLAbyte();
 		ByteWrapper emptyWrapper = new ByteWrapper();
 
 		try
@@ -373,16 +373,16 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 	}
 
 	///////////////////////////////////////
-	// testHLAASCIIcharDecodeByteArray() //
+	// testHLAbyteDecodeByteArray() //
 	///////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteArray()
+	public void testHLAbyteDecodeByteArray()
 	{
 		// Create a ByteWrapper with data for a single type contained within
 		byte[] buffer = { (byte)0x41 };
 
 		// Create the object to decode into
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x00 );
+		HLAbyte data = this.encoderFactory.createHLAbyte( (byte)0x00 );
 
 		try
 		{
@@ -394,17 +394,17 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		catch( Exception e )
 		{
 			// FAIL: not expecting an exception here
-			unexpectedException( "Decoding an HLAASCIIchar", e );
+			unexpectedException( "Decoding an HLAbyte", e );
 		}
 	}
 
 	////////////////////////////////////////////
-	// testHLAASCIIcharDecodeByteArrayEmpty() //
+	// testHLAbyteDecodeByteArrayEmpty() //
 	////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteArrayEmpty()
+	public void testHLAbyteDecodeByteArrayEmpty()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAbyte data = this.encoderFactory.createHLAbyte();
 		byte[] emptyBuffer = new byte[0];
 
 		try

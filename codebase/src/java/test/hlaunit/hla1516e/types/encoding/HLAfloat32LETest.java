@@ -12,6 +12,10 @@
  */
 package hlaunit.hla1516e.types.encoding;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -23,17 +27,30 @@ import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.EncoderFactory;
-import hla.rti1516e.encoding.HLAASCIIchar;
+import hla.rti1516e.encoding.HLAfloat32LE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.hla1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAASCIIcharTest", "types", "encoding"} )
-public class HLAASCIIcharTest extends Abstract1516eTest
+@Test( sequential = true,groups = {"HLAfloat32LETest", "types", "encoding"} )
+public class HLAfloat32LETest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-
+	private static final float NOTHING = 0f;
+	
+	private static final float PI = 3.14159f;
+	private static final byte[] PI_BIN = new byte[] { (byte)0xd0, (byte)0x0f, (byte)0x49, 
+	                                                  (byte)0x40 };
+	
+	private static final float E = 2.71828f;
+	private static final byte[] E_BIN = new byte[]{ (byte)0x4d, (byte)0xf8, (byte)0x2d, 
+	                                                (byte)0x40 };
+	
+	private static final float G = 9.80665f;
+	private static final byte[] G_BIN = new byte[] { (byte)0x0a, (byte)0xe8, (byte)0x1c, 
+	                                                 (byte)0x41 };
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
@@ -72,59 +89,78 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 
 		super.afterClass();
 	}
+	
+	private byte[] getCombinedTestArray()
+	{
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream( PI_BIN.length + 
+		                                                         E_BIN.length +
+		                                                         G_BIN.length );
+		try
+		{
+			bytes.write( PI_BIN );
+			bytes.write( E_BIN );
+			bytes.write( G_BIN );
+		}
+		catch( IOException ioe )
+		{
+			unexpectedException( "Writing raw data types", ioe );
+		}
+		
+		return bytes.toByteArray();
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////// Test Methods //////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
 
-	////////////////////////////////////
-	// TEST: testHLAASCIIcharCreate() //
-	////////////////////////////////////
+	//////////////////////////////////////
+	// TEST: testHLAfloat32LECreate() //
+	//////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharCreate()
+	public void testHLAfloat32LECreate()
 	{
 		// Default constructor
-		HLAASCIIchar defaultConstructor = this.encoderFactory.createHLAASCIIchar();
+		HLAfloat32LE defaultConstructor = this.encoderFactory.createHLAfloat32LE();
 		Assert.assertNotNull( defaultConstructor );
 
 		// Value constructor
-		HLAASCIIchar valueConstructor = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAfloat32LE valueConstructor = this.encoderFactory.createHLAfloat32LE( PI );
 		Assert.assertNotNull( valueConstructor );
-		Assert.assertEquals( valueConstructor.getValue(), (byte)0x41 );
+		Assert.assertEquals( valueConstructor.getValue(), PI );
 	}
 
-	/////////////////////////////////////////
-	// TEST: testHLAASCIIcharGetSetValue() //
-	/////////////////////////////////////////
+	///////////////////////////////////////////
+	// TEST: testHLAfloat32LEGetSetValue() //
+	///////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharGetSetValue()
+	public void testHLAfloat32LEGetSetValue()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE( PI );
 
 		// Get/Set valid values
-		data.setValue( (byte)0x42 );
+		data.setValue( E );
 
-		Assert.assertFalse( (byte)0x41 == data.getValue() );
-		Assert.assertEquals( data.getValue(), (byte)0x42 );
+		Assert.assertFalse( data.getValue() == PI );
+		Assert.assertEquals( data.getValue(), E );
 	}
 
-	//////////////////////////////////////////////
-	// TEST: testHLAASCIIcharGetOctetBoundary() //
-	//////////////////////////////////////////////
+	////////////////////////////////////////////////
+	// TEST: testHLAfloat32LEGetOctetBoundary() //
+	////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharGetOctetBoundary()
+	public void testHLAfloat32LEGetOctetBoundary()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
-		Assert.assertEquals( data.getOctetBoundary(), 1 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE();
+		Assert.assertEquals( data.getOctetBoundary(), 4 );
 	}
 
-	//////////////////////////////////////////
-	// TEST: testHLAASCIIcharEncodeSingle() //
-	//////////////////////////////////////////
+	////////////////////////////////////////////
+	// TEST: testHLAfloat32LEEncodeSingle() //
+	////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharEncodeSingle()
+	public void testHLAfloat32LEEncodeSingle()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE( PI );
 
 		// Encode with a wrapper that is exactly the right size
 		int length = data.getEncodedLength();
@@ -136,7 +172,7 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		Assert.assertEquals( wrapper.getPos(), length );
 
 		// Are the contents of the ByteWrapper what is expected?
-		Assert.assertEquals( wrapper.array(), new byte[]{ (byte)0x41 } );
+		Assert.assertEquals( wrapper.array(), PI_BIN );
 
 		// Attempting to encode beyond the ByteWrapper's bounds should result in an EncoderException
 		try
@@ -156,35 +192,40 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 	}
 
-	////////////////////////////////////////////
-	// TEST: testHLAASCIIcharEncodeMultiple() //
-	////////////////////////////////////////////
+	//////////////////////////////////////////////
+	// TEST: testHLAfloat32LEEncodeMultiple() //
+	//////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharEncodeMultiple()
+	public void testHLAfloat32LEEncodeMultiple()
 	{
-		HLAASCIIchar[] data = { this.encoderFactory.createHLAASCIIchar( (byte)0x41 ),
-		                        this.encoderFactory.createHLAASCIIchar( (byte)0x42 ),
-		                        this.encoderFactory.createHLAASCIIchar( (byte)0x43 ) };
+		byte[] dataRaw = getCombinedTestArray();
+		
+		HLAfloat32LE[] data = { this.encoderFactory.createHLAfloat32LE( PI ),
+		                        this.encoderFactory.createHLAfloat32LE( E ),
+		                        this.encoderFactory.createHLAfloat32LE( G ) };
 
 		// Encode with a wrapper that can contain up to 3 of this type
-		int length = data[0].getEncodedLength();
-		ByteWrapper wrapper = new ByteWrapper( length * 3 );
+		ByteWrapper wrapper = new ByteWrapper( dataRaw.length );
+		int expectedPosition = 0;
+		
 		for( int i = 0; i < 3; ++i )
 		{
-			Assert.assertEquals( i * length, wrapper.getPos() );
+			Assert.assertEquals( expectedPosition, wrapper.getPos() );
 
 			// Does the position increment by the expected amount?
 			data[i].encode( wrapper );
-			Assert.assertEquals( (i + 1) * length, wrapper.getPos() );
+			expectedPosition += data[i].getEncodedLength();
+			
+			Assert.assertEquals( wrapper.getPos(), expectedPosition );
 
 			// Are the contents of the ByteWrapper what was expected?
-			byte[] wrapperContents = wrapper.array();
-			for( int j = 0; j < i; ++j )
-				Assert.assertEquals( wrapperContents[j], data[j].getValue() );
+			byte[] wrapperContents = Arrays.copyOf( wrapper.array(), expectedPosition );
+			byte[] dataToHere = Arrays.copyOf( dataRaw, expectedPosition );
+			Assert.assertEquals( wrapperContents, dataToHere );
 		}
 
 		// Attempting to encode beyond the ByteWrapper's bounds should result in an EncoderException
-		HLAASCIIchar extra = this.encoderFactory.createHLAASCIIchar();
+		HLAfloat32LE extra = this.encoderFactory.createHLAfloat32LE();
 		try
 		{
 			extra.encode( wrapper );
@@ -203,13 +244,13 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 	}
 
-	////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharEncodeEmptyWrapper() //
-	////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// TEST: testHLAfloat32LEEncodeEmptyWrapper() //
+	//////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharEncodeEmptyWrapper()
+	public void testHLAfloat32LEEncodeEmptyWrapper()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE();
 		ByteWrapper emptyWrapper = new ByteWrapper();
 
 		try
@@ -230,52 +271,49 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 	}
 
-	//////////////////////////////////////////////
-	// TEST: testHLAASCIIcharGetEncodedLength() //
-	//////////////////////////////////////////////
+	////////////////////////////////////////////////
+	// TEST: testHLAfloat32LEGetEncodedLength() //
+	////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharGetEncodedLength()
+	public void testHLAfloat32LEGetEncodedLength()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
-		Assert.assertEquals( data.getEncodedLength(), 1 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE( PI );
+		Assert.assertEquals( data.getEncodedLength(), PI_BIN.length );
 	}
 
-	/////////////////////////////////////////
-	// TEST: testHLAASCIIcharToByteArray() //
-	/////////////////////////////////////////
+	///////////////////////////////////////////
+	// TEST: testHLAfloat32LEToByteArray() //
+	///////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharToByteArray()
+	public void testHLAfloat32LEToByteArray()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x41 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE( PI );
 		byte[] asByteArray = data.toByteArray();
 
-		Assert.assertEquals( asByteArray.length, 1 );
-		Assert.assertEquals( asByteArray, new byte[]{ (byte)0x41 } );
+		Assert.assertEquals( asByteArray, PI_BIN );
 	}
 
-	/////////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharDecodeByteWrapperSingle() //
-	/////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	// TEST: testHLAfloat32LEDecodeByteWrapperSingle() //
+	///////////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteWrapperSingle()
+	public void testHLAfloat32LEDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
-		ByteWrapper wrapper = new ByteWrapper( new byte[]{ (byte)0x41 } );
+		ByteWrapper wrapper = new ByteWrapper( PI_BIN );
 
 		// Create the object to decode into
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x00 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE();
 
 		try
 		{
 			data.decode( wrapper );
-			
-			Assert.assertFalse( data.getValue() == (byte)0x00 );
-			Assert.assertEquals( data.getValue(), (byte)0x41 );
+			Assert.assertEquals( data.getValue(), PI );
 		}
 		catch( Exception e )
 		{
 			// FAIL: not expecting an exception here
-			unexpectedException( "Decoding an HLAASCIIchar", e );
+			unexpectedException( "Decoding an HLAfloat32LE", e );
 		}
 
 		// Attempting to decode another type should result in a DecoderException
@@ -297,14 +335,15 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 	}
 
-	///////////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharDecodeByteWrapperMultiple() //
-	///////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
+	// TEST: testHLAfloat32LEDecodeByteWrapperMultiple() //
+	/////////////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteWrapperMultiple()
+	public void testHLAfloat32LEDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
-		byte[] buffer = new byte[]{ (byte)0x41, (byte)0x42, (byte)0x43 };
+		byte[] buffer = getCombinedTestArray();
+		float[] values = { PI, E, G };
 		ByteWrapper wrapper = new ByteWrapper( buffer );
 
 		// Attempt to decode all three types contained within the wrapper
@@ -313,22 +352,22 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 			for( int i = 0; i < 3; ++i )
 			{
 				// Create an object to decode into
-				HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x00 );
+				HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE( NOTHING );
 				data.decode( wrapper );
 
-				Assert.assertFalse( data.getValue() == (byte)0x00 );
-				Assert.assertEquals( data.getValue(), buffer[i] );
+				Assert.assertFalse( data.getValue() == NOTHING );
+				Assert.assertEquals( data.getValue(), values[i] );
 			}
 		}
 		catch( Exception e )
 		{
-			unexpectedException( "Decoding a HLAASCIIchar", e );
+			unexpectedException( "Decoding a HLAfloat32LE", e );
 		}
 
 		// Attempting to decode another type should result in a DecoderException
 		try
 		{
-			HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+			HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE();
 			data.decode( wrapper );
 
 			// FAIL: expected a DecoderException
@@ -345,13 +384,13 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 	}
 
-	////////////////////////////////////////////////////
-	// TEST: testHLAASCIIcharDecodeByteWrapperEmpty() //
-	////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////
+	// TEST: testHLAfloat32LEDecodeByteWrapperEmpty() //
+	//////////////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteWrapperEmpty()
+	public void testHLAfloat32LEDecodeByteWrapperEmpty()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE();
 		ByteWrapper emptyWrapper = new ByteWrapper();
 
 		try
@@ -372,39 +411,36 @@ public class HLAASCIIcharTest extends Abstract1516eTest
 		}
 	}
 
-	///////////////////////////////////////
-	// testHLAASCIIcharDecodeByteArray() //
-	///////////////////////////////////////
+	/////////////////////////////////////////
+	// testHLAfloat32LEDecodeByteArray() //
+	/////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteArray()
+	public void testHLAfloat32LEDecodeByteArray()
 	{
-		// Create a ByteWrapper with data for a single type contained within
-		byte[] buffer = { (byte)0x41 };
-
 		// Create the object to decode into
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar( (byte)0x00 );
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE( NOTHING );
 
 		try
 		{
-			data.decode( buffer );
+			data.decode( PI_BIN );
 			
-			Assert.assertFalse( data.getValue() == (byte)0x00 );
-			Assert.assertEquals( data.getValue(), (byte)0x41 );
+			Assert.assertFalse( data.getValue() == NOTHING );
+			Assert.assertEquals( data.getValue(), PI );
 		}
 		catch( Exception e )
 		{
 			// FAIL: not expecting an exception here
-			unexpectedException( "Decoding an HLAASCIIchar", e );
+			unexpectedException( "Decoding an HLAfloat32LE", e );
 		}
 	}
 
-	////////////////////////////////////////////
-	// testHLAASCIIcharDecodeByteArrayEmpty() //
-	////////////////////////////////////////////
+	//////////////////////////////////////////////
+	// testHLAfloat32LEDecodeByteArrayEmpty() //
+	//////////////////////////////////////////////
 	@Test
-	public void testHLAASCIIcharDecodeByteArrayEmpty()
+	public void testHLAfloat32LEDecodeByteArrayEmpty()
 	{
-		HLAASCIIchar data = this.encoderFactory.createHLAASCIIchar();
+		HLAfloat32LE data = this.encoderFactory.createHLAfloat32LE();
 		byte[] emptyBuffer = new byte[0];
 
 		try
