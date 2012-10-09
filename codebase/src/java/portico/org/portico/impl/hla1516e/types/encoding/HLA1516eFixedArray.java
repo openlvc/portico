@@ -21,6 +21,7 @@ import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAfixedArray;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class HLA1516eFixedArray<T extends DataElement>
 	//----------------------------------------------------------
 	public HLA1516eFixedArray( T... provided )
 	{
+		this.elements = new ArrayList<T>( provided.length );
 		for( T element : provided )
 			this.elements.add( element );
 	}
@@ -52,6 +54,7 @@ public class HLA1516eFixedArray<T extends DataElement>
 	 */
 	public HLA1516eFixedArray( DataElementFactory<T> factory, int size )
 	{
+		this.elements = new ArrayList<T>( size );
 		for( int i = 0; i < size; i++ )
 			elements.add( factory.createElement(i) );
 	}
@@ -97,40 +100,80 @@ public class HLA1516eFixedArray<T extends DataElement>
 	@Override
 	public int getOctetBoundary()
 	{
-		if( elements.isEmpty() )
-			return 1; // can't return 0 or we'll have problems later... what to do!?
-		else
-			return elements.get(0).getOctetBoundary();
+		// Return the size of the largest element
+		int maxSize = 1;
+		
+		for( T element : this.elements )
+			maxSize = Math.max( maxSize, element.getEncodedLength() );
+		
+		return maxSize;
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
+		int length = this.size();
+		if( byteWrapper.remaining() < this.getEncodedLength() )
+			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
 		
+		// Write the array length
+		byteWrapper.putInt( length );
+		
+		// Write the array contents
+		for( T element : elements )
+			element.encode( byteWrapper );
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return -1;
+		int size = 4;
+		for( T element : this.elements )
+			size += element.getEncodedLength();
+		
+		return size;
 	}
 
 	@Override
 	public byte[] toByteArray() throws EncoderException
 	{
-		return null;
+		// Encode the array and then use the ByteWrapper's underlying byte[]
+		int length = this.getEncodedLength();
+		ByteWrapper byteWrapper = new ByteWrapper( length );
+		this.encode( byteWrapper );
+		
+		return byteWrapper.array();
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
+		// Need at least 4 bytes to read the number of elements
+		if( byteWrapper.remaining() < 4 )
+			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
 		
+		// Incoming size must match the size that the array was initialised with
+		int length = byteWrapper.getInt();
+		if( length != this.elements.size() )
+		{
+			throw new DecoderException( "Element count in decoded array differs. Expected [" + 
+										this.elements.size() + 
+										"] Received [" + 
+										length + 
+										"]" );
+		}
+		
+		// Decode the elements
+		for( T element : elements )
+			element.decode( byteWrapper );
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		
+		// Decode via a ByteWrapper
+		ByteWrapper byteWrapper = new ByteWrapper( bytes );
+		this.decode( byteWrapper );
 	}
 
 	//----------------------------------------------------------

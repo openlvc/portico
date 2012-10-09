@@ -284,7 +284,7 @@ public class HLA1516eEncoderFactory implements EncoderFactory
 	public <T extends DataElement> HLAvariableArray<T>
 	       createHLAvariableArray( DataElementFactory<T> factory, T... elements )
 	{
-		return new HLA1516eVariableArray<T>( elements );
+		return new HLA1516eVariableArray<T>( factory, elements );
 	}
 
 	//----------------------------------------------------------
