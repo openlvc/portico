@@ -39,10 +39,11 @@ public class ICMetadata implements Serializable
 	private int                     handle;
 	private Order                   order;
 	private Transport               transport;
-	private Space           space;
+	private Space                   space;
 	private ICMetadata              parent;
 	private Set<ICMetadata>         children;
 	private Map<Integer,PCMetadata> parameters;
+	private ObjectModel             model;
 	private String                  qualifiedName; // set on first access
 	private String                  vsafeQualifiedName; // version-safe name, set on first access
 	
@@ -61,6 +62,7 @@ public class ICMetadata implements Serializable
 		this.transport   = Transport.RELIABLE;
 		this.space       = null;
 		this.parent      = null;
+		this.model       = null;
 		this.children    = new HashSet<ICMetadata>();
 		this.parameters  = new HashMap<Integer,PCMetadata>();
 	}
@@ -72,6 +74,21 @@ public class ICMetadata implements Serializable
 	public Set<ICMetadata> getChildTypes()
 	{
 		return this.children;
+	}
+
+	/**
+	 * Returns the contained child interaction type if its local name matches the given one.
+	 * If no child with the name is found, null is returned.
+	 */
+	public ICMetadata getChildType( String name )
+	{
+		for( ICMetadata child : children )
+		{
+			if( child.getLocalName().equals(name) )
+				return child;
+		}
+		
+		return null;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -158,6 +175,21 @@ public class ICMetadata implements Serializable
 	{
 		return this.parameters.get( handle );
 	}
+
+	/**
+	 * Return the contained, declared parameter with the given name, or null if there is none.
+	 * Inherited and child parameters are not considered.
+	 */
+	public PCMetadata getDeclaredParameter( String name )
+	{
+		for( PCMetadata parameter : parameters.values() )
+		{
+			if( parameter.getName().equals(name) )
+				return parameter;
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * Get the available parameter (inherited included) of this class for the given handle. If
@@ -243,6 +275,16 @@ public class ICMetadata implements Serializable
 	public int getHandle()
 	{
 		return handle;
+	}
+
+	/**
+	 * Changes the handle of this class. To prevent external tampering, this
+	 * is marked as protected and should not be called by anything except the
+	 * model merger.
+	 */
+	protected void setHandle( int handle )
+	{
+		this.handle = handle;
 	}
 
 	/**
@@ -378,12 +420,72 @@ public class ICMetadata implements Serializable
 		this.space = space;
 	}
 
+	public ObjectModel getModel()
+	{
+		return this.model;
+	}
+	
+	public void setModel( ObjectModel model )
+	{
+		this.model = model;
+	}
+
 	public String toString()
 	{
 		if( PorticoConstants.USE_Q_NAMES )
 			return getQualifiedName();
 		else
 			return "" + this.handle;
+	}
+
+	/**
+	 * Returns true if this metadata type equals the provided one, false otherwise.
+	 * <p/>
+	 * In determining equality, the contains parameters are checked to ensure they
+	 * are all present in each class, and if not, null is returned. Child classes
+	 * are not considered (hence the shallow part).
+	 * <p/>
+	 * Only local settings are tested, this does not include parent types, child types,
+	 * or trasient values like handles.
+	 * 
+	 * @param other The object to compare equivalence with.
+	 * @return True if they are equal, false otherwise
+	 */
+	public boolean shallowEquals( ICMetadata other )
+	{
+		if( other == null )
+			return false;
+		
+		if( name.equals(other.name) == false )
+			return false;
+
+		// check the order, transport and such
+		if( order.equals(other.order) == false ||
+			transport.equals(other.transport) == false )
+		{
+			return false;
+		}
+
+		// check to make sure we have the same number of parameters so as to rule out
+		// any situation where the other class is a superset of us (which would pass the
+		// test in the loop below falsely)
+		if( parameters.size() != other.parameters.size() )
+			return false;
+
+		// loop through all our parameters to make sure the other type has them all
+		for( PCMetadata localParameter : parameters.values() )
+		{
+			// find the parameter with the same name in the other class
+			PCMetadata otherParameter = other.getDeclaredParameter( localParameter.getName() );
+			if( otherParameter == null )
+				return false;
+
+			if( localParameter.equals(otherParameter) == false )
+				return false;
+		}
+		
+		// everything looks good!
+		return true;
 	}
 
 	//----------------------------------------------------------

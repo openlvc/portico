@@ -26,6 +26,7 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.lrc.services.federation.msg.JoinFederation;
@@ -243,6 +244,13 @@ public class JGroupsConnection implements IConnection
 		// connect to the channel if we are not already
 		FederationChannel federation = getFederationChannel( joinMessage.getFederationName() );
 		
+		// validate that our FOM modules can be merged successfully with the existing FOM first
+		// make sure the FOM modules can be successfully merged with the existing model
+		logger.debug( "Validate that ["+joinMessage.getJoinModules().size()+
+		              "] modules can merge successfully with the existing FOM" );
+		ModelMerger.mergeDryRun( federation.getManifest().getFom() , joinMessage.getJoinModules() );
+		logger.debug( "Modules can be merged successfully, continue with join" );
+
 		// tell the channel that we're joining the federation
 		String joinedName = federation.joinFederation( joinMessage.getFederateName(), this.lrc );
 		// the joined name could be different, so update the request to make sure it is correct
@@ -250,6 +258,26 @@ public class JGroupsConnection implements IConnection
 		
 		// now that we've joined a channel, store it here so we can route messages to it
 		this.joinedChannel = federation;
+		
+		// we have to merge the FOMs together here for us before this returns to the Join
+		// handler and a RoleCall is sent out. We have to do this because although we receive
+		// our own RoleCall notice (with the additional modules) we won't process it as we
+		// can't tell if it's one we sent out because we joined (and thus need to merge) or because
+		// someone else joined. Additional modules will only be present if it is a new join, so
+		// we could figure it out that way, but that will cause redundant merges for the JVM
+		// binding (as all connections share the same object model reference). To cater to the
+		// specifics of this connection it's better to put the logic in the connection rather than
+		// in the generic-to-all-connections RoleCallHandler. Long way of saying we need to merge
+		// in the additional join modules that were provided here. F*** IT! WE'LL DO IT LIVE!
+		if( joinMessage.getJoinModules().size() > 0 )
+		{
+			logger.debug( "Merging "+joinMessage.getJoinModules().size()+
+			              " additional FOM modules that we receive with join request" );
+
+			federation.getManifest().getFom().unlock();
+			ModelMerger.merge( federation.getManifest().getFom(), joinMessage.getJoinModules() );
+			federation.getManifest().getFom().lock();
+		}
 
 		// create and return the roster
 		return new JGroupsRoster( federation.getManifest().getLocalFederateHandle(),

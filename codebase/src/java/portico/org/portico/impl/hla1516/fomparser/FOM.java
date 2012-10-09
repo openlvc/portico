@@ -503,7 +503,9 @@ public class FOM
 			// create the parser
 			FOM parser = new FOM();
 			// we'll call the node handler directly because we want to process the root node
-			return parser.process( rootElement );
+			ObjectModel model = parser.process( rootElement );
+			model.setFileName( fed.toString() );
+			return model;
 		}
 		catch( JConfigurationException ce )
 		{

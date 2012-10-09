@@ -31,6 +31,7 @@ import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
+import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.lrc.services.federation.msg.JoinFederation;
@@ -178,8 +179,17 @@ public class JVMConnection implements IConnection
 			throw new JFederationExecutionDoesNotExist( "federation doesn't exist: " + federation );
 		}
 		
-		// join the federation, this will check to see if there is already a federate with same name
+		// validate that our FOM modules can be merged successfully with the existing FOM first
+		// make sure the FOM modules can be successfully merged with the existing model
+		logger.debug( "Validate that ["+joinMessage.getJoinModules().size()+
+		              "] modules can merge successfully with the existing FOM" );
+		ModelMerger.mergeDryRun( broadcaster.getFOM(), joinMessage.getJoinModules() );
+		logger.debug( "Modules can be merged successfully, continue with join" );
+
+		// join the federation
+		// this will check to see if there is already a federate with the same name
 		this.localHandle = broadcaster.joinLrc( federate, this.lrc );
+
 		// store the federation broadcaster locally
 		this.federation = broadcaster;
 		

@@ -67,7 +67,10 @@ public class RoleCallHandler extends LRCMessageHandler
 		// we do not know about the federate yet, store its particulars and
 		// send it back information about us
 		if( logger.isDebugEnabled() )
-			logger.debug( "@REMOTE RoleCall received [handle:"+handle+",name:"+name+"]" );
+		{
+			logger.debug( "@REMOTE RoleCall received [handle:"+handle+",name:"+name+
+			              "] by local federate ["+lrcState.getFederateName()+"]" );
+		}
 
 		///////////////////////////////////////
 		// inform the notification listeners //
@@ -79,6 +82,8 @@ public class RoleCallHandler extends LRCMessageHandler
 		// about them (having not notified the LRC through the NotificationManager) we think we
 		// don't know about them, so we send another RoleCall. The same process happens in the
 		// other federates and we eventually end with a StackOverflowException.
+		//
+		// FOM module merging happens in here
 		notificationManager.remoteFederateJoinedFederation( notice );
 
 		//////////////////////////////////////////////////////////////////

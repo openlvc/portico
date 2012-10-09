@@ -51,7 +51,9 @@ public class FOM
 			throw new JCouldNotOpenFED( "Error opening [" + fom + "]: " + e.getMessage() );
 		}
 
-		return parseFOM( istream );
+		ObjectModel model = parseFOM( istream );
+		model.setFileName( fom.toString() );
+		return model;
 	}
 
 	public static ObjectModel parseFOM( InputStream istream ) throws JCouldNotOpenFED, JErrorReadingFED

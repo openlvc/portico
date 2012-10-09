@@ -15,6 +15,7 @@
 package org.portico.impl.hla1516e;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -71,6 +72,7 @@ import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JFederationTimeAlreadyPassed;
+import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JInteractionClassNotDefined;
 import org.portico.lrc.compat.JInteractionClassNotPublished;
 import org.portico.lrc.compat.JInteractionClassNotSubscribed;
@@ -232,190 +234,6 @@ public class Rti1516eAmbassador implements RTIambassador
 	}
 
 	// 4.5
-	public void createFederationExecution( String federationExecutionName,
-	                                       URL[] fomModules,
-	                                       URL mimModule,
-	                                       String logicalTimeImplementationName )
-	    throws CouldNotCreateLogicalTimeFactory,
-	           InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
-	           ErrorReadingMIM,
-	           CouldNotOpenMIM,
-	           DesignatorIsHLAstandardMIM,
-	           FederationExecutionAlreadyExists,
-	           NotConnected,
-	           RTIinternalError
-	{
-		featureNotSupported( "createFederationExecution(fomModules,mimModule)" );
-	}
-
-	// 4.5
-	public void createFederationExecution( String executionName,
-	                                       URL[] fomModules,
-	                                       String timeImplementation )
-	    throws CouldNotCreateLogicalTimeFactory,
-	           InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
-	           FederationExecutionAlreadyExists,
-	           NotConnected,
-	           RTIinternalError
-	{
-		///////////////////////////////////////////////////////
-		// 1. create the message and pass it to the LRC sink //
-		///////////////////////////////////////////////////////
-		// attempt to parse the FOM //
-		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
-		ResponseMessage response = processMessage( request );
-
-		////////////////////////////
-		// 2. process the results //
-		////////////////////////////
-		// check to see if we got an error or a success
-		if( response.isError() == false )
-		{
-			// everything went fine!
-			return;
-		}
-		else
-		{
-			// an exception was caused :(
-			Throwable theException = ((ErrorResponse)response).getCause();
-			
-			if( theException instanceof JRTIinternalError )
-			{
-				throw new RTIinternalError( theException );
-			}
-			else if( theException instanceof JFederationExecutionAlreadyExists )
-			{
-				throw new FederationExecutionAlreadyExists( theException );
-			}
-			else if( theException instanceof JCouldNotOpenFED )
-			{
-				throw new CouldNotOpenFDD( theException );
-			}
-			else if( theException instanceof JErrorReadingFED )
-			{
-				throw new ErrorReadingFDD( theException );
-			}
-			else
-			{
-				logException( "createFederationExecution", theException );
-			}
-		}
-	}
-
-	// 4.5
-	public void createFederationExecution( String executionName, URL[] fomModules, URL mimModule )
-	    throws InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
-	           ErrorReadingMIM,
-	           CouldNotOpenMIM,
-	           DesignatorIsHLAstandardMIM,
-	           FederationExecutionAlreadyExists,
-	           NotConnected,
-	           RTIinternalError
-	{
-		///////////////////////////////////////////////////////
-		// 1. create the message and pass it to the LRC sink //
-		///////////////////////////////////////////////////////
-		// attempt to parse the FOM //
-		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
-		ResponseMessage response = processMessage( request );
-
-		////////////////////////////
-		// 2. process the results //
-		////////////////////////////
-		// check to see if we got an error or a success
-		if( response.isError() == false )
-		{
-			// everything went fine!
-			return;
-		}
-		else
-		{
-			// an exception was caused :(
-			Throwable theException = ((ErrorResponse)response).getCause();
-			
-			if( theException instanceof JRTIinternalError )
-			{
-				throw new RTIinternalError( theException );
-			}
-			else if( theException instanceof JFederationExecutionAlreadyExists )
-			{
-				throw new FederationExecutionAlreadyExists( theException );
-			}
-			else if( theException instanceof JCouldNotOpenFED )
-			{
-				throw new CouldNotOpenFDD( theException );
-			}
-			else if( theException instanceof JErrorReadingFED )
-			{
-				throw new ErrorReadingFDD( theException );
-			}
-			else
-			{
-				logException( "createFederationExecution", theException );
-			}
-		}
-	}
-
-	// 4.5
-	public void createFederationExecution( String executionName, URL[] fomModules )
-		throws InconsistentFDD,
-		       ErrorReadingFDD,
-		       CouldNotOpenFDD,
-		       FederationExecutionAlreadyExists,
-		       NotConnected,
-		       RTIinternalError
-	{
-		///////////////////////////////////////////////////////
-		// 1. create the message and pass it to the LRC sink //
-		///////////////////////////////////////////////////////
-		// attempt to parse the FOM //
-		CreateFederation request = new CreateFederation( executionName, fomModules[0] );
-		ResponseMessage response = processMessage( request );
-
-		////////////////////////////
-		// 2. process the results //
-		////////////////////////////
-		// check to see if we got an error or a success
-		if( response.isError() == false )
-		{
-			// everything went fine!
-			return;
-		}
-		else
-		{
-			// an exception was caused :(
-			Throwable theException = ((ErrorResponse)response).getCause();
-			
-			if( theException instanceof JRTIinternalError )
-			{
-				throw new RTIinternalError( theException );
-			}
-			else if( theException instanceof JFederationExecutionAlreadyExists )
-			{
-				throw new FederationExecutionAlreadyExists( theException );
-			}
-			else if( theException instanceof JCouldNotOpenFED )
-			{
-				throw new CouldNotOpenFDD( theException );
-			}
-			else if( theException instanceof JErrorReadingFED )
-			{
-				throw new ErrorReadingFDD( theException );
-			}
-			else
-			{
-				logException( "createFederationExecution", theException );
-			}
-		}
-	}
-
-	// 4.5
 	public void createFederationExecution( String executionName, URL fomModule )
 		throws InconsistentFDD,
 		       ErrorReadingFDD,
@@ -427,7 +245,6 @@ public class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		// attempt to parse the FOM //
 		CreateFederation request = new CreateFederation( executionName, fomModule );
 		ResponseMessage response = processMessage( request );
 
@@ -453,6 +270,10 @@ public class Rti1516eAmbassador implements RTIambassador
 			{
 				throw new FederationExecutionAlreadyExists( theException );
 			}
+			else if( theException instanceof JInconsistentFDD )
+			{
+				throw new InconsistentFDD( theException );
+			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{
 				throw new CouldNotOpenFDD( theException );
@@ -466,6 +287,161 @@ public class Rti1516eAmbassador implements RTIambassador
 				logException( "createFederationExecution", theException );
 			}
 		}
+	}
+
+	// 4.5
+	public void createFederationExecution( String federationName, URL[] fomModules )
+		throws InconsistentFDD,
+		       ErrorReadingFDD,
+		       CouldNotOpenFDD,
+		       FederationExecutionAlreadyExists,
+		       NotConnected,
+		       RTIinternalError
+	{
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		CreateFederation request = new CreateFederation( federationName, fomModules );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederationExecutionAlreadyExists )
+			{
+				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JInconsistentFDD )
+			{
+				throw new InconsistentFDD( theException );
+			}
+			else if( theException instanceof JCouldNotOpenFED )
+			{
+				throw new CouldNotOpenFDD( theException );
+			}
+			else if( theException instanceof JErrorReadingFED )
+			{
+				throw new ErrorReadingFDD( theException );
+			}
+			else
+			{
+				logException( "createFederationExecution", theException );
+			}
+		}
+	}
+
+	// 4.5
+	public void createFederationExecution( String federationName, URL[] fomModules, URL mimModule )
+	    throws InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           ErrorReadingMIM,
+	           CouldNotOpenMIM,
+	           DesignatorIsHLAstandardMIM,
+	           FederationExecutionAlreadyExists,
+	           NotConnected,
+	           RTIinternalError
+	{
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		// jam the MIM in at the front of the list of modules
+		ArrayList<URL> moduleList = new ArrayList<URL>();
+		moduleList.add( mimModule );
+		for( URL module : fomModules )
+			moduleList.add( module );
+
+		CreateFederation request = new CreateFederation( federationName, moduleList );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+			
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JFederationExecutionAlreadyExists )
+			{
+				throw new FederationExecutionAlreadyExists( theException );
+			}
+			else if( theException instanceof JInconsistentFDD )
+			{
+				throw new InconsistentFDD( theException );
+			}
+			else if( theException instanceof JCouldNotOpenFED )
+			{
+				throw new CouldNotOpenFDD( theException );
+			}
+			else if( theException instanceof JErrorReadingFED )
+			{
+				throw new ErrorReadingFDD( theException );
+			}
+			else
+			{
+				logException( "createFederationExecution", theException );
+			}
+		}
+	}
+
+	// 4.5
+	public void createFederationExecution( String federationName, URL[] fomModules, String timeName )
+	    throws CouldNotCreateLogicalTimeFactory,
+	           InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           FederationExecutionAlreadyExists,
+	           NotConnected,
+	           RTIinternalError
+	{
+		// validate the time type and hand off to the (String,URL[]) overload
+		createFederationExecution( federationName, fomModules );
+	}
+
+	// 4.5
+	public void createFederationExecution( String federationName,
+	                                       URL[] fomModules,
+	                                       URL mimModule,
+	                                       String timeName )
+	    throws CouldNotCreateLogicalTimeFactory,
+	           InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           ErrorReadingMIM,
+	           CouldNotOpenMIM,
+	           DesignatorIsHLAstandardMIM,
+	           FederationExecutionAlreadyExists,
+	           NotConnected,
+	           RTIinternalError
+	{
+		// validate the time parameter and hand off to the (String,URL[],URL) overload
+		createFederationExecution( federationName, fomModules, mimModule );
 	}
 
 	// 4.6
@@ -521,16 +497,9 @@ public class Rti1516eAmbassador implements RTIambassador
 	}
 
 	// 4.9
-	public FederateHandle joinFederationExecution( String federateName,
-	                                               String federateType,
-	                                               String federationName,
-	                                               URL[] additionalFomModules )
+	public FederateHandle joinFederationExecution( String federateType, String federationName )
 	    throws CouldNotCreateLogicalTimeFactory,
-	           FederateNameAlreadyInUse,
 	           FederationExecutionDoesNotExist,
-	           InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
 	           SaveInProgress,
 	           RestoreInProgress,
 	           FederateAlreadyExecutionMember,
@@ -538,32 +507,16 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		logger.warn( "joinFederationExecution(name,type,federation,modules): "+
-		             "Not fully supported, modules ignored" );
-
-		return joinFederationExecution( federateName, federateType, federationName );
-	}
-
-	// 4.9
-	public FederateHandle joinFederationExecution( String federateType,
-	                                               String federationName,
-	                                               URL[] additionalFomModules )
-	    throws CouldNotCreateLogicalTimeFactory,
-	           FederationExecutionDoesNotExist,
-	           InconsistentFDD,
-	           ErrorReadingFDD,
-	           CouldNotOpenFDD,
-	           SaveInProgress,
-	           RestoreInProgress,
-	           FederateAlreadyExecutionMember,
-	           NotConnected,
-	           CallNotAllowedFromWithinCallback,
-	           RTIinternalError
-	{
-		logger.warn( "joinFederationExecution(type,federation,modules): Not fully supported, "+
-		             "modules ignored" );
-
-		return joinFederationExecution( federateType, federationName );
+		// this method just passes off the request to the (String,String,String) overload
+		// using the federate name as the federate type
+		try
+		{
+			return joinFederationExecution( federateType, federateType, federationName );
+		}
+		catch( FederateNameAlreadyInUse niu )
+		{
+			throw new RTIinternalError( niu.getMessage(), niu );
+		}
 	}
 
 	// 4.9
@@ -580,6 +533,79 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
+		try
+		{
+			return joinFederationExecution( federateName, federateType, federationName, null );
+		}
+		catch( CouldNotOpenFDD cnof )
+		{
+			// should not happen
+			logException( "joinFederationExecution", cnof );
+			return null;
+		}
+		catch( InconsistentFDD ifdd )
+		{
+			// should not happen
+			logException( "joinFederationExecution", ifdd );
+			return null;
+		}
+		catch( ErrorReadingFDD erf )
+		{
+			// should not happen
+			logException( "joinFederationExecution", erf );
+			return null;
+		}
+	}
+
+	// 4.9
+	public FederateHandle joinFederationExecution( String federateType,
+	                                               String federationName,
+	                                               URL[] fomModules )
+	    throws CouldNotCreateLogicalTimeFactory,
+	           FederationExecutionDoesNotExist,
+	           InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           SaveInProgress,
+	           RestoreInProgress,
+	           FederateAlreadyExecutionMember,
+	           NotConnected,
+	           CallNotAllowedFromWithinCallback,
+	           RTIinternalError
+	{
+		try
+		{
+			return joinFederationExecution( federateType,
+			                                federateType,
+			                                federationName,
+			                                fomModules );
+		}
+		catch( FederateNameAlreadyInUse fniu )
+		{
+			// should not happen
+			logException( "joinFederationExecution", fniu );
+			return null;
+		}
+	}
+
+	// 4.9
+	public FederateHandle joinFederationExecution( String federateName,
+	                                               String federateType,
+	                                               String federationName,
+	                                               URL[] fomModules )
+	    throws CouldNotCreateLogicalTimeFactory,
+	           FederateNameAlreadyInUse,
+	           FederationExecutionDoesNotExist,
+	           InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           SaveInProgress,
+	           RestoreInProgress,
+	           FederateAlreadyExecutionMember,
+	           NotConnected,
+	           CallNotAllowedFromWithinCallback,
+	           RTIinternalError
+	{
 		// 0. check the federate ambassador //
 		// If we don't have a federate ambassador, we haven't connected yet
 		if( helper.getFederateAmbassador() == null )
@@ -588,7 +614,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		JoinFederation request = new JoinFederation( federationName, federateName );
+		JoinFederation request = new JoinFederation( federationName, federateName, fomModules );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -636,27 +662,6 @@ public class Rti1516eAmbassador implements RTIambassador
 				logException( "joinFederationExecution", theException );
 				return null;
 			}
-		}
-	}
-
-	// 4.9
-	public FederateHandle joinFederationExecution( String federateType, String federationName )
-	    throws CouldNotCreateLogicalTimeFactory,
-	           FederationExecutionDoesNotExist,
-	           SaveInProgress,
-	           RestoreInProgress,
-	           FederateAlreadyExecutionMember,
-	           NotConnected,
-	           CallNotAllowedFromWithinCallback,
-	           RTIinternalError
-	{
-		try
-		{
-			return joinFederationExecution( federateType, federateType, federationName );
-		}
-		catch( FederateNameAlreadyInUse niu )
-		{
-			throw new RTIinternalError( niu.getMessage(), niu );
 		}
 	}
 

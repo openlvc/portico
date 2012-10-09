@@ -60,7 +60,17 @@ public class PCMetadata implements Serializable
 	{
 		return this.handle;
 	}
-	
+
+	/**
+	 * Changes the handle of this class. To prevent external tampering, this
+	 * is marked as protected and should not be called by anything except the
+	 * model merger.
+	 */
+	protected void setHandle( int handle )
+	{
+		this.handle = handle;
+	}
+
 	public ICMetadata getContainer()
 	{
 		return this.container;
@@ -70,7 +80,25 @@ public class PCMetadata implements Serializable
 	{
 		this.container = container;
 	}
-	
+
+	/**
+	 * @return true if the other object is another {@link PCMetadata} and has the same name.
+	 *         False otherwise.
+	 */
+	public boolean equals( Object other )
+	{
+		if( other instanceof PCMetadata )
+		{
+			PCMetadata otherMetadata = (PCMetadata)other;
+			if( name.equals(otherMetadata.name) )
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

@@ -1,0 +1,2926 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The IEEE hereby grants a general, royalty-free license to copy, distribute, -->
+<!-- display and make derivative works from this material, for all purposes,     -->
+<!-- provided that any use of the material contains the following                -->
+<!-- attribution: "Reprinted with permission from IEEE 1516.1(TM)-2010".         -->
+<!-- Should you require additional information, contact the Manager, Standards   -->
+<!-- Intellectual Property, IEEE Standards Association (stds-ipr@ieee.org).      -->
+<objectModel
+   xmlns="http://standards.ieee.org/IEEE1516-2010"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 http://standards.ieee.org/downloads/1516/1516.2-2010/IEEE1516-DIF-2010.xsd">
+   <modelIdentification>
+      <name>Standard MOM and Initialization Module (MIM) for HLA IEEE 1516-2010</name>
+      <type>FOM</type>
+      <version>1.0</version>
+      <modificationDate>2010-08-16</modificationDate>
+      <securityClassification>Unclassified</securityClassification>
+      <purpose>Standard MOM and Initialization Module for HLA IEEE 1516-2010</purpose>
+      <applicationDomain>HLA General</applicationDomain>
+      <description>The MOM Object Classes and Interaction Classes of this object model may be extended.</description>
+      <poc>
+         <pocType>Standards Sponsor</pocType>
+         <pocName>Simulation Interoperability Standards Organization</pocName>
+         <pocOrg>SISO</pocOrg>
+         <pocTelephone>+1 (407) 882-1348</pocTelephone>
+         <pocEmail>info@sisostds.org</pocEmail>
+      </poc>
+      <glyph alt="MOM and Initialization Module" type="GIF">
+         R0lGODlhIAAgAMQAAPeUHYFNDwAAAP3ozYRPD61oFMp5GJNYEfmzX/zbs/vIi/ihOOWJG0InCLVtFfmpStSFJiEUBFIxCtaAGZRZETEeBhAKAsZ2F2M7DHNFDgAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAgACAAAAX/YCCOZGme5aCubOu+qgjP9ComeK7vfI+LiqBwSCwagyKEcslsOp9K0WJKrVqv2KnoAeh6v+CwGLIVm89fcoCLbofV3AmB4PBS5l0CJa/3OuYTAHAADgICDV6GAl2HjIZeDYZ1g4WPhIqMiACKdZuSgmWFFQIXAAQCo5mMowQAF6gCk6ECGQKtEhWRqpsNFRKmtLGga5cEEb8WGLq8mRgWABIRp7LEhQQYERMCFMuNvBQCExEY08Nc1uCnE92ah9qnd8KUttoREQDsqvbh5fOtFgJ+5WMmQcCzfrNu2cK3iBmzU78QVlt4qtTARq9aSWTjpqM5jx4HgXQjciQaNQxSL6pcybKly5QiDMicSbOmzZsyRRTYybOnz59Ad4o4QLSo0aNIkxJFwbSp06dQRYQAADs=
+      </glyph>
+   </modelIdentification>
+   <objects>
+      <objectClass>
+         <name>HLAobjectRoot</name>
+         <sharing>Neither</sharing>
+         <attribute>
+            <name>HLAprivilegeToDeleteObject</name>
+            <dataType>HLAtoken</dataType>
+            <updateType>Static</updateType>
+            <updateCondition>NA</updateCondition>
+            <ownership>DivestAcquire</ownership>
+            <sharing>PublishSubscribe</sharing>
+            <transportation>HLAreliable</transportation>
+            <order>TimeStamp</order>
+         </attribute>
+         <objectClass>
+            <name>HLAmanager</name>
+            <sharing>Neither</sharing>
+            <semantics>This object class is the root class of all MOM object classes</semantics>
+            <objectClass>
+               <name>HLAfederate</name>
+               <sharing>Publish</sharing>
+               <semantics>This object class shall contain RTI state variables relating to a joined federate. The RTI
+                  shall publish it and shall register one object instance for each joined federate in a federation.
+                  Dynamic attributes that shall be contained in an object instance shall be updated periodically, where
+                  the period should be determined by an interaction of the class
+                  HLAmanager.HLAfederate.HLAadjust.HLAsetTiming. If this value is never set or is set to zero, no
+                  periodic update shall be performed by the RTI.
+
+                  The RTI shall respond to the invocation, by any federate, of the Request Attribute Value Update
+                  service for this object class or for any instance attribute of an object instance of this class by
+                  supplying values via the normal instance attribute update mechanism, regardless of whether the
+                  attribute has a data type of static, periodic, or conditional. In addition to its responsibility to
+                  update attributes of object instances of this class when those updates are explicitly requested, the
+                  RTI shall automatically update instance attributes of object instances of this class according to the
+                  update policy of the attribute, which is determined by the update type of the class attribute in Table
+                  6. For those attributes that have an update type of Periodic, the update wall-clock time interval
+                  shall be determined by the HLAreportPeriod parameter in an interaction of classHLAmanager.HLAfederate.
+                  HLAadjust.HLAsetTiming. If this value is never set or is set to zero, no periodic updates shall be
+                  performed by the RTI. Those attributes that have an update type of Conditional shall have update
+                  conditions as defined in the Table 6.
+               </semantics>
+               <attribute>
+                  <name>HLAfederateHandle</name>
+                  <dataType>HLAhandle</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Handle of the joined federate returned by a Join Federation Execution service invocation
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAfederateName</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>
+                     Name of the joined federate supplied to a successful Join Federation Execution service invocation
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAfederateType</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Type of the joined federate specified by the joined federate when it joined the federation
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAfederateHost</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Host name of the computer on which the joined federate is executing</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLARTIversion</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Version of the RTI software being used</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAFOMmoduleDesignatorList</name>
+                  <dataType>HLAmoduleDesignatorList</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>FOM Module designators as specified by the federate when the Join Federation Execution
+                     service was invoked. If several identical FOM modules are provided only the designator of the first
+                     of these FOM modules shall be added to the list.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAtimeConstrained</name>
+                  <dataType>HLAboolean</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>
+                     Whenever services Time Constrained Enabled or Disable Time Constrained are successfully invoked
+                     (including via the HLAdisableTimeConstrained interaction).
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Whether the time advancement of the joined federate is constrained by other joined federates
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAtimeRegulating</name>
+                  <dataType>HLAboolean</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>
+                     Whenever services Time Regulation Enabled or Disable Time Regulation are successfully invoked
+                     (including via the HLAdisableTimeRegulation interaction).
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Whether the joined federate influences the time advancement of other joined federates
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAasynchronousDelivery</name>
+                  <dataType>HLAboolean</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever services Enable Asynchronous Delivery or Disable Asynchronous Delivery are
+                     successfully invoked (including via the HLAenableAsynchronousDelivery or
+                     HLAdisableAsynchronousDelivery interactions).
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Whether the RTI shall deliver RO messages to the joined federate while the joined
+                     federate's time manager state is not "Time Advancing" (only matters if the joined federate is
+                     time-constrained).
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAfederateState</name>
+                  <dataType>HLAfederateState</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever the services Initiate Federate Save, Federation Saved, Federation Restore
+                     Begun, Confirm Federation Restoration Request (success), or Join Federation Execution are
+                     successfully invoked. Also, after the Federation Restored service has been invoked at all federates
+                     in the federation execution. If a joined federate is in the Federate Save in Progress state, no
+                     corresponding reflects shall be invoked at that joined federate.
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>State of the joined federate. The MOM may, but is not required to, update any
+                     HLAfederateState instance attribute values during the interval after the last federate in the
+                     federation execution invokes the Federate Restore Complete service but before the last Federation
+                     Restored † callback is invoked at some federate for a given federation restoration.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAtimeManagerState</name>
+                  <dataType>HLAtimeState</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever services Time Advance Request, Time Advance Request Available, Next Message
+                     Request, Next Message Request Available, Flush Queue Request, or Time Advance Grant are
+                     successfully invoked (including via the HLAtimeAdvanceRequest, HLAtimeAdvanceRequestAvailable,
+                     HLAnextMessageRequest, HLAnextMessageRequestAvailable, or HLAflushQueueRequest interactions).
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>State of the joined federate's time manager</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAlogicalTime</name>
+                  <dataType>HLAlogicalTime</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Joined federate's logical time. Initial value of this information is initial value of
+                     federation time of the Time Representation Abstract Data Type (TRADT).
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAlookahead</name>
+                  <dataType>HLAtimeInterval</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Minimum duration into the future that a TSO message will be scheduled. The value shall not
+                     be defined if the joined federate is not time-regulating)
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAGALT</name>
+                  <dataType>HLAlogicalTime</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Joined federate's Greatest Available Logical Time (GALT). The value shall not be defined if
+                     GALT is not defined for the joined federate.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLALITS</name>
+                  <dataType>HLAlogicalTime</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Joined federate's Least Incoming Time Stamp (LITS). The value shall not be defined if LITS
+                     is not defined for the joined federate.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAROlength</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Number of RO messages queued for delivery to the joined federate.</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLATSOlength</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Number of TSO messages queued for delivery to the joined federate</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAreflectionsReceived</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of times the Reflect Attribute Values † service has been invoked at the joined
+                     federate (as opposed to the number of instance attribute value reflections that have been received
+                     at the joined federate).
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAupdatesSent</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of updates sent by the joined federate" in XML and "Total number of times the
+                     Update Attribute Values † service has successfully been invoked by the joined federate (as opposed
+                     to the number of instance attribute values that have been updated by the joined federate).
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAinteractionsReceived</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of interactions received by the joined federate.</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAinteractionsSent</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of interactions sent by the joined federate. This information shall reflect
+                     related DDM usage.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesThatCanBeDeleted</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of object instances whose HLAprivilegeToDeleteObject attribute is owned by the
+                     joined federate
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesUpdated</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of object instances for which the joined federate has invoked the Update
+                     Attribute Values service.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesReflected</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of object instances for which the joined federate has had a Reflect Attribute
+                     Values service invocation.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesDeleted</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of times the Delete Object Instance service was invoked by the joined federate
+                     since the federate joined the federation
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesRemoved</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of times the Remove Object Instance service was invoked for the joined
+                     federate since the federate joined the federation.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesRegistered</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of times the Register Object Instance or Register Object Instance with Region
+                     service were invoked by the joined federate since the federate joined the federation.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAobjectInstancesDiscovered</name>
+                  <dataType>HLAcount</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Total number of times the Discover Object Instance † service was invoked for the joined
+                     federate since the federate joined the federation.The value of the HLAobjectInstancesDiscovered
+                     attribute shall include multiple invocations of the Discover Object Instance † service for a given
+                     object instance that may occur as a result of invocation of the Local Delete Object Instance
+                     service at a federate.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAtimeGrantedTime</name>
+                  <dataType>HLAmsec</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Wall clock time duration that the federate has spent in the Time Granted state since the
+                     last update of this attribute. When the HLAtimeGrantedTime and the HLAtimeAdvancingTime attributes
+                     are initially updated, their values shall be the wall-clock time duration that the federate has
+                     spent in the state since the federate has been joined to the federation execution.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAtimeAdvancingTime</name>
+                  <dataType>HLAmsec</dataType>
+                  <updateType>Periodic</updateType>
+                  <updateCondition>HLAsetTiming.HLAreportPeriod</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Wall clock time duration that the federate has spent in the Time Advancing state since the
+                     last update of this attribute. When the HLAtimeGrantedTime and the HLAtimeAdvancingTime attributes
+                     are initially updated, their values shall be the wall-clock time duration that the federate has
+                     spent in the state since the federate has been joined to the federation execution.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAconveyRegionDesignatorSets</name>
+                  <dataType>HLAswitch</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever the HLAmanager.HLAfederate.HLAfederate.HLAadjust.HLAsetSwitches interaction
+                     is sent to successfully change the value of the HLAconveyRegionDesignatorSets parameter.
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Value of joined federate's Convey Region Designator Sets Switch. Updated when value of
+                     switch changes
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAconveyProducingFederate</name>
+                  <dataType>HLAswitch</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever the HLAmanager.HLAfederate.HLAfederate.HLAadjust.HLAsetSwitches interaction
+                     is sent to successfully change the value of the HLAconveyProducingFederate parameter.
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <dimensions>
+                     <dimension>HLAfederate</dimension>
+                  </dimensions>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Value of joined federate's Convey Producing Federate Switch. Updated when value of switch
+                     changes
+                  </semantics>
+               </attribute>
+            </objectClass>
+            <objectClass>
+               <name>HLAfederation</name>
+               <sharing>Publish</sharing>
+               <semantics>This object class shall contain RTI state variables relating to a federation execution. The
+                  RTI shall publish it and shall register one object instance for the federation execution. The RTI
+                  shall respond to the invocation, by any federate, of the Request Attribute Value Update service for
+                  this object class or for any instance attribute of an object instance of this class by supplying
+                  values via the normal instance attribute update mechanism, regardless of whether the attribute has a
+                  data type of static or conditional. In addition to its responsibility to update attributes of object
+                  instances of this class when those updates are explicitly requested, the RTI shall automatically
+                  update instance attributes of object instances of this class according to the update policy of the
+                  attribute, which is determined by the update type of the class attribute in Table 6. Those attributes
+                  that have an update type of Conditional shall have update conditions as defined in the Table 6.
+               </semantics>
+               <attribute>
+                  <name>HLAfederationName</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Name of the federation to which the joined federate belongs</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAfederatesInFederation</name>
+                  <dataType>HLAhandleList</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Federate joins or resigns</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Identifiers of joined federates that are joined to the federation</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLARTIversion</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Version of the RTI software</semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAMIMdesignator</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>NA</updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Designator associated with the MIM specified in the Create Federation Execution service
+                     invocation. In case the RTI has supplied the standard MIM, the designator shall be
+                     “HLAstandardMIM”.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAFOMmoduleDesignatorList</name>
+                  <dataType>HLAmoduleDesignatorList</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever new FOM modules are added by Create Federation Execution and Join Federation
+                     Execution service invocations.
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>FOM Module designators for the federation as specified in the Create Federation Execution
+                     service and Join Federation Execution invocations. If several identical FOM modules are provided
+                     only the designator for the first of these FOM modules shall be added to the list.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAcurrentFDD</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever the Current FOM subset is modified by Create Federation Execution and Join
+                     Federation Execution service invocations.
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>The Current FDD realized as a result of antecedent successful Create Federation Execution
+                     and Join Federation Execution service invocations.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAtimeImplementationName</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Static</updateType>
+                  <updateCondition>N/A
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Name of the time implementation as supplied to the Create Federation Execution service when
+                     the federation was created.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAlastSaveName</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever Federation Saved service is successfully invoked with a save-success
+                     indicator of successful
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Name associated with the last federation state save (null if no saves have occurred)
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAlastSaveTime</name>
+                  <dataType>HLAlogicalTime</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever Federation Saved service is successfully invoked with a save-success
+                     indicator of successful
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Logical time at which the last federation state save occurred. If the last save was not a
+                     timed save, then the HLAlastSaveTime attribute value shall be an empty (zero-length) HLAlogicalTime
+                     array to indicate that the value of the HLAlastSaveTime attribute is undefined. If no timed saves
+                     have occurred the value shall be an empty (zero-length) HLAlogicalTime array.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAnextSaveName</name>
+                  <dataType>HLAunicodeString</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever Request Federation Save service is successfully invoked
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Name associated with the next federation state save (null if no saves are scheduled)
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAnextSaveTime</name>
+                  <dataType>HLAlogicalTime</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever Request Federation Save service is successfully invoked
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Logical time at which the next federation state timed save is scheduled. If no timed saves
+                     are scheduled the value shall be an empty (zero-length) HLAlogicalTime array.
+                  </semantics>
+               </attribute>
+               <attribute>
+                  <name>HLAautoProvide</name>
+                  <dataType>HLAswitch</dataType>
+                  <updateType>Conditional</updateType>
+                  <updateCondition>Whenever the HLAmanager.HLAfederate.HLAfederation.HLAadjust.HLAsetSwitches
+                     interaction is sent to successfully change the value of the HLAautoProvide parameter.
+                  </updateCondition>
+                  <ownership>NoTransfer</ownership>
+                  <sharing>Publish</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Value of federation-wide Auto-Provide Switch. Updated when value of switch changes
+                  </semantics>
+               </attribute>
+            </objectClass>
+         </objectClass>
+      </objectClass>
+   </objects>
+   <interactions>
+      <interactionClass>
+         <name>HLAinteractionRoot</name>
+         <sharing>Neither</sharing>
+         <transportation>HLAreliable</transportation>
+         <order>TimeStamp</order>
+         <interactionClass>
+            <name>HLAmanager</name>
+            <sharing>Neither</sharing>
+            <transportation>HLAreliable</transportation>
+            <order>Receive</order>
+            <semantics>Root class of MOM interactions</semantics>
+            <interactionClass>
+               <name>HLAfederate</name>
+               <sharing>Neither</sharing>
+               <transportation>HLAreliable</transportation>
+               <order>Receive</order>
+               <semantics>Root class of MOM interactions that deal with a specific joined federate</semantics>
+               <parameter>
+                  <name>HLAfederate</name>
+                  <dataType>HLAhandle</dataType>
+                  <semantics>Handle of the joined federate that was provided when joining.</semantics>
+               </parameter>
+               <interactionClass>
+                  <name>HLAadjust</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Permit a joined federate to adjust the RTI statevariables associated with another joined
+                     federate
+                  </semantics>
+                  <interactionClass>
+                     <name>HLAsetTiming</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Adjust the time period between updates of the HLAmanager.HLAfederate object instance for
+                        the specified joined federate. If this interaction is never sent, the RTI shall not perform
+                        periodic updates
+                     </semantics>
+                     <parameter>
+                        <name>HLAreportPeriod</name>
+                        <dataType>HLAseconds</dataType>
+                        <semantics>Number of seconds between updates of instance attribute values of the HLAfederate
+                           object instance (A zero value causes periodic updates to cease). If no interaction of class
+                           HLAmanager.HLAfederate.HLAadjust.HLAsetTiming has been sent, then no periodic updates of MOM
+                           attribute values shall be generated.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAmodifyAttributeState</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Modify the ownership state of an attribute of an object instance for the specified
+                        joined federate. If the interaction is used to give ownership of the instance attribute to the
+                        specified joined federate and another joined federate currently owns the instance attribute, the
+                        owning joined federate shall be divested of ownership of the instance attribute before ownership
+                        is granted to the specified joined federate. No notification of change of ownership of the
+                        instance attribute shall be provided to either joined federate. In order for ownership of the
+                        instance attribute to be granted to the specified joined federate, the following conditions
+                        shall be true: - The specified joined federate knows about the object instance. - The specified
+                        joined federate is publishing the corresponding class attribute at the known class of the
+                        specified object instance at that joined federate. - The specified instance attribute is not
+                        owned by the RTI (i.e., it is not a predefined attribute of a MOM object class). If one or more
+                        of the above conditions are not met, then the interaction shall have no effect and an error
+                        shall be reported via an interaction of class HLAmanager. HLAfederate.HLAreport.
+                        HLAreportMOMexception.
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance whose attribute state is being changed
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattribute</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the instance attribute whose state is being changed</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeState</name>
+                        <dataType>HLAownership</dataType>
+                        <semantics>New state for the attribute of the object instance</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAsetServiceReporting</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Specify whether to report service invocations to or from the specified joined federate
+                        via HLAmanager.HLAfederate.HLAreport.HLAreportServiceInvocation interactions (enable or disable
+                        Service-Reporting). If the specified joined federate is subscribed to the
+                        HLAmanager.HLAfederate.HLAreport.HLAreportServiceInvocation interaction, all attempts to enable
+                        service reporting for that joined federate by sending an
+                        HLAmanager.HLAfederate.HLAadjust.HLAsetServiceReporting interaction with an HLAreportingState
+                        parameter value of HLAtrue shall fail and be reported via the normal MOM interaction failure
+                        means.
+                     </semantics>
+                     <parameter>
+                        <name>HLAreportingState</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the RTI should report service invocations (default = HLAfalse)
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAsetExceptionReporting</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Specify whether the RTI shall report service invocation exceptions via
+                        HLAmanager.HLAfederate.HLAreport. HLAreportException interactions
+                     </semantics>
+                     <parameter>
+                        <name>HLAreportingState</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the RTI should report exceptions (default = HLAfalse)</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAsetSwitches</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Set the values of joined federate specific switches. A joined federate may send
+                        individual declared parameters of this subclass.
+                     </semantics>
+                     <parameter>
+                        <name>HLAconveyRegionDesignatorSets</name>
+                        <dataType>HLAswitch</dataType>
+                        <semantics>Set the joined federate's Convey Region Designator Sets Switch to the provided value.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAconveyProducingFederate</name>
+                        <dataType>HLAswitch</dataType>
+                        <semantics>Set the joined federate's Convey Producing Federate Switch to the provided value.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+               </interactionClass>
+               <interactionClass>
+                  <name>HLArequest</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Permit a federate to request RTI data about another federate</semantics>
+                  <interactionClass>
+                     <name>HLArequestPublications</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send report interactions that contain the publication data of a
+                        joined federate. It shall result in one interaction of class HLAmanager. HLAfederate.HLAreport.
+                        HLAreportInteractionPublication and one interaction of class HLAmanager.HLAfederate.
+                        HLAreport.HLAreportObjectClassPublication for each object class published. If the joined
+                        federate is published to no object classes then one of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassPublication shall be sent as a NULL
+                        response with the HLAobjectClassCount parameter having a value of 0.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestSubscriptions</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send report interactions that contain the subscription data of a
+                        joined federate. It shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportInteractionSubscription and one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassSubscription for each different combination
+                        of (object class, passive subscription indicator) values that are subscribed. If the joined
+                        federate is subscribed to no object classes, then one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassSubscription shell be sent as a NULL
+                        response with the HLAobjectClassCount parameter having a value of 0.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestObjectInstancesThatCanBeDeleted</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the object instances that
+                        can be deleted at a joined federate. It shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesThatCanBeDeleted.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestObjectInstancesUpdated</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the object instance
+                        updating responsibility of a joined federate. It shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesUpdated.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestObjectInstancesReflected</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the object instances for
+                        which a joined federate has had a Reflect Attribute Values service invocation. It shall result
+                        in one interaction ofclass HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesReflected.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestUpdatesSent</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the number of updates that
+                        a joined federate has generated. It shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportUpdatesSent for each transportation type.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestInteractionsSent</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the number of interactions
+                        that a joined federate has generated. This count shall include interactions sent with region. It
+                        shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportInteractionsSent for each transportation type.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestReflectionsReceived</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the number of reflections
+                        that a joined federate has received. It shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportReflectionsReceived for each transportation type.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestInteractionsReceived</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the number of interactions
+                        that a joined federate has received. It shall result in one interaction of class
+                        HLAmanager.HLAfederate.HLAreport.HLAreportInteractionsReceived for each transportation type.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestObjectInstanceInformation</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains the information that a
+                        joined federate maintains on a single object instance. It shall result in one interaction of
+                        class HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstanceInformation
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance for which information is being requested
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestFOMmoduleData</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Requests that the RTI shall send a report interaction with the content of the specified
+                        FOM module that was specified by the federate. The FOM module is indicated by the order number
+                        in the federates HLAFOMmoduleDesignatorList attribute.
+                     </semantics>
+                     <parameter>
+                        <name>HLAFOMmoduleIndicator</name>
+                        <dataType>HLAindex</dataType>
+                        <semantics>Indicates order number of requested FOM module</semantics>
+                     </parameter>
+                  </interactionClass>
+               </interactionClass>
+               <interactionClass>
+                  <name>HLAreport</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Report RTI data about a joined federate. The RTI shall send these interactions in response
+                     to interactions of class HLAmanager.HLAfederate.HLArequest that correspond to services that are
+                     normally invoked by federates.
+                  </semantics>
+                  <interactionClass>
+                     <name>HLAreportObjectClassPublication</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestPublications. It shall report the attributes of one
+                        object class published by the joined federate. One of these interactions shall be sent for each
+                        object class containing attributes that are published by the joined federate. If the joined
+                        federate is published to no object classes then a single interaction shall be sent as a NULL
+                        response with the HLAobjectClassCount parameter having a value of 0.
+                     </semantics>
+                     <parameter>
+                        <name>HLAnumberOfClasses</name>
+                        <dataType>HLAcount</dataType>
+                        <semantics>The number of object classes for which the joined federate publishes attributes. This
+                           parameter shall be 0 in a NULL response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAobjectClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>The object class whose publication is being reported. This parameter shall be omitted
+                           in a NULL response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of HLAobjectClass attributes that the joined federate is publishing.
+                           This parameter shall be omitted in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportInteractionPublication</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestPublications. It shall report the interaction
+                        classes published by the joined federate. If the joined federate is published to no interaction
+                        classes, then a single interaction shall be sent as a NULL response with the
+                        HLAinteractionClassList parameter having an undefined value (i.e. 0 length array).
+                     </semantics>
+                     <parameter>
+                        <name>HLAinteractionClassList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of interaction classes that the joined federate is publishing. This parameter
+                           shall be an empty list in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportObjectClassSubscription</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestSubscriptions. It shall report the attributes of one
+                        object class subscribed to by the joined federate. One of these interactions shall be sent for
+                        each object class that is subscribed by the joined federate. This information shall reflect
+                        related DDM usage. If joined federate has no subscribed object classes, then a single
+                        interaction shall be sent as a NULL response with the HLAnumberOfClasses parameter having a
+                        value of 0.
+                     </semantics>
+                     <parameter>
+                        <name>HLAnumberOfClasses</name>
+                        <dataType>HLAcount</dataType>
+                        <semantics>The number of object class and passive indicator combinations for which the joined
+                           federate subscribes to attributes. This information shall reflect related DDM usage. This
+                           parameter shall be 0 in a NULL response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAobjectClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>The object class whose subscription is being reported. This parameter shall be
+                           omitted in a NULL response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAactive</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the subscription is active. This parameter shall be omitted in a NULL
+                           response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAmaxUpdateRate</name>
+                        <dataType>HLAupdateRateName</dataType>
+                        <semantics>Name of the maximum subscribed update rate. This parameter shall be omitted in a NULL
+                           response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of class attributes to which the joined federate is subscribing. This
+                           parameter shall be omitted in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportInteractionSubscription</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestSubscriptions. It shall report the interaction
+                        classes subscribed to by the joined federate. This information shall reflect related DDM usage.
+                        If the joined federate has no subscribed interaction classes, then a single interaction shall be
+                        sent as a NULL response with the HLAinteractionClassList parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAinteractionClassList</name>
+                        <dataType>HLAinteractionSubList</dataType>
+                        <semantics>List of interaction class/subscription type pairs. Each pair consists of the handle
+                           of an interaction class that the joined federate is subscribed to and whether the joined
+                           federate is actively subscribing. This information shall reflect related DDM usage. This
+                           parameter shall be an empty list in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportObjectInstancesThatCanBeDeleted</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestObject InstancesThatCanBeDeleted. It shall report
+                        the number of object instances (by registered class of the object instances) whose
+                        HLAprivilegeToDeleteObject attributes are owned by the joined federate.
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstanceCounts</name>
+                        <dataType>HLAobjectClassBasedCounts</dataType>
+                        <semantics>A list of object instance counts. Each object instance count consists of an object
+                           class handle and the number of object instances of that class. This parameter shall be an
+                           empty list in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportObjectInstancesUpdated</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancessUpdated. It shall report the number
+                        of object instances (by registered class of the object instances) for which the joined federate
+                        has successfully invoked the Update Attribute Values service. If the joined federate has no
+                        object instances that are updated for a given transport type then a single interaction shall be
+                        sent as a NULL response with the HLAobjectInstanceCounts parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstanceCounts</name>
+                        <dataType>HLAobjectClassBasedCounts</dataType>
+                        <semantics>List of object instance counts. Each object instance count consists of an object
+                           class handle and the number of object instances of that class. This parameter shall be an
+                           empty list in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportObjectInstancesReflected</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesReflected. It shall report the number
+                        of object instances (by registered class of the object instances) for which the joined federate
+                        has had a Reflect Attribute Values service invocation. If the joined federate has no object
+                        instances that are reflected for a given transport type, then a single interaction shall be sent
+                        as a NULL response with the HLAobjectInstanceCounts parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstanceCounts</name>
+                        <dataType>HLAobjectClassBasedCounts</dataType>
+                        <semantics>List of object instance counts. Each object instance count consists of an object
+                           class handle and the number of object instances of that class. This parameter shall be an
+                           empty list in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportUpdatesSent</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestUpdatesSent. It shall report the number of updates
+                        sent (by registered class of the object instances of the updates) by the joined federate since
+                        the beginning of the federation execution. One interaction of this class shall be sent by the
+                        RTI for each transportation type used. If the joined federate has no updates sent for a given
+                        transportation type, then a single interaction shall be sent as a NULL response with the
+                        HLAupdateCounts parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtransportation</name>
+                        <dataType>HLAtransportationName</dataType>
+                        <semantics>Transportation type used in sending updates</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAupdateCounts</name>
+                        <dataType>HLAobjectClassBasedCounts</dataType>
+                        <semantics>List of update counts. Each update count consists of an object class handle and the
+                           number of updates sent of that class. If no updates of instance attributes of any object
+                           instances of any class for a given transportation type have been sent, then the RTI shall
+                           send a HLAmanager.HLAfederate. HLAreport.HLAreportUpdatesSent interaction for that
+                           transportation type. However, no HLAobjectClassBasedCount elements at all shall appear in the
+                           HLAobjectClassBased Count array for that interaction of that transportation type. In other
+                           words, the HLAreportUpdatesSent interaction that is sent for that transportation type will
+                           have an empty HLAobjectClassBasedCount array. If no updates of instance attributes of any
+                           object instances of a given class for a given transportation type have been sent, then no
+                           HLAobjectClassBasedCount element for that object class shall be in the
+                           HLAobjectClassBasedCount array of the HLAmanager.HLAfederate.HLAreport.HLAreportUpdatesSent
+                           interaction for that transportation type. This parameter shall be an empty list in a NULL
+                           response for the given transportation type.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportReflectionsReceived</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestReflectionsReceived. It shall report the number of
+                        reflections received (by registered class of the object instances of the reflects) by the joined
+                        federate since the beginning of the federation execution. One interaction of this class shall be
+                        sent by the RTI for each transportation type used. If the joined federate has no reflections
+                        received for a given transportation type, then a single interaction shall be sent as a NULL
+                        response with the HLAreflectCounts parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtransportation</name>
+                        <dataType>HLAtransportationName</dataType>
+                        <semantics>Transportation type used in receiving reflections</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAreflectCounts</name>
+                        <dataType>HLAobjectClassBasedCounts</dataType>
+                        <semantics>List of reflection counts. Each reflection count consists of an object class handle
+                           and the number of reflections received of that class. If no reflects of instance attributes
+                           of any object instances of any class for a given transportation type have been received, then
+                           the RTI shall send a HLAmanager.HLAfederate.HLAreport.HLAreportReflectionsReceived
+                           interaction for that transportation type. However, no HLAobjectClassBasedCount elements at
+                           all shall appear in the HLAobjectClassBasedCount array for that interaction of that
+                           transportation type. In other words, the HLAreportReflectionsReceived interaction that is
+                           sent for that transportation type shall have an empty HLAobjectClassBasedCount array. If no
+                           reflects of instance attributes of any object instances of a given class for a given
+                           transportation type have been received, then no HLAobjectClassBasedCount element for that
+                           object class shall be in the HLAobjectClassBasedCount array of the HLAmanager.
+                           HLAfederate.HLAreport.HLAreportReflectionsReceived interaction for that transportation type.
+                           This parameter shall be an empty list in a NULL response for the given transportation type.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportInteractionsSent</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestInteractionsSent. It shall report the number of
+                        interactions sent (by sent class of the interactions) by the joined federate since the beginning
+                        of the federation execution. This count shall include interactions sent with region. One
+                        interaction of this class shall be sent by the RTI for each transportation type used. If the
+                        joined federate has no interactions that are sent for a given transportation type then a single
+                        interaction shall be sent as a NULL response with the HLAinteractionCounts parameter having an
+                        undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtransportation</name>
+                        <dataType>HLAtransportationName</dataType>
+                        <semantics>Transportation type used in sending interactions</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAinteractionCounts</name>
+                        <dataType>HLAinteractionCounts</dataType>
+                        <semantics>List of interaction counts. Each interaction count consists of an interaction class
+                           handle and the number of interactions of that class. This information shall reflect related
+                           DDM usage. This parameter shall be an empty list in a NULL response for the given
+                           transportation type.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportInteractionsReceived</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of
+                        classHLAmanager.HLAfederate.HLArequest. HLArequestInteractionsReceived. It shall report the
+                        number of interactions received (by sent class of the interactions) by the joined federate since
+                        the beginning of the federation execution. One interaction of this class shall be sent by the
+                        RTI for each transportation type used. If the joined federate has no interactions that are
+                        received for a given transportation type, then a single interaction shall be sent as a NULL
+                        response with the HLAinteractionCounts parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtransportation</name>
+                        <dataType>HLAtransportationName</dataType>
+                        <semantics>Transportation type used in receiving interactions</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAinteractionCounts</name>
+                        <dataType>HLAinteractionCounts</dataType>
+                        <semantics>List of interaction counts. Each interaction count consists of an interaction class
+                           handle and the number of interactions of that class. This parameter shall be an empty list in
+                           a NULL response for the given transportation type.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportObjectInstanceInformation</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstanceInformation. It shall report on a
+                        single object instance and portray the instance attributes of that object instance that are
+                        owned by the joined federate, the registered class of the object instance, and the known class
+                        of the object instance at that joined federate. If the joined federate does not know the object
+                        instance, a single interaction shall be sent as a NULL response with the
+                        HLAownedInstanceAttributeList parameter having an undefined value.
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance for which the interaction was sent</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAownedInstanceAttributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of the handles of all instance attributes, of the object instance, owned by the
+                           joined federate. This parameter shall be an empty list in a NULL response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAregisteredClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the registered class of the object instance. This parameter shall be
+                           omitted in a NULL response.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAknownClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the known class of the object instance at the joined federate. This
+                           parameter shall be omitted in a NULL response.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportException</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI when an exception occurs as the result of a
+                        service invocation at the indicated joined federate. This interaction shall be sent only if the
+                        last HLAmanager.HLAfederate.HLAadjust.HLAsetExceptionReporting interaction changing the
+                        HLAreportingState parameter sets the parameter to HLAtrue, for the indicated joined federate.
+                     </semantics>
+                     <parameter>
+                        <name>HLAservice</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>In the case in which the HLAreportMOMexception interaction is sent by the RTI because
+                           a service interaction (an interaction that imitates a federate's invocation of an HLA
+                           service) was sent and not all of the service's preconditions are met, the value of this
+                           parameter shall be the name of the HLAinteractionRoot.HLA.Manager.HLAfederate.HLAservice
+                           interaction that was sent. In the case in which the HLAreportMOMexception interaction is sent
+                           by the RTI because a MOM interaction without all of the necessary parameters was sent, the
+                           value of this parameter shall be the name of the class of the interaction that was sent. The
+                           name of the interaction class provided shall always be fully qualified, as defined in the
+                           OMT, so as to avoid potential ambiguities.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAexception</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Textual depiction of the exception.</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportServiceInvocation</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                        <dimension>HLAserviceGroup</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>This interaction shall be sent by the RTI whenever an HLA service is invoked, either by
+                        the indicated joined federate or by the RTI at the indicated joined federate, and
+                        Service-Reporting is Enabled for the indicated joined federate. This interaction shall always
+                        contain the arguments supplied by the service invoker. If the service invocation was successful,
+                        the interaction also shall contain the value returned to the invoker (if the service returns a
+                        value); otherwise, the interaction also shall contain an indication of the exception that was
+                        raised to the invoker.
+                     </semantics>
+                     <parameter>
+                        <name>HLAservice</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Textual name of the service</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAsuccessIndicator</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the service invocation was successful. Exception values are returned along
+                           with HLAfalse value
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAsuppliedArguments</name>
+                        <dataType>HLAargumentList</dataType>
+                        <semantics>Textual depiction of the arguments supplied in the service invocation
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAreturnedArguments</name>
+                        <dataType>HLAargumentList</dataType>
+                        <semantics>Textual depiction of the argument returned by the service invocation. The list is
+                           null if the service does not normally return a value or if HLAsuccessIndicator is HLAfalse.
+                           Each returned argument is an element on the list. The number of returned arguments depends
+                           upon the service narrative and not any particular API and services may have more than one
+                           returned argument.
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAexception</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Textual depiction of the exception raised by this service invocation (null if
+                           HLAsuccessIndicator is HLAtrue)
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAserialNumber</name>
+                        <dataType>HLAcount</dataType>
+                        <semantics>This is a per-joined federate serial number that shall start at zero and shall
+                           increment by 1 for each HLAmanager.HLAfederate.HLAreport HLAreportServiceInvocation
+                           interaction that represents service invocations to or from the respective joined federate.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportMOMexception</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI when one the following occurs: a MOM
+                        interaction without all the necessary parameters is sent or an interaction that imitates a
+                        federate's invocation of an HLA service is sent and not all of the service's pre-conditions are
+                        met.
+                     </semantics>
+                     <parameter>
+                        <name>HLAservice</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Name of the service interaction that had a problem or raised the exception
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAexception</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Textual depiction of the problem/exception</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAparameterError</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>HLAtrue if there was an incorrect number of interaction parameters or a parameter was
+                           incorrectly formatted, HLAfalse otherwise
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportFederateLost</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>This MOM interaction shall be sent when a federate has been lost from the federation due
+                        to a fault.
+                     </semantics>
+                     <parameter>
+                        <name>HLAfederateName</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Name of the lost joined federate
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Last-known-good timestamp to which the lost joined federate was granted
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAfaultDescription</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Human-readable description of the fault
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportFOMmoduleData</name>
+                     <sharing>Publish</sharing>
+                     <dimensions>
+                        <dimension>HLAfederate</dimension>
+                     </dimensions>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederate.HLArequest.HLArequestFOMmoduleData. It shall report the content of the
+                        specified FOM module for the federate.
+                     </semantics>
+                     <parameter>
+                        <name>HLAFOMmoduleIndicator</name>
+                        <dataType>HLAindex</dataType>
+                        <semantics>Indicates order number of reported FOM module</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAFOMmoduleData</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Contents of the reported FOM module</semantics>
+                     </parameter>
+                  </interactionClass>
+               </interactionClass>
+               <interactionClass>
+                  <name>HLAservice</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>The interaction class shall be acted upon by the RTI. These interactions shall invoke HLA
+                     services on behalf of another joined federate. They shall cause the RTI to react as if the service
+                     has been invoked by that other joined federate. If exceptions arise as a result of the use of these
+                     interactions, they shall be reported via the HLAmanager.HLAfederate.HLAreport.HLAreportMOMexception
+                     interaction to all joined federates that subscribe to this interaction. There are two ways an error
+                     can occur: the sending federate does not provide all the required arguments as parameters or the
+                     preconditions of the spoofed service are not met. Each type of error is reported via the
+                     HLAMOMreportMOMexception. NOTE - These interactions shall have the potential to disrupt normal
+                     federation execution and should be used with great care.
+                  </semantics>
+                  <interactionClass>
+                     <name>HLAresignFederationExecution</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate to resign from the federation execution. A joined federate
+                        shall be able to send this interaction anytime.
+                     </semantics>
+                     <parameter>
+                        <name>HLAresignAction</name>
+                        <dataType>HLAresignAction</dataType>
+                        <semantics>Action that the RTI is to take in conjunction with the resignation
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAsynchronizationPointAchieved</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Mimic the federate's report of achieving a synchronization point.</semantics>
+                     <parameter>
+                        <name>HLAlabel</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Label associated with the synchronization point</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAfederateSaveBegun</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Mimic the federate's report of starting a save</semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAfederateSaveComplete</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Mimic the joined federate's report of completion of a federate save. A joined federate
+                        shall be able to send this interaction during a federate save.
+                     </semantics>
+                     <parameter>
+                        <name>HLAsuccessIndicator</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the federate save was successful</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAfederateRestoreComplete</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Mimic the joined federate's report of completion of a restore. A joined federate shall
+                        be able to send this interaction during a federation restore.
+                     </semantics>
+                     <parameter>
+                        <name>HLAsuccessIndicator</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the restore was successful</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLApublishObjectClassAttributes</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Set the joined federate's publication status of attributes of an object class
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Object class for which the joined federate's publication shall change
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of attributes of HLAobjectClass, that the joined federate shall now
+                           publish
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAunpublishObjectClassAttributes</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate no longer to publish attributes of an object class
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Object class for which the joined federate's unpublication shall change
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of attributes of HLAobjectClass, that the joined federate shall now
+                           unpublish
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLApublishInteractionClass</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Set the joined federate's publication status of an interaction class</semantics>
+                     <parameter>
+                        <name>HLAinteractionClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Interaction class that the joined federate shall publish</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAunpublishInteractionClass</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate no longer to publish an interaction class</semantics>
+                     <parameter>
+                        <name>HLAinteractionClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Interaction class that the joined federate shall no longer publish
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAsubscribeObjectClassAttributes</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Set the joined federate's subscription status of attributes of an object class
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Object class for which the joined federate's subscription shall change
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of attributes of HLAobjectClass to which the joined federate shall
+                           now subscribe
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAactive</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the subscription is active</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAunsubscribeObjectClassAttributes</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate no longer to subscribe to attributes of an object class
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Object class for which the joined federate's subscription shall change
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of attributes of HLAobjectClass to which the joined federate shall
+                           now unsubscribe
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAsubscribeInteractionClass</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Set the joined federate's subscription status to an interaction class.
+                     </semantics>
+                     <parameter>
+                        <name>HLAinteractionClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Interaction class to which the federate shall subscribe</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAactive</name>
+                        <dataType>HLAboolean</dataType>
+                        <semantics>Whether the subscription is active</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAunsubscribeInteractionClass</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate no longer to subscribe to an interaction class
+                     </semantics>
+                     <parameter>
+                        <name>HLAinteractionClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Interaction class to which the joined federate will no longer be subscribed
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAdeleteObjectInstance</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause an object instance to be deleted from the federation.</semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance that is to be deleted</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAtag</name>
+                        <dataType>HLAopaqueData</dataType>
+                        <semantics>Tag associated with the deletion</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Time stamp of the deletion (optional)</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAlocalDeleteObjectInstance</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Inform the RTI that it shall treat the specified object instance as if the joined
+                        federate did not know about the object instance.
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance that is to be deleted</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestAttributeTransportationTypeChange</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request a change of the transportation type used by the joined federate when sending
+                        attributes belonging to the object instance
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance whose attribute transportation type is to be changed
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of the handles of instance attributes whose transportation type is to be changed
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAtransportation</name>
+                        <dataType>HLAtransportationName</dataType>
+                        <semantics>Transportation type to be used for updating instance attributes in the list
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestInteractionTransportationTypeChange</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request a change of the transportation type used by the joined federate when sending a
+                        class of interaction
+                     </semantics>
+                     <parameter>
+                        <name>HLAinteractionClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Interaction class whose transportation type is changed by this service invocation
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAtransportation</name>
+                        <dataType>HLAtransportationName</dataType>
+                        <semantics>Transportation type to be used for sending the interaction class</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAunconditionalAttributeOwnershipDivestiture</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the ownership of attributes of an object instance to be unconditionally divested
+                        by the joined federate
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance whose attributes' ownership is to be divested
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of handles of instance attributes belonging to HLAobjectInstance whose ownership
+                           is to be divested by the joined federate
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAenableTimeRegulation</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate to begin regulating the logical time of other joined federates
+                     </semantics>
+                     <parameter>
+                        <name>HLAlookahead</name>
+                        <dataType>HLAtimeInterval</dataType>
+                        <semantics>Lookahead to be used by the joined federate while regulating other joined federates
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAdisableTimeRegulation</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the joined federate to cease regulating the logical time of other joined federates
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAenableTimeConstrained</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the logical time of the joined federate to begin being constrained by the logical
+                        times of other joined federates
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAdisableTimeConstrained</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the logical time of the joined federate to cease being constrained by the logical
+                        times of other joined federates
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAtimeAdvanceRequest</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request an advance of the joined federate's logical time on behalf of the joined
+                        federate, and release zero or more messages for delivery to the joined federate
+                     </semantics>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Time stamp requested</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAtimeAdvanceRequestAvailable</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request an advance of the joined federate's logical time, on behalf of the joined
+                        federate, and release zero or more messages for delivery to the joined federate
+                     </semantics>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Time stamp requested</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAnextMessageRequest</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request the logical time of the joined federate to be advanced to the time stamp of the
+                        next TSO message that shall be delivered to the joined federate, provided that the message shall
+                        have a time stamp no greater than the logical time specified in the request, and release zero or
+                        more messages for delivery to the joined federate.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Time stamp requested</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAnextMessageRequestAvailable</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request the logical time of the joined federate to be advanced to the time stamp of the
+                        next TSO message that shall be delivered to the joined federate, provided that the message shall
+                        have a time stamp no greater than the logical time specified in the request, and release zero or
+                        more messages for delivery to the joined federate.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Time stamp requested</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAflushQueueRequest</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request the logical time of the joined federate to be advanced as far as possible,
+                        provided that the time stamp is less than or equal to the logical time specified in the request.
+                        All TSO and RO messages shall be delivered to the joined federate.
+                     </semantics>
+                     <parameter>
+                        <name>HLAtimeStamp</name>
+                        <dataType>HLAlogicalTime</dataType>
+                        <semantics>Time stamp requested</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAenableAsynchronousDelivery</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Cause the RTI to deliver RO messages to the joined federate at any wall-clock time, even
+                        if the joined federate is time-constrained.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAdisableAsynchronousDelivery</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>When the joined federate is time-constrained, cause the RTI to deliver RO messages to
+                        the joined federate only when its time manager state is "Time Advancing".
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAmodifyLookahead</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Change the lookahead value used by the joined federate</semantics>
+                     <parameter>
+                        <name>HLAlookahead</name>
+                        <dataType>HLAtimeInterval</dataType>
+                        <semantics>New value for lookahead</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAchangeAttributeOrderType</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Change the order type used by the joined federate when sending attributes belonging to
+                        the object instance
+                     </semantics>
+                     <parameter>
+                        <name>HLAobjectInstance</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Handle of the object instance whose attribute order type is to be changed
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAattributeList</name>
+                        <dataType>HLAhandleList</dataType>
+                        <semantics>List of the handles of instance attributes whose order type is to be changed
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAsendOrder</name>
+                        <dataType>HLAorderType</dataType>
+                        <semantics>Order type to be used for sending the instance attribute list</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAchangeInteractionOrderType</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Change the order type used by the joined federate when sending a class of interaction
+                     </semantics>
+                     <parameter>
+                        <name>HLAinteractionClass</name>
+                        <dataType>HLAhandle</dataType>
+                        <semantics>Interaction class whose order type is changed by this service invocation
+                        </semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAsendOrder</name>
+                        <dataType>HLAorderType</dataType>
+                        <semantics>Order type to be used for sending the interaction class</semantics>
+                     </parameter>
+                  </interactionClass>
+               </interactionClass>
+            </interactionClass>
+            <interactionClass>
+               <name>HLAfederation</name>
+               <sharing>Neither</sharing>
+               <transportation>HLAreliable</transportation>
+               <order>Receive</order>
+               <semantics>Root class of MOM interactions that deal with a specific federation execution.
+               </semantics>
+               <interactionClass>
+                  <name>HLAadjust</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Permit a federate to adjust the RTI state variables associated with a federation execution.
+                  </semantics>
+                  <interactionClass>
+                     <name>HLAsetSwitches</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Set the values of federation execution-wide switches. A joined federate may send
+                        individual declared parameters of this subclass.
+                     </semantics>
+                     <parameter>
+                        <name>HLAautoProvide</name>
+                        <dataType>HLAswitch</dataType>
+                        <semantics>Set the federation-wide Auto-Provide Switch to the provided value.
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+               </interactionClass>
+               <interactionClass>
+                  <name>HLArequest</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Permit a federate to request RTI data about a specific federation execution
+                  </semantics>
+                  <interactionClass>
+                     <name>HLArequestSynchronizationPoints</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains a list of all in-progress
+                        federation synchonization points. It shall result in one interaction class
+                        HLAmanager.HLAfederation.HLAreport.HLAreportSynchronizationPoints
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestSynchronizationPointStatus</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Request that the RTI send a report interaction that contains a list that includes each
+                        federate (and its synchronization point status) that is associated with a particular
+                        synchronization point. It shall result in one interaction of class
+                        HLAmanager.HLAfederation.HLAreport.HLAreportSynchronizationPointStaus.
+                     </semantics>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestFOMmoduleData</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Requests that the RTI shall send a report interaction with the content of the specified
+                        FOM module for the federation. The FOM module is indicated by the order number in the
+                        federations HLAFOMmoduleDesignatorList attribute.
+                     </semantics>
+                     <parameter>
+                        <name>HLAFOMmoduleIndicator</name>
+                        <dataType>HLAindex</dataType>
+                        <semantics>Indicates order number of requested FOM module</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLArequestMIMdata</name>
+                     <sharing>Subscribe</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>Requests that the RTI shall send a report interaction with the content of the MIM for
+                        the federation.
+                     </semantics>
+                  </interactionClass>
+               </interactionClass>
+               <interactionClass>
+                  <name>HLAreport</name>
+                  <sharing>Neither</sharing>
+                  <transportation>HLAreliable</transportation>
+                  <order>Receive</order>
+                  <semantics>Permit a federate to receive RTI data about a specific federation execution
+                  </semantics>
+                  <interactionClass>
+                     <name>HLAreportSynchronizationPoints</name>
+                     <sharing>Publish</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederation.HLArequest.HLArequestSynchronizationPoints. It shall report the list of
+                        active synchronization points in the federation execution.
+                     </semantics>
+                     <parameter>
+                        <name>HLAsyncPoints</name>
+                        <dataType>HLAsynchPointList</dataType>
+                        <semantics>List of the in progress federation execution synchronization points
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportSynchronizationPointStatus</name>
+                     <sharing>Publish</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederation. HLArequest.HLArequestSynchronizationPointStatus. It shall report the
+                        status of a particular synchronization point. This shall be a list that includes each federate
+                        (and its synchronization status) that is associated with a particular synchronization point.
+                     </semantics>
+                     <parameter>
+                        <name>HLAsyncPointName</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Name of a particular synchronization point</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAsyncPointFederates</name>
+                        <dataType>HLAsynchPointFederateList</dataType>
+                        <semantics>List of each federate (and its synchronization status) associated with the particular
+                           synchronization point
+                        </semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportFOMmoduleData</name>
+                     <sharing>Publish</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederation.HLArequest.HLArequestFOMmoduleData. It shall report the content of the
+                        specified FOM module for the federation.
+                     </semantics>
+                     <parameter>
+                        <name>HLAFOMmoduleIndicator</name>
+                        <dataType>HLAindex</dataType>
+                        <semantics>Indicates order number of reported FOM module</semantics>
+                     </parameter>
+                     <parameter>
+                        <name>HLAFOMmoduleData</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Contents of the reported FOM module</semantics>
+                     </parameter>
+                  </interactionClass>
+                  <interactionClass>
+                     <name>HLAreportMIMdata</name>
+                     <sharing>Publish</sharing>
+                     <transportation>HLAreliable</transportation>
+                     <order>Receive</order>
+                     <semantics>The interaction shall be sent by the RTI in response to an interaction of class
+                        HLAmanager.HLAfederation.HLArequest.HLArequest MIMData. It shall report the content of the MIM
+                        for the federation.
+                     </semantics>
+                     <parameter>
+                        <name>HLAMIMdata</name>
+                        <dataType>HLAunicodeString</dataType>
+                        <semantics>Contents of the reported MIM</semantics>
+                     </parameter>
+                  </interactionClass>
+               </interactionClass>
+            </interactionClass>
+         </interactionClass>
+      </interactionClass>
+   </interactions>
+   <dimensions>
+      <dimension notes="MOM1">
+         <name>HLAfederate</name>
+         <dataType>HLAnormalizedFederateHandle</dataType>
+         <normalization>Normalize Federate Handle service</normalization>
+         <value>Excluded</value>
+      </dimension>
+      <dimension>
+         <name>HLAserviceGroup</name>
+         <dataType>HLAnormalizedServiceGroup</dataType>
+         <upperBound>7</upperBound>
+         <normalization>Normalize Service Group service</normalization>
+         <value>Excluded</value>
+      </dimension>
+   </dimensions>
+   <transportations>
+      <transportation>
+         <name>HLAreliable</name>
+         <reliable>Yes</reliable>
+         <semantics>Provide reliable delivery of data in the sense that TCP/IP delivers its data reliably</semantics>
+      </transportation>
+      <transportation>
+         <name>HLAbestEffort</name>
+         <reliable>No</reliable>
+         <semantics>Make an effort to deliver data in the sense that UDP provides best-effort delivery</semantics>
+      </transportation>
+   </transportations>
+   <dataTypes>
+      <basicDataRepresentations>
+         <basicData>
+            <name>HLAinteger16BE</name>
+            <size>16</size>
+            <interpretation>Integer in the range [-2^15, 2^15 - 1]</interpretation>
+            <endian>Big</endian>
+            <encoding>16-bit two's complement signed integer. The most significant bit contains the sign.</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAinteger32BE</name>
+            <size>32</size>
+            <interpretation>Integer in the range [-2^31, 2^31 - 1]</interpretation>
+            <endian>Big</endian>
+            <encoding>32-bit two's complement signed integer. The most significant bit contains the sign.</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAinteger64BE</name>
+            <size>64</size>
+            <interpretation>Integer in the range [-2^63, 2^63 - 1]</interpretation>
+            <endian>Big</endian>
+            <encoding>64-bit two's complement signed integer first. The most significant bit contains the sign.
+            </encoding>
+         </basicData>
+         <basicData>
+            <name>HLAfloat32BE</name>
+            <size>32</size>
+            <interpretation>Single-precision floating point number</interpretation>
+            <endian>Big</endian>
+            <encoding>32-bit IEEE normalized single-precision format. See IEEE Std 754-1985</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAfloat64BE</name>
+            <size>64</size>
+            <interpretation>Double-precision floating point number</interpretation>
+            <endian>Big</endian>
+            <encoding>64-bit IEEE normalized double-precision format. See IEEE Std 754-1985</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAoctetPairBE</name>
+            <size>16</size>
+            <interpretation>16-bit value</interpretation>
+            <endian>Big</endian>
+            <encoding>Assumed to be portable among devices.</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAinteger16LE</name>
+            <size>16</size>
+            <interpretation>Integer in the range [-2^15, 2^15 - 1]</interpretation>
+            <endian>Little</endian>
+            <encoding>16-bit two's complement signed integer. The most significant bit contains the sign.</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAinteger32LE</name>
+            <size>32</size>
+            <interpretation>Integer in the range [-2^31, 2^31 - 1]</interpretation>
+            <endian>Little</endian>
+            <encoding>32-bit two's complement signed integer. The most significant bit contains the sign.</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAinteger64LE</name>
+            <size>64</size>
+            <interpretation>Integer in the range [-2^63, 2^63 - 1]</interpretation>
+            <endian>Little</endian>
+            <encoding>64-bit two's complement signed integer first. The most significant bit contains the sign.
+            </encoding>
+         </basicData>
+         <basicData>
+            <name>HLAfloat32LE</name>
+            <size>32</size>
+            <interpretation>Single-precision floating point number</interpretation>
+            <endian>Little</endian>
+            <encoding>32-bit IEEE normalized single-precision format. See IEEE Std 754-1985</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAfloat64LE</name>
+            <size>64</size>
+            <interpretation>Double-precision floating point number</interpretation>
+            <endian>Little</endian>
+            <encoding>64-bit IEEE normalized double-precision format. See IEEE Std 754-1985</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAoctetPairLE</name>
+            <size>16</size>
+            <interpretation>16-bit value</interpretation>
+            <endian>Little</endian>
+            <encoding>Assumed to be portable among hardware devices.</encoding>
+         </basicData>
+         <basicData>
+            <name>HLAoctet</name>
+            <size>8</size>
+            <interpretation>8-bit value</interpretation>
+            <endian>Big</endian>
+            <encoding>Assumed to be portable among hardware devices.</encoding>
+         </basicData>
+      </basicDataRepresentations>
+      <simpleDataTypes>
+         <simpleData>
+            <name>HLAASCIIchar</name>
+            <representation>HLAoctet</representation>
+            <units>NA</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>Standard ASCII character (see ANSI Std x3.4-1986)</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAunicodeChar</name>
+            <representation>HLAoctetPairBE</representation>
+            <units>NA</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>Unicode UTF-16 character (see The Unicode Standard, Version 3.0)</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAbyte</name>
+            <representation>HLAoctet</representation>
+            <units>NA</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>Uninterpreted 8-bit byte</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAcount</name>
+            <representation>HLAinteger32BE</representation>
+            <units>NA</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>NA</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAseconds</name>
+            <representation>HLAinteger32BE</representation>
+            <units>s</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>NA</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAmsec</name>
+            <representation>HLAinteger32BE</representation>
+            <units>ms</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>NA</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAnormalizedFederateHandle</name>
+            <representation>HLAinteger32BE</representation>
+            <units>NA</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>The type of the normalized value of a federate handle as returned by the Normalize Federate
+               Handle service. The value is appropriate for defining the range of the HLAfederate dimension for regions
+               with this dimension.
+            </semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAindex</name>
+            <representation>HLAinteger32BE</representation>
+            <units>NA</units>
+            <resolution>NA</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>NA</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAinteger64Time</name>
+            <representation>HLAinteger64BE</representation>
+            <units>NA</units>
+            <resolution>1</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>Standardized 64 bit integer time</semantics>
+         </simpleData>
+         <simpleData>
+            <name>HLAfloat64Time</name>
+            <representation>HLAfloat64BE</representation>
+            <units>NA</units>
+            <resolution>4.9E-308</resolution>
+            <accuracy>NA</accuracy>
+            <semantics>Standardized 64 bit float time</semantics>
+         </simpleData>
+      </simpleDataTypes>
+      <enumeratedDataTypes>
+         <enumeratedData>
+            <name>HLAboolean</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>Standard boolean type</semantics>
+            <enumerator>
+               <name>HLAfalse</name>
+               <value>0</value>
+            </enumerator>
+            <enumerator>
+               <name>HLAtrue</name>
+               <value>1</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAfederateState</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>State of the federate</semantics>
+            <enumerator>
+               <name>ActiveFederate</name>
+               <value>1</value>
+            </enumerator>
+            <enumerator>
+               <name>FederateSaveInProgress</name>
+               <value>3</value>
+            </enumerator>
+            <enumerator>
+               <name>FederateRestoreInProgress</name>
+               <value>5</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAtimeState</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>State of time advancement</semantics>
+            <enumerator>
+               <name>TimeGranted</name>
+               <value>0</value>
+            </enumerator>
+            <enumerator>
+               <name>TimeAdvancing</name>
+               <value>1</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAownership</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>NA</semantics>
+            <enumerator>
+               <name>Unowned</name>
+               <value>0</value>
+            </enumerator>
+            <enumerator>
+               <name>Owned</name>
+               <value>1</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAresignAction</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>Action to be performed by RTI in conjunction with resignation</semantics>
+            <enumerator>
+               <name>DivestOwnership</name>
+               <value>1</value>
+            </enumerator>
+            <enumerator>
+               <name>DeleteObjectInstances</name>
+               <value>2</value>
+            </enumerator>
+            <enumerator>
+               <name>CancelPendingAcquisitions</name>
+               <value>3</value>
+            </enumerator>
+            <enumerator>
+               <name>DeleteObjectInstancesThenDivestOwnership</name>
+               <value>4</value>
+            </enumerator>
+            <enumerator>
+               <name>CancelPendingAcquisitionsThenDeleteObjectInstancesThenDivestOwnership</name>
+               <value>5</value>
+            </enumerator>
+            <enumerator>
+               <name>NoAction</name>
+               <value>6</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAorderType</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>Order type to be used for sending attributes or interactions</semantics>
+            <enumerator>
+               <name>Receive</name>
+               <value>0</value>
+            </enumerator>
+            <enumerator>
+               <name>TimeStamp</name>
+               <value>1</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAswitch</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>NA</semantics>
+            <enumerator>
+               <name>Enabled</name>
+               <value>1</value>
+            </enumerator>
+            <enumerator>
+               <name>Disabled</name>
+               <value>0</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAsynchPointStatus</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>Joined federate synchronization point status</semantics>
+            <enumerator>
+               <name>NoActivity</name>
+               <value>0</value>
+            </enumerator>
+            <enumerator>
+               <name>AttemptingToRegisterSynchPoint</name>
+               <value>1</value>
+            </enumerator>
+            <enumerator>
+               <name>MovingToSynchPoint</name>
+               <value>2</value>
+            </enumerator>
+            <enumerator>
+               <name>WaitingForRestOfFederation</name>
+               <value>3</value>
+            </enumerator>
+         </enumeratedData>
+         <enumeratedData>
+            <name>HLAnormalizedServiceGroup</name>
+            <representation>HLAinteger32BE</representation>
+            <semantics>Service group identifier</semantics>
+            <enumerator>
+               <name>FederationManagement</name>
+               <value>0</value>
+            </enumerator>
+            <enumerator>
+               <name>DeclarationManagement</name>
+               <value>1</value>
+            </enumerator>
+            <enumerator>
+               <name>ObjectManagement</name>
+               <value>2</value>
+            </enumerator>
+            <enumerator>
+               <name>OwnershipManagement</name>
+               <value>3</value>
+            </enumerator>
+            <enumerator>
+               <name>TimeManagement</name>
+               <value>4</value>
+            </enumerator>
+            <enumerator>
+               <name>DataDistributionManagement</name>
+               <value>5</value>
+            </enumerator>
+            <enumerator>
+               <name>SupportServices</name>
+               <value>6</value>
+            </enumerator>
+         </enumeratedData>
+      </enumeratedDataTypes>
+      <arrayDataTypes>
+         <arrayData>
+            <name>HLAASCIIstring</name>
+            <dataType>HLAASCIIchar</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>ASCII string representation</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAunicodeString</name>
+            <dataType>HLAunicodeChar</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>Unicode string representation</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAopaqueData</name>
+            <dataType>HLAbyte</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>Uninterpreted sequence of bytes</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAtoken</name>
+            <dataType>HLAbyte</dataType>
+            <cardinality>0</cardinality>
+            <encoding>HLAfixedArray</encoding>
+         </arrayData>
+         <arrayData>
+            <name>HLAhandle</name>
+            <dataType>HLAbyte</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>Encoded value of a handle. The encoding is based on the type of handle</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAtransportationName</name>
+            <dataType>HLAunicodeChar</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>String whose legal value shall be a name from any row in the OMT transportation table (IEEE Std
+               1516.2-2010)
+            </semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAupdateRateName</name>
+            <dataType>HLAunicodeChar</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>String whose legal value shall be a name from any row in the OMT update rate table (IEEE Std
+               1516.2-2010)
+            </semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAlogicalTime</name>
+            <dataType>HLAbyte</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>An encoded logical time. An empty array shall indicate that the values is not defined
+            </semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAtimeInterval</name>
+            <dataType>HLAbyte</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>An encoded logical time interval. An empty array shall indicate that the values is not defined
+            </semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAhandleList</name>
+            <dataType>HLAhandle</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of encoded handles</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAinteractionSubList</name>
+            <dataType>HLAinteractionSubscription</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of interaction subscription indicators</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAargumentList</name>
+            <dataType>HLAunicodeString</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of arguments</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAobjectClassBasedCounts</name>
+            <dataType>HLAobjectClassBasedCount</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of counts of various items based on object class. In all MOM interactions that have a
+               parameter of datatype HLAobjectClassBased- Counts, if an HLAobjectClassBasedCount element of the
+               HLAobjectClassBasedCounts array would have a value (object class, 0), the HLAobjectClassBasedCount
+               element shall not be present in the HLAobjectClassBasedCounts array. In other words, only HLAobject-
+               ClassBasedCount elements that have positive counts shall be present in an HLAobjectClassBasedCounts
+               array. From this, it follows that if all object class counts have a zero value, then the HLAobjectClass-
+               BasedCounts array shall not have any elements in it; it shall be an empty HLAobjectClassBasedCounts
+               array.
+            </semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAinteractionCounts</name>
+            <dataType>HLAinteractionCount</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of interaction counts. In all MOM interactions that have a parameter of datatype
+               HLAinteractionCounts, if an HLAinteractionCount element of the HLAinteractionCounts array would have a
+               value (interaction class, 0), the HLAinteractionCount element shall not be present in the
+               HLAinteractionCounts array. In other words, only HLAinteractionCount elements that have positive counts
+               shall be present in an HLAinteractionCounts array. From this, it follows that if all interaction class
+               counts have a zero value, then the HLAinteractionCounts array shall not have any elements in it; it shall
+               be an empty HLAinteractionCounts array.
+            </semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAsynchPointList</name>
+            <dataType>HLAunicodeString</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of names of synchronization points.</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAsynchPointFederateList</name>
+            <dataType>HLAsynchPointFederate</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of joined federates and the synchronization status of each.</semantics>
+         </arrayData>
+         <arrayData>
+            <name>HLAmoduleDesignatorList</name>
+            <dataType>HLAunicodeString</dataType>
+            <cardinality>Dynamic</cardinality>
+            <encoding>HLAvariableArray</encoding>
+            <semantics>List of designators of FOM modules.</semantics>
+         </arrayData>
+      </arrayDataTypes>
+      <fixedRecordDataTypes>
+         <fixedRecordData>
+            <name>HLAinteractionSubscription</name>
+            <encoding>HLAfixedRecord</encoding>
+            <semantics>Interaction subscription information</semantics>
+            <field>
+               <name>HLAinteractionClass</name>
+               <dataType>HLAhandle</dataType>
+               <semantics>Encoded interaction class handle</semantics>
+            </field>
+            <field>
+               <name>HLAactive</name>
+               <dataType>HLAboolean</dataType>
+               <semantics>Whether subscription is active (HLAtrue=active)</semantics>
+            </field>
+         </fixedRecordData>
+         <fixedRecordData>
+            <name>HLAobjectClassBasedCount</name>
+            <encoding>HLAfixedRecord</encoding>
+            <semantics>Object class and count of associated items</semantics>
+            <field>
+               <name>HLAobjectClass</name>
+               <dataType>HLAhandle</dataType>
+               <semantics>Encoded object class handle</semantics>
+            </field>
+            <field>
+               <name>HLAcount</name>
+               <dataType>HLAcount</dataType>
+               <semantics>Number of items</semantics>
+            </field>
+         </fixedRecordData>
+         <fixedRecordData>
+            <name>HLAinteractionCount</name>
+            <encoding>HLAfixedRecord</encoding>
+            <semantics>Count of interactions of a class</semantics>
+            <field>
+               <name>HLAinteractionClass</name>
+               <dataType>HLAhandle</dataType>
+               <semantics>Encoded interaction class handle</semantics>
+            </field>
+            <field>
+               <name>HLAinteractionCount</name>
+               <dataType>HLAcount</dataType>
+               <semantics>Number of interactions</semantics>
+            </field>
+         </fixedRecordData>
+         <fixedRecordData>
+            <name>HLAsynchPointFederate</name>
+            <encoding>HLAfixedRecord</encoding>
+            <semantics>A particular joined federate and its synchronization point status</semantics>
+            <field>
+               <name>HLAfederate</name>
+               <dataType>HLAhandle</dataType>
+               <semantics>Encoded joined federate handle</semantics>
+            </field>
+            <field>
+               <name>HLAfederateSynchStatus</name>
+               <dataType>HLAsynchPointStatus</dataType>
+               <semantics>Synchronization status of the particular joined federate</semantics>
+            </field>
+         </fixedRecordData>
+      </fixedRecordDataTypes>
+      <variantRecordDataTypes/>
+   </dataTypes>
+   <notes>
+      <note>
+         <label>MOM1</label>
+         <semantics>The value of the Dimension Upper Bound entry for the Federate dimension is RTI implementation
+            dependent.
+         </semantics>
+      </note>
+   </notes>
+</objectModel>
