@@ -15,10 +15,9 @@
 package org.portico.utils.fom;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -60,32 +59,7 @@ public class FomParser
 		//////////////////////////////////////////////
 		// validate file exists and open to peek at // 
 		//////////////////////////////////////////////
-		try
-		{
-    		// make sure the file exists
-			if( fedLocation == null )
-				throw new JCouldNotOpenFED( "Fed file doesn't exist: file="+null );
-			
-			// known problem with URL.toURI() and paths with spaces, need to work around that
-			File file = null;
-			try
-			{
-	    		file = new File( fedLocation.toURI() );
-			}
-			catch( URISyntaxException urie )
-			{
-				file = new File( fedLocation.getPath() );
-			}
-			
-    		if( file.exists() == false )
-    			throw new JCouldNotOpenFED( "Fed file doesn't exist: file="+fedLocation );
-    		else if( file.canRead() == false )
-    			throw new JCouldNotOpenFED( "Can't open fed file for reading: file="+fedLocation );
-		}
-		catch( Exception e )
-		{
-			throw new JCouldNotOpenFED( e.getMessage(), e );
-		}
+		InputStream fedstream = openStream( fedLocation );
 
 		/////////////////////////////////////////////////////////////////////////
 		// read the first few lines into a buffer so we can use them to figure //
@@ -95,8 +69,7 @@ public class FomParser
 		try
 		{
 			// read the first few lines from the location into the buffer
-			InputStream stream = fedLocation.openStream();
-			BufferedReader reader = new BufferedReader( new InputStreamReader(stream) );
+			BufferedReader reader = new BufferedReader( new InputStreamReader(fedstream) );
 			for( int i = 0; i < 5; i++ )
 			{
 				String line = reader.readLine();
@@ -110,6 +83,10 @@ public class FomParser
 		catch( Exception e )
 		{
 			throw new JErrorReadingFED( e.getMessage(), e );
+		}
+		finally
+		{
+			try{ fedstream.close(); }catch( Exception e ){ /* ignore for now*/ }
 		}
 		
 		// direct the FOM to the approrpiate parser
@@ -136,6 +113,23 @@ public class FomParser
 			// parse with 1516 parser
 			logger.debug( "Parsing FED file (format=ieee1516): " + fedLocation );
 			return org.portico.impl.hla1516.fomparser.FOM.parseFOM( fedLocation );
+		}
+	}
+
+	private InputStream openStream( URL location ) throws JCouldNotOpenFED, JErrorReadingFED 
+	{
+		// make sure the file exists
+		if( location == null )
+			throw new JCouldNotOpenFED( "Fed file doesn't exist: file="+null );
+
+		try
+		{
+			return location.openStream();
+		}
+		catch( IOException ioex )
+		{
+			throw new JCouldNotOpenFED( "Error opening fed file from ["+location+
+			                            "]: "+ioex.getMessage(), ioex );
 		}
 	}
 
