@@ -82,7 +82,7 @@
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
-	<property name="macosx.jdk.home" location="/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home"/>
+	<property name="macosx.jdk.home" location="${env.JAVA_HOME}"/>
 	<property name="windows.jdk.home" location="${env.JAVA_HOME}"/>
 	
 	<!-- Location Properties -->
