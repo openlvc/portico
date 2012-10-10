@@ -163,7 +163,9 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		this.federationName = null;
 		this.joined = false;
 		this.fom = null;
-		this.momManager = new MomManager( this, theLRC.logger );
+		this.momManager = new MomManager( this,
+		                                  theLRC.getSpecHelper().getHlaVersion(),
+		                                  theLRC.logger );
 		
 		// Time related settings //
 		this.timeManager = new TimeManager();

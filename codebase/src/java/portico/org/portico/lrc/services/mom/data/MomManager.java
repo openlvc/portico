@@ -19,6 +19,7 @@ import java.io.ObjectOutput;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCState;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
@@ -51,6 +52,7 @@ public class MomManager implements SaveRestoreTarget
 	//----------------------------------------------------------
 	private boolean enabled;
 	private LRCState lrcState;
+	private HLAVersion hlaVersion;
 	private Logger logger;
 	private MomFederation momFederation;
 
@@ -62,12 +64,19 @@ public class MomManager implements SaveRestoreTarget
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public MomManager( LRCState lrcState, Logger logger )
+	public MomManager( LRCState lrcState, HLAVersion hlaVersion, Logger logger )
 	{
 		this.enabled = PorticoConstants.isMomEnabled();
 		this.lrcState = lrcState;
+		this.hlaVersion = hlaVersion;
 		this.logger = logger;
 		this.isRestore = false;
+		
+		if( hlaVersion == HLAVersion.IEEE1516e && this.enabled )
+		{
+			logger.warn( "MOM support is currently unsupported in IEEE-1516e federations." );
+			this.enabled = false;
+		}
 	}
 
 	//----------------------------------------------------------
