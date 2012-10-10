@@ -25,7 +25,6 @@ import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.RTIambassador;
 import hla.rti1516e.ResignAction;
 import hla.rti1516e.RtiFactoryFactory;
-import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.encoding.HLAinteger16BE;
 import hla.rti1516e.encoding.HLAinteger32BE;
@@ -181,16 +180,19 @@ public class ExampleFederate
 		/////////////////////////////////////////////////
 		// 1 & 2. create the RTIambassador and Connect //
 		/////////////////////////////////////////////////
+		log( "Creating RTIambassador" );
 		rtiamb = RtiFactoryFactory.getRtiFactory().getRtiAmbassador();
 		encoderFactory = RtiFactoryFactory.getRtiFactory().getEncoderFactory();
 		
 		// connect
+		log( "Connecting..." );
 		fedamb = new ExampleFederateAmbassador( this );
 		rtiamb.connect( fedamb, CallbackModel.HLA_EVOKED );
 
 		//////////////////////////////
 		// 3. create the federation //
 		//////////////////////////////
+		log( "Creating Federation..." );
 		// We attempt to create a new federation with the first three of the
 		// restaurant FOM modules covering processes, food and drink
 		try
@@ -459,18 +461,14 @@ public class ExampleFederate
 		// helpers if you don't want. The RTI just wants an arbitrary byte[]
 
 		// generate the value for the number of cups (same as the timestep)
-		ByteWrapper cupsWrapper = new ByteWrapper();
 		HLAinteger16BE cupsValue = encoderFactory.createHLAinteger16BE( getTimeAsShort() );
-		cupsValue.encode( cupsWrapper );
-		attributes.put( cupsHandle, cupsWrapper.array() );
+		attributes.put( cupsHandle, cupsValue.toByteArray() );
 		
 		// generate the value for the flavour on our magically flavour changing drink
 		// the values for the enum are defined in the FOM
-		ByteWrapper flavWrapper = new ByteWrapper();
 		int randomValue = 101 + new Random().nextInt(3);
 		HLAinteger32BE flavValue = encoderFactory.createHLAinteger32BE( randomValue );
-		flavValue.encode( flavWrapper );
-		attributes.put( flavHandle, flavWrapper.array() );
+		attributes.put( flavHandle, flavValue.toByteArray() );
 
 		//////////////////////////
 		// do the actual update //
