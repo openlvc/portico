@@ -43,10 +43,7 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 
 	public HLA1516eUnicodeString( String value )
 	{
-		if( value == null )
-			this.value = "null";
-		else
-			this.value = value;
+		setValue( value );
 	}
 
 	//----------------------------------------------------------
@@ -69,18 +66,23 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	 */
 	public void setValue( String value )
 	{
-		this.value = value;
+		if( value == null )
+			this.value = "null";
+		else
+			this.value = value;
 	}
 
-	public byte[] getBytes()
+	public byte[] getBytes() throws EncoderException
 	{
 		try
 		{
+			// NOTE: String.getBytes("UTF-16") returns a byte array with the Unicode BOM at the
+			// start (0xfe, 0xff). We are currently including this in our String data.
 			return this.value.getBytes( CHARSET );
 		}
 		catch( Exception e )
 		{
-			throw new RuntimeException( e.getMessage(), e );
+			throw new EncoderException( e.getMessage(), e );
 		}
 	}
 
@@ -90,19 +92,26 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public int getOctetBoundary()
 	{
-		return 4;
+		return 4 + getBytes().length;
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return 4+getBytes().length;
+		return 4 + getBytes().length;
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		byteWrapper.put( toByteArray() );
+		try
+		{
+			byteWrapper.put( toByteArray() );
+		}
+		catch( Exception e )
+		{
+			throw new EncoderException( e.getMessage(), e );
+		}
 	}
 
 	@Override
@@ -118,12 +127,13 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		int length = byteWrapper.getInt();
-		byte[] buffer = new byte[length];
-		byteWrapper.get( buffer );
 		try
 		{
-			this.value = new String( buffer, CHARSET );
+    		int length = byteWrapper.getInt();
+    		byte[] buffer = new byte[length];
+    		byteWrapper.get( buffer );
+    		
+    		this.value = new String( buffer, CHARSET );
 		}
 		catch( Exception e )
 		{
@@ -134,10 +144,11 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		int length = BitHelpers.readIntBE( bytes, 0 );
-		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length );
 		try
 		{
+    		int length = BitHelpers.readIntBE( bytes, 0 );
+    		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length );
+		
 			this.value = new String( stringBytes, CHARSET );
 		}
 		catch( Exception e )

@@ -78,7 +78,16 @@ public class HLA1516eASCIIchar extends HLA1516eDataElement implements HLAASCIIch
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		byteWrapper.put( this.value );
+		try
+		{
+			byteWrapper.put( this.value );
+		}
+		catch( ArrayIndexOutOfBoundsException aioobe )
+		{
+			// The ByteWrapper class can throw an ArrayIndexOutOfBoundsException, so repackage
+			// it as an EncoderException
+			throw new EncoderException( aioobe.getMessage(), aioobe );
+		}
 	}
 
 	@Override
@@ -96,12 +105,24 @@ public class HLA1516eASCIIchar extends HLA1516eDataElement implements HLAASCIIch
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		this.value = (byte)byteWrapper.get();
+		try
+		{
+			this.value = (byte)byteWrapper.get();
+		}
+		catch( ArrayIndexOutOfBoundsException aioobe )
+		{
+			// The ByteWrapper class can throw an ArrayIndexOutOfBoundsException, so repackage
+			// it as an DecoderException
+			throw new DecoderException( aioobe.getMessage(), aioobe );
+		}
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
+		if( bytes.length < 1 )
+			throw new DecoderException( "Not enough bytes in provided byte array" );
+		
 		this.value = bytes[0];
 	}
 

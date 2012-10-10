@@ -14,9 +14,12 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
+import hla.rti1516e.encoding.ByteWrapper;
+import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAoctet;
 
-public class HLA1516eOctet extends HLA1516eByte implements HLAoctet
+public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -25,23 +28,91 @@ public class HLA1516eOctet extends HLA1516eByte implements HLAoctet
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-
+	private byte value;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public HLA1516eOctet()
 	{
-		super();
+		this.value = Byte.MIN_VALUE;
 	}
 
 	public HLA1516eOctet( byte value )
 	{
-		super( value );
+		this.value = value;
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	/**
+	 * Returns the byte value of this element.
+	 * 
+	 * @return value current value
+	 */
+	public byte getValue()
+	{
+		return this.value;
+	}
+
+	/**
+	 * Sets the byte value of this element.
+	 * 
+	 * @param value new value
+	 */
+	public void setValue( byte value )
+	{
+		this.value = value;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// DataElement Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public int getOctetBoundary()
+	{
+		return 1;
+	}
+
+	@Override
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		if( byteWrapper.remaining() < this.getEncodedLength() )
+			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
+		
+		byteWrapper.put( this.value );
+	}
+
+	@Override
+	public int getEncodedLength()
+	{
+		return 1;
+	}
+
+	@Override
+	public byte[] toByteArray() throws EncoderException
+	{
+		return new byte[]{ this.value };
+	}
+
+	@Override
+	public void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		if( byteWrapper.remaining() < this.getEncodedLength() )
+			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		
+		this.value = (byte)byteWrapper.get();
+	}
+
+	@Override
+	public void decode( byte[] bytes ) throws DecoderException
+	{
+		if( bytes.length < this.getEncodedLength() )
+			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		
+		this.value = bytes[0];
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

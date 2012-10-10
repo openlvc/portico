@@ -92,51 +92,67 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	/////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////// DataElement Methods //////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Not really sure what to do here. Will just figure out what the octet boundary of
-	 * the biggest element is and return that.
-	 */
 	@Override
 	public int getOctetBoundary()
 	{
-		int biggest = 1;
-		for( DataElement element : elements )
-		{
-			if( element.getOctetBoundary() > biggest )
-				biggest = element.getOctetBoundary();
-		}
+		// Return the size of the largest element
+		int maxSize = 1;
 		
-		return biggest;
+		for( DataElement element : this.elements )
+			maxSize = Math.max( maxSize, element.getEncodedLength() );
+		
+		return maxSize;
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
+		if( this.elements.size() == 0 )
+			throw new EncoderException( "Cannot encode an empty fixed record!" );
 		
+		for( DataElement element : this.elements )
+			element.encode( byteWrapper );
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return -1;
+		int size = 0;
+		
+		for( DataElement element : this.elements )
+			size += element.getEncodedLength();
+		
+		return size;
 	}
 
 	@Override
 	public byte[] toByteArray() throws EncoderException
 	{
-		return null;
+		// Encode into a byte wrapper
+		int length = this.getEncodedLength();
+		ByteWrapper byteWrapper = new ByteWrapper( length );
+		this.encode( byteWrapper );
+		
+		// Return the underlying array
+		return byteWrapper.array();
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
+		if( this.elements.size() == 0 )
+			throw new EncoderException( "Cannot decode into an empty fixed record!" );
 		
+		for( DataElement element : this.elements )
+			element.decode( byteWrapper );
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		
+		// Wrap in a byte wrapper and decode
+		ByteWrapper byteWrapper = new ByteWrapper( bytes );
+		this.decode( byteWrapper );
 	}
 
 	//----------------------------------------------------------

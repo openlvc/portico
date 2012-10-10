@@ -90,18 +90,21 @@ public class HLA1516eASCIIstring extends HLA1516eDataElement implements HLAASCII
 	@Override
 	public int getOctetBoundary()
 	{
-		return 4;
+		return 4 + this.value.length();
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return 4+getBytes().length;
+		return 4 + getBytes().length;
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
+		if( byteWrapper.remaining() < getEncodedLength() )
+			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
+		
 		byte[] buffer = getBytes();
 		byteWrapper.putInt( buffer.length );
 		byteWrapper.put( buffer );
@@ -120,11 +123,12 @@ public class HLA1516eASCIIstring extends HLA1516eDataElement implements HLAASCII
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		int length = byteWrapper.getInt();
-		byte[] buffer = new byte[length];
-		byteWrapper.get( buffer );
 		try
 		{
+			int length = byteWrapper.getInt();
+			byte[] buffer = new byte[length];
+			byteWrapper.get( buffer );
+			
 			this.value = new String( buffer, CHARSET );
 		}
 		catch( Exception e )
@@ -136,10 +140,10 @@ public class HLA1516eASCIIstring extends HLA1516eDataElement implements HLAASCII
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		int length = BitHelpers.readIntBE( bytes, 0 );
-		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length );
 		try
 		{
+			int length = BitHelpers.readIntBE( bytes, 0 );
+			byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length );
 			this.value = new String( stringBytes, CHARSET );
 		}
 		catch( Exception e )
