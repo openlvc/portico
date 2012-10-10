@@ -240,16 +240,29 @@ public class ExampleFederateAmbassador extends NullFederateAmbassador
 		{
 			// print the attibute handle
 			builder.append( "\tattributeHandle=" );
-			builder.append( attributeHandle );
-			
-			builder.append( ", attributeValue=" );
+
 			// if we're dealing with Flavor, decode into the appropriate enum value
-			if( attributeHandle == federate.flavHandle )
+			if( attributeHandle.equals(federate.flavHandle) )
+			{
+				builder.append( attributeHandle );
+				builder.append( " (Flavor)    " );
+				builder.append( ", attributeValue=" );
 				builder.append( decodeFlavor(theAttributes.get(attributeHandle)) );
-			else if( attributeHandle == federate.cupsHandle )
+			}
+			else if( attributeHandle.equals(federate.cupsHandle) )
+			{
+				builder.append( attributeHandle );
+				builder.append( " (NumberCups)" );
+				builder.append( ", attributeValue=" );
 				builder.append( decodeNumCups(theAttributes.get(attributeHandle)) );
+			}
 			else
-				builder.append( "unknown attribute" );
+			{
+				builder.append( attributeHandle );
+				builder.append( " (Unknown)   " );
+			}
+			
+			builder.append( "\n" );
 		}
 		
 		log( builder.toString() );
@@ -292,6 +305,11 @@ public class ExampleFederateAmbassador extends NullFederateAmbassador
 		
 		// print the handle
 		builder.append( " handle=" + interactionClass );
+		if( interactionClass.equals(federate.servedHandle) )
+		{
+			builder.append( " (DrinkServed)" );
+		}
+		
 		// print the tag
 		builder.append( ", tag=" + new String(tag) );
 		// print the time (if we have it) we'll get null if we are just receiving
