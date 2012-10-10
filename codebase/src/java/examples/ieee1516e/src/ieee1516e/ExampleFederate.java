@@ -539,7 +539,7 @@ public class ExampleFederate
 
 	private byte[] generateTag()
 	{
-		return (""+System.currentTimeMillis()).getBytes();
+		return ("(timestamp) "+System.currentTimeMillis()).getBytes();
 	}
 
 	//----------------------------------------------------------
