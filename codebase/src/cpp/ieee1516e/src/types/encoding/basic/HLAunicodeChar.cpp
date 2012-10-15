@@ -123,14 +123,14 @@ size_t HLAunicodeChar::decodeFrom( const std::vector<Octet>& buffer, size_t inde
 	return index + BitHelpers::LENGTH_WCHAR;
 }
 
-// Return the size in unicodeChars of this element's encoding.
+// Return the size in bytes of this element's encoding.
 size_t HLAunicodeChar::getEncodedLength() const
 	throw( EncoderException )
 {
 	return BitHelpers::LENGTH_WCHAR;
 }
 
-// Return the unicodeChar boundary of this element.
+// Return the octet boundary of this element.
 unsigned int HLAunicodeChar::getOctetBoundary() const
 {
 	return BitHelpers::LENGTH_WCHAR;

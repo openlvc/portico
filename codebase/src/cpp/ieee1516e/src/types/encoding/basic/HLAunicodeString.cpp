@@ -170,14 +170,14 @@ size_t HLAunicodeString::decodeFrom( const std::vector<Octet>& buffer, size_t in
 	return index + BitHelpers::LENGTH_INT + (length * BitHelpers::LENGTH_SHORT);
 }
 
-// Return the size in unicodeStrings of this element's encoding.
+// Return the size in bytes of this element's encoding.
 size_t HLAunicodeString::getEncodedLength() const
 	throw( EncoderException )
 {
 	return BitHelpers::getEncodedLength( this->get() );
 }
 
-// Return the unicodeString boundary of this element.
+// Return the octet boundary of this element.
 unsigned int HLAunicodeString::getOctetBoundary() const
 {
 	return BitHelpers::getEncodedLength( this->get() );
@@ -188,8 +188,13 @@ unsigned int HLAunicodeString::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAunicodeString::hash() const
 {
-	//return 31 * 7 + this->get();
-	return 0;
+	Integer64 hash = 7;
+
+	const std::wstring value = this->get();
+	for( size_t i = 0 ; i < value.length() ; ++i )
+		hash = 31 * hash + value.at(i);
+
+	return hash;
 }
 
 // Change this instance to use supplied external memory.

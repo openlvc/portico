@@ -119,7 +119,7 @@ size_t HLAoctet::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	return endIndex;
 }
 
-// Return the size in octets of this element's encoding.
+// Return the size in bytes of this element's encoding.
 size_t HLAoctet::getEncodedLength() const
 	throw( EncoderException )
 {

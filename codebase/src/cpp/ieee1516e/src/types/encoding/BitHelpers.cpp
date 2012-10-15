@@ -425,7 +425,6 @@ size_t BitHelpers::getEncodedLength( const std::wstring& value )
 void BitHelpers::encodeUnicodeString( const std::wstring& value, char* buffer, size_t offset )
 {
 	size_t len = value.size();
-	size_t stringSize = len * BitHelpers::LENGTH_SHORT;
 	size_t headerSize = BitHelpers::LENGTH_INT + BitHelpers::LENGTH_SHORT;
 
 	char* data = buffer + offset;
