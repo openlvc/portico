@@ -13,14 +13,14 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAoctetPairBEImplementation
-{
-	OctetPair value;
-};
+DEFINE_TYPE_IMPL( HLAoctetPairBEImplementation, OctetPair )
+
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
 //------------------------------------------------------------------------------------------
@@ -28,16 +28,14 @@ struct HLAoctetPairBEImplementation
 // Uses internal memory.
 HLAoctetPairBE::HLAoctetPairBE()
 {
-	this->_impl = new HLAoctetPairBEImplementation();
-	this->_impl->value = OctetPair( 0, 0 );
+	this->_impl = new HLAoctetPairBEImplementation( OctetPair(0, 0) );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAoctetPairBE::HLAoctetPairBE( const OctetPair& inData )
 {
-	this->_impl = new HLAoctetPairBEImplementation();
-	this->_impl->value = OctetPair( inData );
+	this->_impl = new HLAoctetPairBEImplementation( inData );
 }
 
 // Constructor: External memory
@@ -48,16 +46,14 @@ HLAoctetPairBE::HLAoctetPairBE( const OctetPair& inData )
 // A null value will construct instance to use internal memory.
 HLAoctetPairBE::HLAoctetPairBE( OctetPair* inData )
 {
-	this->_impl = new HLAoctetPairBEImplementation();
-	this->_impl->value = OctetPair( *inData );
+	this->_impl = new HLAoctetPairBEImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAoctetPairBE::HLAoctetPairBE( const HLAoctetPairBE& rhs )
 {
-	this->_impl = new HLAoctetPairBEImplementation();
-	this->_impl->value = OctetPair( rhs._impl->value );
+	this->_impl = new HLAoctetPairBEImplementation( rhs.get() );
 }
 
 HLAoctetPairBE::~HLAoctetPairBE()
@@ -79,28 +75,44 @@ std::auto_ptr<DataElement> HLAoctetPairBE::clone() const
 VariableLengthData HLAoctetPairBE::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+	VariableLengthData data;
+	this->encode( data );
+
+	return data;
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAoctetPairBE::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
-	
+	// Assign a buffer to take the OctetPair
+	char buffer[2];
+	buffer[1] = this->get().first;
+	buffer[0] = this->get().second;
+
+	inData.setData( buffer, 2 );
 }
 
 // Encode this element and append it to a buffer
 void HLAoctetPairBE::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+	char data[2];
+	data[1] = this->get().first;
+	data[0] = this->get().second;
+
+	buffer.insert( buffer.end(), data, data + 2 );
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAoctetPairBE::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	if( inData.size() < 2 )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	const char* asChars = (const char*)inData.data();
+	this->set( OctetPair(asChars[1], asChars[0]) );
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -108,20 +120,26 @@ void HLAoctetPairBE::decode( const VariableLengthData& inData )
 size_t HLAoctetPairBE::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+	if( index + 2 > buffer.size() )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	const char* asChars = (const char*)buffer.data();
+	this->set( OctetPair(asChars[1], asChars[0]) );
+
+	return index + 2;
 }
 
 // Return the size in bytes of this element's encoding.
 size_t HLAoctetPairBE::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return 2;
 }
 
 // Return the octet boundary of this element.
 unsigned int HLAoctetPairBE::getOctetBoundary() const
 {
-	return 0;
+	return 2;
 }
 
 // Return a hash of the encoded data
@@ -129,7 +147,11 @@ unsigned int HLAoctetPairBE::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAoctetPairBE::hash() const
 {
-	return 0;
+	Integer64 hash = 7;
+	hash = 31 * hash + this->get().first;
+	hash = 31 * hash + this->get().second;
+
+	return hash;
 }
 
 // Change this instance to use supplied external memory.
@@ -140,20 +162,20 @@ Integer64 HLAoctetPairBE::hash() const
 void HLAoctetPairBE::setDataPointer( OctetPair* inData )
 	throw( EncoderException )
 {
-	
+	this->_impl->setUseExternalMemory( inData );
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAoctetPairBE::set( OctetPair inData )
 {
-	this->_impl->value = inData;
+	this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 OctetPair HLAoctetPairBE::get() const
 {
-	return this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -163,7 +185,7 @@ OctetPair HLAoctetPairBE::get() const
 // Uses existing memory of this instance.
 HLAoctetPairBE& HLAoctetPairBE::operator= ( const HLAoctetPairBE& rhs )
 {
-	this->_impl->value = OctetPair( rhs._impl->value );
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -171,7 +193,7 @@ HLAoctetPairBE& HLAoctetPairBE::operator= ( const HLAoctetPairBE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAoctetPairBE& HLAoctetPairBE::operator= ( OctetPair rhs )
 {
-	this->_impl->value = OctetPair( rhs );
+	this->set( rhs );
 	return *this;
 }
 
@@ -179,7 +201,7 @@ HLAoctetPairBE& HLAoctetPairBE::operator= ( OctetPair rhs )
 // Return value from encoded data.
 HLAoctetPairBE::operator OctetPair() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------
