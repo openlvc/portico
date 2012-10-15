@@ -13,14 +13,13 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAunicodeStringImplementation
-{
-	std::wstring value;
-};
+DEFINE_TYPE_IMPL( HLAunicodeStringImplementation, std::wstring )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -29,16 +28,14 @@ struct HLAunicodeStringImplementation
 // Uses internal memory.
 HLAunicodeString::HLAunicodeString()
 {
-	this->_impl = new HLAunicodeStringImplementation();
-	this->_impl->value = L"";
+	this->_impl = new HLAunicodeStringImplementation( L"" );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAunicodeString::HLAunicodeString( const std::wstring& inData )
 {
-	this->_impl = new HLAunicodeStringImplementation();
-	this->_impl->value = std::wstring( inData );
+	this->_impl = new HLAunicodeStringImplementation( inData );
 }
 
 // Constructor: External memory
@@ -49,16 +46,14 @@ HLAunicodeString::HLAunicodeString( const std::wstring& inData )
 // A null value will construct instance to use internal memory.
 HLAunicodeString::HLAunicodeString( std::wstring* inData )
 {
-	this->_impl = new HLAunicodeStringImplementation();
-	this->_impl->value = std::wstring( *inData );
+	this->_impl = new HLAunicodeStringImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAunicodeString::HLAunicodeString( const HLAunicodeString& rhs )
 {
-	this->_impl = new HLAunicodeStringImplementation();
-	this->_impl->value = std::wstring( rhs._impl->value );
+	this->_impl = new HLAunicodeStringImplementation( rhs.get() );
 }
 
 HLAunicodeString::~HLAunicodeString()
@@ -80,28 +75,60 @@ std::auto_ptr<DataElement> HLAunicodeString::clone() const
 VariableLengthData HLAunicodeString::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+	VariableLengthData data;
+	this->encode( data );
+
+	return data;
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAunicodeString::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
-	
+	// Assign a buffer to take the std::wstring
+	const std::wstring value = this->get();
+	size_t encodedLength = BitHelpers::getEncodedLength( value );
+	char* data = new char[encodedLength];
+
+	// Encode to buffer
+	BitHelpers::encodeUnicodeString( value, data, 0 );
+
+	// Set data into VariableLengthData
+	inData.setData( data, encodedLength );
+
+	// Clean up!
+	delete [] data;
 }
 
 // Encode this element and append it to a buffer
 void HLAunicodeString::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+	// Assign a buffer to take the std::wstring
+	const std::wstring value = this->get();
+	size_t encodedLength = BitHelpers::getEncodedLength( value );
+	char* data = new char[encodedLength];
+
+	// Encode to buffer
+	BitHelpers::encodeUnicodeString( value, data, 0 );
+
+	// Append data to the end of the provided buffer
+	buffer.insert( buffer.end(), data, data + encodedLength );
+
+	// Clean up!
+	delete [] data;
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAunicodeString::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	// Wrap the VariableLengthData's internal byte array in a std::vector<Octet>
+	const char* bytes = (const char*)inData.data();
+	std::vector<Octet> buffer( bytes, bytes + inData.size() );
+
+	// Decode!
+	this->decodeFrom( buffer, 0 );
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -109,20 +136,51 @@ void HLAunicodeString::decode( const VariableLengthData& inData )
 size_t HLAunicodeString::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+	// Are there enough bytes to read in the character length?
+	if( index + BitHelpers::LENGTH_INT > buffer.size() )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	// Read in the character length
+	const char* data = (const char*)buffer.data() + index;
+	size_t length = BitHelpers::decodeIntBE( data, 0 );
+
+	// Are there enough bytes to read in the string?
+	if( index + BitHelpers::LENGTH_INT + (length * BitHelpers::LENGTH_SHORT) > buffer.size() )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	if( length > 0 )
+	{
+		wchar_t* chars = new wchar_t[length - 1];
+
+		// Read in the characters, excluding the Unicode BOM at the start
+		for( size_t i = 1 ; i < length ; ++i )
+		{
+			size_t iIndex = BitHelpers::LENGTH_INT + (i * BitHelpers::LENGTH_SHORT);
+			chars[i - 1] = (wchar_t)BitHelpers::decodeShortBE( data, iIndex );
+		}
+
+		// Construct a wstring, and assign it as the current value
+		std::wstring value( chars, length - 1 );
+		this->set( value );
+
+		// Clean up temp array
+		delete [] chars;
+	}
+
+	return index + BitHelpers::LENGTH_INT + (length * BitHelpers::LENGTH_SHORT);
 }
 
-// Return the size in bytes of this element's encoding.
+// Return the size in unicodeStrings of this element's encoding.
 size_t HLAunicodeString::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return BitHelpers::getEncodedLength( this->get() );
 }
 
-// Return the octet boundary of this element.
+// Return the unicodeString boundary of this element.
 unsigned int HLAunicodeString::getOctetBoundary() const
 {
-	return 0;
+	return BitHelpers::getEncodedLength( this->get() );
 }
 
 // Return a hash of the encoded data
@@ -130,6 +188,7 @@ unsigned int HLAunicodeString::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAunicodeString::hash() const
 {
+	//return 31 * 7 + this->get();
 	return 0;
 }
 
@@ -141,20 +200,27 @@ Integer64 HLAunicodeString::hash() const
 void HLAunicodeString::setDataPointer( std::wstring* inData )
 	throw( EncoderException )
 {
-	
+	if( inData )
+	{
+		this->_impl->setUseExternalMemory( inData );
+	}
+	else
+	{
+		throw EncoderException( L"NULL inData pointer provided to setDataPointer" );
+	}
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAunicodeString::set( std::wstring inData )
 {
-	this->_impl->value = std::wstring( inData );
+	this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 std::wstring HLAunicodeString::get() const
 {
-	return this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -164,7 +230,7 @@ std::wstring HLAunicodeString::get() const
 // Uses existing memory of this instance.
 HLAunicodeString& HLAunicodeString::operator= ( const HLAunicodeString& rhs )
 {
-	this->_impl->value = std::wstring( rhs._impl->value );
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -172,7 +238,7 @@ HLAunicodeString& HLAunicodeString::operator= ( const HLAunicodeString& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAunicodeString& HLAunicodeString::operator= ( std::wstring rhs )
 {
-	this->_impl->value = std::wstring( rhs );
+	this->set( rhs );
 	return *this;
 }
 
@@ -180,7 +246,7 @@ HLAunicodeString& HLAunicodeString::operator= ( std::wstring rhs )
 // Return value from encoded data.
 HLAunicodeString::operator std::wstring() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------

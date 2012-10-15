@@ -13,32 +13,29 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAASCIIcharImplementation
-{
-	char value;
-};
+DEFINE_TYPE_IMPL( HLAASCIIcharImplementation, char )
 
 //------------------------------------------------------------------------------------------
-//                                       CONSTRUCTORS                                       
+//                                       CONSTRUCTORS
 //------------------------------------------------------------------------------------------
 // Constructor: Default
 // Uses internal memory.
 HLAASCIIchar::HLAASCIIchar()
 {
-	this->_impl = new HLAASCIIcharImplementation();
-	this->_impl->value = (char)0;
+	this->_impl = new HLAASCIIcharImplementation( (char)0 );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAASCIIchar::HLAASCIIchar( const char& inData )
 {
-	this->_impl = new HLAASCIIcharImplementation();
-	this->_impl->value = inData;
+	this->_impl = new HLAASCIIcharImplementation( inData );
 }
 
 // Constructor: External memory
@@ -49,20 +46,20 @@ HLAASCIIchar::HLAASCIIchar( const char& inData )
 // A null value will construct instance to use internal memory.
 HLAASCIIchar::HLAASCIIchar( char* inData )
 {
-	
+	this->_impl = new HLAASCIIcharImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAASCIIchar::HLAASCIIchar( const HLAASCIIchar& rhs )
 {
-	this->_impl = new HLAASCIIcharImplementation();
-	this->_impl->value = rhs._impl->value;
+	this->_impl = new HLAASCIIcharImplementation( rhs.get() );
 }
 
 HLAASCIIchar::~HLAASCIIchar()
 {
-	delete this->_impl;
+    if( this->_impl )
+        delete this->_impl;
 }
 
 //------------------------------------------------------------------------------------------
@@ -79,28 +76,35 @@ std::auto_ptr<DataElement> HLAASCIIchar::clone() const
 VariableLengthData HLAASCIIchar::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+    char value = this->get();
+	return VariableLengthData( &value, BitHelpers::LENGTH_CHAR );
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAASCIIchar::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
-	
+    char value = this->get();
+	inData.setData( &value, BitHelpers::LENGTH_CHAR );
 }
 
 // Encode this element and append it to a buffer
 void HLAASCIIchar::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+    buffer.push_back( this->get() );
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAASCIIchar::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	if( inData.size() < BitHelpers::LENGTH_CHAR )
+        throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+    char* rawData = (char*)inData.data();
+    this->_impl->setValue( *rawData );
+
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -108,20 +112,26 @@ void HLAASCIIchar::decode( const VariableLengthData& inData )
 size_t HLAASCIIchar::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+    size_t endIndex = index + BitHelpers::LENGTH_CHAR;
+    if( buffer.size() < endIndex )
+        throw EncoderException( L"Insufficient data in buffer to decode value" );
+    
+    this->_impl->setValue( buffer.at(index) );
+    
+    return endIndex;
 }
 
 // Return the size in bytes of this element's encoding.
 size_t HLAASCIIchar::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return BitHelpers::LENGTH_CHAR;
 }
 
 // Return the octet boundary of this element.
 unsigned int HLAASCIIchar::getOctetBoundary() const
 {
-	return 0;
+	return BitHelpers::LENGTH_CHAR;
 }
 
 // Return a hash of the encoded data
@@ -129,7 +139,7 @@ unsigned int HLAASCIIchar::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAASCIIchar::hash() const
 {
-	return 0;
+	return 31 * 7 + this->get();
 }
 
 // Change this instance to use supplied external memory.
@@ -140,20 +150,27 @@ Integer64 HLAASCIIchar::hash() const
 void HLAASCIIchar::setDataPointer( char* inData )
 	throw( EncoderException )
 {
-	
+	if( inData )
+    {
+        this->_impl->setUseExternalMemory( inData );
+    }
+    else
+    {
+        throw EncoderException( L"NULL inData pointer provided to setDataPointer" );
+    }
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAASCIIchar::set( char inData )
 {
-	this->_impl->value = inData;
+    this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 char HLAASCIIchar::get() const
 {
-	return (char)this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -163,7 +180,7 @@ char HLAASCIIchar::get() const
 // Uses existing memory of this instance.
 HLAASCIIchar& HLAASCIIchar::operator= ( const HLAASCIIchar& rhs )
 {
-	this->_impl->value = rhs._impl->value;
+    this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -171,7 +188,7 @@ HLAASCIIchar& HLAASCIIchar::operator= ( const HLAASCIIchar& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAASCIIchar& HLAASCIIchar::operator= ( char rhs )
 {
-	this->_impl->value = rhs;
+    this->set( rhs );
 	return *this;
 }
 
@@ -179,7 +196,7 @@ HLAASCIIchar& HLAASCIIchar::operator= ( char rhs )
 // Return value from encoded data.
 HLAASCIIchar::operator char() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------

@@ -13,14 +13,13 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAoctetImplementation
-{
-	Octet value;
-};
+DEFINE_TYPE_IMPL( HLAoctetImplementation, Octet )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -29,16 +28,14 @@ struct HLAoctetImplementation
 // Uses internal memory.
 HLAoctet::HLAoctet()
 {
-	this->_impl = new HLAoctetImplementation();
-	this->_impl->value = 0;
+	this->_impl = new HLAoctetImplementation( (Octet)0 );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAoctet::HLAoctet( const Octet& inData )
 {
-	this->_impl = new HLAoctetImplementation();
-	this->_impl->value = inData;
+	this->_impl = new HLAoctetImplementation( inData );
 }
 
 // Constructor: External memory
@@ -49,16 +46,14 @@ HLAoctet::HLAoctet( const Octet& inData )
 // A null value will construct instance to use internal memory.
 HLAoctet::HLAoctet( Octet* inData )
 {
-	this->_impl = new HLAoctetImplementation();
-	this->_impl->value = *inData;
+	this->_impl = new HLAoctetImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAoctet::HLAoctet( const HLAoctet& rhs )
 {
-	this->_impl = new HLAoctetImplementation();
-	this->_impl->value = rhs._impl->value;
+	this->_impl = new HLAoctetImplementation( rhs.get() );
 }
 
 HLAoctet::~HLAoctet()
@@ -80,28 +75,34 @@ std::auto_ptr<DataElement> HLAoctet::clone() const
 VariableLengthData HLAoctet::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+	Octet value = this->get();
+	return VariableLengthData( &value, BitHelpers::LENGTH_CHAR );
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAoctet::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
-	
+	const char value = this->get();
+	inData.setData( &value, BitHelpers::LENGTH_CHAR );
 }
 
 // Encode this element and append it to a buffer
 void HLAoctet::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+	buffer.push_back( this->get() );
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAoctet::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	if( inData.size() < BitHelpers::LENGTH_CHAR )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	const char* rawData = (const char*)inData.data();
+	this->_impl->setValue( *rawData );
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -109,20 +110,26 @@ void HLAoctet::decode( const VariableLengthData& inData )
 size_t HLAoctet::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+	size_t endIndex = index + BitHelpers::LENGTH_CHAR;
+	if( buffer.size() < endIndex )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	this->_impl->setValue( buffer.at(index) );
+
+	return endIndex;
 }
 
-// Return the size in bytes of this element's encoding.
+// Return the size in octets of this element's encoding.
 size_t HLAoctet::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return BitHelpers::LENGTH_CHAR;
 }
 
 // Return the octet boundary of this element.
 unsigned int HLAoctet::getOctetBoundary() const
 {
-	return 0;
+	return BitHelpers::LENGTH_CHAR;
 }
 
 // Return a hash of the encoded data
@@ -130,7 +137,7 @@ unsigned int HLAoctet::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAoctet::hash() const
 {
-	return this->_impl->value;
+	return 31 * 7 + this->get();
 }
 
 // Change this instance to use supplied external memory.
@@ -141,20 +148,27 @@ Integer64 HLAoctet::hash() const
 void HLAoctet::setDataPointer( Octet* inData )
 	throw( EncoderException )
 {
-	
+	if( inData )
+	{
+		this->_impl->setUseExternalMemory( inData );
+	}
+	else
+	{
+		throw EncoderException( L"NULL inData pointer provided to setDataPointer" );
+	}
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAoctet::set( Octet inData )
 {
-	this->_impl->value = inData;
+	this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 Octet HLAoctet::get() const
 {
-	return this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -164,7 +178,7 @@ Octet HLAoctet::get() const
 // Uses existing memory of this instance.
 HLAoctet& HLAoctet::operator= ( const HLAoctet& rhs )
 {
-	this->_impl->value = rhs._impl->value;
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -172,7 +186,7 @@ HLAoctet& HLAoctet::operator= ( const HLAoctet& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAoctet& HLAoctet::operator= ( Octet rhs )
 {
-	this->_impl->value = rhs;
+	this->set( rhs );
 	return *this;
 }
 
@@ -180,7 +194,7 @@ HLAoctet& HLAoctet::operator= ( Octet rhs )
 // Return value from encoded data.
 HLAoctet::operator Octet() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------

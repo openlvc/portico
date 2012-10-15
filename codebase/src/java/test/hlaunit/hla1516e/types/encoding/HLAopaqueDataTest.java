@@ -14,7 +14,6 @@ package hlaunit.hla1516e.types.encoding;
 
 import java.util.Arrays;
 
-import org.portico.impl.hla1516e.types.encoding.HLA1516eEncoderFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -70,20 +69,18 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	@BeforeClass(alwaysRun = true)
 	public void beforeClass()
 	{
-//		super.beforeClass();
-//
-//		// Create an EncoderFactory for the duration of the test session
-//		try
-//		{
-//			RtiFactory rtiFactory = RtiFactoryFactory.getRtiFactory();
-//			this.encoderFactory = rtiFactory.getEncoderFactory();
-//		}
-//		catch( RTIinternalError rtiie )
-//		{
-//			super.unexpectedException( "Creating an EncoderFactory", rtiie );
-//		}
-		
-		this.encoderFactory = new HLA1516eEncoderFactory();
+		super.beforeClass();
+
+		// Create an EncoderFactory for the duration of the test session
+		try
+		{
+			RtiFactory rtiFactory = RtiFactoryFactory.getRtiFactory();
+			this.encoderFactory = rtiFactory.getEncoderFactory();
+		}
+		catch( RTIinternalError rtiie )
+		{
+			super.unexpectedException( "Creating an EncoderFactory", rtiie );
+		}
 	}
 
 	@Override
@@ -92,7 +89,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	{
 		this.encoderFactory = null;
 
-//		super.afterClass();
+		super.afterClass();
 	}
 	
 	private int getExpectedEncodedLength( byte[] opaqueData )

@@ -118,8 +118,13 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	public byte[] toByteArray() throws EncoderException
 	{
 		byte[] bytes = getBytes();
-		byte[] buffer = new byte[4+bytes.length];
-		BitHelpers.putIntBE( bytes.length, buffer, 0 );
+		
+		// Include the BOM in our string length calculations
+		int len = value.length() + 1;
+		
+		// 2 bytes per unicode character
+		byte[] buffer = new byte[4 + (len * 2)];
+		BitHelpers.putIntBE( len, buffer, 0 );
 		BitHelpers.putByteArray( bytes, buffer, 4 );
 		return buffer;
 	}
@@ -130,7 +135,7 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 		try
 		{
     		int length = byteWrapper.getInt();
-    		byte[] buffer = new byte[length];
+    		byte[] buffer = new byte[length * 2];
     		byteWrapper.get( buffer );
     		
     		this.value = new String( buffer, CHARSET );
@@ -147,7 +152,7 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 		try
 		{
     		int length = BitHelpers.readIntBE( bytes, 0 );
-    		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length );
+    		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length * 2 );
 		
 			this.value = new String( stringBytes, CHARSET );
 		}

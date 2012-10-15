@@ -13,14 +13,13 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAinteger16BEImplementation
-{
-	Integer16 value;
-};
+DEFINE_TYPE_IMPL( HLAinteger16BEImplementation, Integer16 )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -29,16 +28,14 @@ struct HLAinteger16BEImplementation
 // Uses internal memory.
 HLAinteger16BE::HLAinteger16BE()
 {
-	this->_impl = new HLAinteger16BEImplementation();
-	this->_impl->value = 0;
+	this->_impl = new HLAinteger16BEImplementation( (Integer16)0 );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAinteger16BE::HLAinteger16BE( const Integer16& inData )
 {
-	this->_impl = new HLAinteger16BEImplementation();
-	this->_impl->value = inData;
+	this->_impl = new HLAinteger16BEImplementation( inData );
 }
 
 // Constructor: External memory
@@ -49,16 +46,14 @@ HLAinteger16BE::HLAinteger16BE( const Integer16& inData )
 // A null value will construct instance to use internal memory.
 HLAinteger16BE::HLAinteger16BE( Integer16* inData )
 {
-	this->_impl = new HLAinteger16BEImplementation();
-	this->_impl->value = *inData;
+	this->_impl = new HLAinteger16BEImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAinteger16BE::HLAinteger16BE( const HLAinteger16BE& rhs )
 {
-	this->_impl = new HLAinteger16BEImplementation();
-	this->_impl->value = rhs._impl->value;
+	this->_impl = new HLAinteger16BEImplementation( rhs.get() );
 }
 
 HLAinteger16BE::~HLAinteger16BE()
@@ -80,28 +75,42 @@ std::auto_ptr<DataElement> HLAinteger16BE::clone() const
 VariableLengthData HLAinteger16BE::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+	VariableLengthData data;
+	this->encode( data );
+
+	return data;
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAinteger16BE::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
+	// Assign a buffer to take the Integer16
+	char buffer[BitHelpers::LENGTH_SHORT];
+	BitHelpers::encodeShortBE( this->get(), buffer, 0 );
 	
+	inData.setData( buffer, BitHelpers::LENGTH_SHORT );
 }
 
 // Encode this element and append it to a buffer
 void HLAinteger16BE::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+	char data[BitHelpers::LENGTH_SHORT];
+	BitHelpers::encodeShortBE( this->get(), data, 0 );
+
+	buffer.insert( buffer.end(), data, data + BitHelpers::LENGTH_SHORT );
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAinteger16BE::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	if( inData.size() < BitHelpers::LENGTH_SHORT )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	Integer16 value = BitHelpers::decodeShortBE( (const char*)inData.data(), 0 );
+	this->set( value );
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -109,20 +118,22 @@ void HLAinteger16BE::decode( const VariableLengthData& inData )
 size_t HLAinteger16BE::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+	Integer16 value = BitHelpers::decodeShortBE( buffer, index );
+	this->set( value );
+	return index + BitHelpers::LENGTH_SHORT;
 }
 
 // Return the size in bytes of this element's encoding.
 size_t HLAinteger16BE::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return BitHelpers::LENGTH_SHORT;
 }
 
 // Return the octet boundary of this element.
 unsigned int HLAinteger16BE::getOctetBoundary() const
 {
-	return 0;
+	return BitHelpers::LENGTH_SHORT;
 }
 
 // Return a hash of the encoded data
@@ -130,7 +141,7 @@ unsigned int HLAinteger16BE::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAinteger16BE::hash() const
 {
-	return this->_impl->value;
+	return 31 * 7 + this->get();
 }
 
 // Change this instance to use supplied external memory.
@@ -141,20 +152,20 @@ Integer64 HLAinteger16BE::hash() const
 void HLAinteger16BE::setDataPointer( Integer16* inData )
 	throw( EncoderException )
 {
-	
+	this->_impl->setUseExternalMemory( inData );
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAinteger16BE::set( Integer16 inData )
 {
-	this->_impl->value = inData;
+	this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 Integer16 HLAinteger16BE::get() const
 {
-	return this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -164,7 +175,7 @@ Integer16 HLAinteger16BE::get() const
 // Uses existing memory of this instance.
 HLAinteger16BE& HLAinteger16BE::operator= ( const HLAinteger16BE& rhs )
 {
-	this->_impl->value = rhs._impl->value;
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -172,7 +183,7 @@ HLAinteger16BE& HLAinteger16BE::operator= ( const HLAinteger16BE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAinteger16BE& HLAinteger16BE::operator= ( Integer16 rhs )
 {
-	this->_impl->value = rhs;
+	this->set( rhs );
 	return *this;
 }
 
@@ -180,7 +191,7 @@ HLAinteger16BE& HLAinteger16BE::operator= ( Integer16 rhs )
 // Return value from encoded data.
 HLAinteger16BE::operator Integer16() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------
