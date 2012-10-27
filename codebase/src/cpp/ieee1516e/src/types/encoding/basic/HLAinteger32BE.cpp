@@ -13,14 +13,13 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAinteger32BEImplementation
-{
-	Integer32 value;
-};
+DEFINE_TYPE_IMPL( HLAinteger32BEImplementation, Integer32 )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -29,16 +28,14 @@ struct HLAinteger32BEImplementation
 // Uses internal memory.
 HLAinteger32BE::HLAinteger32BE()
 {
-	this->_impl = new HLAinteger32BEImplementation();
-	this->_impl->value = 0;
+	this->_impl = new HLAinteger32BEImplementation( 0 );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAinteger32BE::HLAinteger32BE( const Integer32& inData )
 {
-	this->_impl = new HLAinteger32BEImplementation();
-	this->_impl->value = inData;
+	this->_impl = new HLAinteger32BEImplementation( inData );
 }
 
 // Constructor: External memory
@@ -49,16 +46,14 @@ HLAinteger32BE::HLAinteger32BE( const Integer32& inData )
 // A null value will construct instance to use internal memory.
 HLAinteger32BE::HLAinteger32BE( Integer32* inData )
 {
-	this->_impl = new HLAinteger32BEImplementation();
-	this->_impl->value = *inData;
+	this->_impl = new HLAinteger32BEImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAinteger32BE::HLAinteger32BE( const HLAinteger32BE& rhs )
 {
-	this->_impl = new HLAinteger32BEImplementation();
-	this->_impl->value = rhs._impl->value;
+	this->_impl = new HLAinteger32BEImplementation( rhs.get() );
 }
 
 HLAinteger32BE::~HLAinteger32BE()
@@ -80,28 +75,42 @@ std::auto_ptr<DataElement> HLAinteger32BE::clone() const
 VariableLengthData HLAinteger32BE::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+	VariableLengthData data;
+	this->encode( data );
+
+	return data;
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAinteger32BE::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
+	// Assign a buffer to take the Integer32
+	char buffer[BitHelpers::LENGTH_INT];
+	BitHelpers::encodeIntBE( this->get(), buffer, 0 );
 	
+	inData.setData( buffer, BitHelpers::LENGTH_INT );
 }
 
 // Encode this element and append it to a buffer
 void HLAinteger32BE::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+	char data[BitHelpers::LENGTH_INT];
+	BitHelpers::encodeIntBE( this->get(), data, 0 );
+
+	buffer.insert( buffer.end(), data, data + BitHelpers::LENGTH_INT );
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAinteger32BE::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	if( inData.size() < BitHelpers::LENGTH_INT )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+
+	Integer32 value = BitHelpers::decodeIntBE( (const char*)inData.data(), 0 );
+	this->set( value );
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -109,20 +118,22 @@ void HLAinteger32BE::decode( const VariableLengthData& inData )
 size_t HLAinteger32BE::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+	Integer32 value = BitHelpers::decodeIntBE( buffer, index );
+	this->set( value );
+	return index + BitHelpers::LENGTH_INT;
 }
 
 // Return the size in bytes of this element's encoding.
 size_t HLAinteger32BE::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return BitHelpers::LENGTH_INT;
 }
 
 // Return the octet boundary of this element.
 unsigned int HLAinteger32BE::getOctetBoundary() const
 {
-	return 0;
+	return BitHelpers::LENGTH_INT;
 }
 
 // Return a hash of the encoded data
@@ -130,7 +141,7 @@ unsigned int HLAinteger32BE::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAinteger32BE::hash() const
 {
-	return this->_impl->value;
+	return 31 * 7 + this->get();
 }
 
 // Change this instance to use supplied external memory.
@@ -141,20 +152,20 @@ Integer64 HLAinteger32BE::hash() const
 void HLAinteger32BE::setDataPointer( Integer32* inData )
 	throw( EncoderException )
 {
-	
+	this->_impl->setUseExternalMemory( inData );
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAinteger32BE::set( Integer32 inData )
 {
-	this->_impl->value = inData;
+	this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 Integer32 HLAinteger32BE::get() const
 {
-	return this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -164,7 +175,7 @@ Integer32 HLAinteger32BE::get() const
 // Uses existing memory of this instance.
 HLAinteger32BE& HLAinteger32BE::operator= ( const HLAinteger32BE& rhs )
 {
-	this->_impl->value = rhs._impl->value;
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -172,7 +183,7 @@ HLAinteger32BE& HLAinteger32BE::operator= ( const HLAinteger32BE& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAinteger32BE& HLAinteger32BE::operator= ( Integer32 rhs )
 {
-	this->_impl->value = rhs;
+	this->set( rhs );
 	return *this;
 }
 
@@ -180,7 +191,7 @@ HLAinteger32BE& HLAinteger32BE::operator= ( Integer32 rhs )
 // Return value from encoded data.
 HLAinteger32BE::operator Integer32() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------

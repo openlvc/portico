@@ -41,7 +41,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	
 	private static final String HELLO_WORLD = "Hello World";
 	private static final byte[] HELLO_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00, (byte)0x00, 
-	                                                          (byte)0x18, (byte)0xfe, (byte)0xff,
+	                                                          (byte)0x0c, (byte)0xfe, (byte)0xff,
 	                                                          (byte)0x00, (byte)0x48, (byte)0x00, 
 	                                                          (byte)0x65, (byte)0x00, (byte)0x6c, 
 	                                                          (byte)0x00, (byte)0x6c, (byte)0x00, 
@@ -53,7 +53,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	
 	private static final String BONJOUR_WORLD = "Bonjour World";
 	private static final byte[] BONJOUR_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00, (byte)0x00, 
-		                                                        (byte)0x1c, (byte)0xfe, (byte)0xff, 
+		                                                        (byte)0x0e, (byte)0xfe, (byte)0xff, 
 		                                                        (byte)0x00, (byte)0x42, (byte)0x00, 
 		                                                        (byte)0x6f, (byte)0x00, (byte)0x6e, 
 		                                                        (byte)0x00, (byte)0x6a, (byte)0x00, 
@@ -66,7 +66,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	
 	private static final String OH_HAI_WORLD = "OH HAI World";
 	private static final byte[] OH_HAI_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00, (byte)0x00, 
-		                                                       (byte)0x1a, (byte)0xfe, (byte)0xff, 
+		                                                       (byte)0x0d, (byte)0xfe, (byte)0xff, 
 		                                                       (byte)0x00, (byte)0x4f, (byte)0x00, 
 		                                                       (byte)0x48, (byte)0x00, (byte)0x20, 
 		                                                       (byte)0x00, (byte)0x48, (byte)0x00, 

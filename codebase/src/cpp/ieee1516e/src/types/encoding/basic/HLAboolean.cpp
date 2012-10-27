@@ -13,14 +13,17 @@
  *
  */
 #include "common.h"
+#include "types/encoding/BitHelpers.h"
+#include "types/encoding/TypeImplementation.h"
+
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-struct HLAbooleanImplementation
-{
-	bool value;
-};
+DEFINE_TYPE_IMPL( HLAbooleanImplementation, bool )
+
+const int HLAfalse = 0;
+const int HLAtrue = 1;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -29,16 +32,14 @@ struct HLAbooleanImplementation
 // Uses internal memory.
 HLAboolean::HLAboolean()
 {
-	this->_impl = new HLAbooleanImplementation();
-	this->_impl->value = false;
+	this->_impl = new HLAbooleanImplementation( false );
 }
 
 // Constructor: Initial Value
 // Uses internal memory.
 HLAboolean::HLAboolean( const bool& inData )
 {
-	this->_impl = new HLAbooleanImplementation();
-	this->_impl->value = inData;
+	this->_impl = new HLAbooleanImplementation( inData );
 }
 
 // Constructor: External memory
@@ -49,16 +50,14 @@ HLAboolean::HLAboolean( const bool& inData )
 // A null value will construct instance to use internal memory.
 HLAboolean::HLAboolean( bool* inData )
 {
-	this->_impl = new HLAbooleanImplementation();
-	this->_impl->value = *inData;
+	this->_impl = new HLAbooleanImplementation( inData );
 }
 
 // Constructor: Copy
 // Uses internal memory.
 HLAboolean::HLAboolean( const HLAboolean& rhs )
 {
-	this->_impl = new HLAbooleanImplementation();
-	this->_impl->value = rhs._impl->value;
+	this->_impl = new HLAbooleanImplementation( rhs.get() );
 }
 
 HLAboolean::~HLAboolean()
@@ -80,28 +79,36 @@ std::auto_ptr<DataElement> HLAboolean::clone() const
 VariableLengthData HLAboolean::encode() const
 	throw( EncoderException )
 {
-	return VariableLengthData();
+	VariableLengthData data;
+	this->encode( data );
+
+	return data;
 }
 
 // Encode this element into an existing VariableLengthData
 void HLAboolean::encode( VariableLengthData& inData ) const
 	throw( EncoderException )
 {
-	
+	char asBytes[BitHelpers::LENGTH_INT];
+	BitHelpers::encodeIntBE( this->get() ? HLAtrue : HLAfalse, asBytes, 0 );
+	inData.setData( asBytes, BitHelpers::LENGTH_INT );
 }
 
 // Encode this element and append it to a buffer
 void HLAboolean::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	
+	BitHelpers::encodeIntBE( this->get() ? HLAtrue : HLAfalse, buffer );
 }
 
 // Decode this element from the RTI's VariableLengthData.
 void HLAboolean::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
-	
+	if( inData.size() < BitHelpers::LENGTH_INT )
+		throw EncoderException( L"Insufficient data in buffer to decode value" );
+	int value = BitHelpers::decodeIntBE( (const char*)inData.data(), 0 );
+	this->set( value != HLAfalse );
 }
 
 // Decode this element starting at the index in the provided buffer
@@ -109,20 +116,23 @@ void HLAboolean::decode( const VariableLengthData& inData )
 size_t HLAboolean::decodeFrom( const std::vector<Octet>& buffer, size_t index )
 	throw( EncoderException )
 {
-	return 0;
+	int value = BitHelpers::decodeIntBE( buffer, index );
+	this->set( value != HLAfalse );
+
+	return index + BitHelpers::LENGTH_INT;
 }
 
 // Return the size in bytes of this element's encoding.
 size_t HLAboolean::getEncodedLength() const
 	throw( EncoderException )
 {
-	return 0;
+	return BitHelpers::LENGTH_INT;
 }
 
 // Return the octet boundary of this element.
 unsigned int HLAboolean::getOctetBoundary() const
 {
-	return 0;
+	return BitHelpers::LENGTH_INT;
 }
 
 // Return a hash of the encoded data
@@ -130,10 +140,7 @@ unsigned int HLAboolean::getOctetBoundary() const
 // in VariantRecord.
 Integer64 HLAboolean::hash() const
 {
-	if( this->_impl->value )
-		return 0;
-	else
-		return 1;
+	return 31 * 7 + this->get();
 }
 
 // Change this instance to use supplied external memory.
@@ -144,20 +151,27 @@ Integer64 HLAboolean::hash() const
 void HLAboolean::setDataPointer( bool* inData )
 	throw( EncoderException )
 {
-	
+	if( inData )
+	{
+		this->_impl->setUseExternalMemory( inData );
+	}
+	else
+	{
+		throw EncoderException( L"NULL inData pointer provided to setDataPointer" );
+	}
 }
 
 // Set the value to be encoded.
 // If this element uses external memory, the memory will be modified.
 void HLAboolean::set( bool inData )
 {
-	this->_impl->value = inData;
+	this->_impl->setValue( inData );
 }
 
 // Get the value from encoded data.
 bool HLAboolean::get() const
 {
-	return this->_impl->value;
+	return this->_impl->getValue();
 }
 
 //------------------------------------------------------------------------------------------
@@ -167,7 +181,7 @@ bool HLAboolean::get() const
 // Uses existing memory of this instance.
 HLAboolean& HLAboolean::operator= ( const HLAboolean& rhs )
 {
-	this->_impl->value = rhs._impl->value;
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
@@ -175,7 +189,7 @@ HLAboolean& HLAboolean::operator= ( const HLAboolean& rhs )
 // If this element uses external memory, the memory will be modified.
 HLAboolean& HLAboolean::operator= ( bool rhs )
 {
-	this->_impl->value = rhs;
+	this->set( rhs );
 	return *this;
 }
 
@@ -183,7 +197,7 @@ HLAboolean& HLAboolean::operator= ( bool rhs )
 // Return value from encoded data.
 HLAboolean::operator bool() const
 {
-	return this->_impl->value;
+	return this->get();
 }
 
 //------------------------------------------------------------------------------------------
