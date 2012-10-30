@@ -230,7 +230,6 @@ public class TestFederate
 		try
 		{
 			this.rtiamb.destroyFederationExecution( name );
-			quickDisconnect();
 		}
 		catch( Exception e )
 		{
@@ -256,7 +255,6 @@ public class TestFederate
 		try
 		{
 			this.rtiamb.destroyFederationExecution( name );
-			quickDisconnect();
 		}
 		catch( Exception e )
 		{

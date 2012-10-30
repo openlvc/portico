@@ -12,19 +12,19 @@
  *   (that goes for your lawyer as well)
  *
  */
-package hlaunit.hla1516e.support;
+package hlaunit.hla1516e.federation;
 
-import hla.rti1516e.ObjectClassHandle;
-import hlaunit.hla1516e.common.Abstract1516eTest;
-
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"PrivilegeToDeleteTest", "model"})
-public class PrivilegeToDeleteTest extends Abstract1516eTest
+import hlaunit.hla1516e.common.Abstract1516eTest;
+import hlaunit.hla1516e.common.TestFederate;
+
+@Test(sequential=true, groups={"ConnectTest", "basic", "connect", "federationManagement"})
+public class ConnectTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -33,6 +33,7 @@ public class PrivilegeToDeleteTest extends Abstract1516eTest
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private TestFederate secondFederate;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -41,56 +42,36 @@ public class PrivilegeToDeleteTest extends Abstract1516eTest
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	@Override
 	@BeforeClass(alwaysRun=true)
 	public void beforeClass()
 	{
 		super.beforeClass();
+		this.secondFederate = new TestFederate( "secondFederate", this );
+		this.secondFederate.quickConnect();
+	}
 
+	@BeforeMethod(alwaysRun=true)
+	public void beforeMethod()
+	{
 		// create a federation that we can test with //
 		defaultFederate.quickCreate();
-		defaultFederate.quickJoin();
-	}
-	
-	@Override
-	@AfterClass(alwaysRun=true)
-	public void afterClass()
-	{
-		// destroy the federation that we are working in //
-		defaultFederate.quickDestroy();
-
-		super.afterClass();
 	}
 	
 	@AfterMethod(alwaysRun=true)
 	public void afterMethod()
 	{
-		defaultFederate.quickResign();
+		defaultFederate.quickResignTolerant();
+		secondFederate.quickResignTolerant();
+		defaultFederate.quickDestroy();
 	}
-	
-	//////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////// Test Methods //////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////
-	// TEST: testPrivToDelete() //
-	//////////////////////////////
-	/**
-	 * Added in response to PORT-349. Just try and obtain privilegeToDelete
-	 */
-	public void testPrivToDelete()
+	@AfterClass(alwaysRun=true)
+	public void afterClass()
 	{
-		try
-		{
-			ObjectClassHandle oRoot = defaultFederate.rtiamb.getObjectClassHandle( "ObjectRoot" );
-			defaultFederate.rtiamb.getAttributeHandle( oRoot, "HLAprivilegeToDelete" );
-		}
-		catch( Exception e )
-		{
-			Assert.fail( "Exception while fetching privilegeToDelete handle: "+e.getMessage(), e );
-		}
+		secondFederate.quickDisconnect();
+		super.afterClass();
 	}
-	
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
