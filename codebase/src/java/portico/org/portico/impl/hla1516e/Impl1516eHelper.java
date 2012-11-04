@@ -15,6 +15,7 @@
 package org.portico.impl.hla1516e;
 
 import hla.rti1516e.FederateAmbassador;
+import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
 import hla.rti1516e.exceptions.InTimeAdvancingState;
 import hla.rti1516e.exceptions.InvalidLogicalTime;
@@ -121,11 +122,16 @@ public class Impl1516eHelper implements ISpecHelper
 	 * @param timeout The length of time to wait if there are no callbacks to process (in seconds)
 	 * @return True if there are still more callbacks that can be processed, false otherwise
 	 */
-	public boolean evokeSingle( double timeout ) throws RTIinternalError
+	public boolean evokeSingle( double timeout ) throws CallNotAllowedFromWithinCallback,
+	                                                    RTIinternalError
 	{
 		try
 		{
 			return this.lrc.tickSingle( timeout );
+		}
+		catch( JConcurrentAccessAttempted concurrent )
+		{
+			throw new CallNotAllowedFromWithinCallback( concurrent.getMessage(), concurrent );
 		}
 		catch( Exception e )
 		{
@@ -143,11 +149,16 @@ public class Impl1516eHelper implements ISpecHelper
 	 * @param max The maximum amount of time to process messages for (in seconds)
 	 * @return True if there are still more callbacks that can be processed, false otherwise
 	 */
-	public boolean evokeMultiple( double min, double max ) throws RTIinternalError
+	public boolean evokeMultiple( double min, double max ) throws CallNotAllowedFromWithinCallback,
+	                                                              RTIinternalError
 	{
 		try
 		{
 			return this.lrc.tick( min, max );
+		}
+		catch( JConcurrentAccessAttempted concurrent )
+		{
+			throw new CallNotAllowedFromWithinCallback( concurrent.getMessage(), concurrent );
 		}
 		catch( Exception e )
 		{
@@ -173,7 +184,7 @@ public class Impl1516eHelper implements ISpecHelper
 	 * we are currently ticking, a {@link hla.rti.ConcurrentAccessAttempted
 	 * ConcurrentAccessAttempted} will be thrown. 
 	 */
-	public void checkAccess() throws RTIinternalError
+	public void checkAccess() throws CallNotAllowedFromWithinCallback
 	{
 		try
 		{
@@ -181,7 +192,7 @@ public class Impl1516eHelper implements ISpecHelper
 		}
 		catch( JConcurrentAccessAttempted ca )
 		{
-			throw new RTIinternalError( ca.getMessage() );
+			throw new CallNotAllowedFromWithinCallback( ca.getMessage() );
 		}
 	}
 	

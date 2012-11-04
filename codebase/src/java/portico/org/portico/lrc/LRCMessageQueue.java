@@ -184,7 +184,7 @@ public class LRCMessageQueue implements SaveRestoreTarget
 		finally
 		{
 			// signal to any threads waiting on the condition
-			condition.signal();
+			condition.signalAll();
 			// release the lock
 			lock.unlock();
 		}
@@ -409,6 +409,40 @@ public class LRCMessageQueue implements SaveRestoreTarget
 		catch( InterruptedException ie )
 		{
 			return null;
+		}
+		finally
+		{
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * This method is the same as {@link #poll(long)} except that it will wait without timing
+	 * out until a new message is available. At this point it will return the message, or, if
+	 * it has been interrupted it will return null.
+	 */
+	public PorticoMessage pollUntilNextMessage() throws InterruptedException
+	{
+		lock.lock();
+		try
+		{
+			// 1. check to see if we have a message
+			// there is no need to aquire the lock as we are not accessing the queue directly
+			// lock is reentrant, so we shouldn't take hit for aquiring it in poll()
+			PorticoMessage theMessage = poll();
+			if( theMessage != null )
+			{
+				// there is a message so we can just return it
+				return theMessage;
+			}
+	
+			// 2. need to wait for an update to come through
+			// wait on condition
+			condition.await();
+			// we have been woken up:
+			//  -if by timeout: return null
+			//  -if by signal: return available message
+			return poll();
 		}
 		finally
 		{

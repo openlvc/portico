@@ -49,7 +49,7 @@ public class ArrayIteratorTest
 		this.strings = new String[]{ "one", "two", "three" };
 	}
 	
-	@Test
+	@Test(enabled=false)
 	public void testArrayIterator()
 	{
 		@SuppressWarnings("unchecked")

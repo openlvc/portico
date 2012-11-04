@@ -20,6 +20,7 @@ import java.util.Map;
 import org.portico.bindings.ConnectedRoster;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
+import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.services.federation.msg.JoinFederation;
@@ -80,9 +81,9 @@ public class JoinFederationHandler extends LRCMessageHandler
 		// check to make sure the federate isn't already joined
 		if( lrcState.isJoined() )
 		{
-			throw new JRTIinternalError( "LRC already connected to federation [" +
-			                             lrcState.getFederationName() + "] as federate ["+moniker()+ 
-			                             "]: Create a new RTIambassador for a second connection" );
+			throw new JFederateAlreadyExecutionMember( "Already connected to federation [" +
+			                                            lrcState.getFederationName() +
+			                                            "] as federate ["+moniker()+"]" );
 		}
 
 		// log the request and pass it on to the connection
