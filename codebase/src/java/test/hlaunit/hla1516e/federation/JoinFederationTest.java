@@ -251,7 +251,7 @@ public class JoinFederationTest extends Abstract1516eTest
 	/////////////////////////////////////////////////
 	// TEST: testJoinFederationWhenAlreadyJoined() //
 	/////////////////////////////////////////////////
-	@Test
+	@Test()
 	public void testJoinFederationWhenAlreadyJoined()
 	{
 		// set up by running a valid join //
@@ -268,10 +268,6 @@ public class JoinFederationTest extends Abstract1516eTest
 		catch( FederateAlreadyExecutionMember aem )
 		{
 			// SUCCESS
-		}
-		catch( RTIinternalError rtie )
-		{
-			// ALSO VALID
 		}
 		catch( Exception e )
 		{
