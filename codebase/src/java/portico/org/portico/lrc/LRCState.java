@@ -100,6 +100,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	private TimeManager timeManager;
 	private TimeStatus timeStatus;
 	private boolean ticking;
+	private boolean immediateCallbacks;
 	
 	// Pub&Sub settings //
 	private InterestManager interestManager;
@@ -171,6 +172,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		this.timeManager = new TimeManager();
 		this.timeStatus = new TimeStatus(); // give us a dummy status with default values for now
 		this.ticking = false;
+		this.immediateCallbacks = false;
 		
 		// Pub&Sub settings //
 		this.interestManager = new InterestManager( this );
@@ -342,7 +344,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	 */
 	public void checkAccess() throws JConcurrentAccessAttempted
 	{
-		if( ticking )
+		if( !immediateCallbacks && ticking )
 			throw new JConcurrentAccessAttempted( "Currently ticking" );
 	}
 	
@@ -485,6 +487,26 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	////////////////////////////////////////////////////////////
 	////////////////// Time Shortcut Settings //////////////////
 	////////////////////////////////////////////////////////////
+	public boolean isImmediateCallbackDeliveryEnabled()
+	{
+		return this.immediateCallbacks;
+	}
+
+	/**
+	 * The IEEE-1516 and 1516e standards provide facilities to allow the immediate delivery
+	 * of callback messages rather than the usual asynchronous/tick delivery mechanism. To
+	 * provide support for this, when the mode is enabled the LVCQueue itself will have an
+	 * additional thread that will be used to deliver all callbacks immediately, rather than
+	 * waiting for tick to be called (although we'll extract callback via the same poll()
+	 * call to ensure we only release TSO messages at the appropriate time).
+	 * <p/>
+	 * This call will enable that mode and kick off a separate processing thread.
+	 */
+	public void setImmediateCallbackDelivery( boolean enabled )
+	{
+		this.immediateCallbacks = enabled;
+	}
+
 	public boolean isTicking()
 	{
 		return this.ticking;
@@ -789,6 +811,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		// Time related settings //
 		//output.writeObject( timeStatus );
 		output.writeBoolean( ticking );
+		output.writeBoolean( immediateCallbacks );
 		
 		// Instance Repository //
 		output.writeInt( latestObjectHandle );
@@ -812,6 +835,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		// Time related settings //
 		this.timeStatus = timeManager.getTimeStatus( federateHandle );
 		this.ticking = input.readBoolean();
+		this.immediateCallbacks = input.readBoolean();
 		
 		// Instance Repository //
 		this.latestObjectHandle = input.readInt();

@@ -99,7 +99,7 @@ public class CreateFederationTest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: (valid) testCreateFederationWithSingleFom() //
 	///////////////////////////////////////////////////////
-	@Test(groups="temp")
+	@Test
 	public void testCreateFederationWithSingleFom()
 	{
 		// create a link to the FOM //

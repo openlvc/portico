@@ -29,6 +29,7 @@ import org.testng.Assert;
 import hla.rti1516e.AttributeHandle;
 import hla.rti1516e.AttributeHandleSet;
 import hla.rti1516e.AttributeHandleValueMap;
+import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateHandleSet;
 import hla.rti1516e.InteractionClassHandle;
 import hla.rti1516e.LogicalTime;
@@ -98,15 +99,47 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		return System.currentTimeMillis() + CommonSetup.TIMEOUT+10;
 	}
 	
-	private void tick()
+	/**
+	 * This method should be used in all our waitForXxx() methods in place of using
+	 * {@link #tick()}. In IEEE-1516e federates have two options for callback models. The first
+	 * is EVOKED, which is essentially a fancy name for the old tick/async callback approach.
+	 * The second is IMMEDIATE, in which calls to the FederateAmbassador are provided immediately
+	 * in a separate thread without having to call tick().
+	 * <p/>
+	 * In situations where the behaviour of the waitForXxx() methods of this class are required
+	 * to be callback-model agnostic, this method will perform the appropriate action given the
+	 * configuration of the testing federate. It will call {@link tick()} if the model is EVOKED
+	 * or it will poll for messages and return when a new message is available. 
+	 */
+	private void waitForEvent()
 	{
-		try
+		if( federate.getCallbackModel() == CallbackModel.HLA_EVOKED )
 		{
-			federate.quickTick();
+			// we're using the standard tick/async callback model
+			try
+			{
+				federate.quickTick();
+			}
+			catch( Exception e )
+			{
+				throw new TimeoutException( "Problem while ticking: " + e.getMessage(), e );
+			}
 		}
-		catch( Exception e )
+		else
 		{
-			throw new TimeoutException( "Problem while ticking: " + e.getMessage(), e );
+			// We are configured for IMMEDIATE callbacks - use signalling to trigger events
+			synchronized( this )
+			{
+				try
+				{
+					this.wait( getTimeout() );
+				}
+				catch( InterruptedException ie )
+				{
+					throw new TimeoutException( "Interrupted waiting for event. "+
+					                            "Can't determine if test passed" );
+				}
+			}
 		}
 	}
 	
@@ -163,7 +196,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 			}
 			
 			// tick away
-			tick();
+			waitForEvent();
 		}
 
 		// we have the announcement
@@ -183,7 +216,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		while( true )
 		{
 			// tick for callbacks
-			tick();
+			waitForEvent();
 			
 			// see if the point has been announced
 			if( isAnnounced(label) )
@@ -233,7 +266,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				throw new TimeoutException( "Time out waiting for sync point announce result" );
 			}
 
-			tick();
+			waitForEvent();
 		}
 
 		// we have the label //
@@ -275,7 +308,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				throw new TimeoutException( "Timeout waiting for synchronize on [" + label + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 	}
 	
@@ -295,7 +328,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				return;
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		throw new TimeoutException( "Synchronized on point before expected timeout [" +label+ "]" );
@@ -336,7 +369,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            instanceHandle + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 	}
 	
@@ -404,7 +437,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		do
 		{
 			// tick some to get the party started
-			tick();
+			waitForEvent();
 
 			// look for the first instance of the given class handle //
 			for( TestObject temp : this.discovered )
@@ -452,7 +485,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		while( finishTime > System.currentTimeMillis() )
 		{
 			// get some callback love
-			tick();
+			waitForEvent();
 			
 			if( this.roUpdated.contains(instanceHandle) )
 			{
@@ -491,7 +524,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		long finishTime = getTimeout();
 		while( finishTime > System.currentTimeMillis() )
 		{
-			tick();
+			waitForEvent();
 			if( this.roUpdated.contains(handle) )
 			{
 				this.roUpdated.remove( handle );
@@ -522,7 +555,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		long finishTime = getTimeout();
 		while( finishTime > System.currentTimeMillis() )
 		{
-			tick();
+			waitForEvent();
 			if( this.tsoUpdated.contains(handle) )
 			{
 				this.tsoUpdated.remove( handle );
@@ -619,7 +652,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            instanceHandle + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		// remove and return the set of updates requested
@@ -670,7 +703,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            instanceHandle + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		// we've received the callback, clean up and get out of here
@@ -721,7 +754,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            instanceHandle + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		// we've received the callback, clean up and get out of here
@@ -773,7 +806,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            classHandle + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		// we should never get here, we'll timeout first
@@ -883,7 +916,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            classHandle + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		// we should never get here, we'll timeout first
@@ -1002,7 +1035,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				throw new TimeoutException( "Timeout waiting for time constrained to be enabled" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 	}
 	
@@ -1038,7 +1071,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				throw new TimeoutException( "Timeout waiting for time regulating to be enabled" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 	}
 
@@ -1076,7 +1109,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				                            toTime + "]" );
 			}
 			
-			tick();
+			waitForEvent();
 		}
 	}
 	
@@ -1096,7 +1129,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 				return;
 			}
 			
-			tick();
+			waitForEvent();
 		}
 		
 		// if we get here, it means we didn't timeout. fail the test
@@ -1118,6 +1151,20 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		}
 	}
 
+	/**
+	 * When immediate callbacks are in use (rather than tick/async callback) we have to signal
+	 * any threads waiting on event receipt to tell them something has arrived that they might
+	 * be interested in. This will cause them to wake up and check whether the condition they
+	 * are waiting on has been realised or now.
+	 */
+	private void notifyEventListeners()
+	{
+		synchronized( this )
+		{
+			this.notifyAll();
+		}
+	}
+
 	/////////////////////////////////////////////////////////////////////////
 	////////////////////////////// Sync Points //////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
@@ -1125,6 +1172,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	public void announceSynchronizationPoint( String label, byte[] tag )
 	{
 		this.announced.put( label, tag );
+		notifyEventListeners();
 	}
 	
 	@Override
@@ -1132,12 +1180,14 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	                                                    SynchronizationPointFailureReason reason )
 	{
 		this.syncFailed = label;
+		notifyEventListeners();
 	}
 
 	@Override
 	public void synchronizationPointRegistrationSucceeded( String label )
 	{
 		this.syncSucceeded = label;
+		notifyEventListeners();
 	}
 	
 	@Override
@@ -1145,6 +1195,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	                                    FederateHandleSet failedToSync )
 	{
 		this.synched.add( synchronizationPointLabel );
+		notifyEventListeners();
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -1155,6 +1206,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	{
 		this.constrained = true;
 		this.logicalTime = TypeFactory.fromTime( time ); 
+		notifyEventListeners();
 	}
 	
 	@Override
@@ -1162,6 +1214,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	{
 		this.regulating = true;
 		this.logicalTime = TypeFactory.fromTime( time );
+		notifyEventListeners();
 	}
 	
 	@Override
@@ -1169,6 +1222,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	{
 		validateEventTime( TypeFactory.fromTime(time), "timeAdvanceGrant" );
 		this.logicalTime = TypeFactory.fromTime( time );
+		notifyEventListeners();
 	}
 
 	/////////////////////////////////////////////////////////////////////////
@@ -1185,6 +1239,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
    		TestObject instance = new TestObject( objectHandle, classHandle, objectName );
    		this.instances.put( objectHandle, instance );
    		this.discovered.add( instance );
+		notifyEventListeners();
 	}
 
 	@Override
@@ -1197,6 +1252,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
    		TestObject instance = this.instances.remove( objectHandle );
    		this.discovered.remove( instance ); // in case it is still hanging around
    		this.roRemoved.add( objectHandle );
+		notifyEventListeners();
 	}
 
 	@Override
@@ -1214,6 +1270,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
    		TestObject instance = this.instances.remove( objectHandle );
    		this.discovered.remove( instance ); // in case it is still hanging around
    		this.tsoRemoved.add( objectHandle );
+		notifyEventListeners();
 	}
 
 	@Override
@@ -1242,6 +1299,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 			//theAttributes.size() + "] attributes" );
 			updatesRequested.put( TypeFactory.getObjectHandle(theObject),
 			                      HLA1516eAttributeHandleSet.toJavaSet(theAttributes) );
+			notifyEventListeners();
 		}
 		catch( Exception e )
 		{
@@ -1271,6 +1329,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		
 		// mark the instance as recently updated //
 		this.roUpdated.add( TypeFactory.getObjectHandle(theObject) );
+		notifyEventListeners();
 	}
 
 	@Override
@@ -1297,6 +1356,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		
 		// mark the instance as recently updated //
 		this.tsoUpdated.add( TypeFactory.getObjectHandle(theObject) );
+		notifyEventListeners();
 	}
 
 	@Override
@@ -1329,6 +1389,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
    		roInteractions.add( new TestInteraction(getInteractionHandle(interactionClass),
    		                                        theParameters,
    		                                        userSuppliedTag) );
+		notifyEventListeners();
 	}
 
 	@Override
@@ -1349,6 +1410,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
     		double time = TypeFactory.fromTime( theTime );
     		int classHandle = TypeFactory.getInteractionHandle( interactionClass );
     		tsoInteractions.add( new TestInteraction(classHandle,theParameters,tag,time) );
+    		notifyEventListeners();
 		}
 		catch( Exception e )
 		{

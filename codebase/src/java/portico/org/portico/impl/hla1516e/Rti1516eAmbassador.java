@@ -204,9 +204,11 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		// check the callback model to make sure it is something we support
-		if( callbackModel == CallbackModel.HLA_IMMEDIATE )
-			throw new UnsupportedCallbackModel( "Callback model not supported: "+callbackModel );
+		// set the callback model on the LRC approrpriately
+		if( callbackModel == CallbackModel.HLA_EVOKED )
+			helper.getLrc().disableImmediateCallbackProcessing();
+		else if( callbackModel == CallbackModel.HLA_IMMEDIATE )
+			helper.getLrc().enableImmediateCallbackProcessing();
 	
 		// check to make sure we're not already connected
 		if( helper.getFederateAmbassador() != null )
@@ -608,8 +610,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	{
 		// 0. check the federate ambassador //
 		// If we don't have a federate ambassador, we haven't connected yet
-		if( helper.getFederateAmbassador() == null )
-			throw new NotConnected( "Federate has not called connect() yet" );
+		helper.checkConnected();
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -631,9 +632,6 @@ public class Rti1516eAmbassador implements RTIambassador
 		}
 		else
 		{
-			// reset the fedamb
-			this.helper.setFederateAmbassador( null );
-
 			// an exception was caused :(
 			Throwable theException = ((ErrorResponse)response).getCause();
 
@@ -5439,10 +5437,13 @@ public class Rti1516eAmbassador implements RTIambassador
 	/////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// Private Utility Methods ////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
-	private ResponseMessage processMessage( PorticoMessage request )
+	private ResponseMessage processMessage( PorticoMessage request ) throws NotConnected
 	{
+		// make sure we're connected
+		this.helper.checkConnected();
+
 		try
-		{
+		{	
 			// make sure we don't have concurrent access problems
 			this.helper.checkAccess();
 			
