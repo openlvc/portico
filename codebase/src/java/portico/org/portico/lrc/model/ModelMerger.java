@@ -232,7 +232,10 @@ public class ModelMerger
 		}
 		
 		// check to see if there are any types in the extension that can be inserted into the base
-		for( ICMetadata extensionChild : extension.getChildTypes() )
+		// make sure we work on a copy of the children, as moving the node across may change its
+		// underlying child structure and cause a ConcurrentModificationException
+		Set<ICMetadata> children = new HashSet<ICMetadata>( extension.getChildTypes() );
+		for( ICMetadata extensionChild : children )
 		{
 			// if the child exists in the base model, try and merge, otherwise it needs to
 			// be added into the base as it represents a new type

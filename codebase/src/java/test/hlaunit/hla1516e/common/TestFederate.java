@@ -213,6 +213,26 @@ public class TestFederate
 	}
 	
 	/**
+	 * Same as {@link #quickCreate()} except that you can specify the FOM modules that we want
+	 * to load.
+	 */
+	public void quickCreateWithModules( URL... modules )
+	{
+		// connect if we haven't already
+		quickConnectIfNot();
+
+		try
+		{
+			URL fom = ClassLoader.getSystemResource( "fom/testfom.xml" );
+			this.rtiamb.createFederationExecution( this.simpleName, modules );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Exception in quickCreate in " + simpleName + " ("+e.getClass()+")", e );
+		}
+	}
+	
+	/**
 	 * Destroy the federation of the name equal to the fedname protected variable
 	 * (which is the simple name of the test class). If the destroy fails, Assert.fail() will
 	 * be used rather than throwing an exception.
@@ -293,6 +313,31 @@ public class TestFederate
 			FederateHandle handle = this.rtiamb.joinFederationExecution( federateName,
 			                                                             "Test Federate", // type
 			                                                             theFederation );
+			this.federateHandle = TypeFactory.getFederateHandle( handle );
+			return this.federateHandle;
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Exception in quickJoin in " + simpleName + " ("+e.getClass()+")", e );
+			return -1;
+		}
+	}
+
+	/**
+	 * Joins this federate to the default federation using the provided FOM modules. If there is
+	 * an error Assert.fail() will be used.
+	 */
+	public int quickJoinWithModules( URL... modules )
+	{
+		quickConnectIfNot();
+
+		try
+		{
+			// now join
+			FederateHandle handle = this.rtiamb.joinFederationExecution( federateName,
+			                                                             "Test Federate", // type
+			                                                             simpleName,
+			                                                             modules );
 			this.federateHandle = TypeFactory.getFederateHandle( handle );
 			return this.federateHandle;
 		}
