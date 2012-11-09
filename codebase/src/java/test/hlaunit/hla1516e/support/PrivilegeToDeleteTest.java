@@ -56,10 +56,10 @@ public class PrivilegeToDeleteTest extends Abstract1516eTest
 	@AfterClass(alwaysRun=true)
 	public void afterClass()
 	{
-		super.afterClass();
-
 		// destroy the federation that we are working in //
 		defaultFederate.quickDestroy();
+
+		super.afterClass();
 	}
 	
 	@AfterMethod(alwaysRun=true)

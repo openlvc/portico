@@ -116,6 +116,19 @@ public class TestFederate
 		}
 	}
 
+	/**
+	 * This method will peep into the underlying RTI implementation and determine the callback
+	 * model in use by the federate.
+	 */
+	public CallbackModel getCallbackModel()
+	{
+		Rti1516eAmbassador amb1516e = ( (Rti1516eAmbassador)rtiamb );
+		if( amb1516e.getHelper().getState().isImmediateCallbackDeliveryEnabled() )
+			return CallbackModel.HLA_IMMEDIATE;
+		else
+			return CallbackModel.HLA_EVOKED;
+	}
+
 	////////////////////////////////////////////////////////////
 	////////////// Connect and Disconnect Methods //////////////
 	////////////////////////////////////////////////////////////
@@ -128,6 +141,19 @@ public class TestFederate
 		{
 			this.fedamb = new TestFederateAmbassador( this );
 			this.rtiamb.connect( this.fedamb, CallbackModel.HLA_EVOKED );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Exception in quickConnect in " + simpleName + " ("+e.getClass()+")", e );
+		}
+	}
+	
+	public void quickConnectWithImmediateCallbacks()
+	{
+		try
+		{
+			this.fedamb = new TestFederateAmbassador( this );
+			this.rtiamb.connect( this.fedamb, CallbackModel.HLA_IMMEDIATE );
 		}
 		catch( Exception e )
 		{
@@ -250,7 +276,6 @@ public class TestFederate
 		try
 		{
 			this.rtiamb.destroyFederationExecution( name );
-			quickDisconnect();
 		}
 		catch( Exception e )
 		{
@@ -276,7 +301,6 @@ public class TestFederate
 		try
 		{
 			this.rtiamb.destroyFederationExecution( name );
-			quickDisconnect();
 		}
 		catch( Exception e )
 		{
@@ -1347,6 +1371,16 @@ public class TestFederate
 			map.put( parameter, parameter.getBytes() );
 		
 		this.quickSend( clazz, map, "letag".getBytes(), time );
+	}
+	
+	/**
+	 * This method tries to send an interaction of the given class with no parameters. It will
+	 * automatically resolve the class handle, failing the test if this cannot happen.
+	 */
+	public void quickSend( String clazz, String... parameters )
+	{
+		HashMap<String,byte[]> map = new HashMap<String,byte[]>();
+		this.quickSend( clazz, map, "letag".getBytes() );
 	}
 	
 	/**

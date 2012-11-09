@@ -60,6 +60,7 @@ public abstract class Abstract1516eTest
 	protected void beforeClass()
 	{
 		this.defaultFederate = new TestFederate( "defaultFederate", this );
+		this.defaultFederate.quickConnect();
 	}
 	
 	protected void afterClass()
