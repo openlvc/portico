@@ -280,7 +280,7 @@ public class CreateFederationTest extends Abstract1516eTest
 	// TEST: (valid) testCreateFedertionWithArbitraryFoms() //
 	//////////////////////////////////////////////////////////
 	@Test
-	public void testCreateFedertionWithArbitraryFoms()
+	public void testCreateFederationWithArbitraryFoms()
 	{
 		// create a link to the FOM //
 		URL[] modules = new URL[]{
