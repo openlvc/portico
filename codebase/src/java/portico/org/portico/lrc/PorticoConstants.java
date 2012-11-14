@@ -158,7 +158,7 @@ public class PorticoConstants
 	public static final String PROPERTY_LOG_DIR = "portico.logdir";
 	
 	/** System property for defining whether or not calls to unsupported RTIambassador methods
-	    should result in an exception or not: default is to throw an RTIinternalError */
+	    should result in an exception or not: default is to NOT throw an exception */
 	public static final String PROPERTY_UNSUPPORTED_EXCEPTIONS = "portico.unsupportedExceptions";
 
 	/** System propery for defining whether or not to consult the other federates to check if an
@@ -566,10 +566,14 @@ public class PorticoConstants
 		updateLogValues();
 		return logFederateHandles;
 	}
-	
+
+	/**
+	 * @return True if the RTI ambassador should throw an exception if a federate attempts to
+	 *         call a method that is not yet support by Portico. False otherwise.
+	 */
 	public static boolean shouldThrowExceptionForUnsupportedCall()
 	{
-		return getBooleanProperty( PROPERTY_UNSUPPORTED_EXCEPTIONS, "true" );
+		return getBooleanProperty( PROPERTY_UNSUPPORTED_EXCEPTIONS, "false" );
 	}
 	
 	public static boolean isObjectNamingNegotiated()

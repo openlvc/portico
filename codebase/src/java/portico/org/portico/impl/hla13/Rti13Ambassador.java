@@ -5869,7 +5869,7 @@ public class Rti13Ambassador implements RTIambassadorEx
 	 */
 	private void featureNotSupported( String methodName ) throws RTIinternalError
 	{
-		logger.error( "Rti13Ambassador doesn't yet support " + methodName );
+		logger.warn( "Rti13Ambassador doesn't yet support " + methodName );
 		if( PorticoConstants.shouldThrowExceptionForUnsupportedCall() )
 			throw new RTIinternalError( "Rti13Ambassador doesn't yet support " + methodName );
 	}
