@@ -5504,7 +5504,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	 */
 	private void featureNotSupported( String methodName ) throws RTIinternalError
 	{
-		logger.error( "The IEEE 1516e interface doesn't yet support " + methodName );
+		logger.warn( "The IEEE 1516e interface doesn't yet support " + methodName );
 		if( PorticoConstants.shouldThrowExceptionForUnsupportedCall() )
 			throw new RTIinternalError( "The IEEE 1516e interface doesn't yet support "+methodName );
 	}

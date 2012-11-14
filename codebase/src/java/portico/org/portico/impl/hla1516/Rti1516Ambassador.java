@@ -4255,7 +4255,7 @@ public class Rti1516Ambassador implements RTIambassador
 	 */
 	private void featureNotSupported( String methodName ) throws RTIinternalError
 	{
-		logger.error( "Rti1516Ambassador doesn't yet support " + methodName );
+		logger.warn( "Rti1516Ambassador doesn't yet support " + methodName );
 		if( PorticoConstants.shouldThrowExceptionForUnsupportedCall() )
 			throw new RTIinternalError( "Rti1516Ambassador doesn't yet support " + methodName );
 	}
