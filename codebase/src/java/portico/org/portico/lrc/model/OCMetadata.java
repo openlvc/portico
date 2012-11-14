@@ -562,49 +562,6 @@ public class OCMetadata implements Serializable
 			return "" + this.handle + " " + this.getAllAttributes();
 	}
 
-	/**
-	 * Returns true if this metadata type equals the provided one, false otherwise.
-	 * <p/>
-	 * In determining equality, the contains attributes are checked to ensure they
-	 * are all present in each class, and if not, null is returned. Child classes
-	 * are not considered (hence the shallow part).
-	 * <p/>
-	 * Only local settings are tested, this does not include parent types, child types,
-	 * or trasient values like handles.
-	 * 
-	 * @param other The object to compare equivalence with.
-	 * @return True if they are equal, false otherwise
-	 */
-	public boolean shallowEquals( OCMetadata other )
-	{
-		if( other == null )
-			return false;
-		
-		if( name.equals(other.name) == false )
-			return false;
-
-		// check to make sure we have the same number of attributes so as to rule out
-		// any situation where the other class is a superset of us (which would pass the
-		// test in the loop below falsely)
-		if( attributes.size() != other.attributes.size() )
-			return false;
-
-		// loop through all our attributes to make sure the other type has them all
-		for( ACMetadata localAttribute : attributes.values() )
-		{
-			// find the attribute with the same name in the other class
-			ACMetadata otherAttribute = other.getDeclaredAttribute( localAttribute.getName() );
-			if( otherAttribute == null )
-				return false;
-			
-			if( localAttribute.equals(otherAttribute) == false )
-				return false;
-		}
-		
-		// everything looks good!
-		return true;
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

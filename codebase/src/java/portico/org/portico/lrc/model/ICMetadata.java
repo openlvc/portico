@@ -438,56 +438,6 @@ public class ICMetadata implements Serializable
 			return "" + this.handle;
 	}
 
-	/**
-	 * Returns true if this metadata type equals the provided one, false otherwise.
-	 * <p/>
-	 * In determining equality, the contains parameters are checked to ensure they
-	 * are all present in each class, and if not, null is returned. Child classes
-	 * are not considered (hence the shallow part).
-	 * <p/>
-	 * Only local settings are tested, this does not include parent types, child types,
-	 * or trasient values like handles.
-	 * 
-	 * @param other The object to compare equivalence with.
-	 * @return True if they are equal, false otherwise
-	 */
-	public boolean shallowEquals( ICMetadata other )
-	{
-		if( other == null )
-			return false;
-		
-		if( name.equals(other.name) == false )
-			return false;
-
-		// check the order, transport and such
-		if( order.equals(other.order) == false ||
-			transport.equals(other.transport) == false )
-		{
-			return false;
-		}
-
-		// check to make sure we have the same number of parameters so as to rule out
-		// any situation where the other class is a superset of us (which would pass the
-		// test in the loop below falsely)
-		if( parameters.size() != other.parameters.size() )
-			return false;
-
-		// loop through all our parameters to make sure the other type has them all
-		for( PCMetadata localParameter : parameters.values() )
-		{
-			// find the parameter with the same name in the other class
-			PCMetadata otherParameter = other.getDeclaredParameter( localParameter.getName() );
-			if( otherParameter == null )
-				return false;
-
-			if( localParameter.equals(otherParameter) == false )
-				return false;
-		}
-		
-		// everything looks good!
-		return true;
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

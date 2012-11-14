@@ -326,7 +326,8 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
-				throw new FederationExecutionAlreadyExists( theException );
+				// FIXME - old type of exception initialization
+				throw new FederationExecutionAlreadyExists( theException.getMessage() );
 			}
 			else if( theException instanceof JInconsistentFDD )
 			{
@@ -5505,8 +5506,8 @@ public class Rti1516eAmbassador implements RTIambassador
 	private void featureNotSupported( String methodName ) throws RTIinternalError
 	{
 		logger.error( "The IEEE 1516e interface doesn't yet support " + methodName );
-		if( PorticoConstants.shouldThrowExceptionForUnsupportedCall() )
-			throw new RTIinternalError( "The IEEE 1516e interface doesn't yet support "+methodName );
+		//if( PorticoConstants.shouldThrowExceptionForUnsupportedCall() )
+		//	throw new RTIinternalError( "The IEEE 1516e interface doesn't yet support "+methodName );
 	}
 
 	//----------------------------------------------------------

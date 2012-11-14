@@ -275,7 +275,8 @@ public class JGroupsConnection implements IConnection
 			              " additional FOM modules that we receive with join request" );
 
 			federation.getManifest().getFom().unlock();
-			ModelMerger.merge( federation.getManifest().getFom(), joinMessage.getJoinModules() );
+			federation.getManifest().setFom( ModelMerger.merge(federation.getManifest().getFom(),
+			                                                   joinMessage.getJoinModules()) );
 			federation.getManifest().getFom().lock();
 		}
 

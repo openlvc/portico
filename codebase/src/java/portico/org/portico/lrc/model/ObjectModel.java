@@ -104,6 +104,11 @@ public class ObjectModel implements Serializable
 	{
 		return this.filename;
 	}
+	
+	public HLAVersion getHlaVersion()
+	{
+		return this.version;
+	}
 
 	/////////////////////////////////////////////////////////////
 	/////////////////////// Space Methods ///////////////////////

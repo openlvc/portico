@@ -16,6 +16,7 @@ package org.portico.bindings.jvm;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +24,9 @@ import org.portico.lrc.LRC;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
 import org.portico.lrc.compat.JFederateNotExecutionMember;
+import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
 
@@ -148,6 +151,21 @@ public class Broadcaster
 	public synchronized ObjectModel getFOM()
 	{
 		return this.fom;
+	}
+
+	/**
+	 * Extend the existing FOM with the given join modules. This call will first do a dry-run
+	 * to ensure that the modules can be happily merged before it actually goes ahead and does
+	 * the merge. If there is a problem detected during this dry run, an exception will be thrown.
+	 */
+	public synchronized void extendFOM( List<ObjectModel> joinModules ) throws JInconsistentFDD,
+	                                                                           JRTIinternalError
+	{
+		// do a dry run before we actually do any merge to ensure that things will work
+		ModelMerger.mergeDryRun( this.fom, joinModules );
+		
+		// if we get here without exception, we're all good to do the proper merge
+		this.fom = ModelMerger.merge( this.fom, joinModules );
 	}
 	
 	public Set<Integer> getFederateHandles()
