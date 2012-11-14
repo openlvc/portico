@@ -19,7 +19,6 @@ import java.net.URL;
 import hla.rti1516e.exceptions.CouldNotOpenFDD;
 import hla.rti1516e.exceptions.ErrorReadingFDD;
 import hla.rti1516e.exceptions.FederationExecutionAlreadyExists;
-import hla.rti1516e.exceptions.InconsistentFDD;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.hla1516e.common.Abstract1516eTest;
 import hlaunit.hla1516e.common.TestFederate;
