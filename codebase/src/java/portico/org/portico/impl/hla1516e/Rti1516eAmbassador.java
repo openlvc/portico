@@ -326,7 +326,8 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
-				throw new FederationExecutionAlreadyExists( theException );
+				// FIXME - old type of exception initialization
+				throw new FederationExecutionAlreadyExists( theException.getMessage() );
 			}
 			else if( theException instanceof JInconsistentFDD )
 			{

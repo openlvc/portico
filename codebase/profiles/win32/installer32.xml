@@ -10,13 +10,13 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="installer.macosx">
+<project name="installer.win32">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Mac OS X installation generation.
+		Windows 32-bit installer generation.
 	</description>
 
 	<!-- ================================================================================= -->
@@ -25,40 +25,15 @@
 	<target name="installer" extensionOf="master.installer">
 		<!-- check to make sure the jre dir exists -->
 		<echo>Checking to see if JRE is available for bundling</echo>
-		<available file="${macosx.jdk.home}/jre" property="jrefound"/>
+		<available file="${windows.jdk.home}/jre" property="jrefound"/>
 		<fail unless="jrefound"
 		      message="Could not locate JRE dir. Set JAVA_HOME env var to point to JDK install"/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
-		<tar destfile="${dist.tgz.file}"
-		     compression="gzip"
-		     longfile="gnu">
-			<tarfileset dir="${dist.sandbox.dir}" includes="**/*"/>
-			<tarfileset dir="${macosx.jdk.home}/jre" includes="**/*" prefix="/jre"/>
-		</tar>
-
-		<!--<echo>Running MacOS DMG Generation</echo>-->
-		
-		<!-- Copy across the OS X Portico.app wrapper -->
-		<!-- we have to use exec to we can get a permission-preserving copy -->
-		<!--
-		<echo>Copying Portico.app into distribution</echo>
-		<exec executable="cp" failonerror="true">
-			<arg line="-R ${resources.installers.dir}/macosx/dmg/Portico.app ${dist.sandbox.dir}/"/>
-		</exec>
-		-->
-
-		<!-- Run the Disk Image Generation Tool -->
-		<!--
-		<echo>Generating the DMG File</echo>
-		<exec executable="hdiutil">
-			<arg value="create"/>
-			<arg value="-srcfolder"/>
-			<arg value="${dist.sandbox.dir}"/>
-			<arg value="-ov"/>
-			<arg value="${dist.dir}/${dist.name}.dmg"/>
-		</exec>
-		-->
+		<zip destfile="${dist.zip.file}">
+			<zipfileset dir="${dist.sandbox.dir}" includes="**/*" prefix="${dist.name}"/>
+			<zipfileset dir="${windows.jdk.home}/jre" includes="**/*" prefix="${dist.name}/jre"/>
+		</zip>
 	</target>
 
 </project>

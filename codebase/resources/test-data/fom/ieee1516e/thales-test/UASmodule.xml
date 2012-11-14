@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objectModel xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 http://standards.ieee.org/downloads/1516/1516.2-2010/IEEE1516-DIF-2010.xsd" xmlns="http://standards.ieee.org/IEEE1516-2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelIdentification>
+        <name>New Module</name>
+        <type>FOM</type>
+        <version>1.0</version>
+        <securityClassification>unclassified</securityClassification>
+        <purpose/>
+        <applicationDomain/>
+        <description>Description of New Module</description>
+        <useLimitation/>
+        <other/>
+    </modelIdentification>
+    <objects>
+        <objectClass>
+            <name>HLAobjectRoot</name>
+            <objectClass>
+                <name>BaseEntity</name>
+                <objectClass>
+                    <name>PhysicalEntity</name>
+                    <objectClass>
+                        <name>Platform</name>
+                        <objectClass>
+                            <name>Aircraft</name>
+                            <objectClass>
+                                <name>UnmannedAirSystem</name>
+                                <sharing>PublishSubscribe</sharing>
+                                <semantics>An aircraft that is not inhabited by humans.</semantics>
+                                <attribute>
+                                    <name>Autonomous</name>
+                                    <dataType>HLAboolean</dataType>
+                                    <updateType>Static</updateType>
+                                    <updateCondition></updateCondition>
+                                    <ownership>NoTransfer</ownership>
+                                    <sharing>PublishSubscribe</sharing>
+                                    <dimensions/>
+                                    <transportation>HLAreliable</transportation>
+                                    <order>Receive</order>
+                                    <semantics>Whether a UAS is autonomous or not. If it is autonomous it will be capable of fulfilling its mission without human intervention.</semantics>
+                                </attribute>
+                            </objectClass>
+                        </objectClass>
+                    </objectClass>
+                </objectClass>
+            </objectClass>
+        </objectClass>
+    </objects>
+    <interactions>
+        <interactionClass>
+            <name>HLAinteractionRoot</name>
+        </interactionClass>
+    </interactions>
+    <switches>
+        <autoProvide isEnabled="true"/>
+        <conveyRegionDesignatorSets isEnabled="true"/>
+        <conveyProducingFederate isEnabled="false"/>
+        <attributeScopeAdvisory isEnabled="true"/>
+        <attributeRelevanceAdvisory isEnabled="true"/>
+        <objectClassRelevanceAdvisory isEnabled="true"/>
+        <interactionRelevanceAdvisory isEnabled="true"/>
+        <serviceReporting isEnabled="true"/>
+        <exceptionReporting isEnabled="false"/>
+        <delaySubscriptionEvaluation isEnabled="false"/>
+        <automaticResignAction resignAction="CancelThenDeleteThenDivest"/>
+    </switches>
+    <dataTypes>
+        <simpleDataTypes/>
+        <enumeratedDataTypes/>
+        <arrayDataTypes/>
+        <fixedRecordDataTypes/>
+        <variantRecordDataTypes/>
+    </dataTypes>
+    <notes/>
+</objectModel>
