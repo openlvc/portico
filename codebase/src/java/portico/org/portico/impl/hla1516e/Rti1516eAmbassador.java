@@ -95,6 +95,7 @@ import org.portico.lrc.compat.JTimeConstrainedAlreadyEnabled;
 import org.portico.lrc.compat.JTimeConstrainedWasNotEnabled;
 import org.portico.lrc.compat.JTimeRegulationAlreadyEnabled;
 import org.portico.lrc.compat.JTimeRegulationWasNotEnabled;
+import org.portico.lrc.management.Federate;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.ICMetadata;
@@ -4752,8 +4753,15 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "getFederateName()" );
-		return null;
+		helper.checkJoined();
+		
+		// get a reference to all the known federates
+		int handle = HLA1516eHandle.validatedHandle( theHandle );
+		Federate federate = helper.getLrc().getState().getKnownFederate( handle );
+		if( federate == null )
+			throw new InvalidFederateHandle( "No known federate for handle ["+handle+"]" );
+		else
+			return federate.getFederateName();
 	}
 
 	// 10.6
