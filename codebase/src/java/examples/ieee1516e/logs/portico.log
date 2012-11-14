@@ -1,5 +1,0 @@
-ERROR [main] portico.lrc: org.portico.lrc.compat.JAttributeNotDefined: PUBLISH-OBJECT: attribute [-1] not defined in object class [HLAobjectRoot.Food.Drink.Soda]
-ERROR [main] portico.lrc.jgroups: FAILURE createFederation: already exists, name=ExampleFederation
-ERROR [main] portico.lrc: org.portico.lrc.compat.JFederationExecutionAlreadyExists: federation exists: ExampleFederation
-ERROR [main] portico.lrc: org.portico.lrc.compat.JFederateAlreadyExecutionMember: federate name in use: exampleFederate
-ERROR [main] portico.lrc: org.portico.lrc.compat.JAttributeNotDefined: PUBLISH-OBJECT: attribute [-1] not defined in object class [HLAobjectRoot.Food.Drink.Soda]
