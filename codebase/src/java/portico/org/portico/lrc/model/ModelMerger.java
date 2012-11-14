@@ -58,15 +58,11 @@ public class ModelMerger
 	/**
 	 * Merge the provided modules together and return the resulting "super FOM".
 	 * <p/>
-	 * If there is one module, it is returned unmodified. If there is more than one, a clone
-	 * of the first module is made, and the rest are merged into that before it is returned.
-	 * The clone is made for two reasons:
-	 * <ol>
-	 *   <li>To ensure the original model (assumed to be the base) is not modified</li>
-	 *   <li>To ensure that the orignal model is used as the base, and as such, handle
-	 *       numbers are valid when adding in new classes (so we don't reassign handle
-	 *       values already given out).</li>
-	 * </ol>
+	 * If there is one module, it is returned unmodified. If there is more than one, the first
+	 * is used as the base and each of the others are subsequently merged in to it. This merge
+	 * is done directly on the base model (a clone was previously made, but this meant that any
+	 * internal state entities that has references to old pieces of the model - say for pub and
+	 * sub - lost them). 
 	 */
 	private ObjectModel mergeModels( List<ObjectModel> models ) throws JInconsistentFDD,
 	                                                                   JRTIinternalError
@@ -80,16 +76,16 @@ public class ModelMerger
 		// We have multiple models to merge
 		// Make a clone of the first model, so that existing handle values are preserved
 		// and then merge in the additional models to the clone
-		ObjectModel clone = deepCopy( models.get(0) );
+		ObjectModel base = models.get(0);
 		for( int i = 1; i < models.size(); i++ )
 		{
 			ObjectModel current = models.get(i);
 			logger.trace( "Merging ["+current.getFileName()+"] into combined FOM" );
-			merge( clone, current );
+			merge( base, current );
 		}
 
 		// validate the model to ensure it has everything we need
-		return validate( clone );
+		return validate( base );
 	}
 
 	/**
