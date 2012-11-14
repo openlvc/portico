@@ -56,12 +56,20 @@ public class ModelMerger
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	/**
-	 * Model merging is not supported at the moment. For now we just return the first module
-	 * in the list and ignore the others.
+	 * Merge the provided modules together and return the resulting "super FOM".
+	 * <p/>
+	 * If there is one module, it is returned unmodified. If there is more than one, a clone
+	 * of the first module is made, and the rest are merged into that before it is returned.
+	 * The clone is made for two reasons:
+	 * <ol>
+	 *   <li>To ensure the original model (assumed to be the base) is not modified</li>
+	 *   <li>To ensure that the orignal model is used as the base, and as such, handle
+	 *       numbers are valid when adding in new classes (so we don't reassign handle
+	 *       values already given out).</li>
+	 * </ol>
 	 */
-	private ObjectModel mergeModels( List<ObjectModel> models )
-		throws JInconsistentFDD,
-		       JRTIinternalError
+	private ObjectModel mergeModels( List<ObjectModel> models ) throws JInconsistentFDD,
+	                                                                   JRTIinternalError
 	{
 		// if we only got one model, there's nothing to merge!
 		if( models.size() == 1 )
@@ -69,19 +77,25 @@ public class ModelMerger
 
 		logger.trace( "Beginning merge of "+models.size()+" FOM models" );
 
-		// if we have more than two, loop until we're done
-		ObjectModel base = models.get(0);
+		// We have multiple models to merge
+		// Make a clone of the first model, so that existing handle values are preserved
+		// and then merge in the additional models to the clone
+		ObjectModel clone = deepCopy( models.get(0) );
 		for( int i = 1; i < models.size(); i++ )
 		{
-			ObjectModel current = heavyCopy( models.get(i) );
-			logger.trace( "Merging ["+current.getFileName()+"] into ["+base.getFileName()+"]" );
-			base = merge( base, current );
+			ObjectModel current = models.get(i);
+			logger.trace( "Merging ["+current.getFileName()+"] into combined FOM" );
+			merge( clone, current );
 		}
-		
+
 		// validate the model to ensure it has everything we need
-		return validate( base );
+		return validate( clone );
 	}
 
+	/**
+	 * This method will merge the provided extension FOM into the base before returning the base.
+	 * Both the models will be modified if there is something to merge.
+	 */
 	private ObjectModel merge( ObjectModel base, ObjectModel extension ) throws JInconsistentFDD
 	{
 		// merge objects, starting at the object root
@@ -100,15 +114,38 @@ public class ModelMerger
 	 * Merge the provided object classes together, extension the parent type with the extension
 	 * type.
 	 * <p/>
-	 * The specification only provides for inserting whole new classes, not merging attribute
-	 * sets from existing classes. As such, this method will verify that both classes are either
-	 * {@link OCMetadata#shallowEquals(OCMetadata) equivalent} or that the extension class is just
-	 * a scaffolding type. If not, an exception will be thrown.
+	 * <b>NOTE</b>
 	 * <p/>
-	 * If they are equal or the extension is just scaffolding, child classes of the extension type
-	 * will be considered. Where there is no equivalent child class beneth the base, the child
-	 * class from the extension will be linked into the base hierarchy. Where there is a child
-	 * from both types with the same name, we recurse back in and repeat the process.
+	 * According to the HLA specification, we can't actually *merge* classes. An extension module
+	 * can either insert entirely new classes, or insert attributes into a previously empty class,
+	 * but two classes cannot be merged.
+	 * <p/>
+	 * <b>Inserting New Classes</b>
+	 * <p/>
+	 * When inserting new classes, the extension module needs to have the same hierarchy as the
+	 * base module (as classes are compared according to their qualified name). To do this, the
+	 * extension can have what's called "scaffolding" types, which are basically just empty class
+	 * declarations that exist to provide the hierarchy for classes further down. When the merge
+	 * process sees a scaffolding type inside the extension module, the class is skipped and we
+	 * continue down into its children.
+	 * <p/>
+	 * Another way of maintaining the hierarchy is to have a complete replication of the class
+	 * declaration. This would typically happen when you just take an existing FOM and add your
+	 * own attributes/classes in (whereas in the previous you'd have empty classes until you got
+	 * to the one you wanted to add). So, when a class from the extension module has attributes,
+	 * we first test to see if the base module has some as well. If there are not attributes in
+	 * the base, it's deemed a scaffolding type on the base side (see below). If there are
+	 * attributes in both, we have to test to ensure that both modules have the same declarations.
+	 * Remember that we can't merge classes, so if they exist in both, they can only exist to
+	 * maintain hierarchy, which means they have to be the same. We test for this, and if they
+	 * are the same, we recurse into the children.
+	 * <p/>
+	 * <b>Inserting Attributes</b>
+	 * <p/>
+	 * The only time we can insert attributes into a class is when it is a scaffolding type in
+	 * the base module. This is deemed to be the case when the base module has no attributes for
+	 * a class and the extension module has some. In this situation, we add all the attributes
+	 * from the extension class into the base and then continue to recurse into the children.
 	 *   
 	 * @param base The class from the base FOM that the module is being merged into
 	 * @param extension The class from the module that is being merged into the base FOM
@@ -117,36 +154,59 @@ public class ModelMerger
 	 */
 	private void mergeObjectClass( OCMetadata base, OCMetadata extension ) throws JInconsistentFDD
 	{
-		// According to the spec, we can't actually *merge* classes. An extension module
-		// can insert new classes into the hierarchy, but can't insert attributes into existing
-		// classes. However, to ensure that extension classes have the correct hierarchy,
-		// classes with the same name must be present in both modules. This can be done validly
-		// in one of two ways: redeclare the entire class with exactly the same settings
-		// (attributes, order, transport, pub/sub settings and all) or redeclare the class
-		// entirely empty (known as providing it for scaffolding). We will throw an exception
-		// and not continue to process children if neither of these is the case.
+		/////////////////////////////////////////
+		// Check to see if we can merge/extend //
+		/////////////////////////////////////////
+		// the appropriate merging action will depend on whether the class is a scaffodling
+		// type in either the base or extension module - let's get the att count to see
+		int baseAttributes = base.getDeclaredAttributeCount();
+		int extensionAttributes = extension.getDeclaredAttributeCount();
 
-		// no attribute merging possible, just check for equivalence or scaffolding
-		if( extension.getDeclaredAttributeCount() != 0  &&  /* scaffolding */
-			base.shallowEquals(extension) == false )        /* equivalence */
+		// Neither base nor Extension have attributes - It's scaffolding in both modules, recurse
+		//if( baseAttributes == 0 && extensionAttributes == 0 ) {} -- here for comments
+
+		// Extension has no attributes - It's scaffolding for something further down, recuse
+		//if( baseAttributes > 0 && extensionAttributes == 0 ) {} -- here for comments
+
+		// Both Base and Extension declare attributes.
+		// Check to see if both classes are equivalent, issuing a warning if they are not.
+		// This is mainly just for information purposes. They can't be merged if they're not
+		// equivalent, and if they are equivalent there is nothing to merge.
+		if( baseAttributes > 0 && extensionAttributes > 0 )
+			validateOCMetadataEquivalent( base, extension );
+
+		// Base has no attributes, but Extension does
+		// The existing base structure is scaffolding we want to graft attributes on to. We
+		// will get these attributes from the extension module
+		// (how does this work when multiple extend?)
+		if( baseAttributes == 0 && extensionAttributes > 0 )
 		{
-			// the extension type is not scaffolding and isn't equal to the base type :(
-			throw new JInconsistentFDD( "Class "+base.getQualifiedName()+
-			                            " redeclared but not equivalent and not scaffolding" );
+			// insert attributes base extension into the base
+			for( ACMetadata attribute : extension.getDeclaredAttributes() )
+			{
+				ACMetadata newAttribute = new ACMetadata( attribute.getName(),
+				                                          base.getModel().generateHandle() );
+				newAttribute.setOrder( attribute.getOrder() );
+				newAttribute.setTransport( attribute.getTransport() );
+				newAttribute.setSpace( attribute.getSpace() );
+				base.addAttribute( newAttribute );
+			}
 		}
 
+		//////////////////////////////////
+		// resurce down to the children //
+		//////////////////////////////////
 		// check to see if there are any types in the extension that can be inserted into the base
 		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
-		Set<OCMetadata> children = new HashSet<OCMetadata>( extension.getChildTypes() );
-		for( OCMetadata extensionChild : children )
+		Set<OCMetadata> extensionChildren = new HashSet<OCMetadata>( extension.getChildTypes() );
+		for( OCMetadata extensionChild : extensionChildren )
 		{
-			// if the child exists in the base model, try and merge, otherwise it needs to
-			// be added into the base as it represents a new type
+			// if the child does not exist in the base model, insert it, otherwise we need to
+			// recurse down into the hierarchy to ensure that extensions don't come further down
 			OCMetadata baseChild = base.getChildType( extensionChild.getLocalName() );
 			if( baseChild == null )
 			{
-				logger.trace( "  Merging class ["+extensionChild.getQualifiedName()+"]" );
-				mergeIntoModel( base.getModel(), base, extensionChild );
+				insertObjectClass( base, extensionChild );
 			}
 			else
 			{
@@ -168,48 +228,36 @@ public class ModelMerger
 	 * @param parent The parent the child will be linked to
 	 * @param child The child that should be inserted into the model
 	 */
-	private void mergeIntoModel( ObjectModel model, OCMetadata parent, OCMetadata child )
+	private void insertObjectClass( OCMetadata parent, OCMetadata extension )
 	{
-		logger.trace( "   -> Inserting class ["+child.getQualifiedName()+"]" );
+		logger.trace( "   -> Inserting class ["+extension.getQualifiedName()+"]" );
 
-		// link us in with the new parent
-		child.setParent( parent );
-
-		// reset the handles for the child and all its attributes
-		child.setHandle( model.generateHandle() );
-		for( ACMetadata attribute : child.getDeclaredAttributes() )
+		// create a new class to insert into the base model basing it off the extension
+		ObjectModel model = parent.getModel();
+		OCMetadata newClass = new OCMetadata( extension.getLocalName(), model.generateHandle() );
+		newClass.setParent( parent );
+		
+		// create new attributes for all those in the extension
+		for( ACMetadata attribute : extension.getDeclaredAttributes() )
 		{
-			// remove the child under the old handle
-			child.removeAttribute( attribute.getHandle() );
-			// set the new handle on the attribute and re-add the child
-			attribute.setHandle( model.generateHandle() );
-			child.addAttribute( attribute );
+			ACMetadata newAttribute = new ACMetadata( attribute.getName(), model.generateHandle() );
+			newAttribute.setOrder( attribute.getOrder() );
+			newAttribute.setTransport( attribute.getTransport() );
+			newAttribute.setSpace( attribute.getSpace() );
+			newClass.addAttribute( newAttribute );
 		}
 		
-		// add the class to the model
-		model.addObjectClass( child );
-		
-		// repeat this process for all the children's children
-		// make copy of grandchildren to avoid ConcurrentModificationException during processing
-		Set<OCMetadata> grandchildren = new HashSet<OCMetadata>( child.getChildTypes() ); 
-		for( OCMetadata grandchild : grandchildren )
-			mergeIntoModel( model, child, grandchild );
+		model.addObjectClass( newClass );
+
+		// repeat this process for each of the grandchildren
+		for( OCMetadata extensionGrandchild : extension.getChildTypes() )
+			insertObjectClass( newClass, extensionGrandchild );
 	}
 
 	/**
-	 * Merge the provided interaction classes together, extending the parent type with the
-	 * extension type.
-	 * <p/>
-	 * The specification only provides for inserting whole new classes, not merging parameter
-	 * sets from existing classes. As such, this method will verify that both classes are either
-	 * {@link ICMetadata#shallowEquals(ICMetadata) equivalent} or that the extension class is just
-	 * a scaffolding type. If not, an exception will be thrown.
-	 * <p/>
-	 * If they are equal or the extension is just scaffolding, child classes of the extension type
-	 * will be considered. Where there is no equivalent child class beneth the base, the child
-	 * class from the extension will be linked into the base hierarchy. Where there is a child
-	 * from both types with the same name, we recurse back in and repeat the process.
-	 *   
+	 * This method is basically the same as {@link #mergeObjectClass(OCMetadata, OCMetadata)}
+	 * except that it works for Interactions/Parameters not Objects/Attributes.
+	 * 
 	 * @param base The class from the base FOM that the module is being merged into
 	 * @param extension The class from the module that is being merged into the base FOM
 	 * @throws JInconsistentFDD If the extension type is not scaffolding AND not equal to the
@@ -218,29 +266,56 @@ public class ModelMerger
 	private void mergeInteractionClass( ICMetadata base, ICMetadata extension )	
 		throws JInconsistentFDD
 	{
-		// As with object classes, we cannot merge two interaction classes. Extension modules
-		// can only append new interactions onto the existing hierarchy in the base module.
-		// If the extension class is not scaffolding and not equal to the base, an inconsistent
-		// FDD exception will be thrown. Otherwise, we check children to see if there are any
-		// we can insert across into the base model
-		if( extension.getDeclaredParameters().size() != 0 &&  /* scaffolding */
-			base.shallowEquals(extension) == false )          /* equivalence */
-		{
-			// the extension type is not scaffolding and isn't equal to the base type :(
-			throw new JInconsistentFDD( "Class "+base.getQualifiedName()+
-			                            " redeclared but not equivalent and not scaffolding" );
-		}
+		/////////////////////////////////////////
+		// Check to see if we can merge/extend //
+		/////////////////////////////////////////
+		// the appropriate merging action will depend on whether the class is a scaffodling
+		// type in either the base or extension module - let's get the att count to see
+		int baseParameters = base.getDeclaredParameters().size();
+		int extensionParameters = extension.getDeclaredParameters().size();
 		
-		// check to see if there are any types in the extension that can be inserted into the base
-		for( ICMetadata extensionChild : extension.getChildTypes() )
+		// Neither base nor Extension have parameters - It's scaffolding in both modules, recurse
+		//if( baseParameters == 0 && extensionParameters == 0 ) {} -- here for comments
+
+		// Extension has no parameters - It's scaffolding for something further down, recuse
+		//if( baseParameters > 0 && extensionParameters == 0 ) {} -- here for comments
+
+		// Both Base and Extension declare parameters.
+		// Check to see if both classes are equivalent, issuing a warning if they are not.
+		// This is mainly just for information purposes. They can't be merged if they're not
+		// equivalent, and if they are equivalent there is nothing to merge.
+		if( baseParameters > 0 && extensionParameters > 0 )
+			validateICMetadataEquivalent( base, extension );
+
+		// Base has no parameters, but Extension does
+		// The existing base structure is scaffolding we want to graft attributes on to. We
+		// will get these attributes from the extension module
+		// (how does this work when multiple extend?)
+		if( baseParameters == 0 && extensionParameters > 0 )
 		{
-			// if the child exists in the base model, try and merge, otherwise it needs to
-			// be added into the base as it represents a new type
+			// insert attributes base extension into the base
+			for( PCMetadata parameter : extension.getDeclaredParameters() )
+			{
+				PCMetadata newParameter = new PCMetadata( parameter.getName(),
+				                                          base.getModel().generateHandle() );
+				base.addParameter( newParameter );
+			}
+		}
+
+		//////////////////////////////////
+		// resurce down to the children //
+		//////////////////////////////////
+		// check to see if there are any types in the extension that can be inserted into the base
+		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
+		Set<ICMetadata> extensionChildren = new HashSet<ICMetadata>( extension.getChildTypes() );
+		for( ICMetadata extensionChild : extensionChildren )
+		{
+			// if the child does not exist in the base model, insert it, otherwise we need to
+			// recurse down into the hierarchy to ensure that extensions don't come further down
 			ICMetadata baseChild = base.getChildType( extensionChild.getLocalName() );
 			if( baseChild == null )
 			{
-				logger.trace( "  Merging class ["+extensionChild.getQualifiedName()+"]" );
-				mergeIntoModel( base.getModel(), base, extensionChild );
+				insertInteractionClass( base, extensionChild );
 			}
 			else
 			{
@@ -262,34 +337,35 @@ public class ModelMerger
 	 * @param parent The parent the child will be linked to
 	 * @param child The child that should be inserted into the model
 	 */
-	private void mergeIntoModel( ObjectModel model, ICMetadata parent, ICMetadata child )
+	private void insertInteractionClass( ICMetadata parent, ICMetadata extension )
 	{
-		logger.trace( "   -> Inserting class ["+child.getQualifiedName()+"]" );
+		logger.trace( "   -> Inserting class ["+extension.getQualifiedName()+"]" );
 
-		// link us in with the new parent
-		child.setParent( parent );
+		// create a new class to insert into the base model basing it off the extension
+		ObjectModel model = parent.getModel();
+		ICMetadata newClass = new ICMetadata( extension.getLocalName(), model.generateHandle() );
+		newClass.setOrder( extension.getOrder() );
+		newClass.setTransport( extension.getTransport() );
+		newClass.setSpace( extension.getSpace() );
+		newClass.setParent( parent );
 
-		// reset the handles for the child and all its parameters
-		child.setHandle( model.generateHandle() );
-		for( PCMetadata parameter : child.getDeclaredParameters() )
+		// create new parameters for all those in the extension
+		for( PCMetadata parameter : extension.getDeclaredParameters() )
 		{
-			// remove the child under the old handle
-			child.removeParameter( parameter.getHandle() );
-			// set the new handle on the parameter and re-add the child
-			parameter.setHandle( model.generateHandle() );
-			child.addParameter( parameter );
+			PCMetadata newParameter = new PCMetadata( parameter.getName(), model.generateHandle() );
+			newClass.addParameter( newParameter );
 		}
-
-		// add the class to the model
-		model.addInteractionClass( child );
 		
-		// repeat this process for all the children's children
-		// make copy of grandchildren to avoid ConcurrentModificationException during processing
-		Set<ICMetadata> grandchildren = new HashSet<ICMetadata>( child.getChildTypes() ); 
-		for( ICMetadata grandchild : grandchildren )
-			mergeIntoModel( model, child, grandchild );
+		model.addInteractionClass( newClass );
+
+		// repeat this process for each of the grandchildren
+		for( ICMetadata extensionGrandchild : extension.getChildTypes() )
+			insertInteractionClass( newClass, extensionGrandchild );
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// Utility Methods //////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * This method make sure that once all the modules are combined that the standard MIM
 	 * types are present. If they're not, they will be merged in.
@@ -298,15 +374,136 @@ public class ModelMerger
 	{
 		// ensure that HLAobjectRoot is present
 		// ensure that HLAinteractionRoot is present
+		// TBC
 		return model;
 	}
 
+	/**
+	 * Checks to see if both classes are equivalent, issuing a warning if they are not.
+	 * This is mainly just for information purposes. They can't be merged if they're not
+	 * equivalent, and if they are equivalent there is nothing to merge.
+	 */
+	private void validateOCMetadataEquivalent( OCMetadata base, OCMetadata extension )
+		throws JInconsistentFDD
+	{
+		// make sure they have the same number of attributes before we loop through them
+		if( extension.getDeclaredAttributeCount() != base.getDeclaredAttributeCount() )
+		{
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Object Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Attribute counts differ (base="+
+			             base.getDeclaredAttributeCount()+", extension="+
+			             extension.getDeclaredAttributeCount()+")" );
+			return;
+		}
+		
+		// loop through all the attributes to make sure they're the same (as far as we care)
+		for( ACMetadata extensionAttribute : extension.getDeclaredAttributes() )
+		{
+			// find the same attribute in the base
+			ACMetadata baseAttribute = base.getDeclaredAttribute( extensionAttribute.getName() );
+			if( baseAttribute == null )
+			{
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Object Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Attribute ["+
+				             extensionAttribute.getName()+
+				             "] in extension does not exist in base module" );
+				return;
+			}
+
+			// is the transport equal?
+			if( extensionAttribute.getTransport() != baseAttribute.getTransport() )
+			{
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Object Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Attribute ["+
+				             extensionAttribute.getName()+
+				             "] in extension has different Transport (base="+
+				             baseAttribute.getTransport()+", extension="+
+				             extensionAttribute.getTransport()+")" );
+				return;
+			}
+			
+			// is the ordering equal?
+			if( extensionAttribute.getOrder() != baseAttribute.getOrder() )
+			{
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Object Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Attribute ["+
+				             extensionAttribute.getName()+
+				             "] in extension has different Order (base="+
+				             baseAttribute.getOrder()+", extension="+
+				             extensionAttribute.getOrder()+")" );
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Checks to see if both classes are equivalent, issuing a warning if they are not.
+	 * This is mainly just for information purposes. They can't be merged if they're not
+	 * equivalent, and if they are equivalent there is nothing to merge.
+	 */
+	private void validateICMetadataEquivalent( ICMetadata base, ICMetadata extension )
+		throws JInconsistentFDD
+	{
+		// do they have the same parameter count?
+		if( extension.getDeclaredParameters().size() != base.getDeclaredParameters().size() )
+		{
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Parameter counts differ (base="+
+			             base.getDeclaredParameterCount()+", extension="+
+			             extension.getDeclaredParameterCount()+")" );
+			return;
+		}
+		
+		// are all of the parameters the same?
+		for( PCMetadata extensionParameter : extension.getDeclaredParameters() )
+		{
+			// does the base class have the parameter?
+			PCMetadata baseParameter = base.getDeclaredParameter( extensionParameter.getName() );
+			if( baseParameter == null )
+			{
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Parameter ["+
+				             extensionParameter.getName()+
+				             "] in extension does not exist in base module" );
+				return;
+			}
+		}
+		
+		// do they have the same order?
+		if( extension.getOrder() != base.getOrder() )
+		{
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Extension class has different Order (base="+
+			             base.getOrder()+", extension="+
+			             extension.getOrder()+")" );
+			return;
+		}
+		
+		// do they have the same transport?
+		if( extension.getTransport() != base.getTransport() )
+		{
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Extension class has different Transport (base="+
+			             base.getTransport()+", extension="+
+			             extension.getTransport()+")" );
+			return;
+		}
+	}
+	
 	/**
 	 * This method makes a copy of the provided model in a very heavy-weight way. Basically it
 	 * serializes it to a byte[] and then reconstitutes it back into a brand new ObjectModel.
 	 * Inelegant, but simple and will do for now.
 	 */
-	private ObjectModel heavyCopy( ObjectModel model ) throws JRTIinternalError
+	private ObjectModel deepCopy( ObjectModel model ) throws JRTIinternalError
 	{
 		try
 		{
@@ -327,6 +524,26 @@ public class ModelMerger
 			throw new JRTIinternalError( "Error while cloning object models to ensure they merge:"+
 			                             e.getMessage(), e );
 		}
+	}
+
+	/**
+	 * Return a string in the format "(merging path/to/extension into path/to/base)" to be used
+	 * for logging information about the merge in error messages.
+	 */
+	public String getMergeDirectionString( OCMetadata base, OCMetadata extension )
+	{
+		return "(merging "+extension.getModel().getFileName()+" into "+
+		       base.getModel().getFileName()+")";
+	}
+
+	/**
+	 * Return a string in the format "(merging path/to/extension into path/to/base)" to be used
+	 * for logging information about the merge in error messages.
+	 */
+	public String getMergeDirectionString( ICMetadata base, ICMetadata extension )
+	{
+		return "(merging "+extension.getModel().getFileName()+" into "+
+		       base.getModel().getFileName()+" ["+Thread.currentThread().getName()+"])";
 	}
 
 	//----------------------------------------------------------

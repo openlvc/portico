@@ -333,7 +333,7 @@
 	-->
 	<target name="release"
 	        extensionOf="master.release"
-	        depends="clean,test,sandbox,javadoc,installer"/>
+	        depends="clean,test,sandbox,javadoc"/>
 
 	<!-- Generate the javadocs and place them in the sandbox. We only do this for a release
 	     build because of the amount of time it takes -->

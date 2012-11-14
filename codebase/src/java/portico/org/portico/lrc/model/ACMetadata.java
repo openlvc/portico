@@ -137,26 +137,6 @@ public class ACMetadata implements Serializable
 		this.container = container;
 	}
 
-	/**
-	 * @return true if the other object is another {@link ACMetadata} and has the same
-	 *         name, order and transport. False otherwise.
-	 */
-	public boolean equals( Object other )
-	{
-		if( other instanceof ACMetadata )
-		{
-			ACMetadata otherMetadata = (ACMetadata)other;
-			if( name.equals(otherMetadata.name) &&
-				order.equals(otherMetadata.order) &&
-				transport.equals(otherMetadata.transport) )
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-	
 	@Override
 	public String toString()
 	{

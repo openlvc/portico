@@ -22,6 +22,7 @@ import hla.rti1516e.exceptions.FederationExecutionAlreadyExists;
 import hla.rti1516e.exceptions.InconsistentFDD;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.hla1516e.common.Abstract1516eTest;
+import hlaunit.hla1516e.common.TestFederate;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -275,6 +276,37 @@ public class CreateFederationTest extends Abstract1516eTest
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
 	}
 
+	//////////////////////////////////////////////////////////
+	// TEST: (valid) testCreateFedertionWithArbitraryFoms() //
+	//////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithArbitraryFoms()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+  			ClassLoader.getSystemResource( "fom/ieee1516e/thales-test/RPR-FOM2D18.xml" ),
+  			ClassLoader.getSystemResource( "fom/ieee1516e/thales-test/UASmodule.xml" ),
+  		};
+		
+		// try and create a valid federation //
+		defaultFederate.quickCreateWithModules( modules[0] );
+		defaultFederate.quickJoin();
+		
+		// validate the FOM structure
+		defaultFederate.quickOCHandleMissing( "HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.UnmannedAirSystem" );
+		
+		// join the second federate
+		TestFederate secondFederate = new TestFederate( "secondFederate", this );
+		secondFederate.quickJoinWithModules( modules[1] );
+		
+		// validate the FOM structure
+		secondFederate.quickOCHandle( "HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.UnmannedAirSystem" );
+		defaultFederate.quickOCHandle( "HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.UnmannedAirSystem" );
+		
+		secondFederate.quickResign();
+		secondFederate.quickDisconnect();
+	}
+	
 	////////////////////////////////////////////////////////////////////////////
 	// TEST: testCreateFederationWithModulesAndNonEquivalentObjectHierarchy() //
 	////////////////////////////////////////////////////////////////////////////
@@ -288,19 +320,11 @@ public class CreateFederationTest extends Abstract1516eTest
 		};
 		
 		// try and create a valid federation //
-		try
-		{
-			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
-			Assert.fail( "Expected exception when merging modules with non-equivalent hierarchies" );
-		}
-		catch( InconsistentFDD ifdd )
-		{
-			// success!
-		}
-		catch( Exception e )
-		{
-			unexpectedException( "Merging modules with non-equivalent object hierarchies", e );
-		}
+		defaultFederate.quickCreateWithModules( modules );
+		defaultFederate.quickJoin();
+
+		// make sure that the non-equivalent classes didn't make it in
+		defaultFederate.quickACHandleMissing("HLAobjectRoot.HLAmanager.HLAfederate", "FakeHandle");
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////
@@ -316,19 +340,13 @@ public class CreateFederationTest extends Abstract1516eTest
 		};
 		
 		// try and create a valid federation //
-		try
-		{
-			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
-			Assert.fail( "Expected exception when merging modules with non-equivalent hierarchies" );
-		}
-		catch( InconsistentFDD ifdd )
-		{
-			// success!
-		}
-		catch( Exception e )
-		{
-			unexpectedException( "Merging modules with non-equivalent interaction hierarchies", e );
-		}
+		defaultFederate.quickCreateWithModules( modules );
+		defaultFederate.quickJoin();
+
+		// make sure that the non-equivalent classes didn't make it in
+		defaultFederate.quickPCHandleMissing( "HLAinteractionRoot.HLAmanager.HLAfederate",
+		                                      "FakeParameter" );
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////
