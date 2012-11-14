@@ -190,6 +190,15 @@ public class ICMetadata implements Serializable
 		
 		return null;
 	}
+
+	/**
+	 * Return the number of parameters that are declared in this interaction alone (excluding
+	 * any that are inherited).
+	 */
+	public int getDeclaredParameterCount()
+	{
+		return parameters.size();
+	}
 	
 	/**
 	 * Get the available parameter (inherited included) of this class for the given handle. If

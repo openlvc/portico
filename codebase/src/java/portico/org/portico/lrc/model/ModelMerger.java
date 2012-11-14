@@ -169,7 +169,9 @@ public class ModelMerger
 		//if( baseAttributes > 0 && extensionAttributes == 0 ) {} -- here for comments
 
 		// Both Base and Extension declare attributes.
-		// We can't extend an existing class, if this is scaffolding, they have to be equivalent
+		// Check to see if both classes are equivalent, issuing a warning if they are not.
+		// This is mainly just for information purposes. They can't be merged if they're not
+		// equivalent, and if they are equivalent there is nothing to merge.
 		if( baseAttributes > 0 && extensionAttributes > 0 )
 			validateOCMetadataEquivalent( base, extension );
 
@@ -279,7 +281,9 @@ public class ModelMerger
 		//if( baseParameters > 0 && extensionParameters == 0 ) {} -- here for comments
 
 		// Both Base and Extension declare parameters.
-		// We can't extend an existing class, if this is scaffolding, they have to be equivalent
+		// Check to see if both classes are equivalent, issuing a warning if they are not.
+		// This is mainly just for information purposes. They can't be merged if they're not
+		// equivalent, and if they are equivalent there is nothing to merge.
 		if( baseParameters > 0 && extensionParameters > 0 )
 			validateICMetadataEquivalent( base, extension );
 
@@ -375,17 +379,9 @@ public class ModelMerger
 	}
 
 	/**
-	 * Returns true if this metadata type equals the provided one, false otherwise.
-	 * <p/>
-	 * In determining equality, the contains attributes are checked to ensure they
-	 * are all present in each class, and if not, null is returned. Child classes
-	 * are not considered (hence the shallow part).
-	 * <p/>
-	 * Only local settings are tested, this does not include parent types, child types,
-	 * or trasient values like handles.
-	 * 
-	 * @param other The object to compare equivalence with.
-	 * @return True if they are equal, false otherwise
+	 * Checks to see if both classes are equivalent, issuing a warning if they are not.
+	 * This is mainly just for information purposes. They can't be merged if they're not
+	 * equivalent, and if they are equivalent there is nothing to merge.
 	 */
 	private void validateOCMetadataEquivalent( OCMetadata base, OCMetadata extension )
 		throws JInconsistentFDD
@@ -393,12 +389,12 @@ public class ModelMerger
 		// make sure they have the same number of attributes before we loop through them
 		if( extension.getDeclaredAttributeCount() != base.getDeclaredAttributeCount() )
 		{
-			throw new JInconsistentFDD( "Object Class ["+base.getQualifiedName()+
-			                            "] redeclared but not equivalent or scaffolding: "+
-			                            "Attribute counts differ (base="+
-			                            base.getDeclaredAttributeCount()+", extension="+
-			                            extension.getDeclaredAttributeCount()+") "+
-			                            getMergeDirectionString(base,extension) );
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Object Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Attribute counts differ (base="+
+			             base.getDeclaredAttributeCount()+", extension="+
+			             extension.getDeclaredAttributeCount()+")" );
+			return;
 		}
 		
 		// loop through all the attributes to make sure they're the same (as far as we care)
@@ -408,49 +404,46 @@ public class ModelMerger
 			ACMetadata baseAttribute = base.getDeclaredAttribute( extensionAttribute.getName() );
 			if( baseAttribute == null )
 			{
-				throw new JInconsistentFDD( "Object Class ["+base.getQualifiedName()+
-				                            "] redeclared but not equivalent or scaffolding: "+
-				                            "Attribute ["+extensionAttribute.getName()+
-				                            "] does not exist in class from base module "+
-				                            getMergeDirectionString(base,extension) );
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Object Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Attribute ["+
+				             extensionAttribute.getName()+
+				             "] in extension does not exist in base module" );
+				return;
 			}
 
 			// is the transport equal?
 			if( extensionAttribute.getTransport() != baseAttribute.getTransport() )
 			{
-				throw new JInconsistentFDD( "Object Class ["+base.getQualifiedName()+
-				                            "] redeclared but not equivalent or scaffolding: "+
-				                            "Extension Attribute ["+extensionAttribute.getName()+
-				                            "] has different Transport (base="+baseAttribute.getTransport()+
-				                            ", extension="+extensionAttribute.getTransport()+") "+
-				                            getMergeDirectionString(base,extension) );
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Object Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Attribute ["+
+				             extensionAttribute.getName()+
+				             "] in extension has different Transport (base="+
+				             baseAttribute.getTransport()+", extension="+
+				             extensionAttribute.getTransport()+")" );
+				return;
 			}
 			
 			// is the ordering equal?
 			if( extensionAttribute.getOrder() != baseAttribute.getOrder() )
 			{
-				throw new JInconsistentFDD( "Object Class ["+base.getQualifiedName()+
-				                            "] redeclared but not equivalent or scaffolding: "+
-				                            "Extension Attribute ["+extensionAttribute.getName()+
-				                            "] has different Order (base="+baseAttribute.getOrder()+
-				                            ", extension="+extensionAttribute.getOrder()+") "+
-				                            getMergeDirectionString(base,extension) );
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Object Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Attribute ["+
+				             extensionAttribute.getName()+
+				             "] in extension has different Order (base="+
+				             baseAttribute.getOrder()+", extension="+
+				             extensionAttribute.getOrder()+")" );
+				return;
 			}
 		}
 	}
 
 	/**
-	 * Returns true if this metadata type equals the provided one, false otherwise.
-	 * <p/>
-	 * In determining equality, the contains parameters are checked to ensure they
-	 * are all present in each class, and if not, null is returned. Child classes
-	 * are not considered (hence the shallow part).
-	 * <p/>
-	 * Only local settings are tested, this does not include parent types, child types,
-	 * or trasient values like handles.
-	 * 
-	 * @param other The object to compare equivalence with.
-	 * @return True if they are equal, false otherwise
+	 * Checks to see if both classes are equivalent, issuing a warning if they are not.
+	 * This is mainly just for information purposes. They can't be merged if they're not
+	 * equivalent, and if they are equivalent there is nothing to merge.
 	 */
 	private void validateICMetadataEquivalent( ICMetadata base, ICMetadata extension )
 		throws JInconsistentFDD
@@ -458,12 +451,12 @@ public class ModelMerger
 		// do they have the same parameter count?
 		if( extension.getDeclaredParameters().size() != base.getDeclaredParameters().size() )
 		{
-			throw new JInconsistentFDD( "Interaction Class ["+base.getQualifiedName()+
-			                            "] redeclared but not equivalent or scaffolding: "+
-			                            "Parameter counts differ (base="+
-			                            base.getDeclaredParameters().size()+", extension="+
-			                            extension.getDeclaredParameters().size()+") "+
-			                            getMergeDirectionString(base,extension) );
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Parameter counts differ (base="+
+			             base.getDeclaredParameterCount()+", extension="+
+			             extension.getDeclaredParameterCount()+")" );
+			return;
 		}
 		
 		// are all of the parameters the same?
@@ -473,32 +466,35 @@ public class ModelMerger
 			PCMetadata baseParameter = base.getDeclaredParameter( extensionParameter.getName() );
 			if( baseParameter == null )
 			{
-				throw new JInconsistentFDD( "Interaction Class ["+base.getQualifiedName()+
-				                            "] redeclared but not equivalent or scaffolding: "+
-				                            "Parameter ["+extensionParameter.getName()+
-				                            "] does not exist in class from base module "+
-				                            getMergeDirectionString(base,extension) );
+				logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+				             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+				             "], declarations not equivalent. Parameter ["+
+				             extensionParameter.getName()+
+				             "] in extension does not exist in base module" );
+				return;
 			}
 		}
 		
 		// do they have the same order?
 		if( extension.getOrder() != base.getOrder() )
 		{
-			throw new JInconsistentFDD( "Interaction Class ["+base.getQualifiedName()+
-			                            "] redeclared but not equivalent or scaffolding: "+
-			                            "Extension class has different Order (base="+
-			                            base.getOrder()+", extension="+extension.getOrder()+") "+
-			                            getMergeDirectionString(base,extension) );
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Extension class has different Order (base="+
+			             base.getOrder()+", extension="+
+			             extension.getOrder()+")" );
+			return;
 		}
 		
 		// do they have the same transport?
 		if( extension.getTransport() != base.getTransport() )
 		{
-			throw new JInconsistentFDD( "Interaction Class ["+base.getQualifiedName()+
-			                            "] redeclared but not equivalent or scaffolding: "+
-			                            "Extension class has different Transport (base="+
-			                            base.getTransport()+", extension="+extension.getTransport()+") "+
-			                            getMergeDirectionString(base,extension) );
+			logger.warn( "Merging FOM Module ("+extension.getModel().getFileName()+"): "+
+			             "Ignoring Interaction Class ["+extension.getQualifiedName()+
+			             "], declarations not equivalent. Extension class has different Transport (base="+
+			             base.getTransport()+", extension="+
+			             extension.getTransport()+")" );
+			return;
 		}
 	}
 	

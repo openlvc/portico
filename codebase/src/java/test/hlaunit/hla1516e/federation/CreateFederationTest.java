@@ -320,19 +320,11 @@ public class CreateFederationTest extends Abstract1516eTest
 		};
 		
 		// try and create a valid federation //
-		try
-		{
-			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
-			Assert.fail( "Expected exception when merging modules with non-equivalent hierarchies" );
-		}
-		catch( InconsistentFDD ifdd )
-		{
-			// success!
-		}
-		catch( Exception e )
-		{
-			unexpectedException( "Merging modules with non-equivalent object hierarchies", e );
-		}
+		defaultFederate.quickCreateWithModules( modules );
+		defaultFederate.quickJoin();
+
+		// make sure that the non-equivalent classes didn't make it in
+		defaultFederate.quickACHandleMissing("HLAobjectRoot.HLAmanager.HLAfederate", "FakeHandle");
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////
@@ -348,19 +340,13 @@ public class CreateFederationTest extends Abstract1516eTest
 		};
 		
 		// try and create a valid federation //
-		try
-		{
-			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, modules );
-			Assert.fail( "Expected exception when merging modules with non-equivalent hierarchies" );
-		}
-		catch( InconsistentFDD ifdd )
-		{
-			// success!
-		}
-		catch( Exception e )
-		{
-			unexpectedException( "Merging modules with non-equivalent interaction hierarchies", e );
-		}
+		defaultFederate.quickCreateWithModules( modules );
+		defaultFederate.quickJoin();
+
+		// make sure that the non-equivalent classes didn't make it in
+		defaultFederate.quickPCHandleMissing( "HLAinteractionRoot.HLAmanager.HLAfederate",
+		                                      "FakeParameter" );
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////
