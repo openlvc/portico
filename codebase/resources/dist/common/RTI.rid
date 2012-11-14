@@ -88,12 +88,13 @@
 # portico.saveDirectory = ./savedata
 
 # (2.3) Unsupported Methods Throw Exceptions
-#        By default, if a user attempts to call a method on the RTI that is currently not supported
-#        by Portico, an RTIinternalError is thrown outlining that situation. This can cause some
-#        federates to crash if they are not expecting it or checking for it. If you set this value
-#        to false, no exception will be thrown and only a message will be logged.
+#        Portico does not support all the RTIambassador methods in all interface versions. To alert
+#        users to situations where a method is called that isn't support, Portico will log a warning
+#        and take no action. This is often a non-fatal action, but in some situations it may cause
+#        federates to stall or misbehave. As such, if this value is set to true, an RTIinternalError
+#        will be thrown when an unsupported method is called. By default, this is false.
 #
-# portico.unsupportedExceptions = true
+# portico.unsupportedExceptions = false
 
 # (2.4) Object Names Negotiated With Federation
 #        When registering an object with a specific name, to ensure that name is unique, the
