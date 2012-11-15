@@ -43,6 +43,10 @@ class HLAopaqueDataImplementation
 			this->initialiseToEmpty();
 		}
 
+		/**
+		 * Creates a HLAopaqueDataImplementation that uses an internal buffer to store the specified
+		 * data
+		 */
 		HLAopaqueDataImplementation( const Octet* inData, size_t dataSize )
 		{
 			this->initialiseToEmpty();
@@ -66,6 +70,11 @@ class HLAopaqueDataImplementation
 			this->bufferInternallyAllocated = false;
 		}
 
+		/**
+		 * Releases the buffer memory if it is being internally managed by this object. If the
+		 * memory is not internally managed by the object, the corresponding memory is not
+		 * affected.
+		 */
 		void releaseInternal()
 		{
 			if( bufferInternallyAllocated )
@@ -80,6 +89,12 @@ class HLAopaqueDataImplementation
 		}
 
 	public:
+		/**
+		 * Instructs the instance to use an internal buffer to store the opaque data, intiialising
+		 * it with the provided value.
+		 * <p/>
+		 * Subsequent calls to get() and set() will return/modify memory internal to this instance.
+		 */
 		void setInternal( const Octet* inData, size_t dataSize )
 		{
 			// TODO Could possibly optimize this by overwriting the existing internal buffer
@@ -96,6 +111,12 @@ class HLAopaqueDataImplementation
 			this->bufferInternallyAllocated = true;
 		}
 
+		/**
+		 * Instructs the instance to use an external buffer to store the opaque data.
+		 * <p/>
+		 * Subsequent calls to get() and set() will return/modify the data stored at the memory
+		 * location specified by this function
+		 */
 		void setExternal( Octet** inData, size_t bufferSize, size_t dataSize )
 		{
 			if( this->bufferInternallyAllocated )
@@ -107,6 +128,12 @@ class HLAopaqueDataImplementation
 			this->bufferInternallyAllocated = false;
 		}
 
+		/**
+		 * Sets this instance's value.
+		 * <p/>
+		 * The value may be written to memory internal or external to this instance depending
+		 * on whether setInternal()/setExternal() has been called previously.
+		 */
 		void set( const Octet* inData, size_t dataSize )
 		{
 			if( this->bufferInternallyAllocated || this->buffer == NULL )
@@ -121,6 +148,12 @@ class HLAopaqueDataImplementation
 			}
 		}
 
+		/**
+		 * Returns this instance's value.
+		 * <p/>
+		 * The value may be obtained from memory internal or external to this instance depending
+		 * on whether setInternal()/setExternal() has been called previously.
+		 */
 		const Octet* get() const
 		{
 			return this->buffer;
