@@ -14,12 +14,12 @@
  */
 #include "common.h"
 #include "types/encoding/BitHelpers.h"
-#include "types/encoding/TypeImplementation.h"
+#include "types/encoding/basic/BasicTypeImpl.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-DEFINE_TYPE_IMPL( HLAunicodeStringImplementation, std::wstring )
+DEFINE_BASIC_TYPE_IMPL( HLAunicodeStringImplementation, std::wstring )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -104,19 +104,13 @@ void HLAunicodeString::encode( VariableLengthData& inData ) const
 void HLAunicodeString::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
 {
-	// Assign a buffer to take the std::wstring
-	const std::wstring value = this->get();
-	size_t encodedLength = BitHelpers::getEncodedLength( value );
-	char* data = new char[encodedLength];
-
-	// Encode to buffer
-	BitHelpers::encodeUnicodeString( value, data, 0 );
+	// Encode into VariableLengthData
+	VariableLengthData data;
+	this->encode( data );
 
 	// Append data to the end of the provided buffer
-	buffer.insert( buffer.end(), data, data + encodedLength );
-
-	// Clean up!
-	delete [] data;
+	char* bytes = (char*)data.data();
+	buffer.insert( buffer.end(), bytes, bytes + data.size() );
 }
 
 // Decode this element from the RTI's VariableLengthData.

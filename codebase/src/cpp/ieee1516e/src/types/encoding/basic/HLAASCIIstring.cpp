@@ -13,13 +13,13 @@
  *
  */
 #include "common.h"
-#include "types/encoding/TypeImplementation.h"
+#include "types/encoding/basic/BasicTypeImpl.h"
 #include "types/encoding/BitHelpers.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-DEFINE_TYPE_IMPL( HLAASCIIstringImplementation, std::string )
+DEFINE_BASIC_TYPE_IMPL( HLAASCIIstringImplementation, std::string )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       

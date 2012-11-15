@@ -31,7 +31,7 @@ DataElement::~DataElement()
 // Return true if given element is same type as this; otherwise, false.
 bool DataElement::isSameTypeAs( const DataElement& inData ) const
 {
-	return false;
+	return typeid(*this) == typeid(inData);
 }
 
 // From standard headers:
