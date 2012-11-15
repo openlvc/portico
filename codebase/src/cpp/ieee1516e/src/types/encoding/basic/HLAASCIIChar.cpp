@@ -14,12 +14,12 @@
  */
 #include "common.h"
 #include "types/encoding/BitHelpers.h"
-#include "types/encoding/TypeImplementation.h"
+#include "types/encoding/basic/BasicTypeImpl.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-DEFINE_TYPE_IMPL( HLAASCIIcharImplementation, char )
+DEFINE_BASIC_TYPE_IMPL( HLAASCIIcharImplementation, char )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS
@@ -180,7 +180,7 @@ char HLAASCIIchar::get() const
 // Uses existing memory of this instance.
 HLAASCIIchar& HLAASCIIchar::operator= ( const HLAASCIIchar& rhs )
 {
-    this->_impl->setUseInternalMemory( rhs.get() );
+	this->_impl->setUseInternalMemory( rhs.get() );
 	return *this;
 }
 
