@@ -32,7 +32,8 @@
 	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
 	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
 
-	<jdk-home/> <!-- validate JAVA_HOME and set jdk.home property -->
+	<!-- validate JAVA_HOME and set jdk.home property -->
+	<getJavaHome property="jdk.home"/>
 
 	<!-- =========================================================== -->
 	<!--                       Master Targets                        -->

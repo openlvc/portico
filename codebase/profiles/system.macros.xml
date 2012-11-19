@@ -19,64 +19,6 @@
 		Set of common macros that can be used in any of the project build profiles.
 	</description>
 
-	
-	<!-- ================================================================================= -->
-	<!--                                 Macro: jdk-home                                   -->
-	<!-- ================================================================================= -->
-	<!--
-	     Macro for ensuring that the environment variable JAVA_HOME is set and for
-	     setting the jdk.home property from it. If the JAVA_HOME environment variable
-	     is not set, this macro will fail the build. If the variable is set, it will
-	     attempt to confirm that the variable points to a valid JDK (not a JRE). Should
-	     this check fail, again, the build will be failed. Should this check pass, the
-	     value of the property "jdk.home" will be set to JAVA_HOME.
-		 
-	     Usage Example:
-         <jdk-home/>
-	-->
-	<macrodef name="jdk-home"
-	          description="Validate that JAVA_HOME is set and ensure jdk.home points to it">
-
-		<!-- Attributes -->
-		<!-- None -->
-		
-		<!-- Task Definition -->
-		<sequential>
-			<!-- check that jdk.home hasn't already been set (maybe from build.properties) -->
-			<if>
-				<isset property="jdk.home"/>
-				<then>
-					<echo>jdk.home already set (build.properties), skipping JAVA_HOME check</echo>
-					<echo>jdk.home is: ${jdk.home}</echo>
-				</then>
-				<else>
-					<!-- we can do the checks now, as jdk.home isn't set -->
-					<!-- make sure we have JAVA_HOME -->
-					<if>
-						<not><isset property="env.JAVA_HOME"/></not>
-						<then>
-						<fail message="The JAVA_HOME environment variable is not set (it must point to a valid JDK)"/>
-						</then>
-					</if>
-
-					<!-- make sure env.JAVA_HOME points to a JDK -->
-					<!-- we determine this by looking for a child jre directory -->
-					<if>
-						<resourceexists><file file="${env.JAVA_HOME}/jre"/></resourceexists>
-						<then>
-							<!-- we're cool! set the property -->
-							<property name="jdk.home" value="${env.JAVA_HOME}"/>
-							<echo>jdk.home set to: ${jdk.home}</echo>
-						</then>
-						<else>
-							<fail message="The JAVA_HOME environment variable is set, but does not point to a valid JDK"/>
-						</else>
-					</if>
-				</else>
-			</if>
-		</sequential>
-	</macrodef>
-	
 	<!-- ================================================================================= -->
 	<!--                               Macro: java-compile                                 -->
 	<!-- ================================================================================= -->
@@ -268,9 +210,6 @@
 	<!-- ================================================================================= -->
 	<!--                                  Macro: cpp-unix                                  -->
 	<!-- ================================================================================= -->
-	<!-- bring in the cpp compiling ant task -->
-	<taskdef name="cpptask" classname="com.lbf.cpptask.CppTask"/>
-
 	<!--
 	     Macro for compiling C++ source files on Linux using g++ and the custom
 	     cpptask Ant Task. This macro will generate libraries or executables and
