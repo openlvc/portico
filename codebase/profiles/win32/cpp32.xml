@@ -20,9 +20,10 @@
 	</description>
 
 	<!-- ==== JDK Settings ==== -->
-	<property name="jdk.include.dir"           location="${jdk.home}/include/win32"/>
-	<property name="jdk.lib.dir"               location="${jdk.home}/lib"/>
-	<!--<property name="jdk.lib.dir"               location="${jdk.home}/jre/bin/server"/>-->
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
+	<property name="jdk.include.dir"             location="${jdk.home.win32}/include"/>
+	<property name="jdk.lib.dir"                 location="${jdk.home.win32}/lib"/>
 	
 	<!-- ==== Basic Properties ==== -->
 	<property name="cpp.build.dir"             location="${build.dir}/cpp/win32"/>
@@ -105,11 +106,11 @@
 			</fileset>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 			<define name="BUILDING_RTI"/> <!-- needed to ensure Exception.cpp stuff works -->
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
@@ -122,12 +123,12 @@
 			</fileset>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 			<define name="BUILDING_RTI"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<library path="${ng6.build.dir}/complete" libs="FedTime"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
 		</cpp-win32>
 	</target>
 
@@ -207,10 +208,10 @@
 			</fileset>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 			<define name="BUILDING_RTI"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
 		</cpp-win32>
 
 		<!-- Build the fedtime DLL -->
@@ -221,12 +222,12 @@
 			</fileset>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
+			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 			<!--<define name="BUILDING_RTI"/> - needed to ensure Exception.cpp stuff works -->
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
 		</cpp-win32>
 	</target>
 
@@ -242,7 +243,7 @@
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e,fedtime1516e"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
 		</cpp-win32>
 	</target>
 
@@ -273,7 +274,7 @@
 		      resultproperty="test13.result">
 			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="PATH" path="${ng6.complete.dir};${jdk.home}\jre\bin\client"/>
+			<env key="PATH" path="${ng6.complete.dir};${jdk.home.win32}\jre\bin\client"/>
 			<env key="PORTICO_DEBUG" value="OFF"/>
 			<env key="CLASSPATH" path="${dist.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>

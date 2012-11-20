@@ -25,14 +25,14 @@
 	<target name="installer" extensionOf="master.installer">
 		<!-- check to make sure the jre dir exists -->
 		<echo>Checking to see if JRE is available for bundling</echo>
-		<available file="${windows.jdk.home}/jre" property="jrefound"/>
+		<available file="${jdk.home.win32}/jre" property="jrefound"/>
 		<fail unless="jrefound"
 		      message="Could not locate JRE dir. Set JAVA_HOME env var to point to JDK install"/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
 		<zip destfile="${dist.zip.file}">
 			<zipfileset dir="${dist.sandbox.dir}" includes="**/*" prefix="${dist.name}"/>
-			<zipfileset dir="${windows.jdk.home}/jre" includes="**/*" prefix="${dist.name}/jre"/>
+			<zipfileset dir="${jdk.home.win32}/jre" includes="**/*" prefix="${dist.name}/jre"/>
 		</zip>
 	</target>
 
