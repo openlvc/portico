@@ -22,6 +22,9 @@
 	<!-- ==== Basic Properties ==== -->
 	<property name="cpp.build.dir"             location="${build.dir}/cpp/macosx"/>
 
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+
 	<!-- ============================================ -->
 	<!-- ==== NG6 and DLC13 Interface Properties ==== -->
 	<!-- ============================================ -->
@@ -98,11 +101,11 @@
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/ng6"/>
 			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
 			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${jdk.home}/jre/lib/server" libs="jvm,jsig"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 
 		<!-- === Create the SymLink === -->
@@ -125,12 +128,12 @@
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/dlc13"/>
 			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
 			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_DLC"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${jdk.home}/jre/lib/server" libs="jvm,jsig"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 
 		<!-- === Create the SymLink === -->
@@ -171,12 +174,12 @@
 			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
-			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
 			<define name="BUILDING_RTI"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
-			<library path="${jdk.home}/jre/lib/server" libs="jvm,jsig"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 
 		<!-- === Create the SymLink === -->
@@ -201,11 +204,11 @@
 		          type="executable">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
-			<includepath path="${macosx.jdk.home}/include;${macosx.jdk.home}/include/darwin"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e"/>
-			<library path="${jdk.home}/jre/lib/server" libs="jvm,jsig"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 	</target>
 
@@ -238,7 +241,7 @@
 		      resultproperty="test13.result">
 			<arg line="${test13.complete.dir}/test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${macosx.jdk.home}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
+			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
 			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>

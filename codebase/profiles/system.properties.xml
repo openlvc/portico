@@ -61,6 +61,9 @@
 	-->
 	<getOsPlatform/>
 
+	<!-- validate JAVA_HOME and set jdk.home property -->
+	<getJavaHome property="jdk.home"/>
+
 	<!-- =========================================================== -->
 	<!--                     Compiler Properties                     -->
 	<!-- =========================================================== -->
@@ -75,11 +78,11 @@
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
-	<property name="jdk.home.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home"/>
-	<property name="jdk.home.win32"   location="c:\Program Files\Java\jdk1.7.0_07"/>
-	<property name="jdk.home.win64"   location="c:\Program Files\Java\jdk1.7.0_07"/>
-	<property name="jdk.home.linux32" location="${env.JAVA_HOME}"/>
-	<property name="jdk.home.linux64" location="${env.JAVA_HOME}"/>
+	<property name="jdk.default.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home"/>
+	<property name="jdk.default.win32"   location="c:\Program Files\Java\jdk1.7.0_07"/>
+	<property name="jdk.default.win64"   location="c:\Program Files\Java\jdk1.7.0_07"/>
+	<property name="jdk.default.linux32" location="${env.JAVA_HOME}"/>
+	<property name="jdk.default.linux64" location="${env.JAVA_HOME}"/>
 	
 	<!-- Location Properties -->
 	<property name="lib.dir"                   location="lib"/>
