@@ -12,12 +12,12 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "TestNG6Interaction.h"
+#include "Test13Interaction.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-TestNG6Interaction::TestNG6Interaction( RTI::InteractionClassHandle classHandle, const char *tag )
+Test13Interaction::Test13Interaction( RTI::InteractionClassHandle classHandle, const char *tag )
 {
 	this->classHandle = classHandle;
 	this->tag = new char[strlen(tag)+1];
@@ -26,7 +26,7 @@ TestNG6Interaction::TestNG6Interaction( RTI::InteractionClassHandle classHandle,
 	this->parameters = new map<RTI::ParameterHandle,char*>();
 }
 
-TestNG6Interaction::~TestNG6Interaction()
+Test13Interaction::~Test13Interaction()
 {
 	delete [] this->tag;
 	MAP_CLEANUP( RTI::ParameterHandle, char*, parameters );
@@ -36,37 +36,37 @@ TestNG6Interaction::~TestNG6Interaction()
 //////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// Instance Methods //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-RTI::InteractionClassHandle TestNG6Interaction::getClassHandle()
+RTI::InteractionClassHandle Test13Interaction::getClassHandle()
 {
 	return this->classHandle;
 }
 
-char* TestNG6Interaction::getTag()
+char* Test13Interaction::getTag()
 {
 	return this->tag;
 }
 
-double TestNG6Interaction::getTime()
+double Test13Interaction::getTime()
 {
 	return this->time;
 }
 
-void TestNG6Interaction::setTime( double theTime )
+void Test13Interaction::setTime( double theTime )
 {
 	this->time = theTime;
 }
 
-int TestNG6Interaction::getSize()
+int Test13Interaction::getSize()
 {
 	return parameters->size();
 }
 
-char* TestNG6Interaction::getParameter( RTI::ParameterHandle parameter )
+char* Test13Interaction::getParameter( RTI::ParameterHandle parameter )
 {
 	return (*parameters)[parameter];
 }
 
-bool TestNG6Interaction::containsParameter( RTI::ParameterHandle parameter )
+bool Test13Interaction::containsParameter( RTI::ParameterHandle parameter )
 {
 	return parameters->find(parameter) != parameters->end();
 }
@@ -77,7 +77,7 @@ bool TestNG6Interaction::containsParameter( RTI::ParameterHandle parameter )
  * the provided value, so it is the callers responsibility to delete the given newValue once it
  * is finished.
  */
-void TestNG6Interaction::setParameter( RTI::ParameterHandle parameter, char *newValue )
+void Test13Interaction::setParameter( RTI::ParameterHandle parameter, char *newValue )
 {
 	// attempt to erase the existing value, no effect if it doesn't exist
 	parameters->erase( parameter );
@@ -91,7 +91,7 @@ void TestNG6Interaction::setParameter( RTI::ParameterHandle parameter, char *new
 /*
  * This will take the given PHVPS and update the local instance with the provided data.
  */
-void TestNG6Interaction::updateParameters( const RTI::ParameterHandleValuePairSet& theParameters )
+void Test13Interaction::updateParameters( const RTI::ParameterHandleValuePairSet& theParameters )
 {
 	for( RTI::ULong i = 0; i < theParameters.size(); i++ )
 	{

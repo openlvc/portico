@@ -24,8 +24,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( QueryAttributeOwnershipTest, "ownershipMa
 /////////////////////////////////////////////////////////////////////////////////////////////
 QueryAttributeOwnershipTest::QueryAttributeOwnershipTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->secondFederate = new TestNG6Federate( "secondFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->secondFederate = new Test13Federate( "secondFederate" );
 }
 
 QueryAttributeOwnershipTest::~QueryAttributeOwnershipTest()
@@ -92,9 +92,9 @@ void QueryAttributeOwnershipTest::testQueryAttributeOwnershipAfterObjectRegistra
 	int defaultHandle = defaultFederate->getFederateHandle();
 	int secondHandle = secondFederate->getFederateHandle();
 	defaultFederate->quickAssertOwnedBy( defaultHandle, theObject, 3, aa, ab, ac );
-	defaultFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	defaultFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 	secondFederate->quickAssertOwnedBy( defaultHandle, theObject, 3, aa, ab, ac );
-	secondFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	secondFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 
 	// pick up some attributes in the second federate
 	// should be: defaultFederate=>{aa,ab,ac}, secondFederate=>{ba,bb,bc}
@@ -118,9 +118,9 @@ void QueryAttributeOwnershipTest::testQueryAttributeOwnershipAfterOwnershipTrans
 	int defaultHandle = defaultFederate->getFederateHandle();
 	int secondHandle = secondFederate->getFederateHandle();
 	defaultFederate->quickAssertOwnedBy( defaultHandle, theObject, 3, aa, ab, ac );
-	defaultFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	defaultFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 	secondFederate->quickAssertOwnedBy( defaultHandle, theObject, 3, aa, ab, ac );
-	secondFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	secondFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 	
 	// transfer aa and ab from defaultFederate to secondFederate
 	secondFederate->quickAcquireRequest( theObject, 2, aa, ab );
@@ -131,11 +131,11 @@ void QueryAttributeOwnershipTest::testQueryAttributeOwnershipAfterOwnershipTrans
 	// check to make sure new ownership is good
 	defaultFederate->quickAssertOwnedBy( defaultHandle, theObject, 1, ac );
 	defaultFederate->quickAssertOwnedBy( secondHandle, theObject, 2, aa, ab );
-	defaultFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	defaultFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 	
 	secondFederate->quickAssertOwnedBy( defaultHandle, theObject, 1, ac );
 	secondFederate->quickAssertOwnedBy( secondHandle, theObject, 2, aa, ab );
-	secondFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	secondFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 }
 
 /////////////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ void QueryAttributeOwnershipTest::testQueryAttributeOwnershipForMomAttributes()
 	defaultFederate->fedamb->waitForDiscovery( 0 /*mom federation object*/ );
 	
 	// check ownership of a MOM attribute
-	defaultFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_RTI,
+	defaultFederate->quickAssertOwnedBy( Test13Federate::OWNER_RTI,
 	                                     0 /*mom federation object*/,
 	                                     1,
 	                                     federationNameHandle );

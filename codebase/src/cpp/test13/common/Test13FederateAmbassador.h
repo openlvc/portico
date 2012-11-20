@@ -25,9 +25,9 @@
 using namespace std;
 
 // forward declaration for circular dependency
-class TestNG6Federate;
-class TestNG6Object;
-class TestNG6Interaction;
+class Test13Federate;
+class Test13Object;
+class Test13Interaction;
 class ActiveSR;
 
 //////////////////////////////////////////
@@ -67,7 +67,7 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *testFederate;
+		Test13Federate *testFederate;
 
 	public: // were "protected" in Java version as that really means "package", make them
 		    // public here just to make for easier access
@@ -79,9 +79,9 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 		SyncRegResult              syncRegResult;
 		
 		// object/interaction containers
-		map<RTI::ObjectHandle,TestNG6Object*> *discovered;
-		map<RTI::ObjectHandle,TestNG6Object*> *roRemoved;
-		map<RTI::ObjectHandle,TestNG6Object*> *tsoRemoved;
+		map<RTI::ObjectHandle,Test13Object*> *discovered;
+		map<RTI::ObjectHandle,Test13Object*> *roRemoved;
+		map<RTI::ObjectHandle,Test13Object*> *tsoRemoved;
 		set<RTI::ObjectHandle> *roUpdated;
 		set<RTI::ObjectHandle> *tsoUpdated;
 		map<RTI::ObjectHandle,set<RTI::AttributeHandle>*> *requestedUpdates;
@@ -95,8 +95,8 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 		map<RTI::AttributeHandle,int> *attributeOwnershipInfo;
 		map<RTI::ObjectHandle,set<RTI::AttributeHandle>*> *attributesCancelled;
 		
-		vector<TestNG6Interaction*> *roInteractions;
-		vector<TestNG6Interaction*> *tsoInteractions;
+		vector<Test13Interaction*> *roInteractions;
+		vector<Test13Interaction*> *tsoInteractions;
 		
 		// save/restore stuff
 		ActiveSR *currentSave;
@@ -108,7 +108,7 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		TestNG6FederateAmbassador( TestNG6Federate *testFederate );
+		TestNG6FederateAmbassador( Test13Federate *testFederate );
 		~TestNG6FederateAmbassador() throw( RTI::FederateInternalError );
 
 	//----------------------------------------------------------
@@ -124,8 +124,8 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 		RTI::Boolean checkTimeoutNonFatal( time_t startTime );
 	
 		// helper methods
-		TestNG6Interaction* fetchInteraction( RTI::InteractionClassHandle theClass,
-		                                      vector<TestNG6Interaction*> *theStore );
+		Test13Interaction* fetchInteraction( RTI::InteractionClassHandle theClass,
+		                                      vector<Test13Interaction*> *theStore );
 		
 		/** search the received set and return true if all the expected handles are in received */
 		RTI::Boolean setContainsAll( set<RTI::AttributeHandle>* expected,
@@ -153,9 +153,9 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 		
 		// object management methods
 		// discover
-		TestNG6Object* waitForDiscovery( RTI::ObjectHandle objectHandle );
-		TestNG6Object* waitForDiscoveryAs( RTI::ObjectHandle object, RTI::ObjectClassHandle asClass );
-		TestNG6Object* waitForDiscoveryAsWithName( RTI::ObjectHandle object,
+		Test13Object* waitForDiscovery( RTI::ObjectHandle objectHandle );
+		Test13Object* waitForDiscoveryAs( RTI::ObjectHandle object, RTI::ObjectClassHandle asClass );
+		Test13Object* waitForDiscoveryAsWithName( RTI::ObjectHandle object,
 		                                           RTI::ObjectClassHandle asClass,
 		                                           char *expectedName );
 		void         waitForDiscoveryTimeout( RTI::ObjectHandle objectHandle );
@@ -167,16 +167,16 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 		void         waitForTSORemovalTimeout( RTI::ObjectHandle objectHandle );
 		
 		// reflect
-		TestNG6Object*      waitForROUpdate( RTI::ObjectHandle objectHandle );
+		Test13Object*      waitForROUpdate( RTI::ObjectHandle objectHandle );
 		void                waitForROUpdateTimeout( RTI::ObjectHandle objectHandle );
-		TestNG6Object*      waitForTSOUpdate( RTI::ObjectHandle objectHandle );
+		Test13Object*      waitForTSOUpdate( RTI::ObjectHandle objectHandle );
 		void                waitForTSOUpdateTimeout( RTI::ObjectHandle objectHandle );
 		
 		// interaction
 		// user is responsible for deleting all returned interactions
-		TestNG6Interaction* waitForROInteraction( RTI::InteractionClassHandle expected );
+		Test13Interaction* waitForROInteraction( RTI::InteractionClassHandle expected );
 		void                waitForROInteractionTimeout( RTI::InteractionClassHandle expected );
-		TestNG6Interaction* waitForTSOInteraction( RTI::InteractionClassHandle expected );
+		Test13Interaction* waitForTSOInteraction( RTI::InteractionClassHandle expected );
 		void                waitForTSOInteractionTimeout( RTI::InteractionClassHandle expected );
 		
 		// provide update requests

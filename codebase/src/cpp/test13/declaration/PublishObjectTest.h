@@ -27,8 +27,8 @@ class PublishObjectTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *listener;
+		Test13Federate *defaultFederate;
+		Test13Federate *listener;
 		
 		RTI::ObjectClassHandle bHandle;
 		RTI::AttributeHandle   aaHandle;

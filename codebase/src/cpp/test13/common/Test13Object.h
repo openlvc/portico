@@ -19,7 +19,7 @@
 
 using namespace std;
 
-class TestNG6Object
+class Test13Object
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -38,10 +38,10 @@ class TestNG6Object
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		TestNG6Object( RTI::ObjectHandle objectHandle,
-		               RTI::ObjectClassHandle classHandle,
-		               const char *objectName );
-		virtual ~TestNG6Object();
+		Test13Object( RTI::ObjectHandle objectHandle,
+		              RTI::ObjectClassHandle classHandle,
+		              const char *objectName );
+		virtual ~Test13Object();
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

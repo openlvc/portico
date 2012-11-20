@@ -25,8 +25,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( RequestUpdateWithRegionTest, "ddm" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 RequestUpdateWithRegionTest::RequestUpdateWithRegionTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->provokerFederate = new TestNG6Federate( "provokerFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->provokerFederate = new Test13Federate( "provokerFederate" );
 }
 
 RequestUpdateWithRegionTest::~RequestUpdateWithRegionTest()

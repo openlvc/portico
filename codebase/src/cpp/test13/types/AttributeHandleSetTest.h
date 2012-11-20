@@ -27,7 +27,7 @@ class AttributeHandleSetTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
     private:
-        TestNG6Federate *defaultFederate;
+        Test13Federate *defaultFederate;
         RTI::AttributeHandleSet *theSet;
 
 	//----------------------------------------------------------

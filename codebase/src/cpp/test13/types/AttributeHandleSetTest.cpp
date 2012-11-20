@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( AttributeHandleSetTest, "types" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 AttributeHandleSetTest::AttributeHandleSetTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
 }
 
 AttributeHandleSetTest::~AttributeHandleSetTest()

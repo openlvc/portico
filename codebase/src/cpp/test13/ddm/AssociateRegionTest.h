@@ -27,10 +27,10 @@ class AssociateRegionTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate; // associate with region
-		TestNG6Federate *federateA;       // subscription region overlaps
-		TestNG6Federate *federateB;       // subscription region doesn't overlap
-		TestNG6Federate *federateC;       // not using ddm
+		Test13Federate *defaultFederate; // associate with region
+		Test13Federate *federateA;       // subscription region overlaps
+		Test13Federate *federateB;       // subscription region doesn't overlap
+		Test13Federate *federateC;       // not using ddm
 		
 		RTI::Region     *senderRegion;
 		RTI::Region     *federateARegion;

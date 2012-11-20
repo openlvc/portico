@@ -26,8 +26,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( RegisterSyncPointTest, "federationManagem
 /////////////////////////////////////////////////////////////////////////////////////////////
 RegisterSyncPointTest::RegisterSyncPointTest()
 {
-	this->federateOne = new TestNG6Federate( "federateOne" );
-	this->federateTwo = new TestNG6Federate( "federateTwo" );
+	this->federateOne = new Test13Federate( "federateOne" );
+	this->federateTwo = new Test13Federate( "federateTwo" );
 	this->label = new char[32];
 	sprintf( this->label, "SynchronizationPoint" );
 	this->tag = new char[8];

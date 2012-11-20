@@ -24,8 +24,8 @@ class FederationRestoreTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *secondFederate;
+		Test13Federate *defaultFederate;
+		Test13Federate *secondFederate;
 		char *saveLabel;
 
 	//----------------------------------------------------------

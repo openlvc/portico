@@ -23,7 +23,7 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( FedTimeTest, "FedTimeTest" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 FedTimeTest::FedTimeTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
 }
 
 FedTimeTest::~FedTimeTest()

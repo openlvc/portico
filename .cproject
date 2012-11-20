@@ -2,12 +2,13 @@
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711" moduleId="org.eclipse.cdt.core.settings" name="cpp-macosx-ng6">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711" moduleId="org.eclipse.cdt.core.settings" name="cpp-macosx-hla13">
 				<externalSettings>
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ng6 macosx) libRTI-NG.dylib"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/cpp-macosx-ng6"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/cpp-macosx-hla13"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="RTI-NG" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -19,7 +20,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="dylib" artifactName="RTI-NG" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" description="Portico C++ HLA 1.3 (ng6) Interface for Mac OS X 64-bit" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711" name="cpp-macosx-ng6" parent="org.eclipse.cdt.msvc.dll.debug">
+				<configuration artifactExtension="dylib" artifactName="RTI-NG" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" description="Portico C++ HLA 1.3 Interface for Mac OS X 64-bit" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711" name="cpp-macosx-hla13" parent="org.eclipse.cdt.msvc.dll.debug">
 					<folderInfo id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.210240311" name="MacOSX GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.base" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.1041332485" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
@@ -33,10 +34,12 @@
 								<option id="macosx.cpp.link.option.libs.1566321421" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="jvm"/>
 									<listOptionValue builtIn="false" value="jsig"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cppunit"/>
 								</option>
 								<option defaultValue="true" id="macosx.cpp.link.option.shared.544454829" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.option.shared" valueType="boolean"/>
 								<option id="macosx.cpp.link.option.paths.456236363" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="${JAVA_HOME}/jre/lib/server"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/lib/cppunit/cppunit-1.12.1/macosx}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.266912328" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -51,8 +54,10 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1846978323" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="${JAVA_HOME}/include"/>
 									<listOptionValue builtIn="false" value="${JAVA_HOME}/include/darwin"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/hla13/include/ng6}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/hla13/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/hla13/include/hla13}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/test13}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.380263278" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
@@ -76,6 +81,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/src"/>
+						<entry excluding="common/TemplateTest.h" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/test13"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -290,11 +296,14 @@
 		<configuration configurationName="(ng6 win32) libRTI-NG.dll"/>
 		<configuration configurationName="cpp-macosx-ieee1516e"/>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="cpp-macosx-ng6"/>
+		<configuration configurationName="cpp-macosx-hla13">
+			<resource resourceType="PROJECT" workspacePath="/portico"/>
+		</configuration>
 		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>

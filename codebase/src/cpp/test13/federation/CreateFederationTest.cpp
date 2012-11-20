@@ -37,7 +37,7 @@ CreateFederationTest::~CreateFederationTest()
 
 void CreateFederationTest::setUp()
 {
-    this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+    this->defaultFederate = new Test13Federate( "defaultFederate" );
 }
 
 void CreateFederationTest::tearDown()
@@ -57,7 +57,7 @@ void CreateFederationTest::testCreateFederation()
 	// can we create the federation?
 	try
 	{
-		defaultFederate->rtiamb->createFederationExecution( TestNG6Federate::SIMPLE_NAME,
+		defaultFederate->rtiamb->createFederationExecution( Test13Federate::SIMPLE_NAME,
 		                                                    "etc/testfom.fed" );
 		// clean up
 		defaultFederate->quickDestroy();
@@ -80,7 +80,7 @@ void CreateFederationTest::testCreateFederationThatAlreadyExists()
 	// can we create the federation?
 	try
 	{
-		defaultFederate->rtiamb->createFederationExecution( TestNG6Federate::SIMPLE_NAME,
+		defaultFederate->rtiamb->createFederationExecution( Test13Federate::SIMPLE_NAME,
 		                                                    "etc/testfom.fed" );
 		// should have received an exception
 		defaultFederate->quickDestroy();
@@ -107,7 +107,7 @@ void CreateFederationTest::testCreateFederationWithInvalidFom()
 {
 	try
 	{
-		defaultFederate->rtiamb->createFederationExecution( TestNG6Federate::SIMPLE_NAME,
+		defaultFederate->rtiamb->createFederationExecution( Test13Federate::SIMPLE_NAME,
 		                                                    "etc/testfom-invalid.fed" );
 		
 		// should have exceptioned all up out of here
@@ -131,7 +131,7 @@ void CreateFederationTest::testCreateFederationWithInvalidFomLocation()
 {
 	try
 	{
-		defaultFederate->rtiamb->createFederationExecution( TestNG6Federate::SIMPLE_NAME,
+		defaultFederate->rtiamb->createFederationExecution( Test13Federate::SIMPLE_NAME,
 		                                                    "etc/noSuchFom.fed" );
 		
 		failTestMissingException( "CouldNotOpenFED", "creating federation with invalid fed location" );
@@ -154,7 +154,7 @@ void CreateFederationTest::testCreateFederationWithNullFom()
 {
 	try
 	{
-		defaultFederate->rtiamb->createFederationExecution( TestNG6Federate::SIMPLE_NAME, NULL );
+		defaultFederate->rtiamb->createFederationExecution( Test13Federate::SIMPLE_NAME, NULL );
 		failTestMissingException( "CouldNotOpenFED", "creating federation with null fed file" );
 	}
 	catch( RTI::CouldNotOpenFED &cnof )

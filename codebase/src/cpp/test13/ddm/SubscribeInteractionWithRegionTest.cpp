@@ -27,8 +27,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( SubscribeInteractionWithRegionTest, "ddm"
 /////////////////////////////////////////////////////////////////////////////////////////////
 SubscribeInteractionWithRegionTest::SubscribeInteractionWithRegionTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->listenerFederate = new TestNG6Federate( "listenerFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->listenerFederate = new Test13Federate( "listenerFederate" );
 }
 
 SubscribeInteractionWithRegionTest::~SubscribeInteractionWithRegionTest()
@@ -87,7 +87,7 @@ void SubscribeInteractionWithRegionTest::validateSubscribed( RTI::Region *region
 	defaultFederate->quickSendWithRegion( "InteractionRoot.X", regionToSend, 3, "xa", "xb", "xc" );
 	
 	// wait for it to be received in the listener
-	TestNG6Interaction *received = listenerFederate->fedamb->waitForROInteraction( xHandle );
+	Test13Interaction *received = listenerFederate->fedamb->waitForROInteraction( xHandle );
 
 	// validate the parameters for the interaction
 	int result = strcmp( "xa", received->getParameter(xaHandle) );

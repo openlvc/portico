@@ -27,7 +27,7 @@ class FederateHandleSetTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
     private:
-        TestNG6Federate *defaultFederate;
+        Test13Federate *defaultFederate;
         RTI::FederateHandleSet *theSet;
 
 	//----------------------------------------------------------

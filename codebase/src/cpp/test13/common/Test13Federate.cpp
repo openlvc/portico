@@ -12,17 +12,17 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "TestNG6Federate.h"
+#include "Test13Federate.h"
 
 // set up the static vars
-char *TestNG6Federate::SIMPLE_NAME = "TestNG6Federation";
-int TestNG6Federate::OWNER_UNOWNED = -1;
-int TestNG6Federate::OWNER_RTI = 0;
+char *Test13Federate::SIMPLE_NAME = "TestNG6Federation";
+int Test13Federate::OWNER_UNOWNED = -1;
+int Test13Federate::OWNER_RTI = 0;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-TestNG6Federate::TestNG6Federate( char *name )
+Test13Federate::Test13Federate( char *name )
 {
 	// store the federate name (make sure it is a copy so that we can delete it when we want)
 	//this->federateName = name;
@@ -37,7 +37,7 @@ TestNG6Federate::TestNG6Federate( char *name )
 	this->fedamb = NULL;
 }
 
-TestNG6Federate::~TestNG6Federate()
+Test13Federate::~Test13Federate()
 {
 	delete [] this->federateName;
 	delete this->rtiamb;
@@ -45,12 +45,12 @@ TestNG6Federate::~TestNG6Federate()
 		delete this->fedamb;
 }
 
-char* TestNG6Federate::getFederateName()
+char* Test13Federate::getFederateName()
 {
 	return this->federateName;
 }
 
-RTI::FederateHandle TestNG6Federate::getFederateHandle()
+RTI::FederateHandle Test13Federate::getFederateHandle()
 {
 	return this->federateHandle;
 }
@@ -62,16 +62,16 @@ RTI::FederateHandle TestNG6Federate::getFederateHandle()
  * This method will create a new federation using a common name known to all TestNG6Federate
  * instances (held in TestNG6Federate::SIMPLE_NAME). The default testing FOM will be used.
  */
-void TestNG6Federate::quickCreate()
+void Test13Federate::quickCreate()
 {
-	this->quickCreate( TestNG6Federate::SIMPLE_NAME );
+	this->quickCreate( Test13Federate::SIMPLE_NAME );
 }
 
 /*
  * This method will create a new federation using the given federation name and the default
  * testing FOM.
  */
-void TestNG6Federate::quickCreate( char *federationName )
+void Test13Federate::quickCreate( char *federationName )
 {
 	try
 	{
@@ -87,16 +87,16 @@ void TestNG6Federate::quickCreate( char *federationName )
  * Join a federation named "testFederation" using a federate name that is the same as the
  * name given to the current test federate
  */
-RTI::FederateHandle TestNG6Federate::quickJoin()
+RTI::FederateHandle Test13Federate::quickJoin()
 {
 	// just call into quickJoin( char* )
-	return this->quickJoin( TestNG6Federate::SIMPLE_NAME );
+	return this->quickJoin( Test13Federate::SIMPLE_NAME );
 }
 
 /*
  * The same as quickJoin() except that you can specify the federation name. 
  */
-RTI::FederateHandle TestNG6Federate::quickJoin( char *federationName )
+RTI::FederateHandle Test13Federate::quickJoin( char *federationName )
 {
 	// create the FederateAmbassador implementation, removing the current one if it exists
 	if( this->fedamb != NULL )
@@ -122,7 +122,7 @@ RTI::FederateHandle TestNG6Federate::quickJoin( char *federationName )
  * This method will resign from the federation to which this federate is currently joined using
  * the resign action DELETE_OBJECTS_AND_RELEASE_ATTRIBUTES.
  */
-void TestNG6Federate::quickResign()
+void Test13Federate::quickResign()
 {
 	this->quickResign( RTI::DELETE_OBJECTS_AND_RELEASE_ATTRIBUTES );
 }
@@ -131,7 +131,7 @@ void TestNG6Federate::quickResign()
  * This method will resign from the federation to which the federate is currently joined using
  * the given resign action.
  */
-void TestNG6Federate::quickResign( RTI::ResignAction action )
+void Test13Federate::quickResign( RTI::ResignAction action )
 {
 	try
 	{
@@ -153,15 +153,15 @@ void TestNG6Federate::quickResign( RTI::ResignAction action )
 /*
  * This method will attempt to destroy and federation with the name TestNG6Federate::SIMPLE_NAME
  */
-void TestNG6Federate::quickDestroy()
+void Test13Federate::quickDestroy()
 {
-	this->quickDestroy( TestNG6Federate::SIMPLE_NAME );
+	this->quickDestroy( Test13Federate::SIMPLE_NAME );
 }
 
 /*
  * This method will attempt to destroy the federation of the given name.
  */
-void TestNG6Federate::quickDestroy( char *federationName )
+void Test13Federate::quickDestroy( char *federationName )
 {
 	try
 	{
@@ -178,11 +178,11 @@ void TestNG6Federate::quickDestroy( char *federationName )
  * for tearDown() methods where you want to clean things up that may already have been cleaned
  * up.
  */
-void TestNG6Federate::quickDestroyNoFail()
+void Test13Federate::quickDestroyNoFail()
 {
 	try
 	{
-		rtiamb->destroyFederationExecution( TestNG6Federate::SIMPLE_NAME );
+		rtiamb->destroyFederationExecution( Test13Federate::SIMPLE_NAME );
 	}
 	catch( RTI::Exception &e )
 	{
@@ -197,7 +197,7 @@ void TestNG6Federate::quickDestroyNoFail()
  * Attempt to register a federation wide synchronization point with the given label and tag. If
  * the tag is NULL, "NA" will be passed
  */
-void TestNG6Federate::quickAnnounce( char *label, char *tag )
+void Test13Federate::quickAnnounce( char *label, char *tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -218,7 +218,7 @@ void TestNG6Federate::quickAnnounce( char *label, char *tag )
  * handles will be used to identify which federates should be privy to the point. If the given
  * tag is NULL, "NA" will be passed.
  */
-void TestNG6Federate::quickAnnounce( char *label, int federateCount, ... /* federate handles */ )
+void Test13Federate::quickAnnounce( char *label, int federateCount, ... /* federate handles */ )
 {
 	// convert the handle set
 	RTI::FederateHandleSet *handleSet = this->createFHS( federateCount );
@@ -246,7 +246,7 @@ void TestNG6Federate::quickAnnounce( char *label, int federateCount, ... /* fede
  * Attempt to sign to the RTI that this federate has achieved the synchronization point with
  * the given label
  */
-void TestNG6Federate::quickAchieved( char *label )
+void Test13Federate::quickAchieved( char *label )
 {
 	try
 	{
@@ -267,7 +267,7 @@ void TestNG6Federate::quickAchieved( char *label )
  * parameter contains the number of parameters that are being published, while the varargs should
  * contains the names of each of the parmeters that are being published.
  */
-void TestNG6Federate::quickPublish( int objectClass, int attributeCount, ... )
+void Test13Federate::quickPublish( int objectClass, int attributeCount, ... )
 {
 	// get a handle set with the attribute values
 	RTI::AttributeHandleSet *ahs = this->createAHS( attributeCount );
@@ -297,7 +297,7 @@ void TestNG6Federate::quickPublish( int objectClass, int attributeCount, ... )
  * parameter is the number of attributes that should be published. This method will resolve the
  * handles on behalf of the user from the given names.
  */
-void TestNG6Federate::quickPublish( char *objectClass, int attributeCount, ... )
+void Test13Federate::quickPublish( char *objectClass, int attributeCount, ... )
 {
 	// resolve the handle for the class
 	RTI::ObjectClassHandle classHandle = quickOCHandle( objectClass );
@@ -328,7 +328,7 @@ void TestNG6Federate::quickPublish( char *objectClass, int attributeCount, ... )
  * Attempts to unpublish all attributes of the class with the given name. If there is an error,
  * the current test is failed.
  */
-void TestNG6Federate::quickUnpublishOC( char *objectClass )
+void Test13Federate::quickUnpublishOC( char *objectClass )
 {
 	// resolve the handle for the class
 	RTI::ObjectClassHandle classHandle = quickOCHandle( objectClass );
@@ -348,7 +348,7 @@ void TestNG6Federate::quickUnpublishOC( char *objectClass )
  * the number of attributes that are being subscribed to, while the varargs should contain the
  * names of all the attributes to subscribe to.
  */
-void TestNG6Federate::quickSubscribe( int objectClass, int attributeCount, ... )
+void Test13Federate::quickSubscribe( int objectClass, int attributeCount, ... )
 {
 	// get a handle set with the attribute values
 	RTI::AttributeHandleSet *ahs = this->createAHS( attributeCount );
@@ -378,7 +378,7 @@ void TestNG6Federate::quickSubscribe( int objectClass, int attributeCount, ... )
  * parameter is the number of attributes that should be published. This method will resolve the
  * handles on behalf of the user from the given names.
  */
-void TestNG6Federate::quickSubscribe( char *objectClass, int attributeCount, ... )
+void Test13Federate::quickSubscribe( char *objectClass, int attributeCount, ... )
 {
 	// resolve the handle for the class
 	RTI::ObjectClassHandle classHandle = quickOCHandle( objectClass );
@@ -409,7 +409,7 @@ void TestNG6Federate::quickSubscribe( char *objectClass, int attributeCount, ...
 /*
  * Attempts to publish the interaction class identified by the given handle.
  */
-void TestNG6Federate::quickPublish( int interactionClass )
+void Test13Federate::quickPublish( int interactionClass )
 {
 	// attempt the publication
 	try
@@ -426,7 +426,7 @@ void TestNG6Federate::quickPublish( int interactionClass )
  * Attempts to publish the interaction class identified by the given class name. This method
  * will resolve the handle on behalf of the caller.
  */
-void TestNG6Federate::quickPublish( char *interactionClass )
+void Test13Federate::quickPublish( char *interactionClass )
 {
 	// resolve the handle for the class
 	RTI::InteractionClassHandle classHandle = this->quickICHandle( interactionClass );
@@ -445,7 +445,7 @@ void TestNG6Federate::quickPublish( char *interactionClass )
 /*
  * Attempts to subscribe to the interaction class identified by the given handle.
  */
-void TestNG6Federate::quickSubscribe( int interactionClass )
+void Test13Federate::quickSubscribe( int interactionClass )
 {
 	// attempt the subscription
 	try
@@ -462,7 +462,7 @@ void TestNG6Federate::quickSubscribe( int interactionClass )
  * Attempts to subscribe to the interaction class identified by the given class name. This method
  * will resolve the handle on behalf of the caller.
  */
-void TestNG6Federate::quickSubscribe( char *interactionClass )
+void Test13Federate::quickSubscribe( char *interactionClass )
 {
 	// resolve the handle
 	RTI::InteractionClassHandle classHandle = this->quickICHandle( interactionClass );
@@ -485,7 +485,7 @@ void TestNG6Federate::quickSubscribe( char *interactionClass )
  * This method will attempt to register an object instance of the given class handle. If
  * successful, it will return the handle of the object that has been registered.
  */
-RTI::ObjectHandle TestNG6Federate::quickRegister( int classHandle )
+RTI::ObjectHandle Test13Federate::quickRegister( int classHandle )
 {
 	try
 	{
@@ -501,7 +501,7 @@ RTI::ObjectHandle TestNG6Federate::quickRegister( int classHandle )
 /*
  * The same as quickRegister(int), except that you can provide the name to use for the object
  */
-RTI::ObjectHandle TestNG6Federate::quickRegister( int classHandle, char *objectName )
+RTI::ObjectHandle Test13Federate::quickRegister( int classHandle, char *objectName )
 {
 	try
 	{
@@ -519,7 +519,7 @@ RTI::ObjectHandle TestNG6Federate::quickRegister( int classHandle, char *objectN
  * it will return the handle of the object that has been registered. The method will resolve
  * the handle for the object class on behalf of the user.
  */
-RTI::ObjectHandle TestNG6Federate::quickRegister( char* className )
+RTI::ObjectHandle Test13Federate::quickRegister( char* className )
 {
 	// resolve the handle before the request
 	RTI::ObjectClassHandle classHandle = this->quickOCHandle( className );
@@ -538,7 +538,7 @@ RTI::ObjectHandle TestNG6Federate::quickRegister( char* className )
 /*
  * The same as quickRegister(char*) except that you can provide the object name
  */
-RTI::ObjectHandle TestNG6Federate::quickRegister( char* className, char *objectName )
+RTI::ObjectHandle Test13Federate::quickRegister( char* className, char *objectName )
 {
 	// resolve the handle before the request
 	RTI::ObjectClassHandle classHandle = this->quickOCHandle( className );
@@ -558,7 +558,7 @@ RTI::ObjectHandle TestNG6Federate::quickRegister( char* className, char *objectN
  * This method will attempt to register an object instance of the given class handle, HOWEVER,
  * it EXPECTS THIS REQUEST TO FAIL with an exeption. If it does not, the test will be killed.
  */
-void TestNG6Federate::quickRegisterFail( int classHandle )
+void Test13Federate::quickRegisterFail( int classHandle )
 {
 	try
 	{
@@ -576,7 +576,7 @@ void TestNG6Federate::quickRegisterFail( int classHandle )
  * This method will attempt to delete the object instance identified by the given handle and
  * will pass the given tag. If the tag is NULL, it will be replaced with "NA".
  */
-void TestNG6Federate::quickDelete( int objectHandle, char *tag )
+void Test13Federate::quickDelete( int objectHandle, char *tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -600,7 +600,7 @@ void TestNG6Federate::quickDelete( int objectHandle, char *tag )
  * Attempt to update the object of the given handle with the provided values and tag. If the
  * tag is NULL, it will be replaced with "NA".
  */
-void TestNG6Federate::quickReflect( int objectHandle,
+void Test13Federate::quickReflect( int objectHandle,
                                     RTI::AttributeHandleValuePairSet *ahvps,
                                     char *tag )
 {
@@ -624,7 +624,7 @@ void TestNG6Federate::quickReflect( int objectHandle,
  * attributes will be a string that is equal to their name. The attributeCount parameter should
  * provide the number of attributes that are being updated.
  */
-void TestNG6Federate::quickReflect( int objectHandle, int attributeCount, ... )
+void Test13Federate::quickReflect( int objectHandle, int attributeCount, ... )
 {
 	//////////////////////
 	// create the AHVPS //
@@ -668,7 +668,7 @@ void TestNG6Federate::quickReflect( int objectHandle, int attributeCount, ... )
  * tag is NULL, it will be replaced with "NA". This method EXPECTS THE UPDATE REQUEST TO FAIL,
  * and if it doesn't, the current test will be killed.
  */
-void TestNG6Federate::quickReflectFail( int objectHandle,
+void Test13Federate::quickReflectFail( int objectHandle,
                                        RTI::AttributeHandleValuePairSet *ahvps,
                                        char *tag )
 {
@@ -692,7 +692,7 @@ void TestNG6Federate::quickReflectFail( int objectHandle,
  * Attempt to send an interaction of the class that has its handle provided with the given
  * set of parameter values. If the tag is NULL, it will be replaced with "NA".
  */
-void TestNG6Federate::quickSend( int clazz, RTI::ParameterHandleValuePairSet *phvps, char *tag )
+void Test13Federate::quickSend( int clazz, RTI::ParameterHandleValuePairSet *phvps, char *tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -714,7 +714,7 @@ void TestNG6Federate::quickSend( int clazz, RTI::ParameterHandleValuePairSet *ph
  * which holds the name of that parameter. The number of paramters that is being sent needs to be
  * provided in the parameterCount argument. The tag will automatically be set to "NA".
  */
-void TestNG6Federate::quickSend( int classHandle, int parameterCount, ... )
+void Test13Federate::quickSend( int classHandle, int parameterCount, ... )
 {
 	//////////////////////
 	// create the PHVPS //
@@ -759,7 +759,7 @@ void TestNG6Federate::quickSend( int classHandle, int parameterCount, ... )
  * provided in the parameterCount argument. The tag will automatically be set to "NA". Sends the
  * interaction with the provided time
  */
-void TestNG6Federate::quickSend( int classHandle, double time, int parameterCount, ...  )
+void Test13Federate::quickSend( int classHandle, double time, int parameterCount, ...  )
 {
 	//////////////////////
 	// create the PHVPS //
@@ -804,7 +804,7 @@ void TestNG6Federate::quickSend( int classHandle, double time, int parameterCoun
  * tag is NULL, it will be replaced with "NA". This method EXPECTS THE SEND REQUEST TO FAIL,
  * and if it doesn't, the current test will be killed.
  */
-void TestNG6Federate::quickSendFail( int classHandle,
+void Test13Federate::quickSendFail( int classHandle,
                                      RTI::ParameterHandleValuePairSet *phvps,
                                      char *tag )
 {
@@ -831,7 +831,7 @@ void TestNG6Federate::quickSendFail( int classHandle,
  * Find and return the space handle for the space of the given name. Kill the test if there is
  * an exception.
  */
-RTI::SpaceHandle TestNG6Federate::quickSpaceHandle( char* spaceName )
+RTI::SpaceHandle Test13Federate::quickSpaceHandle( char* spaceName )
 {
 	try
 	{
@@ -848,7 +848,7 @@ RTI::SpaceHandle TestNG6Federate::quickSpaceHandle( char* spaceName )
  * Find and return the dimension handle for the dimension of the given name in the space of the
  * given name. Kill the test if there is an exception.
  */
-RTI::DimensionHandle TestNG6Federate::quickDimensionHandle( char* spaceName, char* dimensionName )
+RTI::DimensionHandle Test13Federate::quickDimensionHandle( char* spaceName, char* dimensionName )
 {
 	RTI::SpaceHandle spaceHandle = quickSpaceHandle( spaceName );
 	try
@@ -866,7 +866,7 @@ RTI::DimensionHandle TestNG6Federate::quickDimensionHandle( char* spaceName, cha
  * Create and return a region using the given space handle and number of extents. Kill the test
  * if there is an exception.
  */
-RTI::Region* TestNG6Federate::quickCreateRegion( RTI::SpaceHandle space, RTI::ULong extents )
+RTI::Region* Test13Federate::quickCreateRegion( RTI::SpaceHandle space, RTI::ULong extents )
 {
 	try
 	{
@@ -885,7 +885,7 @@ RTI::Region* TestNG6Federate::quickCreateRegion( RTI::SpaceHandle space, RTI::UL
  * extent, with its lower and upper bounds being set to the provided values. Kill the test if
  * there is an exception. 
  */
-RTI::Region* TestNG6Federate::quickCreateTestRegion( RTI::ULong lowerBound, RTI::ULong upperBound )
+RTI::Region* Test13Federate::quickCreateTestRegion( RTI::ULong lowerBound, RTI::ULong upperBound )
 {
 	try
 	{
@@ -912,7 +912,7 @@ RTI::Region* TestNG6Federate::quickCreateTestRegion( RTI::ULong lowerBound, RTI:
  * instance of the "OtherSpace" space. This will have a single extent with the given upper and
  * lower bound values for the "OtherDimension" dimension.
  */
-RTI::Region* TestNG6Federate::quickCreateOtherRegion( RTI::ULong lowerBound, RTI::ULong upperBound )
+RTI::Region* Test13Federate::quickCreateOtherRegion( RTI::ULong lowerBound, RTI::ULong upperBound )
 {
 	try
 	{
@@ -938,7 +938,7 @@ RTI::Region* TestNG6Federate::quickCreateOtherRegion( RTI::ULong lowerBound, RTI
  * Notify the RTI that the region has changed and should be updated. If there is an exception,
  * kill the test.
  */
-void TestNG6Federate::quickModifyRegion( RTI::Region* theRegion )
+void Test13Federate::quickModifyRegion( RTI::Region* theRegion )
 {
 	try
 	{
@@ -953,7 +953,7 @@ void TestNG6Federate::quickModifyRegion( RTI::Region* theRegion )
 /*
  * Fetch the RegionToken for the given Region. If there is an exception, kill the test.
  */
-RTI::RegionToken TestNG6Federate::quickGetRegionToken( RTI::Region* theRegion )
+RTI::RegionToken Test13Federate::quickGetRegionToken( RTI::Region* theRegion )
 {
 	try
 	{
@@ -970,7 +970,7 @@ RTI::RegionToken TestNG6Federate::quickGetRegionToken( RTI::Region* theRegion )
  * Get the region that is identified by the given region token and return it. If there is an
  * exception, kill the test.
  */
-RTI::Region* TestNG6Federate::quickGetRegion( RTI::RegionToken regionToken )
+RTI::Region* Test13Federate::quickGetRegion( RTI::RegionToken regionToken )
 {
 	try
 	{
@@ -988,7 +988,7 @@ RTI::Region* TestNG6Federate::quickGetRegion( RTI::RegionToken regionToken )
  * region. If there is an exception during this process, kill the test, otherwise, return the
  * handle of the newly created instance.
  */
-RTI::ObjectHandle TestNG6Federate::quickRegisterWithRegion( char* objectClass,
+RTI::ObjectHandle Test13Federate::quickRegisterWithRegion( char* objectClass,
                                                             RTI::Region* theRegion,
                                                             int attributeCount,
                                                             ... /* attribute names */ )
@@ -1035,7 +1035,7 @@ RTI::ObjectHandle TestNG6Federate::quickRegisterWithRegion( char* objectClass,
  * for the given object instance. If there is an exception trying to do this, the current test
  * will be killed.
  */
-void TestNG6Federate::quickAssociateWithRegion( RTI::ObjectHandle theObject,
+void Test13Federate::quickAssociateWithRegion( RTI::ObjectHandle theObject,
                                                 RTI::Region* theRegion,
                                                 int attributeCount,
                                                 ... /* attribute names */ )
@@ -1071,7 +1071,7 @@ void TestNG6Federate::quickAssociateWithRegion( RTI::ObjectHandle theObject,
  * Unassociate any attributes of the identified object instance that are associated with the
  * given region. If there is an exception trying to do this, the current test will be killed.
  */
-void TestNG6Federate::quickUnassociateWithRegion( RTI::ObjectHandle theObject, RTI::Region* theRegion )
+void Test13Federate::quickUnassociateWithRegion( RTI::ObjectHandle theObject, RTI::Region* theRegion )
 
 {
 	try
@@ -1089,7 +1089,7 @@ void TestNG6Federate::quickUnassociateWithRegion( RTI::ObjectHandle theObject, R
  * Subscribe to the identified object class for each of the given attribute (handles) using the
  * given region. If there is an exception while trying to do this, the current test will be killed.
  */
-void TestNG6Federate::quickSubscribeWithRegion( RTI::ObjectClassHandle classHandle,
+void Test13Federate::quickSubscribeWithRegion( RTI::ObjectClassHandle classHandle,
                                                 RTI::Region* region,
                                                 int attributeCount,
                                                 ... /* attribute handles */ )
@@ -1120,7 +1120,7 @@ void TestNG6Federate::quickSubscribeWithRegion( RTI::ObjectClassHandle classHand
  * Subscribe to the identified object class for each of the given attribute (names) using the
  * given region. If there is an exception while trying to do this, the current test will be killed.
  */
-void TestNG6Federate::quickSubscribeWithRegion( char* className,
+void Test13Federate::quickSubscribeWithRegion( char* className,
                                                 RTI::Region* region,
                                                 int attributeCount, 
                                                 ... /* attribute names */ )
@@ -1152,7 +1152,7 @@ void TestNG6Federate::quickSubscribeWithRegion( char* className,
  * Unsubscribe from the given object class with the given region. If there is an exception during
  * this process, kill the current test.
  */
-void TestNG6Federate::quickUnsubscribeOCWithRegion( RTI::ObjectClassHandle classHandle,
+void Test13Federate::quickUnsubscribeOCWithRegion( RTI::ObjectClassHandle classHandle,
                                                     RTI::Region *region )
 {
 	try
@@ -1169,7 +1169,7 @@ void TestNG6Federate::quickUnsubscribeOCWithRegion( RTI::ObjectClassHandle class
  * Unsubscribe from the given object class with the given region. If there is an exception during
  * this process, kill the current test.
  */
-void TestNG6Federate::quickUnsubscribeOCWithRegion( char* className, RTI::Region* region )
+void Test13Federate::quickUnsubscribeOCWithRegion( char* className, RTI::Region* region )
 {
 	try
 	{
@@ -1185,7 +1185,7 @@ void TestNG6Federate::quickUnsubscribeOCWithRegion( char* className, RTI::Region
  * Subscribe to the given interaction class using the given region. If there is an exception
  * during this process, kill the current test.
  */
-void TestNG6Federate::quickSubscribeWithRegion( RTI::InteractionClassHandle classHandle, RTI::Region* region )
+void Test13Federate::quickSubscribeWithRegion( RTI::InteractionClassHandle classHandle, RTI::Region* region )
 {
 	try
 	{
@@ -1197,7 +1197,7 @@ void TestNG6Federate::quickSubscribeWithRegion( RTI::InteractionClassHandle clas
 	}
 }
 
-void TestNG6Federate::quickSubscribeWithRegion( char* className, RTI::Region* region )
+void Test13Federate::quickSubscribeWithRegion( char* className, RTI::Region* region )
 {
 	try
 	{
@@ -1213,7 +1213,7 @@ void TestNG6Federate::quickSubscribeWithRegion( char* className, RTI::Region* re
  * Unsubscribe from the given interaction class with the given region. If there is an exception
  * during this process, kill the current test.
  */
-void TestNG6Federate::quickUnsubscribeICWithRegion( RTI::InteractionClassHandle classHandle,
+void Test13Federate::quickUnsubscribeICWithRegion( RTI::InteractionClassHandle classHandle,
                                                     RTI::Region *region )
 {
 	try
@@ -1230,7 +1230,7 @@ void TestNG6Federate::quickUnsubscribeICWithRegion( RTI::InteractionClassHandle 
  * Unsubscribe from the given interaction class with the given region. If there is an exception
  * during this process, kill the current test.
  */
-void TestNG6Federate::quickUnsubscribeICWithRegion( char* className, RTI::Region *region )
+void Test13Federate::quickUnsubscribeICWithRegion( char* className, RTI::Region *region )
 {
 	try
 	{
@@ -1246,7 +1246,7 @@ void TestNG6Federate::quickUnsubscribeICWithRegion( char* className, RTI::Region
  * Much the same as quickSend(int,int,...) except that you can include region data. As usual,
  * if there are any problems, the current test will be killed.
  */
-void TestNG6Federate::quickSendWithRegion( char *interactionClass,
+void Test13Federate::quickSendWithRegion( char *interactionClass,
                                            RTI::Region *region,
                                            int parameterCount,
                                            ... /* parameter names */ )
@@ -1294,7 +1294,7 @@ void TestNG6Federate::quickSendWithRegion( char *interactionClass,
 /*
  * Convert the given Portico FedTime instance into the double value that it represents
  */
-double TestNG6Federate::getTime( RTI::FedTime *time )
+double Test13Federate::getTime( RTI::FedTime *time )
 {
 	return ((RTIfedTime*)time)->getTime();
 }
@@ -1302,7 +1302,7 @@ double TestNG6Federate::getTime( RTI::FedTime *time )
 /*
  * Request that time constrained be enabled and block until it is.
  */
-void TestNG6Federate::quickEnableConstrained()
+void Test13Federate::quickEnableConstrained()
 {
 	try
 	{
@@ -1319,7 +1319,7 @@ void TestNG6Federate::quickEnableConstrained()
  * Request that time constrained be enabled, but don't wait for it to become constrained before
  * returning.
  */
-void TestNG6Federate::quickEnabledConstrainedRequest()
+void Test13Federate::quickEnabledConstrainedRequest()
 {
 	try
 	{
@@ -1334,7 +1334,7 @@ void TestNG6Federate::quickEnabledConstrainedRequest()
 /*
  * Disable time constrained.
  */
-void TestNG6Federate::quickDisableConstrained()
+void Test13Federate::quickDisableConstrained()
 {
 	try
 	{
@@ -1350,7 +1350,7 @@ void TestNG6Federate::quickDisableConstrained()
 /*
  * Enables async delivery
  */
-void TestNG6Federate::quickEnableAsync()
+void Test13Federate::quickEnableAsync()
 {
 	try
 	{
@@ -1365,7 +1365,7 @@ void TestNG6Federate::quickEnableAsync()
 /*
  * Disables async delivery
  */
-void TestNG6Federate::quickDisableAsync()
+void Test13Federate::quickDisableAsync()
 {
 	try
 	{
@@ -1381,7 +1381,7 @@ void TestNG6Federate::quickDisableAsync()
  * Request that time regulation be enabled using the given lookahead. Block until the federate
  * becomes regulating.
  */
-void TestNG6Federate::quickEnableRegulating( double lookahead )
+void Test13Federate::quickEnableRegulating( double lookahead )
 {
 	RTIfedTime currentTime = fedamb->logicalTime;
 	RTIfedTime lookaheadTime = lookahead;
@@ -1401,7 +1401,7 @@ void TestNG6Federate::quickEnableRegulating( double lookahead )
  * Request that time regulation be enabled using the given lookahead. Don't wait for the federate
  * to actually become regulating, just return right away.
  */
-void TestNG6Federate::quickEnableRegulatingRequest( double lookahead )
+void Test13Federate::quickEnableRegulatingRequest( double lookahead )
 {
 	RTIfedTime currentTime = fedamb->logicalTime;
 	RTIfedTime lookaheadTime = lookahead;
@@ -1419,7 +1419,7 @@ void TestNG6Federate::quickEnableRegulatingRequest( double lookahead )
 /*
  * Disable time regulation.
  */
-void TestNG6Federate::quickDisableRegulating()
+void Test13Federate::quickDisableRegulating()
 {
 	try
 	{
@@ -1435,7 +1435,7 @@ void TestNG6Federate::quickDisableRegulating()
 /*
  * Query the RTI for the current lookahead and return it.
  */
-double TestNG6Federate::quickQueryLookahead()
+double Test13Federate::quickQueryLookahead()
 {
 	RTI::FedTime *current = NULL;
 	
@@ -1456,7 +1456,7 @@ double TestNG6Federate::quickQueryLookahead()
 /*
  * Attempt to modify the lookahead of the federate, setting it to the given value.
  */
-void TestNG6Federate::quickModifyLookahead( double newLookahead )
+void Test13Federate::quickModifyLookahead( double newLookahead )
 {
 	RTIfedTime lookaheadTime = newLookahead;
 
@@ -1473,7 +1473,7 @@ void TestNG6Federate::quickModifyLookahead( double newLookahead )
 /*
  * Issue a time advance request to the given time, returning once the request has been made.
  */
-void TestNG6Federate::quickAdvanceRequest( double newTime )
+void Test13Federate::quickAdvanceRequest( double newTime )
 {
 	RTIfedTime requestTime = newTime;
 
@@ -1491,7 +1491,7 @@ void TestNG6Federate::quickAdvanceRequest( double newTime )
  * Issue a time advance request to the given time and then wait until the request has been granted
  * before retuning.
  */
-void TestNG6Federate::quickAdvanceAndWait( double newTime )
+void Test13Federate::quickAdvanceAndWait( double newTime )
 {
 	RTIfedTime requestTime = newTime;
 
@@ -1510,7 +1510,7 @@ void TestNG6Federate::quickAdvanceAndWait( double newTime )
 /*
  * Issue a timeAdvanceRequestAvailable() and then return.
  */
-void TestNG6Federate::quickAdvanceRequestAvailable( double newTime )
+void Test13Federate::quickAdvanceRequestAvailable( double newTime )
 {
 	RTIfedTime requestTime = newTime;
 
@@ -1527,7 +1527,7 @@ void TestNG6Federate::quickAdvanceRequestAvailable( double newTime )
 /*
  * Issue a nextEventRequest() and then return.
  */
-void TestNG6Federate::quickNextEventRequest( double newTime )
+void Test13Federate::quickNextEventRequest( double newTime )
 {
 	RTIfedTime requestTime = newTime;
 
@@ -1544,7 +1544,7 @@ void TestNG6Federate::quickNextEventRequest( double newTime )
 /*
  * Issue a flushQueueRequest() and then return.
  */
-void TestNG6Federate::quickFlushQueueRequest( double maxTime )
+void Test13Federate::quickFlushQueueRequest( double maxTime )
 {
 	RTIfedTime time = maxTime;
 	try
@@ -1564,7 +1564,7 @@ void TestNG6Federate::quickFlushQueueRequest( double maxTime )
  * Issue a request to acquire the specified attributes of the specified object if they are
  * currently available (unowned).
  */
-void TestNG6Federate::quickAcquireIfAvailableRequest( RTI::ObjectHandle theObject,
+void Test13Federate::quickAcquireIfAvailableRequest( RTI::ObjectHandle theObject,
                                                       int attributeCount,
                                                       ... )
 {
@@ -1596,7 +1596,7 @@ void TestNG6Federate::quickAcquireIfAvailableRequest( RTI::ObjectHandle theObjec
 /**
  * Issue a request to acquire the specified attributes of the specified object.
  */
-void TestNG6Federate::quickAcquireRequest( RTI::ObjectHandle theObject, int attributeCount, ... )
+void Test13Federate::quickAcquireRequest( RTI::ObjectHandle theObject, int attributeCount, ... )
 {
 	va_list args;
 	va_start( args, attributeCount );
@@ -1627,7 +1627,7 @@ void TestNG6Federate::quickAcquireRequest( RTI::ObjectHandle theObject, int attr
  * Issue a request to unconditionally release the specified attributes of the given object. If
  * there is a problem doing the request, the current test is failed.
  */
-void TestNG6Federate::quickUnconditionalRelease( RTI::ObjectHandle theObject,
+void Test13Federate::quickUnconditionalRelease( RTI::ObjectHandle theObject,
                                                  int attributeCount,
                                                  ... )
 {
@@ -1660,7 +1660,7 @@ void TestNG6Federate::quickUnconditionalRelease( RTI::ObjectHandle theObject,
  * Issue a request to do a negotiated release the specified attributes of the given object. If
  * there is a problem doing the request, the current test is failed.
  */
-void TestNG6Federate::quickNegotiatedRelease( RTI::ObjectHandle theObject,
+void Test13Federate::quickNegotiatedRelease( RTI::ObjectHandle theObject,
                                               int attributeCount,
                                               ... )
 {
@@ -1696,7 +1696,7 @@ void TestNG6Federate::quickNegotiatedRelease( RTI::ObjectHandle theObject,
  * 
  * If there is a problem with the call (such as an exception) the current test will be failed.
  */
-int TestNG6Federate::quickQueryOwnership( RTI::ObjectHandle theObject,
+int Test13Federate::quickQueryOwnership( RTI::ObjectHandle theObject,
                                           RTI::AttributeHandle theAttribute )
 {
 	// issue the request
@@ -1717,7 +1717,7 @@ int TestNG6Federate::quickQueryOwnership( RTI::ObjectHandle theObject,
  * Issues a release response to the RTIamb. If there is an exception during this call, the current
  * test is failed, otherwise, the method will return happily.
  */
-void TestNG6Federate::quickReleaseResponse( RTI::ObjectHandle theObject, int attributeCount, ... )
+void Test13Federate::quickReleaseResponse( RTI::ObjectHandle theObject, int attributeCount, ... )
 {
 	va_list args;
 	va_start( args, attributeCount );
@@ -1750,7 +1750,7 @@ void TestNG6Federate::quickReleaseResponse( RTI::ObjectHandle theObject, int att
  * use TestNG6Federate::OWNER_UNOWNED and TestNG6Federate::OWNER_RTI as the federate handle if it
  * is appropriate for what you are trying to test.
  */
-void TestNG6Federate::quickAssertOwnedBy( int federateHandle,
+void Test13Federate::quickAssertOwnedBy( int federateHandle,
                                           RTI::ObjectHandle theObject,
                                           int attributeCount,
                                           ... )
@@ -1789,7 +1789,7 @@ void TestNG6Federate::quickAssertOwnedBy( int federateHandle,
  * the request or the initiation isn't received in a timely fashion, the current test
  * will be failed.
  */
-void TestNG6Federate::quickSaveInProgress( char *saveLabel )
+void Test13Federate::quickSaveInProgress( char *saveLabel )
 {
 	// initiate a save from this federate using the given label
 	this->quickSaveRequest( saveLabel );
@@ -1801,7 +1801,7 @@ void TestNG6Federate::quickSaveInProgress( char *saveLabel )
 /*
  * Request a federation save with the given label, fail the test if there is an exception
  */
-void TestNG6Federate::quickSaveRequest( char *saveLabel )
+void Test13Federate::quickSaveRequest( char *saveLabel )
 {
 	try
 	{
@@ -1817,7 +1817,7 @@ void TestNG6Federate::quickSaveRequest( char *saveLabel )
  * Tells the RTI that the federate has begun saving. If an exception is thrown, the current test
  * will be failed.
  */
-void TestNG6Federate::quickSaveBegun()
+void Test13Federate::quickSaveBegun()
 {
 	try
 	{
@@ -1833,7 +1833,7 @@ void TestNG6Federate::quickSaveBegun()
  * Tells the RTI that the federate has successfully completed saving. If an exception is thrown,
  * the current test will be failed.
  */
-void TestNG6Federate::quickSaveComplete()
+void Test13Federate::quickSaveComplete()
 {
 	try
 	{
@@ -1849,7 +1849,7 @@ void TestNG6Federate::quickSaveComplete()
  * Tells the RTI that the federate has unsuccessfully completed saving. If an exception is thrown,
  * the current test will be failed.
  */
-void TestNG6Federate::quickSaveNotComplete()
+void Test13Federate::quickSaveNotComplete()
 {
 	try
 	{
@@ -1871,19 +1871,19 @@ void TestNG6Federate::quickSaveNotComplete()
  * given label. If there is a problem in any of the steps (initiating the save, starting it
  * or successfully completing in any of the federates), the current test will be failed.
  */
-void TestNG6Federate::quickSaveToCompletion( char *saveLabel, int federateCount, ... )
+void Test13Federate::quickSaveToCompletion( char *saveLabel, int federateCount, ... )
 {
 	// initiate a save from this federate using the given label
 	quickSaveRequest( saveLabel );
 	
 	// get the set of federates in the federation
-	std::vector<TestNG6Federate*> federates;
+	std::vector<Test13Federate*> federates;
 	va_list args;
 	va_start( args, federateCount );
 	int i = 0;
 	for( i = 0; i < federateCount; i++ )
 	{
-		federates.push_back( va_arg(args,TestNG6Federate*) );
+		federates.push_back( va_arg(args,Test13Federate*) );
 	}
 	va_end( args );
 
@@ -1910,7 +1910,7 @@ void TestNG6Federate::quickSaveToCompletion( char *saveLabel, int federateCount,
  * Requests a federation restore from the RTIambassador and then returns. If there is an
  * exception performing this call, the current test is failed.
  */
-void TestNG6Federate::quickRestoreRequest( char *label )
+void Test13Federate::quickRestoreRequest( char *label )
 {
 	try
 	{
@@ -1927,7 +1927,7 @@ void TestNG6Federate::quickRestoreRequest( char *label )
  * then ticks until either a success of failure notification from the RTI is received. If the
  * initiation is not a success, or there is an exception initiating it, the current test is failed.
  */
-void TestNG6Federate::quickRestoreRequestSuccess( char *label )
+void Test13Federate::quickRestoreRequestSuccess( char *label )
 {
 	quickRestoreRequest( label );
 	fedamb->waitForRestoreRequestSuccess( label );
@@ -1937,7 +1937,7 @@ void TestNG6Federate::quickRestoreRequestSuccess( char *label )
  * Tell the RTI that the federate has completed its restore. If there is a problem, the current
  * test will be killed.
  */
-void TestNG6Federate::quickRestoreComplete()
+void Test13Federate::quickRestoreComplete()
 {
 	try
 	{
@@ -1953,7 +1953,7 @@ void TestNG6Federate::quickRestoreComplete()
  * Tell the RTI that the federate has completed its restore *unsuccessfully*. If there is a
  * problem, the current test will be killed.
  */
-void TestNG6Federate::quickRestoreNotComplete()
+void Test13Federate::quickRestoreNotComplete()
 {
 	try
 	{
@@ -1971,7 +1971,7 @@ void TestNG6Federate::quickRestoreNotComplete()
  * for the save and the restore. The set of all the federates is received from the test
  * class that this federate is associated with. 
  */
-void TestNG6Federate::quickRestoreInProgress( char *saveLabel, int federateCount, ... )
+void Test13Federate::quickRestoreInProgress( char *saveLabel, int federateCount, ... )
 {
 	///////////////////////////////////////////////////
 	////////////////// complete save //////////////////
@@ -1983,13 +1983,13 @@ void TestNG6Federate::quickRestoreInProgress( char *saveLabel, int federateCount
 	quickSaveRequest( saveLabel );
 	
 	// get the set of federates in the federation
-	std::vector<TestNG6Federate*> federates;
+	std::vector<Test13Federate*> federates;
 	va_list args;
 	va_start( args, federateCount );
 	int i = 0;
 	for( i = 0; i < federateCount; i++ )
 	{
-		federates.push_back( va_arg(args,TestNG6Federate*) );
+		federates.push_back( va_arg(args,Test13Federate*) );
 	}
 	va_end( args );
 	
@@ -2031,7 +2031,7 @@ void TestNG6Federate::quickRestoreInProgress( char *saveLabel, int federateCount
 /*
  * Fetch the handle for the given object class
  */
-RTI::ObjectClassHandle TestNG6Federate::quickOCHandle( char *objectClass )
+RTI::ObjectClassHandle Test13Federate::quickOCHandle( char *objectClass )
 {
 	try
 	{
@@ -2047,7 +2047,7 @@ RTI::ObjectClassHandle TestNG6Federate::quickOCHandle( char *objectClass )
 /*
  * Fetch the handle for the given attribute contained in the given object class
  */
-RTI::AttributeHandle TestNG6Federate::quickACHandle( char *objectClass, char *attributeName )
+RTI::AttributeHandle Test13Federate::quickACHandle( char *objectClass, char *attributeName )
 {
 	try
 	{
@@ -2063,7 +2063,7 @@ RTI::AttributeHandle TestNG6Federate::quickACHandle( char *objectClass, char *at
 /*
  * Fetch the handle for the identified interaction class
  */
-RTI::InteractionClassHandle TestNG6Federate::quickICHandle( char *interactionClass )
+RTI::InteractionClassHandle Test13Federate::quickICHandle( char *interactionClass )
 {
 	try
 	{
@@ -2079,7 +2079,7 @@ RTI::InteractionClassHandle TestNG6Federate::quickICHandle( char *interactionCla
 /*
  * Fetch the handle for the identified parameter in the given interaction class
  */
-RTI::ParameterHandle TestNG6Federate::quickPCHandle( char *interactionClass, char *parameterName )
+RTI::ParameterHandle Test13Federate::quickPCHandle( char *interactionClass, char *parameterName )
 {
 	try
 	{
@@ -2095,7 +2095,7 @@ RTI::ParameterHandle TestNG6Federate::quickPCHandle( char *interactionClass, cha
 /*
  * Fetch the object class handle for the object instance with the given handle
  */
-RTI::ObjectClassHandle TestNG6Federate::quickOCHandle( int objectHandle )
+RTI::ObjectClassHandle Test13Federate::quickOCHandle( int objectHandle )
 {
 	try
 	{
@@ -2111,7 +2111,7 @@ RTI::ObjectClassHandle TestNG6Federate::quickOCHandle( int objectHandle )
 /*
  * Returns the name of the object class represented by the given class handle
  */
-char* TestNG6Federate::quickOCName( RTI::ObjectClassHandle classHandle )
+char* Test13Federate::quickOCName( RTI::ObjectClassHandle classHandle )
 {
 	try
 	{
@@ -2127,7 +2127,7 @@ char* TestNG6Federate::quickOCName( RTI::ObjectClassHandle classHandle )
 /*
  * Fetch the name of the object class that the object instance with given handle is of
  */
-char* TestNG6Federate::quickOCNameForInstance( int objectHandle )
+char* Test13Federate::quickOCNameForInstance( int objectHandle )
 {
 	try
 	{
@@ -2143,7 +2143,7 @@ char* TestNG6Federate::quickOCNameForInstance( int objectHandle )
 /*
  * Fetch the name of the interaction class identified by the given handle
  */
-char* TestNG6Federate::quickICName( int interactionHandle )
+char* Test13Federate::quickICName( int interactionHandle )
 {
 	try
 	{
@@ -2163,7 +2163,7 @@ char* TestNG6Federate::quickICName( int interactionHandle )
 /*
  * Create a new, empty AttributeHandleSet of the given size
  */
-RTI::AttributeHandleSet* TestNG6Federate::createAHS( int size )
+RTI::AttributeHandleSet* Test13Federate::createAHS( int size )
 {
 	try
 	{
@@ -2180,7 +2180,7 @@ RTI::AttributeHandleSet* TestNG6Federate::createAHS( int size )
  * Create a new AttributeHandleSet and populate it with the given RTI::AttributeHandle instances
  * in the varargs. The number of arguments supplied is assumed to be the size of the set.
  */
-RTI::AttributeHandleSet* TestNG6Federate::populatedAHS( int size, ... )
+RTI::AttributeHandleSet* Test13Federate::populatedAHS( int size, ... )
 {
 	// create the set
 	RTI::AttributeHandleSet *theSet = createAHS( size );
@@ -2200,7 +2200,7 @@ RTI::AttributeHandleSet* TestNG6Federate::populatedAHS( int size, ... )
 /*
  * Create a new, empty FederateHandleSet of the given size
  */
-RTI::FederateHandleSet* TestNG6Federate::createFHS( int size )
+RTI::FederateHandleSet* Test13Federate::createFHS( int size )
 {
 	try
 	{
@@ -2217,7 +2217,7 @@ RTI::FederateHandleSet* TestNG6Federate::createFHS( int size )
  * Create a new FederateHandleSet and populate it with the given RTI::FederateHandle instances
  * in the varargs. The number of arguments supplied is assumed to be the size of the set.
  */
-RTI::FederateHandleSet* TestNG6Federate::populatedFHS( int size, ... )
+RTI::FederateHandleSet* Test13Federate::populatedFHS( int size, ... )
 {
 	// create the set
 	RTI::FederateHandleSet *theSet = createFHS( size );
@@ -2237,7 +2237,7 @@ RTI::FederateHandleSet* TestNG6Federate::populatedFHS( int size, ... )
 /*
  * Create a new, empty AttributeHandleValuePairSet of the given size
  */
-RTI::AttributeHandleValuePairSet* TestNG6Federate::createAHVPS( int size )
+RTI::AttributeHandleValuePairSet* Test13Federate::createAHVPS( int size )
 {
 	try
 	{
@@ -2253,7 +2253,7 @@ RTI::AttributeHandleValuePairSet* TestNG6Federate::createAHVPS( int size )
 /*
  * Create a new, empty ParameterHandleValuePairSet of the given size
  */
-RTI::ParameterHandleValuePairSet* TestNG6Federate::createPHVPS( int size )
+RTI::ParameterHandleValuePairSet* Test13Federate::createPHVPS( int size )
 {
 	try
 	{
@@ -2270,13 +2270,13 @@ RTI::ParameterHandleValuePairSet* TestNG6Federate::createPHVPS( int size )
 /////////////////////////////// General Utility Helper Methods ///////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 /* Fetch the RTIambassador that is being used by this test federate. */
-RTI::RTIambassador* TestNG6Federate::getRtiAmb()
+RTI::RTIambassador* Test13Federate::getRtiAmb()
 {
 	return this->rtiamb;
 }
 
 /* Call rtiamb->tick(), kill the test if there is a problem */
-void TestNG6Federate::quickTick()
+void Test13Federate::quickTick()
 {
 	try
 	{
@@ -2289,7 +2289,7 @@ void TestNG6Federate::quickTick()
 }
 
 /* Call rtiamb->tick(double,double), kill the test if there is a problem */
-void TestNG6Federate::quickTick( double min, double max )
+void Test13Federate::quickTick( double min, double max )
 {
 	try
 	{
@@ -2306,7 +2306,7 @@ void TestNG6Federate::quickTick( double min, double max )
  * CPPUNIT_FAIL to kill the active test. The activeMethod parameter should be the name of the
  * method that was active at the time of the exception.
  */
-void TestNG6Federate::killTest( RTI::Exception &e, char *activeMethod )
+void Test13Federate::killTest( RTI::Exception &e, char *activeMethod )
 {
 	// create a message notifying of the death
 	char message[4096];
@@ -2321,7 +2321,7 @@ void TestNG6Federate::killTest( RTI::Exception &e, char *activeMethod )
  * This method will cause the currently executing test to fail, passing the message supplied
  * in printf() style as the arguments.
  */
-void TestNG6Federate::killTest( const char *format, ... )
+void Test13Federate::killTest( const char *format, ... )
 {
 	// start the var-arg stuff 
 	va_list args;

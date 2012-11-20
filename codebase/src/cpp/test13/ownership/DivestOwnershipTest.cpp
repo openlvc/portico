@@ -24,8 +24,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( DivestOwnershipTest, "ownershipManagement
 /////////////////////////////////////////////////////////////////////////////////////////////
 DivestOwnershipTest::DivestOwnershipTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->secondFederate = new TestNG6Federate( "secondFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->secondFederate = new Test13Federate( "secondFederate" );
 	this->ahs = NULL;
 	this->tag = new char[8];
 	strcpy( this->tag, "eltaggo" );

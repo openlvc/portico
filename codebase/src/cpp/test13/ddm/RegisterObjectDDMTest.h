@@ -27,10 +27,10 @@ class RegisterObjectDDMTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
     private:
-		TestNG6Federate *defaultFederate; // publishes ObjectRoot.A.B
-		TestNG6Federate *federateA;       // subscribes to ObjectRoot.A.B in regionOne
-		TestNG6Federate *federateB;       // subscribes to ObjectRoot.A.B in regionTwo
-		TestNG6Federate *federateC;       // subscribes to ObjectRoot.A.B in no region
+		Test13Federate *defaultFederate; // publishes ObjectRoot.A.B
+		Test13Federate *federateA;       // subscribes to ObjectRoot.A.B in regionOne
+		Test13Federate *federateB;       // subscribes to ObjectRoot.A.B in regionTwo
+		Test13Federate *federateC;       // subscribes to ObjectRoot.A.B in no region
 		
 		// handles
 		RTI::ObjectClassHandle aHandle;

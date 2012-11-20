@@ -28,8 +28,8 @@ class RequestUpdateWithRegionTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *provokerFederate;
+		Test13Federate *defaultFederate;
+		Test13Federate *provokerFederate;
 		RTI::ObjectClassHandle aHandle;
 		RTI::AttributeHandle   aaHandle;
 		RTI::AttributeHandle   abHandle;

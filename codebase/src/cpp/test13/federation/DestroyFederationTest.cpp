@@ -37,7 +37,7 @@ DestroyFederationTest::~DestroyFederationTest()
 
 void DestroyFederationTest::setUp()
 {
-    this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+    this->defaultFederate = new Test13Federate( "defaultFederate" );
     this->defaultFederate->quickCreate();
 }
 
@@ -59,7 +59,7 @@ void DestroyFederationTest::testDestroyFederation()
 	// try and destroy the federation
 	try
 	{
-		defaultFederate->rtiamb->destroyFederationExecution( TestNG6Federate::SIMPLE_NAME );
+		defaultFederate->rtiamb->destroyFederationExecution( Test13Federate::SIMPLE_NAME );
 	}
 	catch( RTI::Exception &e )
 	{
@@ -80,7 +80,7 @@ void DestroyFederationTest::testDestroyFederationWithJoinedMembers()
 	// try and destroy the federation
 	try
 	{
-		defaultFederate->rtiamb->destroyFederationExecution( TestNG6Federate::SIMPLE_NAME );
+		defaultFederate->rtiamb->destroyFederationExecution( Test13Federate::SIMPLE_NAME );
 		defaultFederate->quickResign();
 		failTestMissingException( "FederatesCurrentlyJoined",
 		                          "destroying fderation with joined members" );

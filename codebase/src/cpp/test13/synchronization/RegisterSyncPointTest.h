@@ -27,8 +27,8 @@ class RegisterSyncPointTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *federateOne;
-		TestNG6Federate *federateTwo;
+		Test13Federate *federateOne;
+		Test13Federate *federateTwo;
 		char *label, *tag;
         
 

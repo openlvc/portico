@@ -27,8 +27,8 @@ class DivestOwnershipTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *secondFederate;
+		Test13Federate *defaultFederate;
+		Test13Federate *secondFederate;
 		RTI::ObjectHandle theObject;
 		RTI::AttributeHandle aa;
 		RTI::AttributeHandle ab;

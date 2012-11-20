@@ -24,7 +24,7 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( ParameterHandleValuePairSetTest, "types" 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ParameterHandleValuePairSetTest::ParameterHandleValuePairSetTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
 }
 
 ParameterHandleValuePairSetTest::~ParameterHandleValuePairSetTest()

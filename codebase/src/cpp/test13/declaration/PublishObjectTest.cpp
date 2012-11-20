@@ -25,8 +25,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( PublishObjectTest, "declarationManagement
 /////////////////////////////////////////////////////////////////////////////////////////////
 PublishObjectTest::PublishObjectTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->listener = new TestNG6Federate( "listener" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->listener = new Test13Federate( "listener" );
 }
 
 PublishObjectTest::~PublishObjectTest()

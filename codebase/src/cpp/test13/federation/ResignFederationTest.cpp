@@ -37,7 +37,7 @@ ResignFederationTest::~ResignFederationTest()
 
 void ResignFederationTest::setUp()
 {
-    this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+    this->defaultFederate = new Test13Federate( "defaultFederate" );
     defaultFederate->quickCreate();
     defaultFederate->quickJoin();
 }

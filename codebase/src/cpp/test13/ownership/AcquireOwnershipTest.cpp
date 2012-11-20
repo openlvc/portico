@@ -24,8 +24,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( AcquireOwnershipTest, "ownershipManagemen
 /////////////////////////////////////////////////////////////////////////////////////////////
 AcquireOwnershipTest::AcquireOwnershipTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->secondFederate = new TestNG6Federate( "secondFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->secondFederate = new Test13Federate( "secondFederate" );
 	this->ahs = NULL;
 	this->tag = new char[8];
 	strcpy( this->tag, "eltaggo" );
@@ -140,12 +140,12 @@ void AcquireOwnershipTest::testAcquireOwnershipIfAvailableWhenUnavailable()
 	
 	// wait for the acquisition notification
 	secondFederate->fedamb->waitForOwnershipUnavailable( theObject, 3, aa, ab, ac );
-	secondFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	secondFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 	secondFederate->quickAssertOwnedBy( defaultFederate->getFederateHandle(), theObject, 3, aa, ab, ac );
 	
 	// give the default federate some time to process callbacks before checking ownership
 	defaultFederate->quickTick( 0.1, 1.0 );
-	secondFederate->quickAssertOwnedBy( TestNG6Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
+	secondFederate->quickAssertOwnedBy( Test13Federate::OWNER_UNOWNED, theObject, 3, ba, bb, bc );
 	defaultFederate->quickAssertOwnedBy( defaultFederate->getFederateHandle(), theObject, 3, aa, ab, ac );
 }
 

@@ -25,25 +25,25 @@
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
 	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
 
-	<!-- ============================================ -->
-	<!-- ==== NG6 and DLC13 Interface Properties ==== -->
-	<!-- ============================================ -->
+	<!-- ============================================== -->
+	<!-- ==== HLA13 and DLC13 Interface Properties ==== -->
+	<!-- ============================================== -->
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
 	<property name="test13.src.dir"            location="${cpp.src.dir}/test13"/>
 	
-	<!-- ng6 build -->
-	<property name="ng6.build.dir"             location="${cpp.build.dir}/ng6"/>
-	<property name="ng6.complete.dir"          location="${ng6.build.dir}/complete"/>
-	<property name="ng6.obj.dir"               location="${ng6.build.dir}/obj"/>
+	<!-- hla13 build -->
+	<property name="hla13.build.dir"           location="${cpp.build.dir}/hla13"/>
+	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
+	<property name="hla13.obj.dir"             location="${hla13.build.dir}/obj"/>
 
 	<!-- dlc13 build -->
 	<property name="dlc13.build.dir"           location="${cpp.build.dir}/dlc13"/>
 	<property name="dlc13.complete.dir"        location="${dlc13.build.dir}/complete"/>
 	<property name="dlc13.obj.dir"             location="${dlc13.build.dir}/obj"/>
 
-	<!-- ng6 test build -->
+	<!-- hla13 test build -->
 	<property name="test13.build.dir"          location="${cpp.build.dir}/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
@@ -88,18 +88,18 @@
 	<target name="compile"
 	        extensionOf="master.compile"
 	        description="Compile the Portico C++ interfaces and Testing Suite for Mac OS X"
-	        depends="compile.ng6, compile.dlc13, compile.ieee1516e, compile.ieee1516e.example"/>
+	        depends="compile.hla13, compile.dlc13, compile.ieee1516e, compile.ieee1516e.example"/>
 
 	<!-- ==================================== -->
 	<!--            NGv6 Interface            -->
 	<!-- ==================================== -->
-	<target name="compile.ng6">
+	<target name="compile.hla13">
 		<cpp-unix outfile="RTI-NG"
-		          outdir="${ng6.build.dir}"
+		          outdir="${hla13.build.dir}"
 		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
 		          linkerArgs="-dynamiclib">
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
 			<define name="BUILDING_RTI"/>
@@ -112,7 +112,7 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlink...</echo>
-		<exec executable="ln" dir="${ng6.complete.dir}" failonerror="true">
+		<exec executable="ln" dir="${hla13.complete.dir}" failonerror="true">
 			<arg line="-sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"/>
 		</exec>
 	</target>
@@ -148,18 +148,18 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="compile.test13" depends="compile.ng6">
+	<target name="compile.hla13.test" depends="compile.hla13">
 		<cpp-unix outfile="test13"
 		          outdir="${test13.build.dir}"
 		          type="executable"
 		          compilerArgs="-g -Wno-write-strings"
 		          linkerArgs="">
 			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${ng6.complete.dir}" libs="RTI-NG"/>
+			<library path="${hla13.complete.dir}" libs="RTI-NG"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpp-unix>
 	</target>
@@ -217,15 +217,15 @@
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
 	<!-- Depends on java.sandbox so the jar file is constructed for the C++ side to call into -->
-	<target name="test" extensionOf="master.test" depends="compile, java.sandbox, test.test13"/>
+	<target name="test" extensionOf="master.test" depends="compile, java.sandbox, test.hla13"/>
 
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.test13" depends="java.sandbox,compile.test13">
+	<target name="test.hla13" depends="java.sandbox,compile.hla13.test">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
-			<fileset dir="${resources.testdata.dir}/cpptest/ng6" includes="**/*"/>
+			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
 			<filterset begintoken="[" endtoken="]">
 				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
 			</filterset>
@@ -241,7 +241,7 @@
 		      resultproperty="test13.result">
 			<arg line="${test13.complete.dir}/test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${ng6.complete.dir};${cppunit.lib}"/>
+			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir};${cppunit.lib}"/>
 			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
@@ -283,9 +283,9 @@
 		<!-- ========= -->
 		<!-- Libraries -->
 		<!-- ========= -->
-		<!-- copy the Portico C++ NGv6 and DLC 1.3 libraries -->
+		<!-- copy the Portico C++ HLA 1.3, DLC 1.3 and IEEE-1516e libraries -->
 		<copy todir="${dist.lib.dir}">
-			<fileset dir="${ng6.complete.dir}"
+			<fileset dir="${hla13.complete.dir}"
 			         includes="**/*"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>
@@ -301,7 +301,7 @@
 
 		<!-- macosx: link the dylib and jnilib -->
 		<echo>creating symlinks from dylibs to jnilibs</echo>
-		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/>   <!-- ng6 -->
+		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/>   <!-- hla13 -->
 		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>    <!-- dlc13 -->
 		<symlink-dylib directory="${dist.lib.dir}" name="librti1516e"/> <!-- ieee1516e -->
 		

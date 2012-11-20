@@ -27,7 +27,7 @@ class DDMSupportServicesTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
+		Test13Federate *defaultFederate;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS

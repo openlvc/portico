@@ -37,7 +37,7 @@ JoinFederationTest::~JoinFederationTest()
 
 void JoinFederationTest::setUp()
 {
-    this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+    this->defaultFederate = new Test13Federate( "defaultFederate" );
     this->defaultFederate->quickCreate();
 }
 

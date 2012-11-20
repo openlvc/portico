@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "TestNG6FederateAmbassador.h"
+#include "Test13FederateAmbassador.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ int    TestNG6FederateAmbassador::BUFFER_SIZE = 64;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-TestNG6FederateAmbassador::TestNG6FederateAmbassador( TestNG6Federate *testFederate )
+TestNG6FederateAmbassador::TestNG6FederateAmbassador( Test13Federate *testFederate )
 {
 	this->testFederate = testFederate;
 	
@@ -36,14 +36,14 @@ TestNG6FederateAmbassador::TestNG6FederateAmbassador( TestNG6Federate *testFeder
 	this->syncRegResult      = WAITING;
 	
 	// object/interaction containers
-	this->discovered         = new map<RTI::ObjectHandle,TestNG6Object*>();
-	this->roRemoved          = new map<RTI::ObjectHandle,TestNG6Object*>();
-	this->tsoRemoved         = new map<RTI::ObjectHandle,TestNG6Object*>();
+	this->discovered         = new map<RTI::ObjectHandle,Test13Object*>();
+	this->roRemoved          = new map<RTI::ObjectHandle,Test13Object*>();
+	this->tsoRemoved         = new map<RTI::ObjectHandle,Test13Object*>();
 	this->roUpdated          = new set<RTI::ObjectHandle>();
 	this->tsoUpdated         = new set<RTI::ObjectHandle>();
 	
-	this->roInteractions     = new vector<TestNG6Interaction*>();
-	this->tsoInteractions    = new vector<TestNG6Interaction*>();
+	this->roInteractions     = new vector<Test13Interaction*>();
+	this->tsoInteractions    = new vector<Test13Interaction*>();
 	
 	this->requestedUpdates   = new map<RTI::ObjectHandle,set<RTI::AttributeHandle>*>();
 	
@@ -68,11 +68,11 @@ TestNG6FederateAmbassador::~TestNG6FederateAmbassador() throw( RTI::FederateInte
 	// clean up all the maps
 	SET_LTSTR_CLEANUP( synchronized );
 	MAP_LTSTR_CLEANUP( announced );
-	MAP_CLEANUP( RTI::ObjectHandle, TestNG6Object*, discovered );
-	MAP_CLEANUP( RTI::ObjectHandle, TestNG6Object*, roRemoved );
-	MAP_CLEANUP( RTI::ObjectHandle, TestNG6Object*, tsoRemoved );
-	VECTOR_CLEANUP( TestNG6Interaction*, roInteractions );
-	VECTOR_CLEANUP( TestNG6Interaction*, tsoInteractions );
+	MAP_CLEANUP( RTI::ObjectHandle, Test13Object*, discovered );
+	MAP_CLEANUP( RTI::ObjectHandle, Test13Object*, roRemoved );
+	MAP_CLEANUP( RTI::ObjectHandle, Test13Object*, tsoRemoved );
+	VECTOR_CLEANUP( Test13Interaction*, roInteractions );
+	VECTOR_CLEANUP( Test13Interaction*, tsoInteractions );
 	MAP_CLEANUP( RTI::ObjectHandle, set<RTI::AttributeHandle>*, requestedUpdates );
 	
 	MAP_CLEANUP( RTI::ObjectHandle, set<RTI::AttributeHandle>*, attributesOffered );
@@ -379,7 +379,7 @@ void TestNG6FederateAmbassador::waitForTimeAdvance( double newTime )
  * handle, or a timeout has occurred. If the timeout runs up before the discovery, the current
  * test will be killed.
  */
-TestNG6Object* TestNG6FederateAmbassador::waitForDiscovery( RTI::ObjectHandle objectHandle )
+Test13Object* TestNG6FederateAmbassador::waitForDiscovery( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( (*discovered)[objectHandle] == NULL )
@@ -397,7 +397,7 @@ TestNG6Object* TestNG6FederateAmbassador::waitForDiscovery( RTI::ObjectHandle ob
  * test will be killed. Further, if the discovered object instance IS NOT of the class identified
  * in the "asClass" argument, the test will also be killed.
  */
-TestNG6Object* TestNG6FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle objectHandle,
+Test13Object* TestNG6FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle objectHandle,
                                                               RTI::ObjectClassHandle asClass )
 {
 	time_t startTime = this->getCurrentTime();
@@ -422,7 +422,7 @@ TestNG6Object* TestNG6FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle 
  * Same as waitForDiscoveryAs() except that it also checks that the name is the same as that which
  * was expected.
  */
-TestNG6Object* TestNG6FederateAmbassador::waitForDiscoveryAsWithName( RTI::ObjectHandle objectHandle,
+Test13Object* TestNG6FederateAmbassador::waitForDiscoveryAsWithName( RTI::ObjectHandle objectHandle,
                                                                       RTI::ObjectClassHandle asClass,
                                                                       char *expectedName )
 {
@@ -585,7 +585,7 @@ void TestNG6FederateAmbassador::waitForTSORemovalTimeout( RTI::ObjectHandle obje
  * the outstanding updates to that point (the updated object handles are stored in a set, so no
  * duplicates are kept).
  */
-TestNG6Object* TestNG6FederateAmbassador::waitForROUpdate( RTI::ObjectHandle objectHandle )
+Test13Object* TestNG6FederateAmbassador::waitForROUpdate( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( roUpdated->find(objectHandle) == roUpdated->end() )
@@ -631,7 +631,7 @@ void TestNG6FederateAmbassador::waitForROUpdateTimeout( RTI::ObjectHandle object
  * For more information, read the documentation for that method (it's just up a little bit, don't
  * worry, you don't have to scroll very far).
  */
-TestNG6Object* TestNG6FederateAmbassador::waitForTSOUpdate( RTI::ObjectHandle objectHandle )
+Test13Object* TestNG6FederateAmbassador::waitForTSOUpdate( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( tsoUpdated->find(objectHandle) == tsoUpdated->end() )
@@ -679,11 +679,11 @@ void TestNG6FederateAmbassador::waitForTSOUpdateTimeout( RTI::ObjectHandle objec
  * that interacitons are stored up, so if there is a pending interaction of the expected class
  * waiting for processing, it will be removed from the list and returned right away.
  */
-TestNG6Interaction*
+Test13Interaction*
 TestNG6FederateAmbassador::waitForROInteraction( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
-	TestNG6Interaction *ng6Interaction = NULL;
+	Test13Interaction *ng6Interaction = NULL;
 	while( (ng6Interaction=fetchInteraction(expected,roInteractions)) == NULL )
 	{
 		this->tick();
@@ -702,7 +702,7 @@ TestNG6FederateAmbassador::waitForROInteraction( RTI::InteractionClassHandle exp
 void TestNG6FederateAmbassador::waitForROInteractionTimeout( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
-	TestNG6Interaction *ng6Interaction = NULL;
+	Test13Interaction *ng6Interaction = NULL;
 	while( (ng6Interaction=fetchInteraction(expected,roInteractions)) == NULL )
 	{
 		// check for a timeout (which is what we want to happen)
@@ -727,11 +727,11 @@ void TestNG6FederateAmbassador::waitForROInteractionTimeout( RTI::InteractionCla
  * that interacitons are stored up, so if there is a pending interaction of the expected class
  * waiting for processing, it will be removed from the list and returned right away.
  */
-TestNG6Interaction*
+Test13Interaction*
 TestNG6FederateAmbassador::waitForTSOInteraction( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
-	TestNG6Interaction *ng6Interaction = NULL;
+	Test13Interaction *ng6Interaction = NULL;
 	while( (ng6Interaction=fetchInteraction(expected,tsoInteractions)) == NULL )
 	{
 		this->tick();
@@ -750,7 +750,7 @@ TestNG6FederateAmbassador::waitForTSOInteraction( RTI::InteractionClassHandle ex
 void TestNG6FederateAmbassador::waitForTSOInteractionTimeout( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
-	TestNG6Interaction *ng6Interaction = NULL;
+	Test13Interaction *ng6Interaction = NULL;
 	while( (ng6Interaction=fetchInteraction(expected,tsoInteractions)) == NULL )
 	{
 		// check for a timeout (which is what we want to happen)
@@ -1341,11 +1341,11 @@ void TestNG6FederateAmbassador::waitForRestoreRequestFailure( char *label )
  * Will attempt to find and return an interaction of the given class in the provided store. If none
  * can be found, NULL will be returned.
  */
-TestNG6Interaction*
+Test13Interaction*
 TestNG6FederateAmbassador::fetchInteraction( RTI::InteractionClassHandle theClass,
-                                             vector<TestNG6Interaction*> *theStore )
+                                             vector<Test13Interaction*> *theStore )
 {
-	vector<TestNG6Interaction*>::iterator it;
+	vector<Test13Interaction*>::iterator it;
 	for( it = theStore->begin(); it < theStore->end(); it++ )
 	{
 		if( theClass == (*it)->getClassHandle() )
@@ -1566,7 +1566,7 @@ void TestNG6FederateAmbassador::discoverObjectInstance( RTI::ObjectHandle theObj
 	       RTI::ObjectClassNotKnown,
 	       RTI::FederateInternalError )
 {
-	TestNG6Object *ng6Object = new TestNG6Object( theObject, objectClass, theObjectName );
+	Test13Object *ng6Object = new Test13Object( theObject, objectClass, theObjectName );
 	(*discovered)[theObject] = ng6Object;
 }
 
@@ -1583,7 +1583,7 @@ void TestNG6FederateAmbassador::reflectAttributeValues(
 	       RTI::FederateInternalError )
 {
 	// find the object that is being updated
-	TestNG6Object *ng6Object = (*discovered)[theObject];
+	Test13Object *ng6Object = (*discovered)[theObject];
 	if( ng6Object == NULL )
 		testFederate->killTest( "Couldn't find object [%d] to update in reflect", theObject );
 	
@@ -1604,7 +1604,7 @@ void TestNG6FederateAmbassador::reflectAttributeValues(
 	       RTI::FederateInternalError )
 {
 	// find the object that is being updated
-	TestNG6Object *ng6Object = (*discovered)[theObject];
+	Test13Object *ng6Object = (*discovered)[theObject];
 	if( ng6Object == NULL )
 		testFederate->killTest( "Couldn't find object [%d] to update in reflect", theObject );
 	
@@ -1628,7 +1628,7 @@ void TestNG6FederateAmbassador::receiveInteraction(
 	       RTI::FederateInternalError )
 {
 	// create a new interaction to store
-	TestNG6Interaction *ng6Interaction = new TestNG6Interaction( theInteraction, theTag );
+	Test13Interaction *ng6Interaction = new Test13Interaction( theInteraction, theTag );
 	ng6Interaction->updateParameters( theParameters );
 	ng6Interaction->setTime( convertTime(theTime) );
 	
@@ -1645,7 +1645,7 @@ void TestNG6FederateAmbassador::receiveInteraction(
 	       RTI::FederateInternalError )
 {
 	// create a new interaction to store
-	TestNG6Interaction *ng6Interaction = new TestNG6Interaction( theInteraction, theTag );
+	Test13Interaction *ng6Interaction = new Test13Interaction( theInteraction, theTag );
 	ng6Interaction->updateParameters( theParameters );
 	
 	// store the interaction
@@ -1660,7 +1660,7 @@ void TestNG6FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObjec
 	       RTI::InvalidFederationTime,
 	       RTI::FederateInternalError )
 {
-	TestNG6Object *ng6Object = (*discovered)[theObject];
+	Test13Object *ng6Object = (*discovered)[theObject];
 	if( ng6Object == NULL )
 	{
 		// something went wrong, kill any tests
@@ -1678,7 +1678,7 @@ void TestNG6FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObjec
 	throw( RTI::ObjectNotKnown,
 	       RTI::FederateInternalError )
 {
-	TestNG6Object *ng6Object = (*discovered)[theObject];
+	Test13Object *ng6Object = (*discovered)[theObject];
 	if( ng6Object == NULL )
 	{
 		// something went wrong, kill any tests
@@ -1885,7 +1885,7 @@ void TestNG6FederateAmbassador::attributeIsNotOwned( RTI::ObjectHandle theObject
 	//       if there is more than one outstanding request for the same attribute but in different
 	//       objects, this has the potential to fail, with the second update overwriting the
 	//       ownership information from the first.
-	(*attributeOwnershipInfo)[theAttribute] = TestNG6Federate::OWNER_UNOWNED;
+	(*attributeOwnershipInfo)[theAttribute] = Test13Federate::OWNER_UNOWNED;
 }
 
 void TestNG6FederateAmbassador::attributeOwnedByRTI( RTI::ObjectHandle theObject,
@@ -1900,7 +1900,7 @@ void TestNG6FederateAmbassador::attributeOwnedByRTI( RTI::ObjectHandle theObject
 	//       if there is more than one outstanding request for the same attribute but in different
 	//       objects, this has the potential to fail, with the second update overwriting the
 	//       ownership information from the first.
-	(*attributeOwnershipInfo)[theAttribute] = TestNG6Federate::OWNER_RTI;
+	(*attributeOwnershipInfo)[theAttribute] = Test13Federate::OWNER_RTI;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

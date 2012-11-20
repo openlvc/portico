@@ -25,10 +25,10 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( RegisterObjectTest, "objectManagement" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 RegisterObjectTest::RegisterObjectTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->federateA = new TestNG6Federate( "federateA" );
-	this->federateB = new TestNG6Federate( "federateB" );
-	this->federateNone = new TestNG6Federate( "federateNone" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->federateA = new Test13Federate( "federateA" );
+	this->federateB = new Test13Federate( "federateB" );
+	this->federateNone = new Test13Federate( "federateNone" );
 }
 
 RegisterObjectTest::~RegisterObjectTest()

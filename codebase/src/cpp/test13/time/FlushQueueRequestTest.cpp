@@ -25,8 +25,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( FlushQueueRequestTest, "timeManagement" )
 /////////////////////////////////////////////////////////////////////////////////////////////
 FlushQueueRequestTest::FlushQueueRequestTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->secondFederate = new TestNG6Federate( "secondFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->secondFederate = new Test13Federate( "secondFederate" );
 }
 
 FlushQueueRequestTest::~FlushQueueRequestTest()
@@ -87,7 +87,7 @@ void FlushQueueRequestTest::testFqr()
 	// of the federation-wide LBTS and an advance will be granted to the LESSER or the
 	// requested time -OR- the timestamp of the highest TSO message
 	secondFederate->quickFlushQueueRequest( 200.0 );
-	TestNG6Interaction *received = secondFederate->fedamb->waitForTSOInteraction( xHandle );
+	Test13Interaction *received = secondFederate->fedamb->waitForTSOInteraction( xHandle );
 	double timestamp = received->getTime();
 	CPPUNIT_ASSERT_EQUAL( 100.0, timestamp );
 

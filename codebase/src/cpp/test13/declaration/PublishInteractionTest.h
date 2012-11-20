@@ -27,8 +27,8 @@ class PublishInteractionTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *listenerFederate;
+		Test13Federate *defaultFederate;
+		Test13Federate *listenerFederate;
 		RTI::InteractionClassHandle xHandle;
 		RTI::InteractionClassHandle yHandle;
 		RTI::ParameterHandle xaHandle, xbHandle, xcHandle;

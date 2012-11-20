@@ -25,8 +25,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( SubscribeObjectWithRegionTest, "ddm" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 SubscribeObjectWithRegionTest::SubscribeObjectWithRegionTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->listenerFederate = new TestNG6Federate( "listenerFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->listenerFederate = new Test13Federate( "listenerFederate" );
 }
 
 SubscribeObjectWithRegionTest::~SubscribeObjectWithRegionTest()
@@ -92,7 +92,7 @@ void SubscribeObjectWithRegionTest::validateSubscribed( RTI::ObjectHandle testOb
 	defaultFederate->quickReflect( testObject, 2, "aa", "ab" );
 	
 	// wait for update in listener (discovery should happen while ticking if not already discovered)
-	TestNG6Object *ng6Object = listenerFederate->fedamb->waitForROUpdate( testObject );
+	Test13Object *ng6Object = listenerFederate->fedamb->waitForROUpdate( testObject );
 	
 	// validate the attribute values
 	int result = strcmp( "aa", ng6Object->getAttribute(aaHandle) );

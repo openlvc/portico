@@ -32,10 +32,10 @@
 #include "fedtime.hh"
 
 // Testing framework includes
-#include "TestNG6Federate.h"
-#include "TestNG6FederateAmbassador.h"
-#include "TestNG6Object.h"
-#include "TestNG6Interaction.h"
+#include "Test13Federate.h"
+#include "Test13FederateAmbassador.h"
+#include "Test13Object.h"
+#include "Test13Interaction.h"
 
 ////////////////////////////
 ////////// macros //////////

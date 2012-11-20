@@ -25,7 +25,7 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( DDMSupportServicesTest, "supportServices"
 /////////////////////////////////////////////////////////////////////////////////////////////
 DDMSupportServicesTest::DDMSupportServicesTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
 }
 
 DDMSupportServicesTest::~DDMSupportServicesTest()

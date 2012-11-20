@@ -25,10 +25,10 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( RegisterObjectDDMTest, "ddm" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 RegisterObjectDDMTest::RegisterObjectDDMTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->federateA = new TestNG6Federate( "federateA" );
-	this->federateB = new TestNG6Federate( "federateB" );
-	this->federateC = new TestNG6Federate( "federateC" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->federateA = new Test13Federate( "federateA" );
+	this->federateB = new Test13Federate( "federateB" );
+	this->federateC = new Test13Federate( "federateC" );
 }
 
 RegisterObjectDDMTest::~RegisterObjectDDMTest()
@@ -129,7 +129,7 @@ void RegisterObjectDDMTest::validateRegistration( RTI::ObjectHandle theObject )
 	defaultFederate->quickReflect( theObject, 6, "aa", "ab", "ac", "ba", "bb", "bc" );
 	
 	// make sure reflections sent to federateA
-	TestNG6Object *ng6Object = federateA->fedamb->waitForROUpdate( theObject );
+	Test13Object *ng6Object = federateA->fedamb->waitForROUpdate( theObject );
 	int result = strcmp( "aa", ng6Object->getAttribute(aaHandle) );
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 	result = strcmp( "ab", ng6Object->getAttribute(abHandle) );

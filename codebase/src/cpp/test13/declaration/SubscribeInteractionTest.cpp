@@ -25,8 +25,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( SubscribeInteractionTest, "declarationMan
 /////////////////////////////////////////////////////////////////////////////////////////////
 SubscribeInteractionTest::SubscribeInteractionTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->listenerFederate = new TestNG6Federate( "listenerFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->listenerFederate = new Test13Federate( "listenerFederate" );
 }
 
 SubscribeInteractionTest::~SubscribeInteractionTest()
@@ -76,7 +76,7 @@ void SubscribeInteractionTest::validateSubscribed()
 	defaultFederate->quickSend( yHandle, 6, "xa", "xb", "xc", "ya", "yb", "yc" );
 	
 	// wait for it to be received in the listener
-	TestNG6Interaction *received = listenerFederate->fedamb->waitForROInteraction( yHandle );
+	Test13Interaction *received = listenerFederate->fedamb->waitForROInteraction( yHandle );
 
 	// validate the parameters for the interaction
 	int result = strcmp( "xa", received->getParameter(xaHandle) );

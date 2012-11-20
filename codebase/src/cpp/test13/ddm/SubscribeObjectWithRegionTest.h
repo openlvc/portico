@@ -27,8 +27,8 @@ class SubscribeObjectWithRegionTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *listenerFederate;
+		Test13Federate *defaultFederate;
+		Test13Federate *listenerFederate;
 		
 		RTI::ObjectClassHandle aHandle;
 		RTI::AttributeHandle   aaHandle;

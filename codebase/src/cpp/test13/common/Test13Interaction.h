@@ -19,7 +19,7 @@
 
 using namespace std;
 
-class TestNG6Interaction : public CppUnit::TestFixture
+class Test13Interaction : public CppUnit::TestFixture
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -38,8 +38,8 @@ class TestNG6Interaction : public CppUnit::TestFixture
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		TestNG6Interaction( RTI::InteractionClassHandle classHandle, const char *tag );
-		virtual ~TestNG6Interaction();
+		Test13Interaction( RTI::InteractionClassHandle classHandle, const char *tag );
+		virtual ~Test13Interaction();
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

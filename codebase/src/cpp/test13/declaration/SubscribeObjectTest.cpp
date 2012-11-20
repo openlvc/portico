@@ -25,8 +25,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( SubscribeObjectTest, "declarationManageme
 /////////////////////////////////////////////////////////////////////////////////////////////
 SubscribeObjectTest::SubscribeObjectTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->listener = new TestNG6Federate( "listener" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->listener = new Test13Federate( "listener" );
 }
 
 SubscribeObjectTest::~SubscribeObjectTest()
@@ -76,7 +76,7 @@ void SubscribeObjectTest::validateSubscribed()
 	defaultFederate->quickReflect( theObject, 2, "aa", "ba" );
 	
 	// wait for the update in the listener
-	TestNG6Object *ng6Object = listener->fedamb->waitForROUpdate( theObject );
+	Test13Object *ng6Object = listener->fedamb->waitForROUpdate( theObject );
 	
 	// validate the attribute values
 	int result = strcmp( "aa", ng6Object->getAttribute(aaHandle) );
@@ -114,7 +114,7 @@ void SubscribeObjectTest::testOCSubscribeWhenAlreadySubscribed()
 	// validate it, but just for aa (validateSubscribed() expected aa and ba)
 	RTI::ObjectHandle theObject = defaultFederate->quickRegister( bHandle );
 	defaultFederate->quickReflect( theObject, 2, "aa", "ba" );
-	TestNG6Object *ng6Object = listener->fedamb->waitForROUpdate( theObject );
+	Test13Object *ng6Object = listener->fedamb->waitForROUpdate( theObject );
 	int result = strcmp( "aa", ng6Object->getAttribute(aaHandle) );
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 	CPPUNIT_ASSERT( ng6Object->getAttribute(baHandle) == NULL );

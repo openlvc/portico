@@ -25,10 +25,10 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( AssociateRegionTest, "ddm" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 AssociateRegionTest::AssociateRegionTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->federateA = new TestNG6Federate( "federateA" );
-	this->federateB = new TestNG6Federate( "federateB" );
-	this->federateC = new TestNG6Federate( "federateC" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->federateA = new Test13Federate( "federateA" );
+	this->federateB = new Test13Federate( "federateB" );
+	this->federateC = new Test13Federate( "federateC" );
 }
 
 AssociateRegionTest::~AssociateRegionTest()
@@ -123,7 +123,7 @@ void AssociateRegionTest::validateAssociated( RTI::ObjectHandle theObject )
 	defaultFederate->quickReflect( theObject, 6, "aa", "ab", "ac", "ba", "bb", "bc" );
 	
 	// make sure the reflection is received by federateA and that it contains the right values
-	TestNG6Object *ng6Object = federateA->fedamb->waitForROUpdate( theObject );
+	Test13Object *ng6Object = federateA->fedamb->waitForROUpdate( theObject );
 	int result = strcmp( "aa", ng6Object->getAttribute(aaHandle) );
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 	result = strcmp( "ab", ng6Object->getAttribute(abHandle) );
@@ -350,7 +350,7 @@ void AssociateRegionTest::validateNotAssociated( RTI::ObjectHandle theObject )
 	defaultFederate->quickReflect( theObject, 6, "aa", "ab", "ac", "ba", "bb", "bc" );
 	
 	// make sure the reflection is received by federateA and that it contains the right values
-	TestNG6Object *ng6Object = federateA->fedamb->waitForROUpdate( theObject );
+	Test13Object *ng6Object = federateA->fedamb->waitForROUpdate( theObject );
 	int result = strcmp( "aa", ng6Object->getAttribute(aaHandle) );
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 	result = strcmp( "ab", ng6Object->getAttribute(abHandle) );

@@ -26,8 +26,8 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( SendInteractionWithRegionTest, "ddm" );
 /////////////////////////////////////////////////////////////////////////////////////////////
 SendInteractionWithRegionTest::SendInteractionWithRegionTest()
 {
-	this->defaultFederate = new TestNG6Federate( "defaultFederate" );
-	this->listenerFederate = new TestNG6Federate( "listenerFederate" );
+	this->defaultFederate = new Test13Federate( "defaultFederate" );
+	this->listenerFederate = new Test13Federate( "listenerFederate" );
 }
 
 SendInteractionWithRegionTest::~SendInteractionWithRegionTest()
@@ -93,7 +93,7 @@ void SendInteractionWithRegionTest::tearDown()
 void SendInteractionWithRegionTest::validateReceivedRO()
 {
 	// wait for the listener to receive it
-	TestNG6Interaction *received = listenerFederate->fedamb->waitForROInteraction( xHandle );
+	Test13Interaction *received = listenerFederate->fedamb->waitForROInteraction( xHandle );
 	
 	// validate the contents of the interaction
 	int result = strcmp( "xa", received->getParameter(xaHandle) );
@@ -110,7 +110,7 @@ void SendInteractionWithRegionTest::validateReceivedRO()
 void SendInteractionWithRegionTest::validateReceivedTSO()
 {
 	// wait for the listener to receive it
-	TestNG6Interaction *received = listenerFederate->fedamb->waitForTSOInteraction( xHandle );
+	Test13Interaction *received = listenerFederate->fedamb->waitForTSOInteraction( xHandle );
 	
 	// validate the contents of the interaction
 	int result = strcmp( "xa", received->getParameter(xaHandle) );
@@ -198,7 +198,7 @@ void SendInteractionWithRegionTest::testSendROInteractionWithRegionAndNoParamete
 	}
 	
 	// wait for the interaciton and validate that it has no parameters
-	TestNG6Interaction *interaction = listenerFederate->fedamb->waitForROInteraction( xHandle );
+	Test13Interaction *interaction = listenerFederate->fedamb->waitForROInteraction( xHandle );
 	int size = interaction->getSize();
 	delete interaction;
 	CPPUNIT_ASSERT_EQUAL( 0, size );
@@ -436,7 +436,7 @@ void SendInteractionWithRegionTest::testSendTSOInteractionWithRegionAndNoParamet
 	defaultFederate->quickAdvanceAndWait( 10.0 );
 	listenerFederate->quickAdvanceAndWait( 10.0 );
 	// should be able to get it now
-	TestNG6Interaction *interaction = listenerFederate->fedamb->waitForTSOInteraction( xHandle );
+	Test13Interaction *interaction = listenerFederate->fedamb->waitForTSOInteraction( xHandle );
 	int size = interaction->getSize();
 	delete interaction;
 	CPPUNIT_ASSERT_EQUAL( 0, size );

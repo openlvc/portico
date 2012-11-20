@@ -20,7 +20,7 @@
 // forward declaration for circular dependency
 class TestNG6FederateAmbassador;
 
-class TestNG6Federate
+class Test13Federate
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -44,8 +44,8 @@ class TestNG6Federate
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		TestNG6Federate( char *name );
-		~TestNG6Federate();
+		Test13Federate( char *name );
+		~Test13Federate();
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

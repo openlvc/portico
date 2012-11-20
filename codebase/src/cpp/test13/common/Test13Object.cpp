@@ -12,14 +12,14 @@
  *   (that goes for your lawyer as well)
  *
  */
-#include "TestNG6Object.h"
+#include "Test13Object.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-TestNG6Object::TestNG6Object( RTI::ObjectHandle objectHandle,
-                              RTI::ObjectClassHandle classHandle,
-                              const char *objectName )
+Test13Object::Test13Object( RTI::ObjectHandle objectHandle,
+                            RTI::ObjectClassHandle classHandle,
+                            const char *objectName )
 {
 	this->objectHandle = objectHandle;
 	this->classHandle = classHandle;
@@ -30,7 +30,7 @@ TestNG6Object::TestNG6Object( RTI::ObjectHandle objectHandle,
 	this->attributes = new map<RTI::AttributeHandle,char*>();
 }
 
-TestNG6Object::~TestNG6Object()
+Test13Object::~Test13Object()
 {
 	if( this->objectName != NULL )
 		delete this->objectName;
@@ -42,27 +42,27 @@ TestNG6Object::~TestNG6Object()
 //////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// Instance Methods //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-RTI::ObjectHandle TestNG6Object::getHandle()
+RTI::ObjectHandle Test13Object::getHandle()
 {
 	return this->objectHandle;
 }
 
-RTI::ObjectClassHandle TestNG6Object::getClassHandle()
+RTI::ObjectClassHandle Test13Object::getClassHandle()
 {
 	return this->classHandle;
 }
 
-char* TestNG6Object::getName()
+char* Test13Object::getName()
 {
 	return this->objectName;
 }
 
-char* TestNG6Object::getAttribute( RTI::AttributeHandle attribute )
+char* Test13Object::getAttribute( RTI::AttributeHandle attribute )
 {
 	return (*attributes)[attribute];
 }
 
-bool TestNG6Object::containsAttribute( RTI::AttributeHandle attribute )
+bool Test13Object::containsAttribute( RTI::AttributeHandle attribute )
 {
 	return attributes->find(attribute) != attributes->end();
 }
@@ -73,7 +73,7 @@ bool TestNG6Object::containsAttribute( RTI::AttributeHandle attribute )
  * the provided value, so it is the callers responsibility to delete the given newValue once it
  * is finished.
  */
-void TestNG6Object::setAttribute( RTI::AttributeHandle attribute, char *newValue )
+void Test13Object::setAttribute( RTI::AttributeHandle attribute, char *newValue )
 {
 	// attempt to erase the existing value, no effect if it doesn't exist
 	attributes->erase( attribute );
@@ -87,7 +87,7 @@ void TestNG6Object::setAttribute( RTI::AttributeHandle attribute, char *newValue
 /*
  * This will take the given AHVPS and update the local instance with the provided data.
  */
-void TestNG6Object::updateAttributes( const RTI::AttributeHandleValuePairSet& theAttributes )
+void Test13Object::updateAttributes( const RTI::AttributeHandleValuePairSet& theAttributes )
 {
 	for( RTI::ULong i = 0; i < theAttributes.size(); i++ )
 	{

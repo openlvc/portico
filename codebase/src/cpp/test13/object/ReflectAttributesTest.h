@@ -27,11 +27,11 @@ class ReflectAttributesTest : public CppUnit::TestFixture
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		TestNG6Federate *defaultFederate;
-		TestNG6Federate *listenerFederate;
+		Test13Federate *defaultFederate;
+		Test13Federate *listenerFederate;
 
 		RTI::ObjectHandle                theObject;
-		TestNG6Object                    *ng6Object;
+		Test13Object                    *ng6Object;
 
 		RTI::ObjectClassHandle           aHandle;
 		RTI::ObjectClassHandle           bHandle;
