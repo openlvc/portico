@@ -28,23 +28,23 @@
 	<!-- ==== Basic Properties ==== -->
 	<property name="cpp.build.dir"             location="${build.dir}/cpp/win32"/>
 
-	<!-- ==== NG6 and DLC13 Interface Properties ==== -->
+	<!-- ==== HLA13 and DLC13 Interface Properties ==== -->
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
-	<property name="test13.src.dir"            location="${cpp.src.dir}/test13"/>
+	<property name="test13.src.dir"            location="${cpp.src.dir}/hla13/test"/>
 
-	<!-- ng6 build -->
-	<property name="ng6.build.dir"             location="${cpp.build.dir}/ng6"/>
-	<property name="ng6.complete.dir"          location="${ng6.build.dir}/complete"/>
-	<property name="ng6.obj.dir"               location="${ng6.build.dir}/obj"/>
+	<!-- hla13 build -->
+	<property name="hla13.build.dir"           location="${cpp.build.dir}/hla13"/>
+	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
+	<property name="hla13.obj.dir"               location="${hla13.build.dir}/obj"/>
 
 	<!-- dlc13 build -->
 	<property name="dlc13.build.dir"           location="${cpp.build.dir}/dlc13"/>
 	<property name="dlc13.complete.dir"        location="${dlc13.build.dir}/complete"/>
 	<property name="dlc13.obj.dir"             location="${dlc13.build.dir}/obj"/>
 
-	<!-- ng6 test build -->
+	<!-- hla13 test build -->
 	<property name="test13.build.dir"          location="${cpp.build.dir}/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 	<property name="test13.obj.dir"            location="${test13.build.dir}/obj"/>
@@ -89,14 +89,14 @@
 	<target name="compile"
 	        extensionOf="master.compile"
 	        description="Compile the Portico C++ interfaces and Testing Suite for Win32 VC10"
-	        depends="compile.ng6, compile.dlc13, compile.ieee1516e"/>
+	        depends="compile.hla13, compile.dlc13, compile.ieee1516e"/>
 
-	<!-- ==================================== -->
-	<!--            NGv6 Interface            -->
-	<!-- ==================================== -->
-	<target name="compile.ng6">
+	<!-- ======================================= -->
+	<!--            HLA 1.3 Interface            -->
+	<!-- ======================================= -->
+	<target name="compile.hla13">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime" outdir="${ng6.build.dir}">
+		<cpp-win32 outfile="libFedTime" outdir="${hla13.build.dir}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -104,7 +104,7 @@
 				<include name="time/FedTimeFactory.cpp"/>
 				<include name="types/Exception.cpp"/>
 			</fileset>
-			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 			<define name="BUILDING_RTI"/> <!-- needed to ensure Exception.cpp stuff works -->
@@ -114,20 +114,20 @@
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="libRTI-NG" outdir="${ng6.build.dir}">
+		<cpp-win32 outfile="libRTI-NG" outdir="${hla13.build.dir}">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
 				<exclude name="time/FedTime.cpp"/>
 				<exclude name="time/FedTimeFactory.cpp"/>
 			</fileset>
-			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}"/>
 			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 			<define name="BUILDING_RTI"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
-			<library path="${ng6.build.dir}/complete" libs="FedTime"/>
+			<library path="${hla13.build.dir}/complete" libs="FedTime"/>
 			<library path="${jdk.home.win32}/lib" libs="jvm"/>
 		</cpp-win32>
 	</target>
@@ -138,60 +138,19 @@
 	<target name="compile.dlc13">
 		<!-- Windows DLC compilation currently disabled -->
 		<echo>Windows HLA 1.3 DLC interface genaration not currently supported</echo>
-
-		<!-- Build the fedtime DLL -->
-		<!--
-		<cpp-win32 outfile="libfedtime13" outdir="${dlc13.build.dir}">
-			<!- Filesets and other settings ->
-			<fileset dir="${hla13.src.dir}">
-				<include name="time/RTIfedTime.cpp"/>
-				<include name="time/FedTime.cpp"/>
-				<include name="time/FedTimeFactory.cpp"/>
-				<include name="types/Exception.cpp"/>
-			</fileset>
-			<includepath path="${hla13.include.dir}/dlc13"/>
-			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
-			<define name="BUILDING_DLC"/>
-			<define name="BUILDING_RTI"/> <!- needed to ensure Exception.cpp stuff works ->
-			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
-		</cpp-win32>
-		-->
-
-		<!-- Build the main DLL -->
-		<!--
-		<cpp-win32 outfile="librti13" outdir="${dlc13.build.dir}">
-			<fileset dir="${hla13.src.dir}">
-				<include name="**/*.cpp"/>
-				<exclude name="time/RTIfedTime.cpp"/>
-				<exclude name="time/FedTime.cpp"/>
-				<exclude name="time/FedTimeFactory.cpp"/>
-			</fileset>
-			<includepath path="${hla13.include.dir}/dlc13"/>
-			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home}/include;${jdk.home}/include/win32"/>
-			<define name="BUILDING_DLC"/>
-			<define name="BUILDING_RTI"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${dlc13.build.dir}/complete" libs="fedtime13"/>
-			<library path="${jdk.home}/lib" libs="jvm"/>
-		</cpp-win32>
-		-->
 	</target>
 
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="compile.test13" depends="compile.ng6">
+	<target name="compile.test13" depends="compile.hla13">
 		<cpp-win32 outfile="test13" outdir="${test13.build.dir}" type="executable">
 			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${hla13.include.dir}/ng6"/>
+			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include.dir}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${ng6.complete.dir}" libs="RTI-NG,FedTime"/>
+			<library path="${hla13.complete.dir}" libs="RTI-NG,FedTime"/>
 			<library path="${cppunit.lib.dir}" libs="cppunit"/>
 		</cpp-win32>
 	</target>
@@ -259,7 +218,7 @@
 	<target name="test.test13" depends="java.sandbox,compile.test13">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
-			<fileset dir="${resources.testdata.dir}/cpptest/ng6" includes="**/*"/>
+			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
 			<filterset begintoken="[" endtoken="]">
 				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
 			</filterset>
@@ -274,7 +233,7 @@
 		      resultproperty="test13.result">
 			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="PATH" path="${ng6.complete.dir};${jdk.home.win32}\jre\bin\client"/>
+			<env key="PATH" path="${hla13.complete.dir};${jdk.home.win32}\jre\bin\client"/>
 			<env key="PORTICO_DEBUG" value="OFF"/>
 			<env key="CLASSPATH" path="${dist.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
@@ -318,7 +277,7 @@
 		<!-- ========= -->
 		<!-- copy the Portico C++ libraries -->
 		<copy todir="${dist.lib.dir}">
-			<fileset dir="${ng6.complete.dir}"
+			<fileset dir="${hla13.complete.dir}"
 			         includes="**/*.lib,**/*.dll"
 			         excludes="**/history.xml"
 			         followsymlinks="false"/>

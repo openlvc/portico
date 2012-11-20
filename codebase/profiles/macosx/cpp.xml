@@ -31,7 +31,7 @@
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
-	<property name="test13.src.dir"            location="${cpp.src.dir}/test13"/>
+	<property name="test13.src.dir"            location="${cpp.src.dir}/hla13/test"/>
 	
 	<!-- hla13 build -->
 	<property name="hla13.build.dir"           location="${cpp.build.dir}/hla13"/>
@@ -90,9 +90,9 @@
 	        description="Compile the Portico C++ interfaces and Testing Suite for Mac OS X"
 	        depends="compile.hla13, compile.dlc13, compile.ieee1516e, compile.ieee1516e.example"/>
 
-	<!-- ==================================== -->
-	<!--            NGv6 Interface            -->
-	<!-- ==================================== -->
+	<!-- ======================================= -->
+	<!--            HLA 1.3 Interface            -->
+	<!-- ======================================= -->
 	<target name="compile.hla13">
 		<cpp-unix outfile="RTI-NG"
 		          outdir="${hla13.build.dir}"
