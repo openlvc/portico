@@ -296,15 +296,15 @@
 		<configuration configurationName="(ng6 win32) libRTI-NG.dll"/>
 		<configuration configurationName="cpp-macosx-ieee1516e"/>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-macosx-ng6"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="cpp-macosx-ng6"/>
-		<configuration configurationName="cpp-macosx-hla13">
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="cpp-win32-ieee1516e">
+		<configuration configurationName="cpp-macosx-hla13">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
 		<configuration configurationName="(ng6 Win32) libRTI-NG.dll">

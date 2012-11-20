@@ -17,38 +17,57 @@
 
 #pragma once
 
-#ifdef WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-#elif defined(__APPLE__)
-    #include <malloc/malloc.h>
-    #include <stdarg.h>
-    #include <ctype.h>
-    #include <ext/hash_map>
-	#include <string>
-	#include <cstring>
-	#include <sys/time.h>
-#else
-    #include <malloc.h>
-    #include <stdarg.h>
-    #include <ctype.h>
-	#include <ext/hash_map>
-	#include <string>
-	#include <cstring>
-	#include <sys/time.h>
+// determine the platform
+#if _WIN32 || _WIN64
+	// determine the platform 
+	#if _WIN32
+		#define ARCH_X86
+	#elif _WIN64
+		#define ARCH_AMD64
+	#endif
+
+	// windows platform, determine the compiler version
+	#if _MSC_VER >= 1700
+		#define VC_VERSION vc11
+		#define VC11
+	#elif _MSC_VER >= 1600
+		#define VC_VERSION vc10
+		#define VC10
+	#elif _MSC_VER >= 1500
+		#define VC_VERSION vc9
+		#define VC9
+	#elif _MSC_VER >= 1400
+		#define VC_VERSION vc8
+		#define VC8
+	#endif
+#elif __GNUC__
+	#if __x86_64__
+		#define ARCH_AMD64
+	#else
+		#define ARCH_X86
+	#endif
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <memory>
-#include <fstream>
-#include <set>
-#include <map>
-#include <typeinfo>
+// include some platform-dependant headers
+#ifdef _WIN32 || _WIN64
+    #include <windows.h>
+	#include <stdint.h>
+#elif defined(__APPLE__)
+    #include <stdarg.h>
+    #include <ctype.h>
+	#include <float.h>
+#else
+    #include <stdarg.h>
+    #include <ctype.h>
+#endif
 
+// standard library types
 using namespace std;
+#include <iostream>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
 
 #define PORTICO13_NS_START namespace portico13 {
 #define PORTICO13_NS_END };

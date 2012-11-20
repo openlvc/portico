@@ -23,17 +23,14 @@ else
         JAVA=$JAVA_HOME/bin/java
 fi
 
-#####################
-# test for RTI_HOME #
-#####################
-if [ "$RTI_HOME" = "" ]
-then
-	cd ../../..
-	RTI_HOME=$PWD
-	export RTI_HOME
-	cd examples/cpp/cpp13
-	echo WARNING Your RTI_HOME environment variable is not set, assuming $RTI_HOME
-fi
+###################
+# Set up RTI_HOME #
+###################
+cd ../../..
+RTI_HOME=$PWD
+export RTI_HOME
+cd examples/cpp/hla13
+echo RTI_HOME environment variable is set to $RTI_HOME
 
 ############################################
 ### (target) clean #########################
@@ -52,9 +49,9 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -O2 -fPIC -I$RTI_HOME/include/ng6 \
+	g++ -O2 -fPIC -I$RTI_HOME/include/hla13 \
 	    -DRTI_USES_STD_FSTREAM \
-		-lRTI-NG -L$RTI_HOME/lib \
+		-lRTI-NG -L$RTI_HOME/lib/gcc4 \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
 	exit;	
 fi
@@ -65,8 +62,9 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	DYLD_LIBRARY_PATH="$RTI_HOME/lib:$JAVA_HOME/jre/lib/server" ./example-federate $*
+	DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/server" ./example-federate $*
 	exit;
 fi
 
 echo $USAGE
+

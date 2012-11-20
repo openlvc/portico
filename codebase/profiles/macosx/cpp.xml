@@ -31,7 +31,8 @@
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
-	<property name="test13.src.dir"            location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
 	
 	<!-- hla13 build -->
 	<property name="hla13.build.dir"           location="${cpp.build.dir}/hla13"/>
@@ -154,7 +155,7 @@
 		          type="executable"
 		          compilerArgs="-g -Wno-write-strings"
 		          linkerArgs="">
-			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
+			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include}"/>
@@ -266,63 +267,55 @@
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
 	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox,compile">
-		<!-- ======= -->
-		<!-- Headers -->
-		<!-- ======= -->
-		<mkdir dir="${dist.sandbox.dir}/include"/>
-
-		<!-- copy the RTI headers over -->
-		<copy todir="${dist.sandbox.dir}/include">
-			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<!-- HLA 1.3 -->
+		<mkdir dir="${dist.sandbox.dir}/include/hla13"/>
+		<copy todir="${dist.sandbox.dir}/include/hla13">
+			<fileset dir="${hla13.include.dir}/hla13" includes="**/*"/>
 		</copy>
-		<mkdir dir="${dist.sandbox.dir}"/>
+		<!-- DLC 1.3 -->
+		<mkdir dir="${dist.sandbox.dir}/include/dlc13"/>
+		<copy todir="${dist.sandbox.dir}/include/dlc13">
+			<fileset dir="${hla13.include.dir}/dlc13" includes="**/*"/>
+		</copy>
+		<!-- IEEE-1516e -->
+		<mkdir dir="${dist.sandbox.dir}/include/ieee1516e"/>
 		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
 			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 
-		<!-- ========= -->
-		<!-- Libraries -->
-		<!-- ========= -->
-		<!-- copy the Portico C++ HLA 1.3, DLC 1.3 and IEEE-1516e libraries -->
-		<copy todir="${dist.lib.dir}">
-			<fileset dir="${hla13.complete.dir}"
-			         includes="**/*"
-			         excludes="**/history.xml"
-			         followsymlinks="false"/>
-			<fileset dir="${dlc13.complete.dir}"
-			         includes="**/*"
-			         excludes="**/history.xml"
-			         followsymlinks="false"/>
-			<fileset dir="${ieee1516e.complete.dir}"
-			         includes="**/*"
-			         excludes="**/history.xml"
-			         followsymlinks="false"/>
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the HLA 1.3 C++ libraries -->
+		<mkdir dir="${dist.lib.dir}/gcc4"/>
+		<copy todir="${dist.lib.dir}/gcc4">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>
+			<fileset dir="${dlc13.complete.dir}" includes="**/*.dylib"/>
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dylib"/>
 		</copy>
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG"/>   <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13"/>    <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e"/> <!-- ieee1516e -->
+		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
-		<!-- macosx: link the dylib and jnilib -->
-		<echo>creating symlinks from dylibs to jnilibs</echo>
-		<symlink-dylib directory="${dist.lib.dir}" name="libRTI-NG"/>   <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}" name="librti13"/>    <!-- dlc13 -->
-		<symlink-dylib directory="${dist.lib.dir}" name="librti1516e"/> <!-- ieee1516e -->
-		
-		<!-- macosx/linux: chmod the dylib/so appropriately -->
-		<chmod dir="${dist.lib.dir}" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
-
-		<!-- ================= -->
-		<!-- Example Federates -->
-		<!-- ================= -->
-		<!-- copy across the example federates -->
-		<copy todir="${dist.examples.dir}/cpp">
-			<fileset dir="${cpp.src.dir}/examples">
-				<include name="**/*"/>
-			</fileset>
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<!-- HLA 1.3 -->
+		<mkdir dir="${dist.examples.dir}/cpp/hla13"/>
+		<copy todir="${dist.examples.dir}/cpp/hla13">
+			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
+		<chmod dir="${dist.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
+		<!-- IEEE-1516e -->
 		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
 		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
-		<!-- chmod them -->
-		<chmod dir="${dist.examples.dir}/cpp" perm="777" includes="**/*.sh"/>
+		<chmod dir="${dist.examples.dir}/cpp/ieee1516e" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->

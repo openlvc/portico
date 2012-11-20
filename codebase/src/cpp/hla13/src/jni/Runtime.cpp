@@ -13,6 +13,7 @@
  *
  */
 #include "Runtime.h"
+#include <fstream>
 
 PORTICO13_NS_START
 
@@ -126,23 +127,27 @@ void Runtime::initializeJVM() throw( HLA::RTIinternalError )
 	///////////////////////////////////////////
 	// 1. get the classpath and library path //
 	///////////////////////////////////////////
-	char** paths = this->generatePaths();
-	logger->debug( "Using Classpath   : %s", paths[0] );
-	logger->debug( "Using Library Path: %s", paths[1] );
+	pair<string,string> paths = this->generatePaths();
+	logger->debug( "Using Classpath   : %s", paths.first.c_str() );
+	logger->debug( "Using Library Path: %s", paths.second.c_str() );
 
 	/////////////////////////////////////////////
 	// 2. check to see if a JVM already exists //
 	/////////////////////////////////////////////
+	// other jvm options - remember to increment the option array size
+	// if you are going to add more
+	string stackSize( "-Xss8m" );
+	
 	// before we can create or connect to the JVM, we need to specify its environment
-	JavaVMInitArgs vmArgs;
+	JavaVMInitArgs vmargs;
 	JavaVMOption options[3];
-	options[0].optionString = paths[0];
-	options[1].optionString = paths[1];
-	options[2].optionString = (char*)"-Xss8m";
-	vmArgs.nOptions = 3;
-	vmArgs.version = JNI_VERSION_1_2;
-	vmArgs.options = options;
-	vmArgs.ignoreUnrecognized = JNI_TRUE;
+	options[0].optionString = const_cast<char*>(paths.first.c_str());
+	options[1].optionString = const_cast<char*>(paths.second.c_str());
+	options[2].optionString = const_cast<char*>(stackSize.c_str());
+	vmargs.nOptions = 3;
+	vmargs.version = JNI_VERSION_1_6;
+	vmargs.options = options;
+	vmargs.ignoreUnrecognized = JNI_TRUE;
 
 	// Before we create the JVM, we will check to see if one already exists or
 	// not. If there is an existing one, we will just attach to it rather than
@@ -150,20 +155,22 @@ void Runtime::initializeJVM() throw( HLA::RTIinternalError )
 	jint result;
 	jsize jvmCount = 0;
 	result = JNI_GetCreatedJavaVMs( &jvm, 1, &jvmCount );
-	if( this->jvm != NULL && jvmCount > 0 && result == 0 )
+	if( this->jvm != NULL && jvmCount > 0 && result == JNI_OK )
 	{
 		///////////////////////////////////////////////////////////////
 		// JVM already exists, just attach to the existing reference //
 		///////////////////////////////////////////////////////////////
-		logger->debug( "Attaching to existing jvm" );
-		result = jvm->AttachCurrentThread( (void**)&jvmenv, &vmArgs );
+		logger->debug( "[check] JVM already exists, attaching to it" );
+		result = jvm->AttachCurrentThread( (void**)&jvmenv, &vmargs );
 		// check the result
 		if( result < 0 )
 		{
-			logger->fatal( "*** Couldn't attach to existing JVM! ***" );
-			throw HLA::RTIinternalError( "*** Couldn't attach to existing JVM! ***" );
+			logger->fatal( "*** JVM already existed, but we failed to attach ***" );
+			logger->fatal( "    result=%d", result );
+			throw HLA::RTIinternalError( "*** JVM already existed, but we failed to attach ***" );
 		}
 
+		// we're all attached just fine, so let's get out of here
 		this->attached = true;
 		return;
 	}
@@ -172,133 +179,79 @@ void Runtime::initializeJVM() throw( HLA::RTIinternalError )
 	// 3. create a new JVM instance //
 	//////////////////////////////////
 	// JVM doesn't exist yet, create a new one to work with
-	logger->debug( "Creating a new JVM" );
-	result = JNI_CreateJavaVM( &jvm, (void**)&jvmenv, &vmArgs );
-
-	////////////////////////////////////////////////
-	// 3a. clean up and check the creation result //
-	////////////////////////////////////////////////
-	// clean up before exiting
-	delete[] paths[0];
-	delete[] paths[1];
-	delete[] paths;
+	logger->debug( "[check] JVM doesn't exist, creating a new one" );
+	result = JNI_CreateJavaVM( &jvm, (void**)&jvmenv, &vmargs );
 
 	if( result < 0 )
 	{
 		logger->fatal( "*** Couldn't create a new JVM! *** result=%d", result );
-		throw HLA::RTIinternalError( "*** Error creating a new JVM! ***" );
-		return;
+		throw HLA::RTIinternalError( "*** Couldn't create a new JVM! ***" );
 	}
 
 	logger->info( "New JVM has been created" );
 }
 
-/*
- * This method will generate the classpath and library path that will be
- * used when starting the JVM. The Classpath will prefix the value of the
- * CLASSPATH environment variable to the string before adding Portico needed
- * entries. The library path will prefix the values of PATH (for windows) or
- * LD_LIBRARY_PATH (for good systems) before adding its own needed entries.
- *
- * The return value will be two char[]'s:
- *  1. The first points to the classpath information
- *  2. The second points to the library path information
- *
- * MEMORY MANAGEMENT: Note that the caller is responsible for the memory that
- *                    is created by this call and must "delete []" the arrays
+/**
+ * Depending on the operating system, kicks off the generation of the class
+ * and library paths. Returns these as a pair.
+ * 
+ * @return The classpath and library path to use when starting the JVM
  */
-char** Runtime::generatePaths() throw( HLA::RTIinternalError )
+pair<string,string> Runtime::generatePaths() throw( HLA::RTIinternalError )
 {
-	// check for the presence of RTI_HOME
+	// Check for the presence of RTI_HOME
+	// RTI_HOME *has* to be set. No two ways about it. Fail out if this isn't the case.
+	// We make all inferences about path locations based off it, give it to us!
 	char *rtihome = getenv( "RTI_HOME" );
-
-	// RTI_HOME *has* to be set. No two ways about it. Fail out if this isn't the case
-	// Wwe make all inferences about path locations based off it, give it to us!
 	if( !rtihome )
 	{
 		logger->fatal( "RTI_HOME not set: this is *REQUIRED* to point to your Portico directory" );
 		throw HLA::RTIinternalError( "RTI_HOME not set: this *must* point to your Portico directory" );
 	}
+	else
+	{
+		// check to make sure it is set to a valid location
+		if( pathExists(string(rtihome)) == false )
+		{
+			logger->fatal( "RTI_HOME doesn't exist: this is *REQUIRED* to point to your Portico directory" );
+			logger->fatal( "RTI_HOME set to [%s]", rtihome );
+			throw HLA::RTIinternalError( "RTI_HOME set to directory that doesn't exist" );
+		}
+	}
 
-	/////////////////////////////////
-	// 2. set up the various paths //
-	/////////////////////////////////
-	#ifdef WIN32
-		return generateWin32Path( rtihome );
+	// Get the class and library paths depending on the platform in use
+	#ifdef _WIN32 || _WIN64
+		return generateWinPath( string(rtihome) );
 	#else
-		char **returnValue = generateUnixPath( rtihome );
-		return returnValue;
-		//return generateUnixPath( rtihome );
+		return generateUnixPath( string(rtihome) );
 	#endif
 }
 
-/*
- * Generate the java.class.path and java.library.path for Windows
+/**
+ * Generate and return the classpath and system path to use when loading the RTI on
+ * *nix based systems. This method will construct two strings with the following:
+ * 
+ * (Classpath)
+ *   * System classpath
+ *   * $RTI_HOME\lib\portico.jar
+ *   
+ * (Library Path)
+ *   * System path
+ *   * $RTI_HOME\bin
+ *   * $JAVA_HOME\jre\lib\i386\client  (32-bit JRE)
+ *   * $JAVA_HOME\jre\lib\amd64\server (64-bit JRE)
+ * 
+ * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
+ * that Portico has shipped with.  
  */
-char** Runtime::generateWin32Path( char* rtihome ) throw( HLA::RTIinternalError )
+pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIinternalError )
 {
-	// this is the memory that will be returned
-	char** returnValue = new char*[2];
+	pair<string,string> paths;
 
-	// pick up the system classpath //
-	const char *systemClasspath = getenv( "CLASSPATH" );
-	if( !systemClasspath )
-	{
-		logger->debug( "CLASSPATH not set, using ." );
-		systemClasspath = ".";
-	}
-
-	// fill out the classpath
-	returnValue[0] = new char[4096+strlen(systemClasspath)];
-	sprintf( returnValue[0], "-Djava.class.path=.;%s;%s\\lib\\portico.jar", systemClasspath, rtihome );
-
-	// pick up the system path
-	const char *systemPath = getenv( "PATH" );
-	if( !systemPath )
-		systemPath = ".";
-
-	// get JAVA_HOME, if it isn't set, assume we have the standalone version of Portico
-	// ***JAVA_HOME STRUCTURE NOTE***
-	// even if JAVA_HOME is present, we have to add "JAVA_HOME\jre\bin\client" AND
-	// "JAVA_HOME\bin\client" to the path because we can't really tell if they're using the
-	// JDK or the JRE, and the path will be different. Easiest just to add both.
-	const char *javahome = getenv( "JAVA_HOME" );
-	if( !javahome )
-	{
-		logger->warn( "WARNING Environment variable JAVA_HOME not set, assuming it is: %s\\jre",
-		              rtihome );
-
-		returnValue[1] = new char[4096+strlen(systemPath)];
-		sprintf( returnValue[1],
-		         "-Djava.library.path=.;%s;%s\\bin;%s\\jre\\bin\\client",
-		         systemPath,
-		         rtihome,
-		         rtihome );
-	}
-	else
-	{
-		logger->debug( "JAVA_HOME set to %s", javahome );
-		returnValue[1] = new char[4096+strlen(systemPath)];
-		sprintf( returnValue[1],
-		         "-Djava.library.path=.;%s;%s\\bin;%s\\jre\\bin\\client;%s\\bin\\client",
-		         systemPath,
-		         rtihome,
-		         javahome,
-		         javahome );
-	}
-
-	return returnValue;
-}
-
-/*
- * Generate the java.class.path and java.library.path for Linux and Mac OS X
- */
-char** Runtime::generateUnixPath( char* rtihome ) throw( HLA::RTIinternalError )
-{
-	// this is the memory that will be returned
-	char** returnValue = new char*[2];
-
-	// pick up the system classpath //
+	//////////////////////////////////
+	// 1. Set up the Java Classpath //
+	//////////////////////////////////
+	// pick up the system classpath and put $RTI_HOME/lib/portico.jar on the end
 	const char *systemClasspath = getenv( "CLASSPATH" );
 	if( !systemClasspath )
 	{
@@ -306,11 +259,110 @@ char** Runtime::generateUnixPath( char* rtihome ) throw( HLA::RTIinternalError )
 		systemClasspath = "./";
 	}
 
-	// fill out the classpath
-	returnValue[0] = new char[4096+strlen(systemClasspath)];
-	sprintf( returnValue[0], "-Djava.class.path=.:%s:%s/lib/portico.jar", systemClasspath, rtihome );
+	// create out classpath
+	stringstream classpath;
+	classpath << "-Djava.class.path=.;"
+	          << rtihome << "\\lib\\portico.jar;"    // %RTI_HOME%\lib\portico.jar
+	          << string(systemClasspath);            // system classpath
+	paths.first = classpath.str();
 
-	// pick up the system path
+	////////////////////////////////
+	// 2. Set up the library path //
+	////////////////////////////////
+	// For the RTI to operate properly, the following must be on the path used to star the JVM:
+	//  * DLLs for the Portico C++ interface
+	//  * DLLs for the JVM
+	
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
+	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
+	stringstream jretest;
+	jretest << rtihome << "\\jre\\bin\\java.exe";
+	if( pathExists(jretest.str()) )
+	{
+		jrelocation = string(rtihome).append("\\jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
+	}
+	else
+	{
+		logger->warn( "WARNING Could not locate bundled JRE, fallback on %JAVA_HOME%: %s",
+		              jrelocation.c_str() );
+	}
+
+	// Get the system path so we can ensure it is on our library path
+	const char *systemPath = getenv( "PATH" );
+	if( !systemPath )
+		systemPath = "";
+
+	// Create our system path
+	stringstream libraryPath;
+	libraryPath << "-Djava.library.path=.;"
+	            << string(systemPath) << ";"
+	            << rtihome << "\\bin\\"
+#if VC11
+	            << "vc11"
+#elif VC10
+	            << "vc10"
+#elif VC9
+	            << "vc9"
+#elif VC8
+	            << "vc8"
+#endif
+
+#ifdef _WIN32
+	            << jrelocation << "\\lib\\i386\\client";
+#else
+	            << jrelocation << "\\lib\\amd64\\server";
+#endif	
+
+	paths.second = libraryPath.str();
+	return paths;
+}
+
+/**
+ * Generate and return the classpath and system path to use when loading the RTI on
+ * *nix based systems. This method will construct two strings with the following:
+ * 
+ * (Classpath)
+ *   * System classpath
+ *   * $RTI_HOME/lib/portico.jar
+ *   
+ * (Library Path)
+ *   * System path
+ *   * $RTI_HOME/lib
+ *   * $JAVA_HOME/jre/lib/server       (Mac OS X 64-bit)
+ *   * $JAVA_HOME/jre/lib/i386/client  (Win/Linux 32-bit)
+ *   * $JAVA_HOME/jre/lib/amd64/server (Win/Linux 64-bit)
+ * 
+ * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
+ * that Portico has shipped with.  
+ */
+pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIinternalError )
+{
+	pair<string,string> paths;
+
+	//////////////////////////////////
+	// 1. Set up the Java Classpath //
+	//////////////////////////////////
+	// pick up the system classpath and put $RTI_HOME/lib/portico.jar on the end
+	const char *systemClasspath = getenv( "CLASSPATH" );
+	if( !systemClasspath )
+	{
+		logger->debug( "CLASSPATH not set, using ." );
+		systemClasspath = "./";
+	}
+
+	// create out classpath
+	stringstream classpath;
+	classpath << "-Djava.class.path=.:"
+	          << string(systemClasspath) << ":"
+	          << rtihome << "/lib/portico.jar";
+	paths.first = classpath.str();
+
+	////////////////////////////////
+	// 2. Set up the library path //
+	////////////////////////////////
+	// Get the system path
 	#ifdef __APPLE__
 	const char *systemPath = getenv( "DYLD_LIBRARY_PATH" );
 	#else
@@ -321,35 +373,33 @@ char** Runtime::generateUnixPath( char* rtihome ) throw( HLA::RTIinternalError )
 	if( !systemPath )
 		systemPath = "";
 
-	const char *javahome = getenv( "JAVA_HOME" );
-	if( !javahome )
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
+	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
+	stringstream jretest;
+	jretest << rtihome << "/jre/bin/java";
+	if( pathExists(jretest.str()) )
 	{
-		#ifndef __APPLE__
-		logger->warn( "WARNING Environment variable JAVA_HOME not set, assuming it is: %s/jre",
-		              rtihome );
-		#endif
-
-		returnValue[1] = new char[4096+strlen(systemPath)];
-		sprintf( returnValue[1],
-		         "-Djava.library.path=.:%s:%s/lib:%s/jre/lib/i386/client:%s/jre/lib/amd64/server",
-		         systemPath,
-		         rtihome,
-		         rtihome,
-		         rtihome );
+		jrelocation = string(rtihome).append("/jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->debug( "JAVA_HOME set to %s", javahome );
-		returnValue[1] = new char[4096+strlen(systemPath)];
-		sprintf( returnValue[1],
-		         "-Djava.library.path=.:%s:%s/lib:%s/jre/lib/i386/client:%s/jre/lib/amd64/server",
-		         systemPath,
-		         rtihome,
-		         javahome,
-		         javahome );
+		logger->warn( "WARNING Could not locate bundled JRE, fallback on $JAVA_HOME: %s",
+		              jrelocation.c_str() );
 	}
 
-	return returnValue;
+	// Create our system path
+	stringstream libraryPath;
+	libraryPath << "-Djava.library.path=.:"
+	          << string(systemPath) << ":"
+	          << rtihome << "/lib/gcc4:"
+	          << jrelocation << "/jre/lib/server:"
+	          << jrelocation << "/jre/lib/i386/client:"
+	          << jrelocation << "/jre/lib/amd64/server";
+	paths.second = libraryPath.str();
+	
+	return paths;
 }
 
 /*
@@ -448,6 +498,16 @@ char* Runtime::convertAndReleaseJString( jstring string )
 
 	// return the userspace string
 	return userString;
+}
+
+/*
+ * Checks to see if a file exists, and if it does, returns true. Returns false otherwise
+ */
+bool Runtime::pathExists( string path )
+{
+	// just try and open it - the object will be collected
+	ifstream thefile( path.c_str() );
+	return (bool)thefile;
 }
 
 //----------------------------------------------------------

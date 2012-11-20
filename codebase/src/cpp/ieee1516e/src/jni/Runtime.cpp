@@ -14,6 +14,7 @@
  */
 #include "jni/Runtime.h"
 #include "jni/JniUtils.h"
+#include <fstream>
 
 PORTICO1516E_NS_START
 
@@ -219,10 +220,20 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
 		logger->fatal( "RTI_HOME not set: this is *REQUIRED* to point to your Portico directory" );
 		throw RTIinternalError( L"RTI_HOME not set: this *must* point to your Portico directory" );
 	}
+	else
+	{
+		// check to make sure it is set to a valid location
+		if( pathExists(string(rtihome)) == false )
+		{
+			logger->fatal( "RTI_HOME doesn't exist: this is *REQUIRED* to point to your Portico directory" );
+			logger->fatal( "RTI_HOME set to [%s]", rtihome );
+			throw RTIinternalError( L"RTI_HOME set to directory that doesn't exist" );
+		}
+	}
 
 	// Get the class and library paths depending on the platform in use
-	#ifdef WIN32
-		return generateWin32Path( string(rtihome) );
+	#ifdef _WIN32 || _WIN64
+		return generateWinPath( string(rtihome) );
 	#else
 		return generateUnixPath( string(rtihome) );
 	#endif
@@ -245,7 +256,7 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
  */
-pair<string,string> Runtime::generateWin32Path( string rtihome ) throw( RTIinternalError )
+pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinternalError )
 {
 	pair<string,string> paths;
 
@@ -263,41 +274,60 @@ pair<string,string> Runtime::generateWin32Path( string rtihome ) throw( RTIinter
 	// create out classpath
 	stringstream classpath;
 	classpath << "-Djava.class.path=.;"
-	          << string(systemClasspath) << ";"
-	          << rtihome << "\\lib\\portico.jar";
+	          << rtihome << "\\lib\\portico.jar;"    // %RTI_HOME%\lib\portico.jar
+	          << string(systemClasspath);            // system classpath
 	paths.first = classpath.str();
 
 	////////////////////////////////
 	// 2. Set up the library path //
 	////////////////////////////////
-	// Get the system path
-	const char *systemPath = getenv( "PATH" );
-	if( !systemPath )
-		systemPath = "";
+	// For the RTI to operate properly, the following must be on the path used to star the JVM:
+	//  * DLLs for the Portico C++ interface
+	//  * DLLs for the JVM
 	
-	// Get JAVA_HOME
-	// fall back to use RTI_HOME if not set
-	const char *javahome = getenv( "JAVA_HOME" );
-	if( !javahome )
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
+	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
+	stringstream jretest;
+	jretest << rtihome << "\\jre\\bin\\java.exe";
+	if( pathExists(jretest.str()) )
 	{
-		javahome = rtihome.c_str();
-		logger->warn( "WARNING Environment variable JAVA_HOME not set, assuming it is: %s\\jre",
-		              rtihome.c_str() );
+		jrelocation = string(rtihome).append("\\jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->debug( "JAVA_HOME set to %s", javahome );
+		logger->warn( "WARNING Could not locate bundled JRE, fallback on %JAVA_HOME%: %s",
+		              jrelocation.c_str() );
 	}
+
+	// Get the system path so we can ensure it is on our library path
+	const char *systemPath = getenv( "PATH" );
+	if( !systemPath )
+		systemPath = "";
 
 	// Create our system path
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.;"
-	          << string(systemPath) << ";"
-	          << rtihome << "\\bin;"
-	          << string(javahome) << "\\jre\\lib\\i386\\client;"
-	          << string(javahome) << "\\jre\\lib\\amd64\\server";
-	paths.second = libraryPath.str();
+	            << string(systemPath) << ";"
+	            << rtihome << "\\bin\\"
+#if VC11
+	            << "vc11"
+#elif VC10
+	            << "vc10"
+#elif VC9
+	            << "vc9"
+#elif VC8
+	            << "vc8"
+#endif
 
+#ifdef _WIN32
+	            << jrelocation << "\\lib\\i386\\client";
+#else
+	            << jrelocation << "\\lib\\amd64\\server";
+#endif	
+
+	paths.second = libraryPath.str();
 	return paths;
 }
 
@@ -354,29 +384,31 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	// make sure we have a system path
 	if( !systemPath )
 		systemPath = "";
-	
-	// Get JAVA_HOME
-	// fall back to use RTI_HOME if not set
-	const char *javahome = getenv( "JAVA_HOME" );
-	if( !javahome )
+
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
+	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
+	stringstream jretest;
+	jretest << rtihome << "/jre/bin/java";
+	if( pathExists(jretest.str()) )
 	{
-		javahome = rtihome.c_str();
-		logger->warn( "WARNING Environment variable JAVA_HOME not set, assuming it is: %s/jre",
-		              rtihome.c_str() );
+		jrelocation = string(rtihome).append("/jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->debug( "JAVA_HOME set to %s", javahome );
+		logger->warn( "WARNING Could not locate bundled JRE, fallback on $JAVA_HOME: %s",
+		              jrelocation.c_str() );
 	}
 
 	// Create our system path
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
 	          << string(systemPath) << ":"
-	          << rtihome << "/lib:"
-	          << string(javahome) << "/jre/lib/server:"
-	          << string(javahome) << "/jre/lib/i386/client:"
-	          << string(javahome) << "/jre/lib/amd64/server";
+	          << rtihome << "/lib/gcc4:"
+	          << jrelocation << "/jre/lib/server:"
+	          << jrelocation << "/jre/lib/i386/client:"
+	          << jrelocation << "/jre/lib/amd64/server";
 	paths.second = libraryPath.str();
 	
 	return paths;
@@ -522,6 +554,16 @@ void Runtime::detachFromJVM()
 		logger->debug( "Detached curren thread from JVM" );
 	else
 		logger->fatal( "Couldn't detach current thread from JVM" );
+}
+
+/*
+ * Checks to see if a file exists, and if it does, returns true. Returns false otherwise
+ */
+bool Runtime::pathExists( string path )
+{
+	// just try and open it - the object will be collected
+	ifstream thefile( path.c_str() );
+	return (bool)thefile;
 }
 
 //------------------------------------------------------------------------------------------

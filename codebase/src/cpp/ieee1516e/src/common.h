@@ -17,8 +17,39 @@
 
 #pragma once
 
-#ifdef WIN32
-    #define WIN32_LEAN_AND_MEAN
+// determine the platform
+#if _WIN32 || _WIN64
+	// determine the platform 
+	#if _WIN32
+		#define ARCH_X86
+	#elif _WIN64
+		#define ARCH_AMD64
+	#endif
+
+	// windows platform, determine the compiler version
+	#if _MSC_VER >= 1700
+		#define VC_VERSION vc11
+		#define VC11
+	#elif _MSC_VER >= 1600
+		#define VC_VERSION vc10
+		#define VC10
+	#elif _MSC_VER >= 1500
+		#define VC_VERSION vc9
+		#define VC9
+	#elif _MSC_VER >= 1400
+		#define VC_VERSION vc8
+		#define VC8
+	#endif
+#elif __GNUC__
+	#if __x86_64__
+		#define ARCH_AMD64
+	#else
+		#define ARCH_X86
+	#endif
+#endif
+
+// include some platform-dependant headers
+#ifdef _WIN32 || _WIN64
     #include <windows.h>
 	#include <stdint.h>
 #elif defined(__APPLE__)

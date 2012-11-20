@@ -110,13 +110,16 @@ class Runtime
 		 * JRE that Portico ships with.
 		 */
 		pair<string,string> generatePaths() throw( RTIinternalError );
-		pair<string,string> generateWin32Path( string rtihome ) throw( RTIinternalError );
+		pair<string,string> generateWinPath( string rtihome ) throw( RTIinternalError );
 		pair<string,string> generateUnixPath( string rtihome ) throw( RTIinternalError );
 		
 		/**
 		 * Invoke the Java class to load and parse the RID file, ignore if it doesn't exist.
 		 */
 		void processRid() throw( RTIinternalError );
+		
+		// utility methods
+		bool pathExists( string path );
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
