@@ -256,14 +256,14 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	if( !systemClasspath )
 	{
 		logger->debug( "CLASSPATH not set, using ." );
-		systemClasspath = "./";
+		systemClasspath = ".";
 	}
 
 	// create out classpath
 	stringstream classpath;
 	classpath << "-Djava.class.path=.;"
-	          << rtihome << "\\lib\\portico.jar;"    // %RTI_HOME%\lib\portico.jar
-	          << string(systemClasspath);            // system classpath
+	          << string(systemClasspath) << ";"      // system classpath
+	          << rtihome << "\\lib\\portico.jar;";   // %RTI_HOME%\lib\portico.jar
 	paths.first = classpath.str();
 
 	////////////////////////////////
