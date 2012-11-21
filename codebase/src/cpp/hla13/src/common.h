@@ -50,16 +50,26 @@
 
 // include some platform-dependant headers
 #ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 	#include <stdint.h>
 #elif defined(__APPLE__)
+    #include <malloc/malloc.h>
     #include <stdarg.h>
     #include <ctype.h>
-	#include <float.h>
+//	#include <float.h>
+    #include <ext/hash_map>
+	#include <sys/time.h>
 #else
+    #include <malloc.h>
     #include <stdarg.h>
     #include <ctype.h>
+    #include <ext/hash_map>
+	#include <sys/time.h>
 #endif
+
+//#include <stdlib.h>
+//#include <stdio.h>
 
 // standard library types
 using namespace std;
@@ -67,7 +77,11 @@ using namespace std;
 #include <map>
 #include <set>
 #include <sstream>
+#include <fstream>
 #include <string>
+#include <cstring>
+#include <memory>
+#include <typeinfo>
 
 #define PORTICO13_NS_START namespace portico13 {
 #define PORTICO13_NS_END };

@@ -83,7 +83,7 @@ JavaRTI::~JavaRTI()
  */
 long JavaRTI::currentTimeMillis()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	LARGE_INTEGER now;
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency( &freq );
