@@ -53,7 +53,7 @@ enum SyncRegResult{ WAITING, FAILURE, SUCCESS };
  * "waitForXxx" methods that will wait for a certain amount of time for an event to happen before
  * it goes ahead and fails the test.
  */
-class TestNG6FederateAmbassador : public NullFederateAmbassador
+class Test13FederateAmbassador : public NullFederateAmbassador
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -108,8 +108,8 @@ class TestNG6FederateAmbassador : public NullFederateAmbassador
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		TestNG6FederateAmbassador( Test13Federate *testFederate );
-		~TestNG6FederateAmbassador() throw( RTI::FederateInternalError );
+		Test13FederateAmbassador( Test13Federate *testFederate );
+		~Test13FederateAmbassador() throw( RTI::FederateInternalError );
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

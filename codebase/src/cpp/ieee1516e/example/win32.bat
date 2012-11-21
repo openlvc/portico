@@ -22,7 +22,7 @@ rem ###################
 :rtihome
 cd ..\..\..
 set RTI_HOME=%CD%
-cd examples\cpp\cpp13
+cd examples\cpp\ieee1516e
 echo RTI_HOME environment variable is set to %RTI_HOME%
 goto run
 

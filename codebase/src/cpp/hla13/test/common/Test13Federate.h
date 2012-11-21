@@ -18,7 +18,7 @@
 #include "Common.h"
 
 // forward declaration for circular dependency
-class TestNG6FederateAmbassador;
+class Test13FederateAmbassador;
 
 class Test13Federate
 {
@@ -38,7 +38,7 @@ class Test13Federate
 		RTI::FederateHandle       federateHandle;
 	public:
 		RTI::RTIambassador        *rtiamb;
-		TestNG6FederateAmbassador *fedamb;
+		Test13FederateAmbassador *fedamb;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS

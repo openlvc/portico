@@ -126,14 +126,16 @@
 									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
 									<listOptionValue builtIn="false" value="RTI_USES_STD_FSTREAM"/>
 									<listOptionValue builtIn="false" value="RTI_DISABLE_WARNINGS"/>
+									<listOptionValue builtIn="false" value="_WIN32"/>
 								</option>
 								<option id="org.eclipse.cdt.msvc.cl.option.includes.1724424626" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${WindowsSDK}\Include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${VS100COMNTOOLS}..\..\VC\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include/win32&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${WindowsSdkOnWin32}\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${WindowsSdkOnWin64}\Include&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.msvc.cl.inputType.540888718" superClass="org.eclipse.cdt.msvc.cl.inputType"/>
 							</tool>
@@ -286,6 +288,115 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
+		<cconfiguration id="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529" moduleId="org.eclipse.cdt.core.settings" name="cpp-win32-hla13">
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/cpp-win32-hla13"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="librti1516e" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="dll" artifactName="librti1516e" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" description="Portico C++ HLA 1.3 Interface for Windows 32bit" id="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529" name="cpp-win32-hla13" parent="org.eclipse.cdt.msvc.dll.debug">
+					<folderInfo id="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529." name="/" resourcePath="">
+						<toolChain id="org.eclipse.cdt.msvc.toolchain.dll.debug.238155832" name="Microsoft Visual C++" resourceTypeBasedDiscovery="true" superClass="org.eclipse.cdt.msvc.toolchain.dll.debug">
+							<targetPlatform id="org.eclipse.cdt.msvc.targetPlatform.dll.debug.1904089127" superClass="org.eclipse.cdt.msvc.targetPlatform.dll.debug"/>
+							<builder buildPath="${workspace_loc:/portico/eclipse-build/cpp/ng6-win32-libRTI-NG.dll}" id="org.eclipse.cdt.msvc.builder.1360120136" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" parallelBuildOn="false" superClass="org.eclipse.cdt.msvc.builder"/>
+							<tool id="org.eclipse.cdt.msvc.cl.c.dll.debug.1950521306" name="C Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.c.dll.debug">
+								<option id="org.eclipse.cdt.msvc.cl.option.optimization.806789526" name="Optimization" superClass="org.eclipse.cdt.msvc.cl.option.optimization" value="org.eclipse.cdt.msvc.cl.option.optimization.default" valueType="enumerated"/>
+								<option id="org.eclipse.cdt.msvc.cl.option.debugFormat.1160959010" name="Debug Information Format" superClass="org.eclipse.cdt.msvc.cl.option.debugFormat" value="org.eclipse.cdt.msvc.cl.option.debugFormat.complete" valueType="enumerated"/>
+								<option id="org.eclipse.cdt.msvc.cl.option.includes.479237333" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico}&quot;"/>
+								</option>
+								<inputType id="org.eclipse.cdt.msvc.cl.inputType.c.841600015" superClass="org.eclipse.cdt.msvc.cl.inputType.c"/>
+							</tool>
+							<tool command="&quot;${VS100COMNTOOLS}..\..\VC\vcvarsall.bat&quot; x86 &amp;&amp; cl /c" id="org.eclipse.cdt.msvc.cl.dll.debug.1566143003" name="C++ Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.dll.debug">
+								<option id="org.eclipse.cdt.msvc.cl.option.optimization.749637450" name="Optimization" superClass="org.eclipse.cdt.msvc.cl.option.optimization" value="org.eclipse.cdt.msvc.cl.option.optimization.1" valueType="enumerated"/>
+								<option id="org.eclipse.cdt.msvc.cl.option.debugFormat.1645943508" name="Debug Information Format" superClass="org.eclipse.cdt.msvc.cl.option.debugFormat" value="org.eclipse.cdt.msvc.cl.option.debugFormat.complete" valueType="enumerated"/>
+								<option id="org.eclipse.cdt.msvc.cl.option.macros.867637435" name="Defines (/D)" superClass="org.eclipse.cdt.msvc.cl.option.macros" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="WIN32"/>
+									<listOptionValue builtIn="false" value="BUILDING_RTI"/>
+									<listOptionValue builtIn="false" value="RTI_USES_STD_FSTREAM"/>
+									<listOptionValue builtIn="false" value="RTI_DISABLE_WARNINGS"/>
+									<listOptionValue builtIn="false" value="BUILDING_FED_TIME"/>
+								</option>
+								<option id="org.eclipse.cdt.msvc.cl.option.includes.1051642514" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${VS100COMNTOOLS}..\..\VC\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include/win32&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/hla13/include/hla13}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/hla13/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/hla13/test}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${WindowsSdkOnWin32}\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${WindowsSdkOnWin64}\Include&quot;"/>
+								</option>
+								<inputType id="org.eclipse.cdt.msvc.cl.inputType.1683499372" superClass="org.eclipse.cdt.msvc.cl.inputType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.msvc.rc.dll.debug.2126347436" name="Resource Compiler (rc)" superClass="org.eclipse.cdt.msvc.rc.dll.debug">
+								<option id="org.eclipse.cdt.msvc.rc.option.includes.408746845" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.rc.option.includes"/>
+								<inputType id="org.eclipse.cdt.msvc.rc.inputType.933048016" superClass="org.eclipse.cdt.msvc.rc.inputType"/>
+							</tool>
+							<tool command="&quot;${VS100COMNTOOLS}..\..\VC\vcvarsall.bat&quot; x86 &amp;&amp; link" id="org.eclipse.cdt.msvc.link.dll.debug.512515015" name="Linker (link)" superClass="org.eclipse.cdt.msvc.link.dll.debug">
+								<option defaultValue="true" id="org.eclipse.cdt.msvc.link.option.dll.55155825" name="Build a DLL" superClass="org.eclipse.cdt.msvc.link.option.dll" valueType="boolean"/>
+								<option id="org.eclipse.cdt.msvc.link.option.debug.207936465" name="Generate Debug Info (/debug)" superClass="org.eclipse.cdt.msvc.link.option.debug" value="true" valueType="boolean"/>
+								<option id="org.eclipse.cdt.msvc.link.option.libraries.40083452" name="Libraries" superClass="org.eclipse.cdt.msvc.link.option.libraries" valueType="libs">
+									<listOptionValue builtIn="false" value="${JAVA_HOME}\lib\jvm.lib"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/win32/vc10/cppunit.lib}&quot;"/>
+								</option>
+								<inputType id="org.eclipse.cdt.msvc.link.inputType.708297839" superClass="org.eclipse.cdt.msvc.link.inputType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.msvc.lib.774813604" name="Library Manager (lib)" superClass="org.eclipse.cdt.msvc.lib"/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529.codebase/src/cpp/ieee1516e/example" name="/" resourcePath="codebase/src/cpp/ieee1516e/example">
+						<toolChain id="org.eclipse.cdt.msvc.toolchain.dll.debug.871794861" name="Microsoft Visual C++" superClass="org.eclipse.cdt.msvc.toolchain.dll.debug" unusedChildren="">
+							<targetPlatform id="org.eclipse.cdt.msvc.targetPlatform.dll.debug.927275643" superClass="org.eclipse.cdt.msvc.targetPlatform.dll.debug"/>
+							<tool id="org.eclipse.cdt.msvc.cl.c.dll.debug.575414739" name="C Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.c.dll.debug.1950521306">
+								<inputType id="org.eclipse.cdt.msvc.cl.inputType.c.94297050" superClass="org.eclipse.cdt.msvc.cl.inputType.c"/>
+							</tool>
+							<tool id="org.eclipse.cdt.msvc.cl.dll.debug.1771910585" name="C++ Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.dll.debug.1566143003">
+								<option id="org.eclipse.cdt.msvc.cl.option.includes.2041726184" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${WindowsSDK}\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${VS100COMNTOOLS}..\..\VC\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${JAVA_HOME}/include/win32&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/codebase/src/cpp/ieee1516e/example}&quot;"/>
+								</option>
+								<inputType id="org.eclipse.cdt.msvc.cl.inputType.233285390" superClass="org.eclipse.cdt.msvc.cl.inputType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.msvc.rc.dll.debug.1724215282" name="Resource Compiler (rc)" superClass="org.eclipse.cdt.msvc.rc.dll.debug.2126347436">
+								<inputType id="org.eclipse.cdt.msvc.rc.inputType.641497455" superClass="org.eclipse.cdt.msvc.rc.inputType"/>
+							</tool>
+							<tool id="org.eclipse.cdt.msvc.link.dll.debug.751232532" name="Linker (link)" superClass="org.eclipse.cdt.msvc.link.dll.debug.512515015"/>
+							<tool id="org.eclipse.cdt.msvc.lib.1211396544" name="Library Manager (lib)" superClass="org.eclipse.cdt.msvc.lib.774813604"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="codebase/src/cpp/hla13/test"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="portico;org.eclipse.cdt.msvc.dll.debug.355197734" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/eclipse-build/cpp/ng6-win32-libFedTime.dll"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/(ng6 win32) libFedTime.dll"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="libFedTime" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+			</storageModule>
+		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="portico.org.eclipse.cdt.msvc.projectType.dll.997918259" name="Shared Library" projectType="org.eclipse.cdt.msvc.projectType.dll"/>
@@ -295,12 +406,15 @@
 		<configuration configurationName="(ng6 Win32) libFedTime.dll"/>
 		<configuration configurationName="(ng6 win32) libRTI-NG.dll"/>
 		<configuration configurationName="cpp-macosx-ieee1516e"/>
+		<configuration configurationName="cpp-win32-hla13">
+			<resource resourceType="PROJECT" workspacePath="/portico"/>
+		</configuration>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
-		<configuration configurationName="cpp-macosx-ng6"/>
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-macosx-ng6"/>
 		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
@@ -312,8 +426,12 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529;org.eclipse.cdt.msvc.dll.debug.2103734852.144091529.;org.eclipse.cdt.msvc.cl.dll.debug.1566143003;org.eclipse.cdt.msvc.cl.inputType.1683499372">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.554976421;org.eclipse.cdt.msvc.dll.debug.554976421.;org.eclipse.cdt.msvc.cl.dll.release.327246943;org.eclipse.cdt.msvc.cl.inputType.742594351">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
 		</scannerConfigBuildInfo>
@@ -353,6 +471,9 @@
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.;org.eclipse.cdt.msvc.cl.dll.debug.2063577613;org.eclipse.cdt.msvc.cl.inputType.605686804">
 			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529;org.eclipse.cdt.msvc.dll.debug.2103734852.144091529.;org.eclipse.cdt.msvc.cl.c.dll.debug.1950521306;org.eclipse.cdt.msvc.cl.inputType.c.841600015">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.554976421;org.eclipse.cdt.msvc.dll.debug.554976421.;org.eclipse.cdt.msvc.cl.c.dll.release.1409344756;org.eclipse.cdt.msvc.cl.inputType.c.218156914">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
 		</scannerConfigBuildInfo>
@@ -360,5 +481,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

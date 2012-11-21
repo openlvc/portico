@@ -60,7 +60,7 @@ void JoinFederationTest::testJoinFederation()
 	try
 	{
 		// create the FederateAmbassador
-		defaultFederate->fedamb = new TestNG6FederateAmbassador( defaultFederate );
+		defaultFederate->fedamb = new Test13FederateAmbassador( defaultFederate );
 
 		// join the federation
 		defaultFederate->rtiamb->joinFederationExecution( defaultFederate->getFederateName(),
@@ -82,7 +82,7 @@ void JoinFederationTest::testJoinFederationThatDoesNotExist()
 	try
 	{
 		// create the FederateAmbassador
-		defaultFederate->fedamb = new TestNG6FederateAmbassador( defaultFederate );
+		defaultFederate->fedamb = new Test13FederateAmbassador( defaultFederate );
 
 		// try and join the federation
 		defaultFederate->rtiamb->joinFederationExecution( defaultFederate->getFederateName(),
@@ -110,7 +110,7 @@ void JoinFederationTest::testJoinFederationWithNullFederationName()
 	try
 	{
 		// create the FederateAmbassador
-		defaultFederate->fedamb = new TestNG6FederateAmbassador( defaultFederate );
+		defaultFederate->fedamb = new Test13FederateAmbassador( defaultFederate );
 
 		// try and join the federation
 		defaultFederate->rtiamb->joinFederationExecution( defaultFederate->getFederateName(),

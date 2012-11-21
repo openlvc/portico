@@ -32,12 +32,13 @@
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include"/>
-	<property name="test13.src.dir"            location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
 
 	<!-- hla13 build -->
 	<property name="hla13.build.dir"           location="${cpp.build.dir}/hla13"/>
 	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
-	<property name="hla13.obj.dir"               location="${hla13.build.dir}/obj"/>
+	<property name="hla13.obj.dir"             location="${hla13.build.dir}/obj"/>
 
 	<!-- dlc13 build -->
 	<property name="dlc13.build.dir"           location="${cpp.build.dir}/dlc13"/>
@@ -143,9 +144,9 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="compile.test13" depends="compile.hla13">
+	<target name="compile.hla13.test" depends="compile.hla13">
 		<cpp-win32 outfile="test13" outdir="${test13.build.dir}" type="executable">
-			<fileset dir="${test13.src.dir}" includes="**/*.cpp"/>
+			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include.dir}"/>
@@ -210,12 +211,12 @@
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
 	<!-- Depends on java.sandbox so the jar file is constructed for the C++ side to call into -->
-	<target name="test" extensionOf="master.test" depends="compile, java.sandbox, test.test13"/>
+	<target name="test" extensionOf="master.test" depends="compile, java.sandbox, test.hla13"/>
 
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.test13" depends="java.sandbox,compile.test13">
+	<target name="test.hla13" depends="java.sandbox,compile.hla13.test">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
@@ -257,57 +258,60 @@
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
 	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox, compile">
-		<!-- ======= -->
-		<!-- Headers -->
-		<!-- ======= -->
-		<mkdir dir="${dist.sandbox.dir}/include"/>
-
-		<!-- copy the RTI headers over -->
-		<!-- hla13 headers -->
-		<copy todir="${dist.sandbox.dir}/include">
-			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<!-- HLA 1.3 -->
+		<mkdir dir="${dist.sandbox.dir}/include/hla13"/>
+		<copy todir="${dist.sandbox.dir}/include/hla13">
+			<fileset dir="${hla13.include.dir}/hla13" includes="**/*"/>
 		</copy>
-		<!-- ieee1516e headers -->
+		<!-- DLC 1.3 -->
+		<!--
+		<mkdir dir="${dist.sandbox.dir}/include/dlc13"/>
+		<copy todir="${dist.sandbox.dir}/include/dlc13">
+			<fileset dir="${hla13.include.dir}/dlc13" includes="**/*"/>
+		</copy>
+		-->
+		<!-- IEEE-1516e -->
+		<mkdir dir="${dist.sandbox.dir}/include/ieee1516e"/>
 		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
 			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 
-		<!-- ========= -->
-		<!-- Libraries -->
-		<!-- ========= -->
-		<!-- copy the Portico C++ libraries -->
-		<copy todir="${dist.lib.dir}">
-			<fileset dir="${hla13.complete.dir}"
-			         includes="**/*.lib,**/*.dll"
-			         excludes="**/history.xml"
-			         followsymlinks="false"/>
-			<fileset dir="${ieee1516e.complete.dir}"
-			         includes="**/*.lib,**/*.dll"
-			         excludes="**/history.xml"
-			         followsymlinks="false"/>
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${dist.lib.dir}/vc10"/>
+		<copy todir="${dist.lib.dir}/vc10">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.lib"/>
+			<!--<fileset dir="${dlc13.complete.dir}" includes="**/*.lib"/>-->
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib"/>
+		</copy>
+		<!-- Copy across the C++ dlls -->
+		<mkdir dir="${dist.bin.dir}/vc10"/>
+		<copy todir="${dist.bin.dir}/vc10">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.dll"/>
+			<!--<fileset dir="${dlc13.complete.dir}" includes="**/*.dll"/>-->
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dll"/>
 		</copy>
 
-		<!-- win32: move an dlls to bin -->
-		<mkdir dir="${dist.sandbox.dir}/bin"/>
-		<move todir="${dist.sandbox.dir}/bin">
-			<fileset dir="${dist.lib.dir}" includes="**/*.dll"/>
-		</move>
-
-		<!-- ================= -->
-		<!-- Example Federates -->
-		<!-- ================= -->
-		<!-- copy across the example federates -->
-		<mkdir dir="${dist.examples.dir}/cpp"/>
-		<copy todir="${dist.examples.dir}/cpp">
-			<fileset dir="${cpp.src.dir}/examples">
-				<include name="**/*"/>
-			</fileset>
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<!-- HLA 1.3 -->
+		<mkdir dir="${dist.examples.dir}/cpp/hla13"/>
+		<copy todir="${dist.examples.dir}/cpp/hla13">
+			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
-		<!-- copy across the ieee1516e example federate -->
+		<chmod dir="${dist.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
+		<!-- IEEE-1516e -->
 		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
 		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
+		<chmod dir="${dist.examples.dir}/cpp/ieee1516e" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->

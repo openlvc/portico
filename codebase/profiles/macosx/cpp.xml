@@ -289,7 +289,7 @@
 		<!-- ========================= -->
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
-		<!-- Copy across the HLA 1.3 C++ libraries -->
+		<!-- Copy across the C++ libraries -->
 		<mkdir dir="${dist.lib.dir}/gcc4"/>
 		<copy todir="${dist.lib.dir}/gcc4">
 			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>

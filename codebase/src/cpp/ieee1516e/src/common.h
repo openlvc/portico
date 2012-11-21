@@ -18,11 +18,12 @@
 #pragma once
 
 // determine the platform
-#if _WIN32 || _WIN64
+#ifdef _WIN32
 	// determine the platform 
-	#if _WIN32
+	#ifdef _WIN32
 		#define ARCH_X86
-	#elif _WIN64
+	#endif
+	#ifdef _WIN64
 		#define ARCH_AMD64
 	#endif
 
@@ -49,7 +50,8 @@
 #endif
 
 // include some platform-dependant headers
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 	#include <stdint.h>
 #elif defined(__APPLE__)

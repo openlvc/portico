@@ -48,7 +48,7 @@ JavaRTI* getRTI( int id )
 	JavaRTI *theRTI = Runtime::getRuntime()->getRtiAmbassador( id );
 	if( theRTI == NULL )
 	{
-		printf( "ERROR [fedamb] Received callback for unknown federate (id=%d)\n", id );
+		cout << "ERROR [fedamb] Received callback for unknown federate (id=" << id << ")" << endl;
 	}
 	
 	return theRTI;

@@ -12,6 +12,8 @@
  *   (that goes for your lawyer as well)
  *
  */
+#include "Common.h"
+
 // CPP Unit includes
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/XmlOutputter.h>

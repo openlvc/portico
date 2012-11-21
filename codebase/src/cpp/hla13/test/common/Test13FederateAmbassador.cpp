@@ -16,14 +16,14 @@
 
 using namespace std;
 
-int    TestNG6FederateAmbassador::STRING_SIZE = 256;
-double TestNG6FederateAmbassador::TIMEOUT = 0.7;
-int    TestNG6FederateAmbassador::BUFFER_SIZE = 64;
+int    Test13FederateAmbassador::STRING_SIZE = 256;
+double Test13FederateAmbassador::TIMEOUT = 0.7;
+int    Test13FederateAmbassador::BUFFER_SIZE = 64;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-TestNG6FederateAmbassador::TestNG6FederateAmbassador( Test13Federate *testFederate )
+Test13FederateAmbassador::Test13FederateAmbassador( Test13Federate *testFederate )
 {
 	this->testFederate = testFederate;
 	
@@ -63,7 +63,7 @@ TestNG6FederateAmbassador::TestNG6FederateAmbassador( Test13Federate *testFedera
 	this->failedRestoreRequest     = NULL;
 }
 
-TestNG6FederateAmbassador::~TestNG6FederateAmbassador() throw( RTI::FederateInternalError )
+Test13FederateAmbassador::~Test13FederateAmbassador() throw( RTI::FederateInternalError )
 {
 	// clean up all the maps
 	SET_LTSTR_CLEANUP( synchronized );
@@ -109,12 +109,12 @@ TestNG6FederateAmbassador::~TestNG6FederateAmbassador() throw( RTI::FederateInte
 //////////////////////////////////// Testing Convenience Methods ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void TestNG6FederateAmbassador::tick()
+void Test13FederateAmbassador::tick()
 {
 	this->testFederate->getRtiAmb()->tick();
 }
 
-time_t TestNG6FederateAmbassador::getCurrentTime()
+time_t Test13FederateAmbassador::getCurrentTime()
 {
 	return time(NULL);
 }
@@ -124,7 +124,7 @@ time_t TestNG6FederateAmbassador::getCurrentTime()
  * has, the CppUnit macros will be used to kill the current test, and the currentMethod will
  * be identified in the failure message.
  */
-void TestNG6FederateAmbassador::checkTimeout( time_t startTime, char *currentMethod )
+void Test13FederateAmbassador::checkTimeout( time_t startTime, char *currentMethod )
 {
 	double difference = difftime( getCurrentTime(), startTime );
 	if( difference > TIMEOUT )
@@ -146,7 +146,7 @@ void TestNG6FederateAmbassador::checkTimeout( time_t startTime, char *currentMet
  * checkTimeout(time_t,char*), it will not fail the current test if a timeout has occurred.
  * Rather, it will just return RTI_TRUE.
  */ 
-RTI::Boolean TestNG6FederateAmbassador::checkTimeoutNonFatal( time_t startTime )
+RTI::Boolean Test13FederateAmbassador::checkTimeoutNonFatal( time_t startTime )
 {
 	double difference = difftime( getCurrentTime(), startTime );
 	if( difference > TIMEOUT )
@@ -165,7 +165,7 @@ RTI::Boolean TestNG6FederateAmbassador::checkTimeoutNonFatal( time_t startTime )
 /*
  * Check to see if the sync point with the given label has been announced or not
  */
-RTI::Boolean TestNG6FederateAmbassador::isAnnounced( char* label )
+RTI::Boolean Test13FederateAmbassador::isAnnounced( char* label )
 {
 	if( this->announced->count(label) == 0 )
 		return RTI::RTI_FALSE;
@@ -176,7 +176,7 @@ RTI::Boolean TestNG6FederateAmbassador::isAnnounced( char* label )
 /*
  * Check to see if the federation has synchronized on the given sync point or not
  */
-RTI::Boolean TestNG6FederateAmbassador::isSynchronized( char* label )
+RTI::Boolean Test13FederateAmbassador::isSynchronized( char* label )
 {
 	if( this->synchronized->count(label) == 0 )
 		return RTI::RTI_FALSE;
@@ -188,7 +188,7 @@ RTI::Boolean TestNG6FederateAmbassador::isSynchronized( char* label )
  * Wait for the given sync point to be announced. If it doesn't happen before a timeout
  * occurs, CppUnit will be used to fail the current test.
  */
-char* TestNG6FederateAmbassador::waitForSyncAnnounce( char* label )
+char* Test13FederateAmbassador::waitForSyncAnnounce( char* label )
 {
 	// wait for the point to be announced
 	time_t startTime = this->getCurrentTime();
@@ -210,7 +210,7 @@ char* TestNG6FederateAmbassador::waitForSyncAnnounce( char* label )
  * in that it EXPECTS there to be a timeout. If the request doesn't timeout, it will fail the
  * current test.
  */
-void TestNG6FederateAmbassador::waitForSyncAnnounceTimeout( char* label )
+void Test13FederateAmbassador::waitForSyncAnnounceTimeout( char* label )
 {
 	// wait for the point to be announced
 	time_t startTime = this->getCurrentTime();
@@ -236,7 +236,7 @@ void TestNG6FederateAmbassador::waitForSyncAnnounceTimeout( char* label )
  * If the registration request is a success, RTI_TRUE is returned, if not, RTI_FALSE. If there
  * is no response before a timeout occurs, the current test will be failed.
  */
-RTI::Boolean TestNG6FederateAmbassador::waitForSyncRegResult( char* label )
+RTI::Boolean Test13FederateAmbassador::waitForSyncRegResult( char* label )
 {
 	// clear the current values
 	this->syncRegResult = WAITING;
@@ -266,7 +266,7 @@ RTI::Boolean TestNG6FederateAmbassador::waitForSyncRegResult( char* label )
  * the actual result, this method will return normally. If the result differs, the current
  * test will be failed.
  */
-void TestNG6FederateAmbassador::waitForSyncRegResult( char* label, RTI::Boolean expectedResult )
+void Test13FederateAmbassador::waitForSyncRegResult( char* label, RTI::Boolean expectedResult )
 {
 	// wait for the result
 	RTI::Boolean result = waitForSyncRegResult( label );
@@ -282,7 +282,7 @@ void TestNG6FederateAmbassador::waitForSyncRegResult( char* label, RTI::Boolean 
  * This method will wait until the federation has synchronized on the given sync point. If the
  * notification doesn't come through before a timeout, the current unit test will be failed.
  */
-void TestNG6FederateAmbassador::waitForSynchronized( char* label )
+void Test13FederateAmbassador::waitForSynchronized( char* label )
 {
 	// wait for us to feel that funky synchronized love
 	time_t startTime = this->getCurrentTime();
@@ -301,7 +301,7 @@ void TestNG6FederateAmbassador::waitForSynchronized( char* label )
  * synchronized on the point with the given label. If this happens BEFORE a timeout occurs,
  * the current test will be failed. If a timeout occurs, this method will return normally.
  */
-void TestNG6FederateAmbassador::waitForSynchornizedTimeout( char* label )
+void Test13FederateAmbassador::waitForSynchornizedTimeout( char* label )
 {
 	// wait for the federation to synchronize
 	time_t startTime = this->getCurrentTime();
@@ -329,7 +329,7 @@ void TestNG6FederateAmbassador::waitForSynchornizedTimeout( char* label )
  * This method will wait until the federate has become time constrained. If the notification
  * doesn't come through before a timeout, the current unit test will be failed.
  */
-void TestNG6FederateAmbassador::waitForConstrainedEnabled()
+void Test13FederateAmbassador::waitForConstrainedEnabled()
 {
 	time_t startTime = this->getCurrentTime();
 	while( this->constrained != RTI::RTI_TRUE )
@@ -343,7 +343,7 @@ void TestNG6FederateAmbassador::waitForConstrainedEnabled()
  * This method will wait until the federate has become time regulating. If the notification
  * doesn't come through before a timeout, the current unit test will be failed.
  */
-void TestNG6FederateAmbassador::waitForRegulatingEnabled()
+void Test13FederateAmbassador::waitForRegulatingEnabled()
 {
 	time_t startTime = this->getCurrentTime();
 	while( this->regulating != RTI::RTI_TRUE )
@@ -358,7 +358,7 @@ void TestNG6FederateAmbassador::waitForRegulatingEnabled()
  * time. If the notification doesn't come through before a timeout, the current unit test will be
  * failed.
  */
-void TestNG6FederateAmbassador::waitForTimeAdvance( double newTime )
+void Test13FederateAmbassador::waitForTimeAdvance( double newTime )
 {
 	time_t startTime = this->getCurrentTime();
 	while( this->logicalTime < newTime )
@@ -379,7 +379,7 @@ void TestNG6FederateAmbassador::waitForTimeAdvance( double newTime )
  * handle, or a timeout has occurred. If the timeout runs up before the discovery, the current
  * test will be killed.
  */
-Test13Object* TestNG6FederateAmbassador::waitForDiscovery( RTI::ObjectHandle objectHandle )
+Test13Object* Test13FederateAmbassador::waitForDiscovery( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( (*discovered)[objectHandle] == NULL )
@@ -397,7 +397,7 @@ Test13Object* TestNG6FederateAmbassador::waitForDiscovery( RTI::ObjectHandle obj
  * test will be killed. Further, if the discovered object instance IS NOT of the class identified
  * in the "asClass" argument, the test will also be killed.
  */
-Test13Object* TestNG6FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle objectHandle,
+Test13Object* Test13FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle objectHandle,
                                                               RTI::ObjectClassHandle asClass )
 {
 	time_t startTime = this->getCurrentTime();
@@ -422,7 +422,7 @@ Test13Object* TestNG6FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle o
  * Same as waitForDiscoveryAs() except that it also checks that the name is the same as that which
  * was expected.
  */
-Test13Object* TestNG6FederateAmbassador::waitForDiscoveryAsWithName( RTI::ObjectHandle objectHandle,
+Test13Object* Test13FederateAmbassador::waitForDiscoveryAsWithName( RTI::ObjectHandle objectHandle,
                                                                       RTI::ObjectClassHandle asClass,
                                                                       char *expectedName )
 {
@@ -459,7 +459,7 @@ Test13Object* TestNG6FederateAmbassador::waitForDiscoveryAsWithName( RTI::Object
  * be killed. This should be used in situations where you want to validate that a federate does not
  * receive a discovery.
  */
-void TestNG6FederateAmbassador::waitForDiscoveryTimeout( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForDiscoveryTimeout( RTI::ObjectHandle objectHandle )
 {
 	// wait for the federation to synchronize
 	time_t startTime = this->getCurrentTime();
@@ -487,7 +487,7 @@ void TestNG6FederateAmbassador::waitForDiscoveryTimeout( RTI::ObjectHandle objec
  * the FederateAmbassador (in receive order). If the removal request takes too long to come through
  * (the timeout period expires) then the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForRORemoval( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForRORemoval( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( (*roRemoved)[objectHandle] == NULL )
@@ -506,7 +506,7 @@ void TestNG6FederateAmbassador::waitForRORemoval( RTI::ObjectHandle objectHandle
  * but it expects this NOT to arrive. It will wait for the timeout period to expire and then return
  * happily. If the notification is received, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForRORemovalTimeout( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForRORemovalTimeout( RTI::ObjectHandle objectHandle )
 {
 	// wait for the federation to synchronize
 	time_t startTime = this->getCurrentTime();
@@ -533,7 +533,7 @@ void TestNG6FederateAmbassador::waitForRORemovalTimeout( RTI::ObjectHandle objec
  * the FederateAmbassador (in timestamp order). If the removal request takes too long to come
  * through (the timeout period expires) then the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForTSORemoval( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForTSORemoval( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( (*tsoRemoved)[objectHandle] == NULL )
@@ -552,7 +552,7 @@ void TestNG6FederateAmbassador::waitForTSORemoval( RTI::ObjectHandle objectHandl
  * notification, but it expects this NOT to arrive. It will wait for the timeout period to expire
  * and then return happily. If the notification is received, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForTSORemovalTimeout( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForTSORemovalTimeout( RTI::ObjectHandle objectHandle )
 {
 	// wait for the federation to synchronize
 	time_t startTime = this->getCurrentTime();
@@ -585,7 +585,7 @@ void TestNG6FederateAmbassador::waitForTSORemovalTimeout( RTI::ObjectHandle obje
  * the outstanding updates to that point (the updated object handles are stored in a set, so no
  * duplicates are kept).
  */
-Test13Object* TestNG6FederateAmbassador::waitForROUpdate( RTI::ObjectHandle objectHandle )
+Test13Object* Test13FederateAmbassador::waitForROUpdate( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( roUpdated->find(objectHandle) == roUpdated->end() )
@@ -605,7 +605,7 @@ Test13Object* TestNG6FederateAmbassador::waitForROUpdate( RTI::ObjectHandle obje
  * current test will be failed. If no update is received before the timeout expires, this method
  * will return happily.
  */
-void TestNG6FederateAmbassador::waitForROUpdateTimeout( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForROUpdateTimeout( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( roUpdated->find(objectHandle) == roUpdated->end() )
@@ -631,7 +631,7 @@ void TestNG6FederateAmbassador::waitForROUpdateTimeout( RTI::ObjectHandle object
  * For more information, read the documentation for that method (it's just up a little bit, don't
  * worry, you don't have to scroll very far).
  */
-Test13Object* TestNG6FederateAmbassador::waitForTSOUpdate( RTI::ObjectHandle objectHandle )
+Test13Object* Test13FederateAmbassador::waitForTSOUpdate( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( tsoUpdated->find(objectHandle) == tsoUpdated->end() )
@@ -651,7 +651,7 @@ Test13Object* TestNG6FederateAmbassador::waitForTSOUpdate( RTI::ObjectHandle obj
  * current test will be failed. If no update is received before the timeout expires, this method
  * will return happily.
  */
-void TestNG6FederateAmbassador::waitForTSOUpdateTimeout( RTI::ObjectHandle objectHandle )
+void Test13FederateAmbassador::waitForTSOUpdateTimeout( RTI::ObjectHandle objectHandle )
 {
 	time_t startTime = this->getCurrentTime();
 	while( tsoUpdated->find(objectHandle) == tsoUpdated->end() )
@@ -680,7 +680,7 @@ void TestNG6FederateAmbassador::waitForTSOUpdateTimeout( RTI::ObjectHandle objec
  * waiting for processing, it will be removed from the list and returned right away.
  */
 Test13Interaction*
-TestNG6FederateAmbassador::waitForROInteraction( RTI::InteractionClassHandle expected )
+Test13FederateAmbassador::waitForROInteraction( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
 	Test13Interaction *ng6Interaction = NULL;
@@ -699,7 +699,7 @@ TestNG6FederateAmbassador::waitForROInteraction( RTI::InteractionClassHandle exp
  * identified class waiting for processing, or one is received before the timeout expires, the
  * current test will be failed. Otherwise, the method will return happily.
  */
-void TestNG6FederateAmbassador::waitForROInteractionTimeout( RTI::InteractionClassHandle expected )
+void Test13FederateAmbassador::waitForROInteractionTimeout( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
 	Test13Interaction *ng6Interaction = NULL;
@@ -728,7 +728,7 @@ void TestNG6FederateAmbassador::waitForROInteractionTimeout( RTI::InteractionCla
  * waiting for processing, it will be removed from the list and returned right away.
  */
 Test13Interaction*
-TestNG6FederateAmbassador::waitForTSOInteraction( RTI::InteractionClassHandle expected )
+Test13FederateAmbassador::waitForTSOInteraction( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
 	Test13Interaction *ng6Interaction = NULL;
@@ -747,7 +747,7 @@ TestNG6FederateAmbassador::waitForTSOInteraction( RTI::InteractionClassHandle ex
  * identified class waiting for processing, or one is received before the timeout expires, the
  * current test will be failed. Otherwise, the method will return happily.
  */
-void TestNG6FederateAmbassador::waitForTSOInteractionTimeout( RTI::InteractionClassHandle expected )
+void Test13FederateAmbassador::waitForTSOInteractionTimeout( RTI::InteractionClassHandle expected )
 {
 	time_t startTime = this->getCurrentTime();
 	Test13Interaction *ng6Interaction = NULL;
@@ -779,7 +779,7 @@ void TestNG6FederateAmbassador::waitForTSOInteractionTimeout( RTI::InteractionCl
  * MEMORY MANAGEMENT: The caller is responsible for deleting the provided set.
  */
 set<RTI::AttributeHandle>*
-TestNG6FederateAmbassador::waitForProvideRequest( RTI::ObjectHandle theObject )
+Test13FederateAmbassador::waitForProvideRequest( RTI::ObjectHandle theObject )
 {
 	time_t startTime = this->getCurrentTime();
 	set<RTI::AttributeHandle> *attributesRequested = NULL;
@@ -798,7 +798,7 @@ TestNG6FederateAmbassador::waitForProvideRequest( RTI::ObjectHandle theObject )
  * expects NOT to receive the request before a timeout occurs. If a request has already been
  * received, or turns up before the timeout occurs, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForProvideRequestTimeout( RTI::ObjectHandle theObject )
+void Test13FederateAmbassador::waitForProvideRequestTimeout( RTI::ObjectHandle theObject )
 {
 	time_t startTime = this->getCurrentTime();
 	set<RTI::AttributeHandle> *attributesRequested = NULL;
@@ -827,7 +827,7 @@ void TestNG6FederateAmbassador::waitForProvideRequestTimeout( RTI::ObjectHandle 
  * of the given object. If the callback isn't received in time, the current test will be failed. If
  * a call comes in and it doesn't contain all the given attributes, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForOwnershipAcquistion( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::waitForOwnershipAcquistion( RTI::ObjectHandle theObject,
                                                             int attributeCount,
                                                             ... )
 {
@@ -869,7 +869,7 @@ void TestNG6FederateAmbassador::waitForOwnershipAcquistion( RTI::ObjectHandle th
  * callback isn't received in time, the current test will be failed. If a call comes in and it
  * doesn't contain all the given attributes, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForOwnershipOffered( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::waitForOwnershipOffered( RTI::ObjectHandle theObject,
                                                          int attributeCount,
                                                          ... )
 {
@@ -911,7 +911,7 @@ void TestNG6FederateAmbassador::waitForOwnershipOffered( RTI::ObjectHandle theOb
  * will be failed. If a call comes in and it doesn't contain all the given attributes, the current
  * test will be failed.
  */
-void TestNG6FederateAmbassador::waitForOwnershipDivested( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::waitForOwnershipDivested( RTI::ObjectHandle theObject,
                                                           int attributeCount,
                                                           ... )
 {
@@ -953,7 +953,7 @@ void TestNG6FederateAmbassador::waitForOwnershipDivested( RTI::ObjectHandle theO
  * If a call comes in and it doesn't contain all the given attributes, the current test will be
  * failed.
  */
-void TestNG6FederateAmbassador::waitForOwnershipUnavailable( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::waitForOwnershipUnavailable( RTI::ObjectHandle theObject,
                                                              int attributeCount,
                                                              ... )
 {
@@ -995,7 +995,7 @@ void TestNG6FederateAmbassador::waitForOwnershipUnavailable( RTI::ObjectHandle t
  * received in time, the current test will be failed. If a call comes in and it doesn't contain 
  * all the given attributes, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForOwnershipRequest( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::waitForOwnershipRequest( RTI::ObjectHandle theObject,
                                                          int attributeCount,
                                                          ... )
 {
@@ -1036,7 +1036,7 @@ void TestNG6FederateAmbassador::waitForOwnershipRequest( RTI::ObjectHandle theOb
  * in the given object. If the callback isn't received in a timely manner, the current test will
  * be failed.
  */
-int TestNG6FederateAmbassador::waitForOwnershipResponse( RTI::ObjectHandle theObject,
+int Test13FederateAmbassador::waitForOwnershipResponse( RTI::ObjectHandle theObject,
                                                          RTI::AttributeHandle theAttribute )
 {
 	time_t startTime = this->getCurrentTime();
@@ -1058,7 +1058,7 @@ int TestNG6FederateAmbassador::waitForOwnershipResponse( RTI::ObjectHandle theOb
  * the current test will be failed. If a call comes in and it doesn't contain all the given
  * attributes, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForOwnershipCancelConfirmation( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::waitForOwnershipCancelConfirmation( RTI::ObjectHandle theObject,
                                                                     int attributeCount,
                                                                     ... )
 {
@@ -1101,7 +1101,7 @@ void TestNG6FederateAmbassador::waitForOwnershipCancelConfirmation( RTI::ObjectH
  * This method waits until a callback is delivered informing the federate that a save with the
  * given label is initiated. If no callback is received in time, the current test will be failed.
  */
-void TestNG6FederateAmbassador::waitForSaveInitiated( char *saveLabel )
+void Test13FederateAmbassador::waitForSaveInitiated( char *saveLabel )
 {
 	time_t startTime = this->getCurrentTime();
 	while( this->currentSave->isInitiated(saveLabel) == RTI::RTI_FALSE )
@@ -1116,7 +1116,7 @@ void TestNG6FederateAmbassador::waitForSaveInitiated( char *saveLabel )
  * has been initiated occurs. It expects that one will not occur and should one be received before
  * a timeout has expired, the current test will be killed.
  */
-void TestNG6FederateAmbassador::waitForSaveInitiatedTimeout( char *saveLabel )
+void Test13FederateAmbassador::waitForSaveInitiatedTimeout( char *saveLabel )
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentSave->isInitiated(saveLabel) == RTI::RTI_FALSE )
@@ -1140,7 +1140,7 @@ void TestNG6FederateAmbassador::waitForSaveInitiatedTimeout( char *saveLabel )
  * Waits for notification that the federation has successfully saved. If the notification doesn't
  * come through before a timeout occurs, the currnet test will be failed.
  */
-void TestNG6FederateAmbassador::waitForFederationSaved()
+void Test13FederateAmbassador::waitForFederationSaved()
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentSave->isComplete() == RTI::RTI_FALSE )
@@ -1160,7 +1160,7 @@ void TestNG6FederateAmbassador::waitForFederationSaved()
  * Waits for notification that the federation has successfully *NOT* saved. If the notification
  * doesn't come through before a timeout occurs, the currnet test will be failed.
  */
-void TestNG6FederateAmbassador::waitForFederationNotSaved()
+void Test13FederateAmbassador::waitForFederationNotSaved()
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentSave->isComplete() == RTI::RTI_FALSE )
@@ -1180,7 +1180,7 @@ void TestNG6FederateAmbassador::waitForFederationNotSaved()
  * Wait for a notification that the federation restore has begun. If this isn't received in a
  * timely fashion, throw an exception.
  */
-void TestNG6FederateAmbassador::waitForFederationRestoreBegun()
+void Test13FederateAmbassador::waitForFederationRestoreBegun()
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isBegun() == RTI::RTI_FALSE )
@@ -1194,7 +1194,7 @@ void TestNG6FederateAmbassador::waitForFederationRestoreBegun()
  * Wait for a notification that a federation restore has been initiated with the given label.
  * If this happens, return the federation handle we were given. If not, throw an exception.
  */
-int TestNG6FederateAmbassador::waitForFederateRestoreInitiated( char* label )
+int Test13FederateAmbassador::waitForFederateRestoreInitiated( char* label )
 {
 	// wait for something to come in for that object
 	time_t startTime = this->getCurrentTime();
@@ -1220,7 +1220,7 @@ int TestNG6FederateAmbassador::waitForFederateRestoreInitiated( char* label )
  * The opposite of waitForFederateRestoreInitiated(char*)}, this method expects a
  * timeout to occur and will fail the current test if one doesn't happen.
  */
-void TestNG6FederateAmbassador::waitForFederateRestoreInitiatedTimeout( char* saveLabel )
+void Test13FederateAmbassador::waitForFederateRestoreInitiatedTimeout( char* saveLabel )
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isInitiated(saveLabel) == RTI::RTI_FALSE )
@@ -1244,7 +1244,7 @@ void TestNG6FederateAmbassador::waitForFederateRestoreInitiatedTimeout( char* sa
  * Wait for a notification from the RTI that the federation restore has succeeded. If we
  * get a failure notice or no notice at all, the current test will be killed.
  */
-void TestNG6FederateAmbassador::waitForFederationRestored()
+void Test13FederateAmbassador::waitForFederationRestored()
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isComplete() == RTI::RTI_FALSE )
@@ -1264,7 +1264,7 @@ void TestNG6FederateAmbassador::waitForFederationRestored()
  * Like waitForFederationRestored() except that it expects a timeout and will fail the test if the
  * notification is received.
  */
-void TestNG6FederateAmbassador::waitForFederationRestoredTimeout( char* label )
+void Test13FederateAmbassador::waitForFederationRestoredTimeout( char* label )
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isComplete() == RTI::RTI_FALSE )
@@ -1288,7 +1288,7 @@ void TestNG6FederateAmbassador::waitForFederationRestoredTimeout( char* label )
  * Wait for a notification from the RTI that the federation restore has completed *unsuccessfully*.
  * If we get a success notice or no notice at all, the current test will be killed.
  */
-void TestNG6FederateAmbassador::waitForFederationNotRestored()
+void Test13FederateAmbassador::waitForFederationNotRestored()
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isComplete() == RTI::RTI_FALSE )
@@ -1309,7 +1309,7 @@ void TestNG6FederateAmbassador::waitForFederationNotRestored()
  * label that they attempted to initiate was successful. If it doesn't happen in a timely
  * fashion, the current test is failed.
  */
-void TestNG6FederateAmbassador::waitForRestoreRequestSuccess( char *label )
+void Test13FederateAmbassador::waitForRestoreRequestSuccess( char *label )
 {
 	time_t startTime = this->getCurrentTime();
 	while( successfulRestoreRequest != NULL && strcmp(successfulRestoreRequest,label) != 0 )
@@ -1324,7 +1324,7 @@ void TestNG6FederateAmbassador::waitForRestoreRequestSuccess( char *label )
  * label that they attempted to initiate has FAILED. If it doesn't happen in a timely fashion,
  * the current test is failed.
  */
-void TestNG6FederateAmbassador::waitForRestoreRequestFailure( char *label )
+void Test13FederateAmbassador::waitForRestoreRequestFailure( char *label )
 {
 	time_t startTime = this->getCurrentTime();
 	while( failedRestoreRequest != NULL && strcmp(failedRestoreRequest,label) != 0 )
@@ -1342,7 +1342,7 @@ void TestNG6FederateAmbassador::waitForRestoreRequestFailure( char *label )
  * can be found, NULL will be returned.
  */
 Test13Interaction*
-TestNG6FederateAmbassador::fetchInteraction( RTI::InteractionClassHandle theClass,
+Test13FederateAmbassador::fetchInteraction( RTI::InteractionClassHandle theClass,
                                              vector<Test13Interaction*> *theStore )
 {
 	vector<Test13Interaction*>::iterator it;
@@ -1363,7 +1363,7 @@ TestNG6FederateAmbassador::fetchInteraction( RTI::InteractionClassHandle theClas
  * Checks the received set to make sure it contains all the attribute handles from the expected
  * set. If it doesn't, RTI_FALSE is returned, otherwise, RTI_TRUE is returend.
  */
-RTI::Boolean TestNG6FederateAmbassador::setContainsAll( set<RTI::AttributeHandle> *expected,
+RTI::Boolean Test13FederateAmbassador::setContainsAll( set<RTI::AttributeHandle> *expected,
                                                         set<RTI::AttributeHandle> *received )
 {
 	set<RTI::AttributeHandle>::iterator setIterator;
@@ -1384,7 +1384,7 @@ RTI::Boolean TestNG6FederateAmbassador::setContainsAll( set<RTI::AttributeHandle
  * Does a string copy from source to target, but will delete the memory at target is it isn't
  * null and will allocate new memory. Really just a "cleanAndCopy"
  */
-void TestNG6FederateAmbassador::copyString( char *target, const char *source )
+void Test13FederateAmbassador::copyString( char *target, const char *source )
 {
 	// delete the old target if there is data there we are going to overwrite
 	if( target != NULL )
@@ -1406,7 +1406,7 @@ void TestNG6FederateAmbassador::copyString( char *target, const char *source )
 //////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Helper Methods ///////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-double TestNG6FederateAmbassador::convertTime( const RTI::FedTime& time )
+double Test13FederateAmbassador::convertTime( const RTI::FedTime& time )
 {
 	RTIfedTime timePorticoImpl;
 
@@ -1425,19 +1425,19 @@ double TestNG6FederateAmbassador::convertTime( const RTI::FedTime& time )
 //////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// Synchornization Point Management //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-void TestNG6FederateAmbassador::synchronizationPointRegistrationSucceeded( const char *label )
+void Test13FederateAmbassador::synchronizationPointRegistrationSucceeded( const char *label )
 	throw( RTI::FederateInternalError )
 {
 	this->syncRegResult = SUCCESS;
 }
 
-void TestNG6FederateAmbassador::synchronizationPointRegistrationFailed( const char *label )
+void Test13FederateAmbassador::synchronizationPointRegistrationFailed( const char *label )
 	throw( RTI::FederateInternalError )
 {
 	this->syncRegResult = FAILURE;
 }
 
-void TestNG6FederateAmbassador::announceSynchronizationPoint( const char *label, const char *tag )
+void Test13FederateAmbassador::announceSynchronizationPoint( const char *label, const char *tag )
 	throw( RTI::FederateInternalError )
 {
 	// copy the strings and put them in the map
@@ -1455,7 +1455,7 @@ void TestNG6FederateAmbassador::announceSynchronizationPoint( const char *label,
 	(*this->announced)[labelCopy] = tagCopy;
 }
 
-void TestNG6FederateAmbassador::federationSynchronized( const char *label )
+void Test13FederateAmbassador::federationSynchronized( const char *label )
 	throw( RTI::FederateInternalError )
 {
 	// copy the value into the set
@@ -1467,7 +1467,7 @@ void TestNG6FederateAmbassador::federationSynchronized( const char *label )
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Save and Restore Management ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-void TestNG6FederateAmbassador::initiateFederateSave( const char *label )
+void Test13FederateAmbassador::initiateFederateSave( const char *label )
 	throw( RTI::UnableToPerformSave,
 	       RTI::FederateInternalError )
 {
@@ -1475,38 +1475,38 @@ void TestNG6FederateAmbassador::initiateFederateSave( const char *label )
 	this->currentSave->initiate( label );
 }
 
-void TestNG6FederateAmbassador::federationSaved()
+void Test13FederateAmbassador::federationSaved()
 	throw( RTI::FederateInternalError )
 {
 	this->currentSave->success();
 }
 
-void TestNG6FederateAmbassador::federationNotSaved()
+void Test13FederateAmbassador::federationNotSaved()
 	throw( RTI::FederateInternalError )
 {
 	this->currentSave->failure();
 }
 
-void TestNG6FederateAmbassador::requestFederationRestoreSucceeded( const char *label )
+void Test13FederateAmbassador::requestFederationRestoreSucceeded( const char *label )
 	throw( RTI::FederateInternalError )
 {
 	copyString( this->successfulRestoreRequest, label );
 }
 
-void TestNG6FederateAmbassador::requestFederationRestoreFailed( const char *label,
+void Test13FederateAmbassador::requestFederationRestoreFailed( const char *label,
                                                                 const char *reason )
 	throw( RTI::FederateInternalError )
 {
 	copyString( this->failedRestoreRequest, label );
 }
 
-void TestNG6FederateAmbassador::federationRestoreBegun() 
+void Test13FederateAmbassador::federationRestoreBegun()
 	throw( RTI::FederateInternalError )
 {
 	this->currentRestore->begun();
 }
 
-void TestNG6FederateAmbassador::initiateFederateRestore( const char *label,
+void Test13FederateAmbassador::initiateFederateRestore( const char *label,
                                                          RTI::FederateHandle handle )
 	throw( RTI::SpecifiedSaveLabelDoesNotExist,
 	       RTI::CouldNotRestore,
@@ -1516,13 +1516,13 @@ void TestNG6FederateAmbassador::initiateFederateRestore( const char *label,
 	this->currentRestore->initiate( label, handle );
 }
 
-void TestNG6FederateAmbassador::federationRestored()
+void Test13FederateAmbassador::federationRestored()
 	throw( RTI::FederateInternalError )
 {
 	this->currentRestore->success();
 }
 
-void TestNG6FederateAmbassador::federationNotRestored()
+void Test13FederateAmbassador::federationNotRestored()
 	throw( RTI::FederateInternalError )
 {
 	this->currentRestore->failure();
@@ -1532,25 +1532,25 @@ void TestNG6FederateAmbassador::federationNotRestored()
 /////////////////////////////// Declaration Management Services //////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void TestNG6FederateAmbassador::startRegistrationForObjectClass( RTI::ObjectClassHandle theClass )
+void Test13FederateAmbassador::startRegistrationForObjectClass( RTI::ObjectClassHandle theClass )
 	throw( RTI::ObjectClassNotPublished,
 	       RTI::FederateInternalError )
 {
 }
 
-void TestNG6FederateAmbassador::stopRegistrationForObjectClass( RTI::ObjectClassHandle theClass )
+void Test13FederateAmbassador::stopRegistrationForObjectClass( RTI::ObjectClassHandle theClass )
 	throw( RTI::ObjectClassNotPublished,
 	       RTI::FederateInternalError )
 {
 }
 
-void TestNG6FederateAmbassador::turnInteractionsOn( RTI::InteractionClassHandle theHandle )
+void Test13FederateAmbassador::turnInteractionsOn( RTI::InteractionClassHandle theHandle )
 	throw( RTI::InteractionClassNotPublished,
 	       RTI::FederateInternalError )
 {
 }
 
-void TestNG6FederateAmbassador::turnInteractionsOff( RTI::InteractionClassHandle theHandle )
+void Test13FederateAmbassador::turnInteractionsOff( RTI::InteractionClassHandle theHandle )
 	throw( RTI::InteractionClassNotPublished,
 	       RTI::FederateInternalError )
 {
@@ -1559,7 +1559,7 @@ void TestNG6FederateAmbassador::turnInteractionsOff( RTI::InteractionClassHandle
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// Object Management Services /////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-void TestNG6FederateAmbassador::discoverObjectInstance( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::discoverObjectInstance( RTI::ObjectHandle theObject,
                                                         RTI::ObjectClassHandle objectClass,
                                                         const char* theObjectName )
 	throw( RTI::CouldNotDiscover,
@@ -1570,7 +1570,7 @@ void TestNG6FederateAmbassador::discoverObjectInstance( RTI::ObjectHandle theObj
 	(*discovered)[theObject] = ng6Object;
 }
 
-void TestNG6FederateAmbassador::reflectAttributeValues(
+void Test13FederateAmbassador::reflectAttributeValues(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleValuePairSet& theAttributes,
                  const RTI::FedTime& theTime,
@@ -1594,7 +1594,7 @@ void TestNG6FederateAmbassador::reflectAttributeValues(
 	tsoUpdated->insert( theObject );
 }
 
-void TestNG6FederateAmbassador::reflectAttributeValues(
+void Test13FederateAmbassador::reflectAttributeValues(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleValuePairSet& theAttributes,
                  const char *theTag )
@@ -1616,7 +1616,7 @@ void TestNG6FederateAmbassador::reflectAttributeValues(
 }
 
 // 4.6
-void TestNG6FederateAmbassador::receiveInteraction(
+void Test13FederateAmbassador::receiveInteraction(
                  RTI::InteractionClassHandle theInteraction,
                  const RTI::ParameterHandleValuePairSet& theParameters,
                  const RTI::FedTime& theTime,
@@ -1636,7 +1636,7 @@ void TestNG6FederateAmbassador::receiveInteraction(
 	tsoInteractions->push_back( ng6Interaction );
 }
 
-void TestNG6FederateAmbassador::receiveInteraction(
+void Test13FederateAmbassador::receiveInteraction(
                  RTI::InteractionClassHandle theInteraction,
                  const RTI::ParameterHandleValuePairSet& theParameters,
                  const char *theTag )
@@ -1652,7 +1652,7 @@ void TestNG6FederateAmbassador::receiveInteraction(
 	roInteractions->push_back( ng6Interaction );
 }
 
-void TestNG6FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObject,
                                                       const RTI::FedTime& theTime,
                                                       const char *theTag,
                                                       RTI::EventRetractionHandle theHandle )
@@ -1674,7 +1674,7 @@ void TestNG6FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObjec
 	(*tsoRemoved)[theObject] = ng6Object;
 }
 
-void TestNG6FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObject, const char *theTag )
+void Test13FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObject, const char *theTag )
 	throw( RTI::ObjectNotKnown,
 	       RTI::FederateInternalError )
 {
@@ -1692,7 +1692,7 @@ void TestNG6FederateAmbassador::removeObjectInstance( RTI::ObjectHandle theObjec
 	(*roRemoved)[theObject] = ng6Object;
 }
 
-void TestNG6FederateAmbassador::attributesInScope( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::attributesInScope( RTI::ObjectHandle theObject,
                                                    const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
 	       RTI::AttributeNotKnown,
@@ -1700,7 +1700,7 @@ void TestNG6FederateAmbassador::attributesInScope( RTI::ObjectHandle theObject,
 {
 }
 
-void TestNG6FederateAmbassador::attributesOutOfScope( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::attributesOutOfScope( RTI::ObjectHandle theObject,
                                                       const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
 	       RTI::AttributeNotKnown,
@@ -1708,7 +1708,7 @@ void TestNG6FederateAmbassador::attributesOutOfScope( RTI::ObjectHandle theObjec
 {
 }
 
-void TestNG6FederateAmbassador::provideAttributeValueUpdate(
+void Test13FederateAmbassador::provideAttributeValueUpdate(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1725,7 +1725,7 @@ void TestNG6FederateAmbassador::provideAttributeValueUpdate(
 	(*requestedUpdates)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::turnUpdatesOnForObjectInstance(
+void Test13FederateAmbassador::turnUpdatesOnForObjectInstance(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1734,7 +1734,7 @@ void TestNG6FederateAmbassador::turnUpdatesOnForObjectInstance(
 {
 }
 
-void TestNG6FederateAmbassador::turnUpdatesOffForObjectInstance(
+void Test13FederateAmbassador::turnUpdatesOffForObjectInstance(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1747,7 +1747,7 @@ void TestNG6FederateAmbassador::turnUpdatesOffForObjectInstance(
 //////////////////////////////// Ownership Management Services ///////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void TestNG6FederateAmbassador::requestAttributeOwnershipAssumption(
+void Test13FederateAmbassador::requestAttributeOwnershipAssumption(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& offeredAttributes,
                  const char *theTag )
@@ -1766,7 +1766,7 @@ void TestNG6FederateAmbassador::requestAttributeOwnershipAssumption(
 	(*attributesOffered)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::attributeOwnershipDivestitureNotification(
+void Test13FederateAmbassador::attributeOwnershipDivestitureNotification(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& releasedAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1784,7 +1784,7 @@ void TestNG6FederateAmbassador::attributeOwnershipDivestitureNotification(
 	(*attributesDivested)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::attributeOwnershipAcquisitionNotification(
+void Test13FederateAmbassador::attributeOwnershipAcquisitionNotification(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& securedAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1803,7 +1803,7 @@ void TestNG6FederateAmbassador::attributeOwnershipAcquisitionNotification(
 	(*attributesAcquired)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::attributeOwnershipUnavailable(
+void Test13FederateAmbassador::attributeOwnershipUnavailable(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1821,7 +1821,7 @@ void TestNG6FederateAmbassador::attributeOwnershipUnavailable(
 	(*attributesUnavailable)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::requestAttributeOwnershipRelease(
+void Test13FederateAmbassador::requestAttributeOwnershipRelease(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& candidateAttributes,
                  const char *theTag )
@@ -1839,7 +1839,7 @@ void TestNG6FederateAmbassador::requestAttributeOwnershipRelease(
 	(*attributesRequested)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::confirmAttributeOwnershipAcquisitionCancellation(
+void Test13FederateAmbassador::confirmAttributeOwnershipAcquisitionCancellation(
                  RTI::ObjectHandle theObject,
                  const RTI::AttributeHandleSet& theAttributes )
 	throw( RTI::ObjectNotKnown,
@@ -1857,7 +1857,7 @@ void TestNG6FederateAmbassador::confirmAttributeOwnershipAcquisitionCancellation
 	(*attributesCancelled)[theObject] = handleSet;
 }
 
-void TestNG6FederateAmbassador::informAttributeOwnership( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::informAttributeOwnership( RTI::ObjectHandle theObject,
                                                           RTI::AttributeHandle theAttribute,
                                                           RTI::FederateHandle theOwner )
 	throw( RTI::ObjectNotKnown,
@@ -1873,7 +1873,7 @@ void TestNG6FederateAmbassador::informAttributeOwnership( RTI::ObjectHandle theO
 	(*attributeOwnershipInfo)[theAttribute] = (int)theOwner;
 }
 
-void TestNG6FederateAmbassador::attributeIsNotOwned( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::attributeIsNotOwned( RTI::ObjectHandle theObject,
                                                      RTI::AttributeHandle theAttribute )
 	throw( RTI::ObjectNotKnown,
 	       RTI::AttributeNotKnown,
@@ -1888,7 +1888,7 @@ void TestNG6FederateAmbassador::attributeIsNotOwned( RTI::ObjectHandle theObject
 	(*attributeOwnershipInfo)[theAttribute] = Test13Federate::OWNER_UNOWNED;
 }
 
-void TestNG6FederateAmbassador::attributeOwnedByRTI( RTI::ObjectHandle theObject,
+void Test13FederateAmbassador::attributeOwnedByRTI( RTI::ObjectHandle theObject,
                                                      RTI::AttributeHandle theAttribute )
 	throw( RTI::ObjectNotKnown,
 	       RTI::AttributeNotKnown,
@@ -1907,7 +1907,7 @@ void TestNG6FederateAmbassador::attributeOwnedByRTI( RTI::ObjectHandle theObject
 ////////////////////////////////// Time Management Services //////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-void TestNG6FederateAmbassador::timeRegulationEnabled( const RTI::FedTime& theFederateTime )
+void Test13FederateAmbassador::timeRegulationEnabled( const RTI::FedTime& theFederateTime )
 	throw( RTI::InvalidFederationTime,
 	       RTI::EnableTimeRegulationWasNotPending,
 	       RTI::FederateInternalError )
@@ -1916,7 +1916,7 @@ void TestNG6FederateAmbassador::timeRegulationEnabled( const RTI::FedTime& theFe
 	this->logicalTime = this->convertTime( theFederateTime );
 }
 
-void TestNG6FederateAmbassador::timeConstrainedEnabled( const RTI::FedTime& theFederateTime )
+void Test13FederateAmbassador::timeConstrainedEnabled( const RTI::FedTime& theFederateTime )
 	throw( RTI::InvalidFederationTime,
 	       RTI::EnableTimeConstrainedWasNotPending,
 	       RTI::FederateInternalError )
@@ -1925,7 +1925,7 @@ void TestNG6FederateAmbassador::timeConstrainedEnabled( const RTI::FedTime& theF
 	this->logicalTime = this->convertTime( theFederateTime );
 }
 
-void TestNG6FederateAmbassador::timeAdvanceGrant( const RTI::FedTime& theTime )
+void Test13FederateAmbassador::timeAdvanceGrant( const RTI::FedTime& theTime )
 	throw( RTI::InvalidFederationTime,
 	       RTI::TimeAdvanceWasNotInProgress,
 	       RTI::FederateInternalError )
@@ -1933,7 +1933,7 @@ void TestNG6FederateAmbassador::timeAdvanceGrant( const RTI::FedTime& theTime )
 	this->logicalTime = this->convertTime( theTime );
 }
 
-void TestNG6FederateAmbassador::requestRetraction( RTI::EventRetractionHandle theHandle )
+void Test13FederateAmbassador::requestRetraction( RTI::EventRetractionHandle theHandle )
 	throw( RTI::EventNotKnown,
 	       RTI::FederateInternalError )
 {

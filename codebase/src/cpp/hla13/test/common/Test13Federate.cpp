@@ -102,7 +102,7 @@ RTI::FederateHandle Test13Federate::quickJoin( char *federationName )
 	if( this->fedamb != NULL )
 		delete this->fedamb;
 	
-	this->fedamb = new TestNG6FederateAmbassador( this );
+	this->fedamb = new Test13FederateAmbassador( this );
 	
 	// try and join the federation
 	try

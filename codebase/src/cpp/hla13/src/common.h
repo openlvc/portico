@@ -49,7 +49,7 @@
 #endif
 
 // include some platform-dependant headers
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
     #include <windows.h>
 	#include <stdint.h>
 #elif defined(__APPLE__)

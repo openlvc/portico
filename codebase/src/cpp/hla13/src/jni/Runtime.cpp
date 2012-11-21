@@ -220,7 +220,7 @@ pair<string,string> Runtime::generatePaths() throw( HLA::RTIinternalError )
 	}
 
 	// Get the class and library paths depending on the platform in use
-	#ifdef _WIN32 || _WIN64
+	#ifdef _WIN32
 		return generateWinPath( string(rtihome) );
 	#else
 		return generateUnixPath( string(rtihome) );
@@ -299,13 +299,16 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
 	            << rtihome << "\\bin\\"
-#if VC11
+#ifdef VC11
 	            << "vc11"
-#elif VC10
+#endif
+#ifdef VC11
 	            << "vc10"
-#elif VC9
+#endif
+#ifdef VC9
 	            << "vc9"
-#elif VC8
+#endif
+#ifdef VC8
 	            << "vc8"
 #endif
 
@@ -505,9 +508,21 @@ char* Runtime::convertAndReleaseJString( jstring string )
  */
 bool Runtime::pathExists( string path )
 {
+#ifdef _WIN32
+	// if we're in windows, ifstream won't be happy if the
+	// path is a directory (booo) so we'll use something else
+	DWORD atts = GetFileAttributesA( path.c_str() );
+	if( atts == INVALID_FILE_ATTRIBUTES )
+		return false;  //something is wrong with your path!
+	else
+		return true;
+	//if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+	//return true;   // this is a directory!
+#else
 	// just try and open it - the object will be collected
 	ifstream thefile( path.c_str() );
 	return (bool)thefile;
+#endif
 }
 
 //----------------------------------------------------------

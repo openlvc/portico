@@ -22,7 +22,7 @@ rem ###################
 :rtihome
 cd ..\..\..
 set RTI_HOME=%CD%
-cd examples\cpp\cpp13
+cd examples\cpp\hla13
 echo RTI_HOME environment variable is set to %RTI_HOME%
 goto run
 
@@ -46,7 +46,7 @@ goto finish
 ############################################
 :compile
 echo "compiling example federate"
-cl /I"%RTI_HOME%\include\hla13" /DRTI_USES_STD_FSTREAM /GX main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc10\libRTI-NG.lib" "%RTI_HOME%\lib\vc10\libFedTime.lib"
+cl /I"%RTI_HOME%\include\hla13" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc10\libRTI-NG.lib" "%RTI_HOME%\lib\vc10\libFedTime.lib"
 goto finish
 
 ############################################
