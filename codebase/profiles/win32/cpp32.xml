@@ -97,7 +97,7 @@
 	<!-- ======================================= -->
 	<target name="compile.hla13">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime" outdir="${hla13.build.dir}" build="both">
+		<cpp-win32 outfile="libFedTime" workdir="${hla13.build.dir}" build="both">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -115,7 +115,7 @@
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="libRTI-NG" outdir="${hla13.build.dir}" build="both">
+		<cpp-win32 outfile="libRTI-NG" workdir="${hla13.build.dir}" build="both">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -145,7 +145,7 @@
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
 	<target name="compile.hla13.test" depends="compile.hla13">
-		<cpp-win32 outfile="test13" outdir="${test13.build.dir}" type="executable">
+		<cpp-win32 outfile="test13" workdir="${test13.build.dir}" type="executable">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/hla13"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
@@ -161,7 +161,7 @@
 	<!-- ==================================== -->
 	<target name="compile.ieee1516e">
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}" build="both">
+		<cpp-win32 outfile="librti1516e" workdir="${ieee1516e.build.dir}" build="both">
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -175,7 +175,7 @@
 		</cpp-win32>
 
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libfedtime1516e" outdir="${ieee1516e.build.dir}" build="both">
+		<cpp-win32 outfile="libfedtime1516e" workdir="${ieee1516e.build.dir}" build="both">
 			<!-- Filesets and other settings -->
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -198,7 +198,7 @@
 	     assure that we can actually compile and link it to Portico -->
 	<target name="compile.ieee1516e.example" depends="compile.ieee1516e">
 		<cpp-win32 outfile="ieee1516e-example"
-		           outdir="${ieee1516e.build.dir}/ieee1516e-example"
+		           workdir="${ieee1516e.build.dir}/ieee1516e-example"
 		           type="executable">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>

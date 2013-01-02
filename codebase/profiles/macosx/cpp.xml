@@ -96,8 +96,10 @@
 	<!-- ======================================= -->
 	<target name="compile.hla13">
 		<cpp-unix outfile="RTI-NG"
-		          outdir="${hla13.build.dir}"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          workdir="${hla13.build.dir}"
+		          mode="both"
+		          arch="amd64"
+		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
 		          linkerArgs="-dynamiclib">
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/hla13"/>
@@ -112,10 +114,9 @@
 		<!-- === Create the SymLink === -->
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
-		<echo>creating symlink...</echo>
-		<exec executable="ln" dir="${hla13.complete.dir}" failonerror="true">
-			<arg line="-sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"/>
-		</exec>
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="libRTI-NG"/>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="libRTI-NGd"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -123,8 +124,10 @@
 	<!-- ==================================== -->
 	<target name="compile.dlc13">
 		<cpp-unix outfile="rti13"
-		          outdir="${dlc13.build.dir}"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          workdir="${dlc13.build.dir}"
+		          mode="both"
+		          arch="amd64"
+		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
 		          linkerArgs="-dynamiclib">
 			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}/dlc13"/>
@@ -140,10 +143,9 @@
 		<!-- === Create the SymLink === -->
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
-		<echo>creating symlink...</echo>
-		<exec executable="ln" dir="${dlc13.complete.dir}" failonerror="true">
-			<arg line="-sf ./librti13.dylib ./librti13.jnilib"/>
-		</exec>
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13"/>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13d"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -151,8 +153,10 @@
 	<!-- ==================================== -->
 	<target name="compile.hla13.test" depends="compile.hla13">
 		<cpp-unix outfile="test13"
-		          outdir="${test13.build.dir}"
+		          workdir="${test13.build.dir}"
 		          type="executable"
+		          mode="release"
+		          arch="amd64"
 		          compilerArgs="-g -Wno-write-strings"
 		          linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
@@ -170,8 +174,10 @@
 	<!-- ==================================== -->
 	<target name="compile.ieee1516e">
 		<cpp-unix outfile="librti1516e.dylib"
-		          outdir="${ieee1516e.build.dir}"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor">
+		          workdir="${ieee1516e.build.dir}"
+		          mode="both"
+		          arch="amd64"
+		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor">
 			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}"/>
@@ -186,10 +192,9 @@
 		<!-- === Create the SymLink === -->
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
-		<echo>creating symlink...</echo>
-		<exec executable="ln" dir="${ieee1516e.complete.dir}" failonerror="true">
-			<arg line="-sf ./librti1516e.dylib ./librti1516e.jnilib"/>
-		</exec>
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti1516e"/>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti1516ed"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -199,10 +204,12 @@
 	     assure that we can actually compile and link it to Portico -->
 	<target name="compile.ieee1516e.example" depends="compile.ieee1516e">
 		<cpp-unix outfile="ieee1516e-example"
-		          outdir="${ieee1516e.build.dir}/ieee1516e-example"
+		          workdir="${ieee1516e.build.dir}/ieee1516e-example"
+		          type="executable"
+		          mode="release"
+		          arch="amd64"
 		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		          linkerArgs=""
-		          type="executable">
+		          linkerArgs="">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
@@ -212,7 +219,6 @@
 			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 	</target>
-
 
 	<!-- ================================================================================= -->
 	<!--                                  Testing Targets                                  -->
@@ -296,9 +302,14 @@
 			<fileset dir="${dlc13.complete.dir}" includes="**/*.dylib"/>
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dylib"/>
 		</copy>
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG"/>   <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13"/>    <!-- dlc13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e"/> <!-- ieee1516e -->
+		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
+		     not copy them and recreate them in place. Booooooo. -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG"/>    <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NGd"/>   <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13"/>     <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13d"/>    <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e"/>  <!-- ieee1516e -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516ed"/> <!-- ieee1516e -->
 		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->
