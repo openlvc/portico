@@ -97,7 +97,7 @@
 	<!-- ======================================= -->
 	<target name="compile.hla13">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime" outdir="${hla13.build.dir}">
+		<cpp-win32 outfile="libFedTime" outdir="${hla13.build.dir}" build="both">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -115,7 +115,7 @@
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="libRTI-NG" outdir="${hla13.build.dir}">
+		<cpp-win32 outfile="libRTI-NG" outdir="${hla13.build.dir}" build="both">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -161,7 +161,7 @@
 	<!-- ==================================== -->
 	<target name="compile.ieee1516e">
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}">
+		<cpp-win32 outfile="librti1516e" outdir="${ieee1516e.build.dir}" build="both">
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -175,7 +175,7 @@
 		</cpp-win32>
 
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libfedtime1516e" outdir="${ieee1516e.build.dir}">
+		<cpp-win32 outfile="libfedtime1516e" outdir="${ieee1516e.build.dir}" build="both">
 			<!-- Filesets and other settings -->
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -285,9 +285,9 @@
 		<!-- Copy across the C++ libraries -->
 		<mkdir dir="${dist.lib.dir}/vc10"/>
 		<copy todir="${dist.lib.dir}/vc10">
-			<fileset dir="${hla13.complete.dir}" includes="**/*.lib"/>
-			<!--<fileset dir="${dlc13.complete.dir}" includes="**/*.lib"/>-->
-			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib"/>
+			<fileset dir="${hla13.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
+			<!--<fileset dir="${dlc13.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>-->
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
 		</copy>
 		<!-- Copy across the C++ dlls -->
 		<mkdir dir="${dist.bin.dir}/vc10"/>

@@ -291,6 +291,7 @@
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
+		<attribute name="build"     description="" default="release"/>
 		<attribute name="compilerArgs"
 		           description="arg list passed directly to compiler"
 		           default="/O2 /EHsc /GR /MD /W0"/>
@@ -307,10 +308,11 @@
 			<mkdir dir="@{outdir}/obj"/>
 			<mkdir dir="@{outdir}/complete"/>
 			<!-- run cpptask -->
-			<cpptask outfile="@{outdir}/complete/@{outfile}"
-			         objdir="@{outdir}/obj"
-			         outtype="@{type}"
-					 outarch="x86"
+			<cpptask outputName="@{outfile}"
+			         workingDirectory="@{outdir}"
+			         outputType="@{type}"
+					 outputArch="x86"
+					 buildType="@{build}"
 			         compiler="vc10"
 			         compilerArgs="@{compilerArgs}"
 			         linkerArgs="@{linkerArgs}">
