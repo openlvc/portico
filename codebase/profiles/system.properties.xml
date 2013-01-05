@@ -42,9 +42,12 @@
 	<!-- Build version identification properties (set if not in "build.version") -->
 	<property file="build.version"/>        <!-- bring in the build version information -->
 	<property name="app.shortname"          value="portico"/> <!-- set in build.version -->
-	<property name="app.version"            value="unknown"/> <!-- set in build.version -->
+	<property name="app.version.number"     value="unknown"/> <!-- set in build.version -->
+	<property name="app.version.tag"        value=""/>        <!-- set in build.version -->
+	<property name="app.version"            value="${app.version.number}${app.version.tag}"/>
 	<property name="app.license"            location="LICENSE.${ant.project.name}"/>
-	
+	<property name="build.number"           value="0"/>       <!-- overridden from command line-->
+
 	<!-- Bring in the common task-defs (cpptask contains many platform tasks) -->
 	<taskdef resource="cpptaskdef.properties"/>
 
