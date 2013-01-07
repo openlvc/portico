@@ -20,10 +20,10 @@
 IEEE1516E_NS_START
 
 /**
- * A template class that abstracts common functionality required by all underlying encoding helper
- * implementations defined by the 1516e specification macro DEFINE_ENCODING_HELPER_CLASS
+ * A template class that abstracts common functionality required by all underlying basic encoding
+ * helper implementations defined by the 1516e specification macro DEFINE_ENCODING_HELPER_CLASS
  */
-template <typename T> class TypeImplementation
+template <typename T> class BasicTypeImpl
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -45,10 +45,10 @@ template <typename T> class TypeImplementation
          *
          * @param value The initial value to assign this type
          */
-        TypeImplementation( const T& value )
+        BasicTypeImpl( const T& value )
         {
             setUseInternalMemory( value );
-        };
+        }
     
         /**
          * Constructor for external memory. This instance changes or is changed by contents of 
@@ -62,15 +62,15 @@ template <typename T> class TypeImplementation
          * @param pointer The pointer to the  memory location that this type should read its value
          * from
          */
-        TypeImplementation( T* pointer )
+        BasicTypeImpl( T* pointer )
         {
             setUseExternalMemory( pointer );
-        };
+        }
         
-        virtual ~TypeImplementation()
+        virtual ~BasicTypeImpl()
         {
             this->externalPointer = NULL;
-        };
+        }
     
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -86,7 +86,7 @@ template <typename T> class TypeImplementation
         {
             this->externalPointer = NULL;
             this->internalValue = value;
-        };
+        }
     
         /**
          * Instructs the instance to use the external memory location to read/store its value from.
@@ -99,7 +99,7 @@ template <typename T> class TypeImplementation
         virtual void setUseExternalMemory( T* pointer )
         {
             this->externalPointer = pointer;
-        };
+        }
     
         /**
          * Returns this instance's value.
@@ -110,7 +110,7 @@ template <typename T> class TypeImplementation
         virtual T getValue()
         {
             return this->externalPointer ? *this->externalPointer : this->internalValue;
-        };
+        }
     
         /**
          * Sets this instance's value.
@@ -124,7 +124,7 @@ template <typename T> class TypeImplementation
                 *this->externalPointer = value;
             else
                 this->internalValue = value;
-        };
+        }
     
     //----------------------------------------------------------
 	//                     STATIC METHODS
@@ -132,17 +132,17 @@ template <typename T> class TypeImplementation
 };
 
 // As the spec itself forward declares the implementation types, we cannot simply typedef them to
-// the templated TypeImplementation class above. Instead we must define the implementation type as
-// a generalization of TypeImplementation and provide the appropriate constructors.
+// the templated BasicTypeImpl class above. Instead we must define the implementation type as
+// a generalization of BasicTypeImpl and provide the appropriate constructors.
 //
 // The macro below has been provided to keep this process to a single line statement
-#define DEFINE_TYPE_IMPL( TypeName, SimpleType )                                                \
-class TypeName : public TypeImplementation<SimpleType>                                          \
+#define DEFINE_BASIC_TYPE_IMPL( TypeName, SimpleType )                                          \
+class TypeName : public BasicTypeImpl<SimpleType>                                          		\
 {                                                                                               \
     public:                                                                                     \
-        TypeName( const SimpleType& value ) : TypeImplementation<SimpleType>( value ) {};       \
-        TypeName( SimpleType* pointer ) : TypeImplementation<SimpleType>( pointer ) {};         \
-        virtual ~TypeName() {};                                                                 \
+        TypeName( const SimpleType& value ) : BasicTypeImpl<SimpleType>( value ) {}				\
+        TypeName( SimpleType* pointer ) : BasicTypeImpl<SimpleType>( pointer ) {}	        	\
+        virtual ~TypeName() {}																	\
 };
 
 IEEE1516E_NS_END

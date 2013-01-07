@@ -14,12 +14,12 @@
  */
 #include "common.h"
 #include "types/encoding/BitHelpers.h"
-#include "types/encoding/TypeImplementation.h"
+#include "types/encoding/basic/BasicTypeImpl.h"
 #include "RTI/encoding/BasicDataElements.h"
 
 IEEE1516E_NS_START
 
-DEFINE_TYPE_IMPL( HLAoctetImplementation, Octet )
+DEFINE_BASIC_TYPE_IMPL( HLAoctetImplementation, Octet )
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
