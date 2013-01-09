@@ -218,10 +218,10 @@
 	     
 	     Usage Example:
 	     <cpp-unix outfile="libraryName"
-	               outdir="${output.dir}"
+	               workdir="${output.dir}"
 	               type="shared"
 	               compilerArgs="-Wall"
-	               linkerArgs="-framework JavaVM -arch i386">
+	               linkerArgs="-install_name @rpath/@{outfile}">
 	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
 	        <includepath path="${include.path.1}:${include.path.2}"/>
 	        <includepath path="${include.path.3}"/>
@@ -234,7 +234,6 @@
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
-		<attribute name="mode"      description="release (default), debug or both" default="release"/>
 		<attribute name="arch"      description="amd64 (default) or x86" default="amd64"/>
 		<attribute name="compiler"  description="g++ (default) or gcc" default="g++"/>
 		<attribute name="compilerArgs" description="arg list passed directly to compiler"
@@ -253,7 +252,6 @@
 			<cpptask outfile="@{outfile}"
 			         workdir="@{workdir}"
 			         type="@{type}"
-			         mode="@{mode}"
 			         arch="@{arch}"
 			         compiler="@{compiler}"
 			         compilerArgs="@{compilerArgs}"
@@ -276,7 +274,6 @@
 	     <cpp-win32 outfile="libraryName"
 	                workdir="${output.dir}"
 	                type="shared"
-	                mode="release"
 	                compiler="vc10"
 	                compilerArgs="-Wall"
 	                linkerArgs="">
@@ -293,7 +290,6 @@
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
-		<attribute name="mode"      description="release (default), debug or both" default="release"/>
 		<attribute name="arch"      description="amd64 or x86 (default)" default="x86"/>
 		<attribute name="compiler"  description="vc8, vc9, vc10" default="vc10"/>
 		<attribute name="compilerArgs" description="arg list passed directly to compiler"
@@ -311,7 +307,6 @@
 			<cpptask outfile="@{outfile}"
 			         workdir="@{workdir}"
 			         type="@{type}"
-			         mode="@{mode}"
 			         arch="@{arch}"
 			         compiler="@{compiler}"
 			         compilerArgs="@{compilerArgs}"

@@ -97,7 +97,6 @@
 	<target name="compile.hla13">
 		<cpp-unix outfile="RTI-NG"
 		          workdir="${hla13.build.dir}"
-		          mode="both"
 		          arch="amd64"
 		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
 		          linkerArgs="-dynamiclib">
@@ -125,7 +124,6 @@
 	<target name="compile.dlc13">
 		<cpp-unix outfile="rti13"
 		          workdir="${dlc13.build.dir}"
-		          mode="both"
 		          arch="amd64"
 		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
 		          linkerArgs="-dynamiclib">
@@ -155,7 +153,6 @@
 		<cpp-unix outfile="test13"
 		          workdir="${test13.build.dir}"
 		          type="executable"
-		          mode="release"
 		          arch="amd64"
 		          compilerArgs="-g -Wno-write-strings"
 		          linkerArgs="">
@@ -175,7 +172,6 @@
 	<target name="compile.ieee1516e">
 		<cpp-unix outfile="librti1516e.dylib"
 		          workdir="${ieee1516e.build.dir}"
-		          mode="both"
 		          arch="amd64"
 		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor">
 			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
@@ -206,7 +202,6 @@
 		<cpp-unix outfile="ieee1516e-example"
 		          workdir="${ieee1516e.build.dir}/ieee1516e-example"
 		          type="executable"
-		          mode="release"
 		          arch="amd64"
 		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
 		          linkerArgs="">

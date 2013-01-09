@@ -97,7 +97,7 @@
 	<!-- ======================================= -->
 	<target name="compile.hla13">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime" workdir="${hla13.build.dir}" mode="both">
+		<cpp-win32 outfile="libFedTime" workdir="${hla13.build.dir}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -115,7 +115,7 @@
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="libRTI-NG" workdir="${hla13.build.dir}" mode="both">
+		<cpp-win32 outfile="libRTI-NG" workdir="${hla13.build.dir}">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -161,7 +161,7 @@
 	<!-- ==================================== -->
 	<target name="compile.ieee1516e">
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="librti1516e" workdir="${ieee1516e.build.dir}" mode="release">
+		<cpp-win32 outfile="librti1516e" workdir="${ieee1516e.build.dir}">
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -175,7 +175,7 @@
 		</cpp-win32>
 
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libfedtime1516e" workdir="${ieee1516e.build.dir}" mode="release">
+		<cpp-win32 outfile="libfedtime1516e" workdir="${ieee1516e.build.dir}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
