@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="hla13">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Mac OS X C++ build profile for HLA v1.3 Interface
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+
+	<!-- ==================================== -->
+	<!-- ==== HLA13 Interface Properties ==== -->
+	<!-- ==================================== -->
+	<!-- source -->
+	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
+	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include/hla13"/>
+	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
+	
+	<!-- build -->
+	<property name="hla13.build.dir"           location="${build.dir}/cpp/macosx/hla13"/>
+	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
+
+	<!-- test build -->
+	<property name="test13.build.dir"          location="${build.dir}/cpp/macosx/test13"/>
+	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
+
+	<!-- =========================================================== -->
+	<!--                     Project Libraries                       -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- See profiles/project.libraries.xml -->
+	<!-- <property name="cppunit.dir"     location="..."/> -->
+	<!-- <property name="cppunit.include" location="..."/> -->
+	<!-- <property name="cppunit.lib"     location="..."/> -->
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="master.clean">
+		<delete dir="${hla13.build.dir}"/>
+		<delete dir="${test13.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent compilation target. This will compile all the core Portico C++
+	     interface and the associated unit test suite code.
+	-->
+	<target name="compile"
+	        extensionOf="master.compile"
+	        description="Compile C++ HLA v1.3 Interface and Test Suite"
+	        depends="compile.x86,
+	                 compile.amd64.debug,
+	                 compile.amd64.release,
+	                 test.compile"/>
+
+	<!-- Let people known that 32-bit builds are not supported -->
+	<target name="compile.x86"><echo>Mac OS X 32-bit builds are not supported</echo></target>
+
+	<!-- ======================================= -->
+	<!--            HLA 1.3 Interface            -->
+	<!-- ======================================= -->
+	<target name="compile.amd64.debug">
+		<cpp-unix outfile="RTI-NG_64d"
+		          workdir="${hla13.build.dir}"
+		          outdir="${hla13.complete.dir}"
+		          arch="amd64"
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs="-dynamiclib">
+			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${hla13.include.dir}"/>
+			<includepath path="${hla13.src.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="libRTI-NG_64d"/>
+	</target>
+
+	<target name="compile.amd64.release" if="release.build">
+		<cpp-unix outfile="RTI-NG_64"
+		          workdir="${hla13.build.dir}"
+		          outdir="${hla13.complete.dir}"
+		          arch="amd64"
+		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs="-dynamiclib">
+			<fileset dir="${hla13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${hla13.include.dir}"/>
+			<includepath path="${hla13.src.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="libRTI-NG_64"/>
+	</target>
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test.compile" depends="compile.amd64.debug">
+		<cpp-unix outfile="test13"
+		          workdir="${test13.build.dir}"
+		          outdir="${test13.complete.dir}"
+		          type="executable"
+		          arch="amd64"
+		          compilerArgs="-g -Wno-write-strings"
+		          linkerArgs="">
+			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${hla13.include.dir}"/>
+			<includepath path="${hla13.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${hla13.complete.dir}" libs="RTI-NG_64d"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+		</cpp-unix>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test" extensionOf="master.test" depends="java.sandbox,test.compile">
+		<!-- 1. copy the testing resources into test
+		     dir (RID file etc...).T he filtering is
+		     primarily used for the gdb environment file -->
+		<copy todir="${test13.complete.dir}">
+			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
+		<echo>Copied testing resources to ${test13.complete.dir}</echo>
+
+		<!-- 2. run the actual test application -->
+		<exec dir="${test13.complete.dir}"
+		      executable="${test13.complete.dir}/test13"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="test13.result">
+			<arg line="${test13.complete.dir}/test-results.xml"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir};${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+		
+		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
+		<!--
+		<echo>Generating the Unit Test Report</echo>
+		<cppunit-report result="${test13.result}"
+		                xmlfile="${test13.complete.dir}/test-results.xml"
+		                xslfile="${test13.complete.dir}/xsl/results.xsl"
+		                outfile="${test13.complete.dir}/test-results.html"/>
+		-->
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox,compile">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${dist.sandbox.dir}/include/hla13"/>
+		<copy todir="${dist.sandbox.dir}/include/hla13">
+			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${dist.lib.dir}/gcc4"/>
+		<copy todir="${dist.lib.dir}/gcc4">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>
+		</copy>
+
+		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
+		     not copy them and recreate them in place. Booooooo. -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG_64"/>    <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG_64d"/>   <!-- hla13 -->
+		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<mkdir dir="${dist.examples.dir}/cpp/hla13"/>
+		<copy todir="${dist.examples.dir}/cpp/hla13">
+			<fileset dir="${hla13.example.dir}" includes="**/*"/>
+		</copy>
+		<chmod dir="${dist.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                             Installer Creation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- No special installation tasks to do for this build -->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts inside in prep
+	     for release.
+	-->
+	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
+
+</project>

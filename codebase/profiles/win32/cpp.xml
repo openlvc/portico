@@ -7,7 +7,7 @@
        different build files (base structure, macros, etc...) and is
        designed to be extended rather than modified. The full system
        is introduced and described in the online documentation:
-       
+
        http://porticoproject.org/index.php?title=Building_Portico
 -->
 <project name="cpp">
@@ -16,7 +16,7 @@
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Mac OS X C++ build profile for the Portico Open Source RTI (all interfaces)
+		Windows 32-bit C++ build profile for the Portico Open Source RTI (all interfaces)
 	</description>
 
 	<!-- This build file provides the ability to do tasks on all C++ interfaces as a group. -->
@@ -26,7 +26,6 @@
 	<!--                                   Clean Targets                                   -->
 	<!-- ================================================================================= -->
 	<target name="clean" extensionOf="master.clean" depends="hla13.clean,
-	                                                         dlc13.clean,
 	                                                         ieee1516e.clean"/>
 
 	<!-- ================================================================================= -->
@@ -36,7 +35,6 @@
 	        extensionOf="master.compile"
 	        description="Compile the Portico C++ interfaces and Testing Suite for Mac OS X"
 	        depends="hla13.compile,
-	                 dlc13.compile,
 	                 ieee1516e.compile"/>
 
 	<!-- ================================================================================= -->
@@ -48,7 +46,6 @@
 	<!--                                  Sandbox Targets                                  -->
 	<!-- ================================================================================= -->
 	<target name="sandbox" extensionOf="master.sandbox" depends="hla13.sandbox,
-	                                                             dlc13.sandbox,
 	                                                             ieee1516e.sandbox"/>
 
 	<!-- ================================================================================= -->

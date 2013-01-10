@@ -31,6 +31,7 @@
 	<!-- =========================================================== -->
 	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
 	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
+	<import file="profiles/project.libraries.xml"/>    <!-- project-specific libraries defs -->
 
 	<!-- =========================================================== -->
 	<!--                       Master Targets                        -->
@@ -57,11 +58,11 @@
 
 	<target name="release"
 	        description="Create a production-ready release. Run all tests and generate installer."
-	        depends="clean,master.release,installer"/>
+	        depends="clean,common.release,master.release,installer"/>
 
-	<target name="release-dev"
+	<target name="release-thin"
 	        description="Create a standard release package, but does not run the tests."
-	        depends="clean,sandbox,installer"/>
+	        depends="clean,common.release,sandbox,installer"/>
 			
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
@@ -89,12 +90,17 @@
 	<include file="profiles/java.xml" as="java"/>
 
 	<!-- Mac OS X C++ and Installer profiles -->
-	<include file="profiles/macosx/cpp.xml"          as="cpp"          if="platform.macosx"/>
-	<include file="profiles/macosx/installer.xml"    as="installer"    if="platform.macosx"/>
-	
+	<include file="profiles/macosx/cpp.xml"          as="cpp"           if="platform.macosx"/>
+	<include file="profiles/macosx/hla13.xml"        as="cpp.hla13"     if="platform.macosx"/>
+	<include file="profiles/macosx/dlc13.xml"        as="cpp.dlc13"     if="platform.macosx"/>
+	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e" if="platform.macosx"/>
+	<include file="profiles/macosx/installer.xml"    as="installer"     if="platform.macosx"/>
+
 	<!-- Windows 32bit C++ and Installer profiles -->
-	<include file="profiles/win32/cpp32.xml"         as="cpp"          if="platform.windows"/>
-	<include file="profiles/win32/installer32.xml"   as="installer"    if="platform.windows"/>
+	<include file="profiles/win32/cpp.xml"           as="cpp"           if="platform.windows"/>
+	<include file="profiles/win32/hla13.xml"         as="cpp.hla13"     if="platform.windows"/>
+	<include file="profiles/win32/ieee1516e.xml"     as="cpp.ieee1516e" if="platform.windows"/>
+	<include file="profiles/win32/installer32.xml"   as="installer"     if="platform.windows"/>
 
 	<!-- Windows 64bit C++ and Installer profiles -->
 	<!--
@@ -109,6 +115,12 @@
 		<!-- Remove any top-level directories that might need to go -->
 		<delete dir="${build.dir}"/>
 		<delete dir="${dist.dir}"/>
+	</target>
+
+	<target name="common.release">
+		<!-- Let everyone know this is a full release build -->
+		<echo> === Full release build (compiling all interfaces and running all tests) === </echo>
+		<property name="release.build" value="true"/>
 	</target>
 
 </project>

@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="ieee1516e">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Mac OS X C++ build profile for IEEE-1516 (2010) Interface [HLA Evolved]
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+
+	<!-- ================================================ -->
+	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
+	<!-- ================================================ -->
+	<!-- source -->
+	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
+	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
+	<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>
+	
+	<!-- build -->
+	<property name="ieee1516e.build.dir"       location="${build.dir}/cpp/macosx/ieee1516e"/>
+	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
+
+	<!-- =========================================================== -->
+	<!--                     Project Libraries                       -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- See profiles/project.libraries.xml -->
+	<!-- <property name="cppunit.dir"     location="..."/> -->
+	<!-- <property name="cppunit.include" location="..."/> -->
+	<!-- <property name="cppunit.lib"     location="..."/> -->
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="master.clean">
+		<delete dir="${ieee1516e.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent compilation target. This will compile all the core Portico C++
+	     interface and the associated unit test suite code.
+	-->
+	<target name="compile"
+	        extensionOf="master.compile"
+	        description="Compile C++ IEEE-1516e Interface"
+	        depends="compile.x86,
+	                 compile.amd64.debug,
+	                 compile.amd64.release,
+	                 example.compile"/>
+
+	<!-- Let people known that 32-bit builds are not supported -->
+	<target name="compile.x86"><echo>Mac OS X 32-bit builds are not supported</echo></target>
+
+	<!-- ==================================== -->
+	<!--            1516e Interface           -->
+	<!-- ==================================== -->
+	<target name="compile.amd64.debug">
+		<cpp-unix outfile="librti1516e_64d"
+		          workdir="${ieee1516e.build.dir}"
+		          outdir="${ieee1516e.complete.dir}"
+		          arch="amd64"
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor">
+			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<define name="DEBUG"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e_64d"/>
+	</target>
+
+	<target name="compile.amd64.release" if="release.build">
+		<cpp-unix outfile="librti1516e_64"
+		          workdir="${ieee1516e.build.dir}"
+		          outdir="${ieee1516e.complete.dir}"
+		          arch="amd64"
+		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor">
+			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e_64"/>
+	</target>
+
+	<!-- ==================================== -->
+	<!--        1516e Example Federate        -->
+	<!-- ==================================== -->
+	<!-- Compiles the 1516e example federate. Doesn't do much except
+	     assure that we can actually compile and link it to Portico -->
+	<target name="example.compile" depends="compile.amd64.debug">
+		<cpp-unix outfile="ieee1516e-example"
+		          workdir="${ieee1516e.build.dir}/ieee1516e-example"
+		          type="executable"
+		          arch="amd64"
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs="">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
+			<define name="DEBUG"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e_64d"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+
+	<!-- Not implemented for C++ IEEE-1516e Inteface -->
+	<target name="test" extensionOf="master.test">
+		<echo>No unit test suite for the IEEE-1516e Interface</echo>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox,compile">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${dist.sandbox.dir}/include/ieee1516e"/>
+		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
+			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${dist.lib.dir}/gcc4"/>
+		<copy todir="${dist.lib.dir}/gcc4">
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dylib"/>
+		</copy>
+
+		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
+		     not copy them and recreate them in place. Booooooo. -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e_64"/>  <!-- ieee1516e -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e_64d"/> <!-- ieee1516e -->
+		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
+		</copy>
+		<chmod dir="${dist.examples.dir}/cpp/ieee1516e" perm="777" includes="**/*.sh"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                             Installer Creation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- No special installation tasks to do for this build -->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts inside in prep
+	     for release.
+	-->
+	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
+
+</project>

@@ -233,6 +233,7 @@
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
+		<attribute name="outdir"    description="location for compiled output" default="@{workdir}/complete"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
 		<attribute name="arch"      description="amd64 (default) or x86" default="amd64"/>
 		<attribute name="compiler"  description="g++ (default) or gcc" default="g++"/>
@@ -251,6 +252,7 @@
 		<sequential>
 			<cpptask outfile="@{outfile}"
 			         workdir="@{workdir}"
+			         outdir="@{outdir}"
 			         type="@{type}"
 			         arch="@{arch}"
 			         compiler="@{compiler}"
