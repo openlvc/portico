@@ -137,14 +137,22 @@ void Runtime::initializeJVM() throw( HLA::RTIinternalError )
 	// other jvm options - remember to increment the option array size
 	// if you are going to add more
 	string stackSize( "-Xss8m" );
+	string mode = getMode();
+	string compiler = getCompiler();
+	string hlaVersion = getHlaVersion();
+	string architecture = getArch();
 	
 	// before we can create or connect to the JVM, we need to specify its environment
 	JavaVMInitArgs vmargs;
-	JavaVMOption options[3];
+	JavaVMOption options[7];
 	options[0].optionString = const_cast<char*>(paths.first.c_str());
 	options[1].optionString = const_cast<char*>(paths.second.c_str());
-	options[2].optionString = const_cast<char*>(stackSize.c_str());
-	vmargs.nOptions = 3;
+	options[2].optionString = const_cast<char*>(mode.c_str());         // build mode
+	options[3].optionString = const_cast<char*>(compiler.c_str());     // compiler version
+	options[4].optionString = const_cast<char*>(hlaVersion.c_str());   // hla interface version
+	options[5].optionString = const_cast<char*>(architecture.c_str()); // architecture
+	options[6].optionString = const_cast<char*>(stackSize.c_str());
+	vmargs.nOptions = 7;
 	vmargs.version = JNI_VERSION_1_6;
 	vmargs.options = options;
 	vmargs.ignoreUnrecognized = JNI_TRUE;
@@ -404,6 +412,61 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	
 	return paths;
 }
+
+/*
+ * Return "-Dportico.cpp.mode=" debug or release
+ */
+string Runtime::getMode() throw( HLA::RTIinternalError )
+{
+#ifdef DEBUG
+	return string("-Dportico.cpp.mode=debug");
+#else
+	return string("-Dportico.cpp.mode=release");
+#endif
+}
+
+/*
+ * Return "-Dportico.cpp.compiler=" vc8, vc9, vc10, vc11, gcc4, ...
+ */
+string Runtime::getCompiler() throw( HLA::RTIinternalError )
+{
+#ifdef VC11
+	return string( "-Dportico.cpp.compiler=vc11" );
+#elif defined(VC10)
+	return string( "-Dportico.cpp.compiler=vc10" );
+#elif defined(VC9)
+	return string( "-Dportico.cpp.compiler=vc9" );
+#elif defined(VC8)
+	return string( "-Dportico.cpp.compiler=vc8" );
+#else
+	return string( "-Dportico.cpp.compiler=gcc4" );
+#endif
+}
+
+/*
+ * Return "-Dportico.cpp.hlaversion=" hla13, dlc13, ieee1516, ieee1516e, ...
+ */
+string Runtime::getHlaVersion() throw( HLA::RTIinternalError )
+{
+#ifdef BUILDING_DLC
+	return string( "-Dportico.cpp.hlaversion=dlc13" );
+#else
+	return string( "-Dportico.cpp.hlaversion=hla13" );
+#endif
+}
+
+/*
+ * Return "-Dportico.cpp.arch=" x86 or amd64
+ */
+string Runtime::getArch() throw( HLA::RTIinternalError )
+{
+#ifdef ARCH_X86
+	return string( "-Dportico.cpp.arch=x86" );
+#else
+	return string( "-Dportico.cpp.arch=amd64" );
+#endif
+}
+
 
 /*
  * This method will locate and parse the RID file. If the file does not exist, it

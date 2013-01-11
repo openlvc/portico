@@ -16,6 +16,7 @@ package org.portico.impl.cpp13;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.portico.lrc.PorticoConstants;
 
 /**
  * This class is responsbile for loading the native libraries that contain the C++ side
@@ -84,22 +85,34 @@ public class NativeLibraryLoader
 
 	private void loadWindowsLibraries()
 	{
-		// When loading the C++ side of the interface, there are a number of different libraries
-		// that we may have to load:
-		//   * HLA v1.3 32-bit (libRTI-NG.dll)
-		//   * HLA v1.3 64-bit (libRTI-NG_64.dll)
-		//
-		// Work through these in order until we get something that loads
-		// We start by assuming that the path is set up correctly. If that fails, we
-		// then try and manually determine the path from RTI_HOME
 		logger.debug( "Attempting to load Portico C++ native interface libraries" );
+
+		//////////////////////////////////////////////////
+		// Build the library name based on architecture //
+		//////////////////////////////////////////////////
+		String libraryName = "";
+
+		// get the interface name
+		if( PorticoConstants.isCppHla13() )
+			libraryName = "libRTI-NG";
+		else
+			libraryName = "librti13";
 		
-		// HLA v1.3 32-bit (libRTI-NG.dll)
-		if( loadLibrary("libRTI-NG","HLA v1.3 32-bit library (libRTI-NG.dll)") )
-			return;
+		// append for 64-bit
+		if( PorticoConstants.isCpp64bit() )
+			libraryName += "_64";
 		
-		// HLA v1.3 64-bit (libRTI-NG_64.dll)
-		if( loadLibrary("libRTI-NG_64","HLA v1.3 64-bit library (libRTI-NG_64.dll)") )
+		// append for a debug library
+		if( PorticoConstants.isCppDebugSession() )
+			libraryName += "d";
+		
+		// generate a nice description string
+		String libraryDescription = "HLA v1.3 C++ library ("+libraryName+".dll)";
+
+		//////////////////////////////
+		// Try and load the library //
+		//////////////////////////////
+		if( loadLibrary(libraryName,libraryDescription) )
 			return;
 
 		// Couldn't find what we're after, see if we can do better manually trying to
@@ -112,55 +125,52 @@ public class NativeLibraryLoader
 		logger.debug( "Could not load native libraries via system path, trying to auto-detect path" );
 		logger.debug( "Using RTI_HOME: "+rtiHome );
 
-		// HLA v1.3 32-bit (libRTI-NG.dll)
-		String name = rtiHome+"\\bin\\vc10\\libRTI-NG.dll";
-		if( loadLibrary(name,"HLA v1.3 32-bit VC10 library (libRTI-NG.dll)") )
+		// try again
+		String name = rtiHome+"\\bin\\vc10\\"+libraryName+".dll";
+		if( loadLibrary(name,libraryDescription) )
 			return;
 		
-		// HLA v1.3 64-bit (libRTI-NG_64.dll)
-		name = rtiHome+"\\bin\\vc10\\libRTI-NG_64.dll";
-		if( loadLibrary(name,"HLA v1.3 64-bit VC10 library (libRTI-NG_64.dll)") )
-			return;
-
 		// fail!
-		System.out.println( "ERROR Could not locate Portico C++ library for HLA v1.3" );
-		System.out.println( "ERROR Make sure %RTI_HOME% is set and "+
-		                    "%RTI_HOME%\\bin\\[compiler] is on you %PATH%" );
+		System.out.println( "ERROR (loadback) Could not locate HLA v1.3 C++ library ("+libraryName+".dll)" );
+		System.out.println( "ERROR (loadback) Make sure %RTI_HOME% is set and %RTI_HOME%\\bin\\[compiler] is on you %PATH%" );
+		System.out.println( "      (loadback) Search path: "+System.getProperty("java.library.path") );
 	}
 	
 	private void loadUnixLibraries()
 	{
-		// When loading the C++ side of the interface, there are a number of different libraries
-		// that we may have to load:
-		//   * HLA v1.3 32-bit (libRTI-NG)
-		//   * HLA v1.3 64-bit (libRTI-NG_64)
-		//   * DLC v1.3 32-bit (librti13)
-		//   * DLC v1.3 64-bit (librti13_64)
-		//
-		// Work through these in order until we get something that loads
-		// We start by assuming that the path is set up correctly. If that fails, we
-		// then try and manually determine the path from RTI_HOME
 		logger.debug( "Attempting to load Portico C++ native interface libraries" );
-		
-		// HLA v1.3 32-bit (libRTI-NG)
-		if( loadLibrary("RTI-NG","HLA v1.3 32-bit library (libRTI-NG)") )
-			return;
-		
-		// HLA v1.3 64-bit (libRTI-NG_64)
-		if( loadLibrary("RTI-NG_64","HLA v1.3 64-bit library (libRTI-NG_64)") )
-			return;
 
-		// DLC v1.3 32-bit (libRTI-NG)
-		if( loadLibrary("rti13","HLA v1.3 32-bit library (librti13)") )
+		//////////////////////////////////////////////////
+		// Build the library name based on architecture //
+		//////////////////////////////////////////////////
+		String libraryName = "";
+
+		// get the interface name
+		if( PorticoConstants.isCppHla13() )
+			libraryName = "RTI-NG";
+		else
+			libraryName = "rti13";
+		
+		// append for 64-bit
+		if( PorticoConstants.isCpp64bit() )
+			libraryName += "_64";
+		
+		// append for a debug library
+		if( PorticoConstants.isCppDebugSession() )
+			libraryName += "d";
+		
+		// generate a nice description string
+		String libraryDescription = "lib"+libraryName+".so";
+
+		//////////////////////////////
+		// Try and load the library //
+		//////////////////////////////
+		if( loadLibrary(libraryName,libraryDescription) )
 			return;
 		
-		// DLC v1.3 64-bit (libRTI-NG_64)
-		if( loadLibrary("rti13_64","HLA v1.3 64-bit library (librti13_64)") )
-			return;
-		
-		
-		System.out.println( "ERROR Could not locate Portico C++ library for HLA v1.3" );
-		System.out.println( "ERROR Make sure $RTI_HOME is set and $RTI_HOME/lib/[compiler] is on you $LD_LIBRARY_PATH" );
+		System.out.println( "ERROR (loadback) Could not locate HLA v1.3 C++ library ("+libraryDescription+")" );
+		System.out.println( "ERROR (loadback) Make sure $RTI_HOME is set and $RTI_HOME/lib/[compiler] is on you $LD_LIBRARY_PATH" );
+		System.out.println( "      (loadback) Search path: "+System.getProperty("java.library.path") );
 	}
 
 	//----------------------------------------------------------

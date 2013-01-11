@@ -74,6 +74,19 @@ class Runtime
 
 	private:
 		void   initializeJVM() throw( HLA::RTIinternalError );
+		
+		/**
+		 * So the Java library can know what library name to use for load back we 
+		 * have to tell it the compiler version, HLA interface version and architecture
+		 * we are using. This helps it assemble the appropriate library names it needs
+		 * to load reference back into the C++ library.
+		 * 
+		 * These are passed into the JVM as system properties on startup
+		 */
+		string getMode() throw( HLA::RTIinternalError );         // debug or release
+		string getCompiler() throw( HLA::RTIinternalError );     // vc8, vc9, vc10, gcc4, ...
+		string getHlaVersion() throw( HLA::RTIinternalError );   // hla13, dlc13, ieee1516e, ...
+		string getArch() throw( HLA::RTIinternalError );         // x86, amd64
 
 		/**
 		 * These methods generate a pair of strings which are the paths that should be

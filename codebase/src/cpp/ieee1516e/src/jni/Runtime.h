@@ -90,6 +90,19 @@ class Runtime
 		void detachFromJVM(); /* should not be called currently */
 
 		/**
+		 * So the Java library can know what library name to use for load back we 
+		 * have to tell it the compiler version, HLA interface version and architecture
+		 * we are using. This helps it assemble the appropriate library names it needs
+		 * to load reference back into the C++ library.
+		 * 
+		 * These are passed into the JVM as system properties on startup
+		 */
+		string getMode() throw( RTIinternalError );         // debug or release
+		string getCompiler() throw( RTIinternalError );     // vc8, vc9, vc10, gcc4, ...
+		string getHlaVersion() throw( RTIinternalError );   // hla13, dlc13, ieee1516e, ...
+		string getArch() throw( RTIinternalError );         // x86, amd64
+
+		/**
 		 * These methods generate a pair of strings which are the paths that should be
 		 * used to start the JVM. The first is the classpath that should be used, the
 		 * second is the library path (so the Java side can load the C++ side back).

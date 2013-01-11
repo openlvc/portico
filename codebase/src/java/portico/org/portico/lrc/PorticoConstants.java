@@ -232,7 +232,18 @@ public class PorticoConstants
 	private static boolean logSpaceHandles = false;
 	private static boolean logDimensionHandles = false;
 	private static boolean logFederateHandles = false;
-
+	
+	//////////////////////////////////////////////
+	///////// Portico C++ Property Names /////////
+	//////////////////////////////////////////////
+	/** Settings passed over from the C++ side as system properties to tell us some
+	    specifics about the C++ app running. Used to determine libraries and paths
+	    for loadback */
+	public static final String PROPERTY_CPP_MODE = "portico.cpp.mode";
+	public static final String PROPERTY_CPP_COMPILER = "portico.cpp.compiler";
+	public static final String PROPERTY_CPP_HLAVERSION = "portico.cpp.hlaversion";
+	public static final String PROPERTY_CPP_ARCH = "portico.cpp.arch";
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
@@ -584,6 +595,82 @@ public class PorticoConstants
 	public static boolean isUniqueFederateNamesRequired()
 	{
 		return getBooleanProperty( PROPERTY_UNIQUE_FEDERATE_NAMES, "true" );
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// C++ Property Methods /////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * The Portico C++ interface is a thin JNI wrapper around the Java library. When it starts,
+	 * it creates a JVM and loads the Java library (and can thus communicate with it). To allow
+	 * the Java side to communicate back with the C++ side, the Java side must load the C++
+	 * libraries (we call this "load back").
+	 * <p/>
+	 * We load libraries by name. If the C++ debug libraries have been used, their name will be
+	 * the standard library name with "d" on the end. To ensure we load the library by the correct
+	 * name, if the debug C++ libraries loaded us, we have to use the name "[libname]d". When the
+	 * debug C++ libraries load us, they will set a system property outlining whether they are in
+	 * debug or release mode. This method will return true if the debug libraries should be loaded. 
+	 */
+	public static boolean isCppDebugSession()
+	{
+		String property = System.getProperty(PROPERTY_CPP_MODE,"release").trim().toLowerCase();
+		return property.equals("debug");
+	}
+
+	/**
+	 * Is the C++ federate that called the Java runtime a 32-bit C++ application?
+	 */
+	public static boolean isCpp32bit()
+	{
+		String property = System.getProperty(PROPERTY_CPP_ARCH,"x86").trim().toLowerCase();
+		return property.equals("x86");
+	}
+	
+	/**
+	 * Is the C++ federate that called the Java runtime a 64-bit C++ application?
+	 */
+	public static boolean isCpp64bit()
+	{
+		return !isCpp32bit();
+	}
+
+	public static String getCppCompilerString()
+	{
+		return System.getProperty( PROPERTY_CPP_COMPILER, "" );
+	}
+
+	/**
+	 * Gets the HLA interface version string for the C++ interface that loaded the Java side
+	 * of the RTI (hla13, dlc13, ieee1516e).
+	 */
+	public static String getCppHlaVersion()
+	{
+		return System.getProperty( PROPERTY_CPP_HLAVERSION, "unknown" );
+	}
+
+	/**
+	 * Is the C++ federate that called the Java runtime an HLA v1.3 federate?
+	 */
+	public static boolean isCppHla13()
+	{
+		return getCppHlaVersion().equals("hla13");
+	}
+	
+	/**
+	 * Is the C++ federate that called the Java runtime an HLA v1.3 (DLC) federate?
+	 */
+	public static boolean isCppDlc13()
+	{
+		return getCppHlaVersion().equals("dlc13");
+	}
+	
+	/**
+	 * Is the C++ federate that called the Java runtime an IEEE-1516e federate?
+	 */
+	public static boolean isCppIeee1516e()
+	{
+		return getCppHlaVersion().equals("ieee1516e");
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////

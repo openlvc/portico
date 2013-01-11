@@ -16,6 +16,7 @@ package org.portico.impl.cpp1516e;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.portico.lrc.PorticoConstants;
 
 /**
  * This class is responsbile for loading the native libraries that contain the C++ side
@@ -84,22 +85,28 @@ public class NativeLibraryLoader
 
 	private void loadWindowsLibraries()
 	{
-		// When loading the C++ side of the interface, there are a number of different libraries
-		// that we may have to load:
-		//   * IEEE-1516e 32-bit (librti1516e.dll)
-		//   * IEEE-1516e 64-bit (librti1516e_64.dll)
-		//
-		// Work through these in order until we get something that loads
-		// We start by assuming that the path is set up correctly. If that fails, we
-		// then try and manually determine the path from RTI_HOME
 		logger.debug( "Attempting to load Portico C++ native interface libraries" );
+
+		//////////////////////////////////////////////////
+		// Build the library name based on architecture //
+		//////////////////////////////////////////////////
+		String libraryName = "librti1516e";
+
+		// append for 64-bit
+		if( PorticoConstants.isCpp64bit() )
+			libraryName += "_64";
 		
-		// IEEE-1516e 32-bit (librti1516e.dll)
-		if( loadLibrary("librti1516e","IEEE-1516e 32-bit library (librti1516e.dll)") )
-			return;
+		// append for a debug library
+		if( PorticoConstants.isCppDebugSession() )
+			libraryName += "d";
 		
-		// IEEE-1516e 64-bit (librti1516e_64.dll)
-		if( loadLibrary("librti1516e_64","IEEE-1516e 64-bit library (librti1516e_64.dll)") )
+		// generate a nice description string
+		String libraryDescription = "IEEE-1516e [HLA Evolved] C++ library ("+libraryName+".dll)";
+
+		//////////////////////////////
+		// Try and load the library //
+		//////////////////////////////
+		if( loadLibrary(libraryName,libraryDescription) )
 			return;
 
 		// Couldn't find what we're after, see if we can do better manually trying to
@@ -112,44 +119,49 @@ public class NativeLibraryLoader
 		logger.debug( "Could not load native libraries via system path, trying to auto-detect path" );
 		logger.debug( "Using RTI_HOME: "+rtiHome );
 
-		// IEEE-1516e 32-bit VC10 (librti1516e.dll)
-		String name = rtiHome+"\\bin\\vc10\\librti1516e.dll";
-		if( loadLibrary(name,"IEEE-1516e 32-bit VC10 library (librti1516e.dll)") )
+		// try again
+		String name = rtiHome+"\\bin\\vc10\\"+libraryName+".dll";
+		if( loadLibrary(name,libraryDescription) )
 			return;
 		
-		// IEEE-1516e 64-bit VC10 (librti1516e_64.dll)
-		name = rtiHome+"\\bin\\vc10\\librti1516e_64.dll";
-		if( loadLibrary(name,"IEEE-1516e 64-bit VC10 library (librti1516e_64.dll)") )
-			return;
-
 		// fail!
-		System.out.println( "ERROR Could not locate Portico C++ library for IEEE-1516e" );
-		System.out.println( "ERROR Make sure %RTI_HOME% is set and "+
+		System.out.println( "ERROR (loadback) Could not locate C++ library ("+libraryName+".dll)" );
+		System.out.println( "      (loadback) Search path: "+System.getProperty("java.library.path") );
+		System.out.println( "ERROR (loadback) Make sure %RTI_HOME% is set and "+
 		                    "%RTI_HOME%\\bin\\[compiler] is on you %PATH%" );
 	}
 	
 	private void loadUnixLibraries()
 	{
-		// When loading the C++ side of the interface, there are a number of different libraries
-		// that we may have to load:
-		//   * IEEE-1516e 32-bit (librti1516e)
-		//   * IEEE-1516e 64-bit (librti1516e_64)
-		//
-		// Work through these in order until we get something that loads
-		// We start by assuming that the path is set up correctly. If that fails, we
-		// then try and manually determine the path from RTI_HOME
 		logger.debug( "Attempting to load Portico C++ native interface libraries" );
+
+		//////////////////////////////////////////////////
+		// Build the library name based on architecture //
+		//////////////////////////////////////////////////
+
+		// get the interface name
+		String libraryName = "rti1516e";
 		
-		// IEEE-1516e 32-bit (librti1516e)
-		if( loadLibrary("rti1516e","IEEE-1516e 32-bit library (librti1516e)") )
+		// append for 64-bit
+		if( PorticoConstants.isCpp64bit() )
+			libraryName += "_64";
+		
+		// append for a debug library
+		if( PorticoConstants.isCppDebugSession() )
+			libraryName += "d";
+		
+		// generate a nice description string
+		String libraryDescription = "lib"+libraryName+".so";
+
+		//////////////////////////////
+		// Try and load the library //
+		//////////////////////////////
+		if( loadLibrary(libraryName,libraryDescription) )
 			return;
-		
-		// IEEE-1516e 64-bit (librti1516e_64)
-		if( loadLibrary("rti1516e_64","IEEE-1516e 64-bit library (librti1516e_64)") )
-			return;
-		
-		System.out.println( "ERROR Could not locate Portico C++ library for IEEE-1516e" );
-		System.out.println( "ERROR Make sure $RTI_HOME is set and $RTI_HOME/lib/[compiler] is on you $LD_LIBRARY_PATH" );
+
+		System.out.println( "ERROR (loadback) Could not locate IEEE-1516e [HLA Evolved] C++ library ("+libraryDescription+")" );
+		System.out.println( "ERROR (loadback) Make sure $RTI_HOME is set and $RTI_HOME/lib/[compiler] is on you $LD_LIBRARY_PATH" );
+		System.out.println( "      (loadback) Search path: "+System.getProperty("java.library.path") );
 	}
 
 	//----------------------------------------------------------

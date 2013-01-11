@@ -17,8 +17,28 @@
 
 #pragma once
 
-// determine the platform
+// The following #defines are set to convey platform information
+//   DEBUG      : Set if this is a debug build. Set from the command line
+// Platform
+//   ARCH_X86   : Set if we are being built for 32-bit systems
+//   ARCH_AMD64 : Set if we are being built for 64-bit systems
+// Operating System
+//   OS_WINDOWS : Set if we are running on a Windows system
+//   OS_LINUX   : Set if we are running on a Linux system
+//   OS_MACOSX  : Set if we are running on a MacOS X system
+// Compiler
+//   VC8        : Set if we are compiling with VC8
+//   VC9        : Set if we are compiling with VC9
+//   VC10       : Set if we are compiling with VC10
+//   VC11       : Set if we are compiling with VC11
+
+///////////////////////////////////////
+// Operating System and Architecture //
+///////////////////////////////////////
 #if _WIN32 || _WIN64
+	#define OS_WINDOWS
+    #define WIN32_LEAN_AND_MEAN
+
 	// determine the platform 
 	#if _WIN32
 		#define ARCH_X86
@@ -41,6 +61,14 @@
 		#define VC8
 	#endif
 #elif __GNUC__
+	// operating system
+	#if defined(__APPLE__)
+		#define OS_MACOSX
+	#elif
+		#define OS_LINUX
+	#endif
+
+	// architecture
 	#if __x86_64__
 		#define ARCH_AMD64
 	#else
@@ -49,11 +77,10 @@
 #endif
 
 // include some platform-dependant headers
-#ifdef _WIN32
-    #define WIN32_LEAN_AND_MEAN
+#ifdef OS_WINDOWS
     #include <windows.h>
 	#include <stdint.h>
-#elif defined(__APPLE__)
+#elif defined(OS_MACOSX)
     #include <malloc/malloc.h>
     #include <stdarg.h>
     #include <ctype.h>
