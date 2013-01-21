@@ -91,7 +91,7 @@
 		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13_64d"/>
 	</target>
 
-	<target name="compile.amd64.release" if="release.build">
+	<target name="compile.amd64.release" if="build.release">
 		<cpp-unix outfile="rti13_64"
 		          workdir="${dlc13.build.dir}"
 		          arch="amd64"

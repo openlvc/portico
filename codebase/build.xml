@@ -58,11 +58,11 @@
 
 	<target name="release"
 	        description="Create a production-ready release. Run all tests and generate installer."
-	        depends="clean,common.release,master.release,installer"/>
+	        depends="clean,build.release,master.release,installer"/>
 
 	<target name="release-thin"
 	        description="Create a standard release package, but does not run the tests."
-	        depends="clean,common.release,sandbox,installer"/>
+	        depends="clean,build.release,sandbox,installer"/>
 			
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
@@ -109,18 +109,20 @@
 	-->
 
 	<!-- =========================================================== -->
+	<!-- Convenience targets for specifying debug or release builds. -->
+	<!-- =========================================================== -->
+	<target name="build.release" description="Flag as release build. Still must run release target">
+		<echo>Build flagged as a release build. Setting build.release property to true</echo>
+		<property name="build.release" value="true"/>
+	</target>
+
+	<!-- =========================================================== -->
 	<!--      Private Internal Targets. Do not modify or extend.     -->
 	<!-- =========================================================== -->
 	<target name="common.clean">
 		<!-- Remove any top-level directories that might need to go -->
 		<delete dir="${build.dir}"/>
 		<delete dir="${dist.dir}"/>
-	</target>
-
-	<target name="common.release">
-		<!-- Let everyone know this is a full release build -->
-		<echo> === Full release build (compiling all interfaces and running all tests) === </echo>
-		<property name="release.build" value="true"/>
 	</target>
 
 </project>

@@ -14,7 +14,6 @@
  */
 package org.portico.impl.cpp1516e;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.portico.lrc.PorticoConstants;
 
@@ -51,7 +50,6 @@ public class NativeLibraryLoader
 	{
 		boolean windows = System.getProperty("os.name").contains("indows");
 		this.logger = Logger.getLogger( "portico.lrc.cpp1516e" );
-		this.logger.setLevel( Level.ERROR );
 		
 		if( windows )
 			loadWindowsLibraries();
@@ -68,6 +66,7 @@ public class NativeLibraryLoader
 		try
 		{
 			System.loadLibrary( libraryName );
+			logger.debug( "SUCCESS (loadback) Loaded "+libraryDescription );
 			return true;
 		}
 		catch( UnsatisfiedLinkError ule )
@@ -120,15 +119,15 @@ public class NativeLibraryLoader
 		logger.debug( "Using RTI_HOME: "+rtiHome );
 
 		// try again
-		String name = rtiHome+"\\bin\\vc10\\"+libraryName+".dll";
+		String compiler = PorticoConstants.getCppCompilerString();
+		String name = rtiHome+"\\bin\\"+compiler+"\\"+libraryName+".dll";
 		if( loadLibrary(name,libraryDescription) )
 			return;
 		
 		// fail!
-		System.out.println( "ERROR (loadback) Could not locate C++ library ("+libraryName+".dll)" );
+		System.out.println( "ERROR (loadback) Could not locate IEEE-1516e C++ library ("+libraryName+".dll)" );
+		System.out.println( "ERROR (loadback) Make sure %RTI_HOME% is set and %RTI_HOME%\\bin\\[compiler] is on you %PATH%" );
 		System.out.println( "      (loadback) Search path: "+System.getProperty("java.library.path") );
-		System.out.println( "ERROR (loadback) Make sure %RTI_HOME% is set and "+
-		                    "%RTI_HOME%\\bin\\[compiler] is on you %PATH%" );
 	}
 	
 	private void loadUnixLibraries()

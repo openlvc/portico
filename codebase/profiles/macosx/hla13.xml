@@ -80,7 +80,7 @@
 	<!-- ======================================= -->
 	<target name="compile.amd64.debug">
 		<cpp-unix outfile="RTI-NG_64d"
-		          workdir="${hla13.build.dir}"
+		          workdir="${hla13.build.dir}/debug"
 		          outdir="${hla13.complete.dir}"
 		          arch="amd64"
 		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
@@ -100,12 +100,12 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${hla13.build.dir}/complete" name="libRTI-NG_64d"/>
+		<symlink-dylib directory="${hla13.complete.dir}" name="libRTI-NG_64d"/>
 	</target>
 
-	<target name="compile.amd64.release" if="release.build">
+	<target name="compile.amd64.release" if="build.release">
 		<cpp-unix outfile="RTI-NG_64"
-		          workdir="${hla13.build.dir}"
+		          workdir="${hla13.build.dir}/release"
 		          outdir="${hla13.complete.dir}"
 		          arch="amd64"
 		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
@@ -124,7 +124,7 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${hla13.build.dir}/complete" name="libRTI-NG_64"/>
+		<symlink-dylib directory="${hla13.complete.dir}" name="libRTI-NG_64"/>
 	</target>
 
 	<!-- ==================================== -->

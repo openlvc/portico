@@ -112,7 +112,7 @@
 	<!--                              -->
 	<!-- === Win32 32-bit Release === -->
 	<!--                              -->
-	<target name="compile.x86.release" if="release.build">
+	<target name="compile.x86.release" if="build.release">
 		<!-- Build the main DLL -->
 		<cpp-win32 outfile="librti1516e"
 		           workdir="${ieee1516e.build.dir}"
