@@ -80,8 +80,10 @@
 	<target name="compile.x86.debug">
 		<!-- Build the fedtime DLL -->
 		<cpp-win32 outfile="libFedTimed"
-		           workdir="${hla13.build.dir}"
-		           outdir="${hla13.complete.dir}">
+		           workdir="${hla13.build.dir}/debug"
+		           outdir="${hla13.complete.dir}"
+				   compilerArgs="/Zi /Od /EHsc /GR /MDd /W0"
+				   linkerArgs="/DEBUG">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -101,8 +103,10 @@
 
 		<!-- Build the main DLL -->
 		<cpp-win32 outfile="libRTI-NGd"
-		           workdir="${hla13.build.dir}"
-		           outdir="${hla13.complete.dir}">
+		           workdir="${hla13.build.dir}/debug"
+		           outdir="${hla13.complete.dir}"
+				   compilerArgs="/Zi /Od /EHsc /GR /MDd /W0"
+				   linkerArgs="/DEBUG">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -127,7 +131,7 @@
 	<target name="compile.x86.release" if="build.release">
 		<!-- Build the fedtime DLL -->
 		<cpp-win32 outfile="libFedTime"
-		           workdir="${hla13.build.dir}"
+		           workdir="${hla13.build.dir}/release"
 		           outdir="${hla13.complete.dir}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
@@ -147,7 +151,7 @@
 
 		<!-- Build the main DLL -->
 		<cpp-win32 outfile="libRTI-NG"
-		           workdir="${hla13.build.dir}"
+		           workdir="${hla13.build.dir}/release"
 		           outdir="${hla13.complete.dir}">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
@@ -173,15 +177,17 @@
 		<cpp-win32 outfile="test13"
 		           workdir="${test13.build.dir}"
 		           outdir="${test13.complete.dir}"
-		           type="executable">
+		           type="executable"
+				   compilerArgs="/Zi /Od /EHsc /GR /MD /W0"
+				   linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
-			<includepath path="${cppunit.include.dir}"/>
+			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
 			<library path="${hla13.complete.dir}" libs="RTI-NGd,FedTimed"/>
-			<library path="${cppunit.lib.dir}" libs="cppunit"/>
+			<library path="${cppunit.lib}/vc10" libs="cppunit"/>
 		</cpp-win32>
 	</target>
 

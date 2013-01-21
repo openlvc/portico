@@ -291,11 +291,12 @@
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
+		<attribute name="outdir"    description="location for compiled output" default="@{workdir}/complete"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
 		<attribute name="arch"      description="amd64 or x86 (default)" default="x86"/>
 		<attribute name="compiler"  description="vc8, vc9, vc10" default="vc10"/>
 		<attribute name="compilerArgs" description="arg list passed directly to compiler"
-		                               default="/O2 /EHsc /GR /MD /W0"/>
+		                               default="/O1 /EHsc /GR /MD /W0"/>
 		<attribute name="linkerArgs" description="args passed to linker" default=""/>
 
 		<!-- Child Elements -->
@@ -308,6 +309,7 @@
 		<sequential>
 			<cpptask outfile="@{outfile}"
 			         workdir="@{workdir}"
+					 outdir="@{outdir}"
 			         type="@{type}"
 			         arch="@{arch}"
 			         compiler="@{compiler}"

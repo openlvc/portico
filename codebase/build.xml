@@ -60,7 +60,7 @@
 	        description="Create a production-ready release. Run all tests and generate installer."
 	        depends="clean,build.release,master.release,installer"/>
 
-	<target name="release-thin"
+	<target name="release.thin"
 	        description="Create a standard release package, but does not run the tests."
 	        depends="clean,build.release,sandbox,installer"/>
 			
