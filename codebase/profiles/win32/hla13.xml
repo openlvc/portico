@@ -187,7 +187,7 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
 			<library path="${hla13.complete.dir}" libs="RTI-NGd,FedTimed"/>
-			<library path="${cppunit.lib}/vc10" libs="cppunit"/>
+			<library path="${cppunit.dir}/win32/vc10" libs="cppunit"/>
 		</cpp-win32>
 	</target>
 
