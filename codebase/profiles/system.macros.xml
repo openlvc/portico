@@ -233,12 +233,13 @@
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
-		<attribute name="outdir"    description="location for compiled output" default="@{workdir}/complete"/>
+		<attribute name="outdir"    description="location for compiled output"   default="@{workdir}/complete"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
-		<attribute name="arch"      description="amd64 (default) or x86" default="amd64"/>
-		<attribute name="compiler"  description="g++ (default) or gcc" default="g++"/>
+		<attribute name="arch"      description="amd64 (default) or x86"         default="amd64"/>
+		<attribute name="compiler"  description="g++ (default) or gcc"           default="g++"/>
+		<attribute name="debug"     description="true or false (default)"        default="false"/>
 		<attribute name="compilerArgs" description="arg list passed directly to compiler"
-		                               default="-O1 -fPIC -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing"/>
+		                               default="-O0 -fPIC -Wall"/>
 		<attribute name="linkerArgs"   description="args passed to linker"
 		                               default=""/>
 
@@ -250,13 +251,23 @@
 
 		<!-- Task Definition -->
 		<sequential>
+			<!-- ensure the debug information is on the compiler args if required -->
+			<local name="finalCompilerArgs"/>
+			<if><istrue value="@{debug}"/><then>
+				<property name="finalCompilerArgs" value="-g @{compilerArgs}"/>
+			</then><else>
+				<property name="finalCompilerArgs" value="@{compilerArgs}"/>
+			</else>
+			</if>
+
+			<!-- call the compiler -->
 			<cpptask outfile="@{outfile}"
 			         workdir="@{workdir}"
 			         outdir="@{outdir}"
 			         type="@{type}"
 			         arch="@{arch}"
 			         compiler="@{compiler}"
-			         compilerArgs="@{compilerArgs}"
+			         compilerArgs="${finalCompilerArgs}"
 			         linkerArgs="@{linkerArgs}">
 				<body/>
 			</cpptask>

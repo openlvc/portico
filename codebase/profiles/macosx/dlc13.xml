@@ -46,7 +46,7 @@
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
 	<!-- ================================================================================= -->
-	<target name="clean" extensionOf="master.clean">
+	<target name="clean" extensionOf="cpp.clean">
 		<delete dir="${dlc13.build.dir}"/>
 	</target>
 
@@ -58,7 +58,7 @@
 	     interface and the associated unit test suite code.
 	-->
 	<target name="compile"
-	        extensionOf="master.compile"
+	        extensionOf="cpp.compile"
 	        description="Compile C++ HLA v1.3 (DLC) Interface"
 	        depends="compile.amd64.debug,
 	                 compile.amd64.release"/>
@@ -121,7 +121,7 @@
 
 	<!-- Not implemented for DLC v1.3 Intefaces. Uses the same
 	     codebase as HLA v1.3 so all testing is handled there -->
-	<target name="test" extensionOf="master.test">
+	<target name="test" extensionOf="cpp.test">
 		<echo>No unit test suite for the DLC v1.3 Interface</echo>
 	</target>
 
@@ -133,7 +133,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox,compile">
+	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,compile">
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
@@ -163,18 +163,13 @@
 	</target>
 
 	<!-- ================================================================================= -->
-	<!--                             Installer Creation Targets                            -->
+	<!--                                 Installer Targets                                 -->
 	<!-- ================================================================================= -->
-	<!-- No special installation tasks to do for this build -->
+	<!-- Not required for an interface build -->
 
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
-	<!-- 
-	     The parent release target. This will run a clean and then compile all code, run all
-	     tests, generate a sandbox and place all additional release artefacts inside in prep
-	     for release.
-	-->
-	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
+	<!-- Not required for an interface build -->
 
 </project>

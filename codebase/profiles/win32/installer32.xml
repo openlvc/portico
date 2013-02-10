@@ -10,7 +10,7 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="installer.win32">
+<project name="win32.installer">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->

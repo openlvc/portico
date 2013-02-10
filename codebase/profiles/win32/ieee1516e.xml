@@ -47,7 +47,7 @@
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
 	<!-- ================================================================================= -->
-	<target name="clean" extensionOf="master.clean">
+	<target name="clean" extensionOf="cpp.clean">
 		<delete dir="${ieee1516e.build.dir}"/>
 	</target>
 
@@ -59,7 +59,7 @@
 	     interface and the associated unit test suite code.
 	-->
 	<target name="compile"
-	        extensionOf="master.compile"
+	        extensionOf="cpp.compile"
 	        description="Compile 32-bit C++ HLA v1.3 Interface"
 	        depends="compile.x86.debug,
 	                 compile.x86.release,
@@ -174,7 +174,7 @@
 	<!-- ================================================================================= -->
 
 	<!-- Not implemented for IEEE-1516e Inteface -->
-	<target name="test" extensionOf="master.test">
+	<target name="test" extensionOf="cpp.test">
 		<echo>No unit test suite for the C++ IEEE-1516e Interface</echo>
 	</target>
 
@@ -186,7 +186,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="java.sandbox,compile">
+	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,compile">
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
@@ -219,18 +219,13 @@
 	</target>
 
 	<!-- ================================================================================= -->
-	<!--                             Installer Creation Targets                            -->
+	<!--                                 Installer Targets                                 -->
 	<!-- ================================================================================= -->
-	<!-- No special installation tasks to do for this build -->
+	<!-- Not required for an interface build -->
 
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
-	<!-- 
-	     The parent release target. This will run a clean and then compile all code, run all
-	     tests, generate a sandbox and place all additional release artefacts inside in prep
-	     for release.
-	-->
-	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
+	<!-- Not required for an interface build -->
 
 </project>
