@@ -77,6 +77,10 @@
 	<property name="java.compiler.source" value="1.6"/>
 	<property name="java.compiler.target" value="1.6"/>
 
+	<!-- msvc compiler properties -->
+	<property name="msvc.dll.debug.defaults"   value="/Zi /MDd /Od /EHsc /GR"/>
+	<property name="msvc.dll.release.defaults" value="/MD /Od /EHsc /GR"/>
+
 	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->

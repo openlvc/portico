@@ -229,7 +229,7 @@
 	        <define name="OTHER_SYMBOL_NAME"/>
 		</cpp-unix>
 	-->
-	<macrodef name="cpp-unix" description="C++ compile target for GCC on Linux and Mac OS X">
+	<macrodef name="g++" description="C++ compile target for GCC on Linux and Mac OS X">
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
@@ -282,14 +282,19 @@
 	     cpptask Ant Task. This macro will generate libraries or executables and
 	     expects its body to be made of any valid cpptask sub-elements. You can
 	     also specify the specific compiler and linker arguments.
+
+	     NOTE: To use this, it is expected that the approrpriate Visual Studio
+	           version is pointed by by the environment variable VSxxCOMNTOOLS.
+	           This is set up by the Visual Studio installers, so should not be
+	           an issue.
 	     
 	     Usage Example:
-	     <cpp-win32 outfile="libraryName"
-	                workdir="${output.dir}"
-	                type="shared"
-	                compiler="vc10"
-	                compilerArgs="-Wall"
-	                linkerArgs="">
+	     <msvc outfile="libraryName"
+	           workdir="${output.dir}"
+	           type="shared"
+	           compiler="vc10"
+	           compilerArgs="${msvc.dll.release.defaults}"
+	           linkerArgs="">
 	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
 	        <includepath path="${include.path.1}:${include.path.2}"/>
 	        <includepath path="${include.path.3}"/>
@@ -298,17 +303,17 @@
 			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
 	-->
-	<macrodef name="cpp-win32" description="C++ compile target for VC10 (32bit) on Windows">
+	<macrodef name="msvc" description="C++ compile macro for MSVC on Windows">
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
-		<attribute name="outdir"    description="location for compiled output" default="@{workdir}/complete"/>
+		<attribute name="outdir"    description="location for compiled output"   default="@{workdir}/complete"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
-		<attribute name="arch"      description="amd64 or x86 (default)" default="x86"/>
-		<attribute name="compiler"  description="vc8, vc9, vc10" default="vc10"/>
-		<attribute name="compilerArgs" description="arg list passed directly to compiler"
-		                               default="/O1 /EHsc /GR /MD /W0"/>
-		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+		<attribute name="arch"      description="amd64 or x86 (default)"         default="x86"/>
+		<attribute name="compiler"  description="vc8, vc9, vc10"                 default="vc10"/>
+		<attribute name="debug"     description="true or false (default)"        default="false"/>
+		<attribute name="compilerArgs" description="arg list passed to compiler" default="${msvc.dll.release.defaults}"/>
+		<attribute name="linkerArgs"   description="args passed to linker"       default=""/>
 
 		<!-- Child Elements -->
 		<element name="body"
@@ -318,6 +323,7 @@
 
 		<!-- Task Definition -->
 		<sequential>
+			<!-- call the compiler -->
 			<cpptask outfile="@{outfile}"
 			         workdir="@{workdir}"
 					 outdir="@{outdir}"

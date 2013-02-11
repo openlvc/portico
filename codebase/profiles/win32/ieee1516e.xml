@@ -73,11 +73,11 @@
 	<!--                            -->
 	<target name="compile.x86.debug">
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="librti1516ed"
-		           workdir="${ieee1516e.build.dir}/debug"
-		           outdir="${ieee1516e.complete.dir}"
-				   compilerArgs="/Zi /Od /EHsc /GR /MDd /W0"
-				   linkerArgs="/DEBUG">
+		<msvc outfile="librti1516ed"
+		      workdir="${ieee1516e.build.dir}/debug"
+		      outdir="${ieee1516e.complete.dir}"
+		      compilerArgs="${msvc.dll.debug.defaults}"
+		      linkerArgs="/DEBUG">
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -92,11 +92,11 @@
 		</cpp-win32>
 
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libfedtime1516ed"
-		           workdir="${ieee1516e.build.dir}/debug"
-		           outdir="${ieee1516e.complete.dir}"
-				   compilerArgs="/Zi /Od /EHsc /GR /MDd /W0"
-				   linkerArgs="/DEBUG">
+		<msvc outfile="libfedtime1516ed"
+		      workdir="${ieee1516e.build.dir}/debug"
+		      outdir="${ieee1516e.complete.dir}"
+		      compilerArgs="${msvc.dll.debug.defaults}"
+		      linkerArgs="/DEBUG">
 			<!-- Filesets and other settings -->
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -118,9 +118,10 @@
 	<!--                              -->
 	<target name="compile.x86.release" if="build.release">
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="librti1516e"
-		           workdir="${ieee1516e.build.dir}/release"
-		           outdir="${ieee1516e.complete.dir}">
+		<msvc outfile="librti1516e"
+		      workdir="${ieee1516e.build.dir}/release"
+		      outdir="${ieee1516e.complete.dir}"
+		      compilerArgs="${msvc.dll.release.defaults}">
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -134,9 +135,10 @@
 		</cpp-win32>
 
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libfedtime1516e"
-		           workdir="${ieee1516e.build.dir}/release"
-		           outdir="${ieee1516e.complete.dir}">
+		<msvc outfile="libfedtime1516e"
+		      workdir="${ieee1516e.build.dir}/release"
+		      outdir="${ieee1516e.complete.dir}"
+		      compilerArgs="${msvc.dll.release.defaults}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${ieee1516e.src.dir}">
 				<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -158,9 +160,10 @@
 	<!-- Compiles the 1516e example federate. Doesn't do much except
 	     assure that we can actually compile and link it to Portico -->
 	<target name="example.compile.x86" depends="compile.x86.debug">
-		<cpp-win32 outfile="ieee1516e-example"
-		           workdir="${ieee1516e.build.dir}/ieee1516e-example"
-		           type="executable">
+		<msvc outfile="ieee1516e-example"
+		      workdir="${ieee1516e.build.dir}/ieee1516e-example"
+		      type="executable"
+		      compilerArgs="/Zi /Od /EHsc /GR /MTd">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<define name="DEBUG"/>

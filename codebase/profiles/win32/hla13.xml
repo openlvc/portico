@@ -79,11 +79,11 @@
 	<!--                            -->
 	<target name="compile.x86.debug">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTimed"
-		           workdir="${hla13.build.dir}/debug"
-		           outdir="${hla13.complete.dir}"
-				   compilerArgs="/Zi /Od /EHsc /GR /MDd /W0"
-				   linkerArgs="/DEBUG">
+		<msvc outfile="libFedTimed"
+		      workdir="${hla13.build.dir}/debug"
+		      outdir="${hla13.complete.dir}"
+		      compilerArgs="${msvc.dll.debug.defaults}"
+		      linkerArgs="/DEBUG">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -102,11 +102,11 @@
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="libRTI-NGd"
-		           workdir="${hla13.build.dir}/debug"
-		           outdir="${hla13.complete.dir}"
-				   compilerArgs="/Zi /Od /EHsc /GR /MDd /W0"
-				   linkerArgs="/DEBUG">
+		<msvc outfile="libRTI-NGd"
+		      workdir="${hla13.build.dir}/debug"
+		      outdir="${hla13.complete.dir}"
+		      compilerArgs="${msvc.dll.debug.defaults}"
+		      linkerArgs="/DEBUG">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -130,9 +130,10 @@
 	<!--                              -->
 	<target name="compile.x86.release" if="build.release">
 		<!-- Build the fedtime DLL -->
-		<cpp-win32 outfile="libFedTime"
-		           workdir="${hla13.build.dir}/release"
-		           outdir="${hla13.complete.dir}">
+		<msvc outfile="libFedTime"
+		      workdir="${hla13.build.dir}/release"
+		      outdir="${hla13.complete.dir}"
+		      compilerArgs="${msvc.dll.release.defaults}">
 			<!-- Filesets and other settings -->
 			<fileset dir="${hla13.src.dir}">
 				<include name="time/RTIfedTime.cpp"/>
@@ -150,9 +151,10 @@
 		</cpp-win32>
 
 		<!-- Build the main DLL -->
-		<cpp-win32 outfile="libRTI-NG"
-		           workdir="${hla13.build.dir}/release"
-		           outdir="${hla13.complete.dir}">
+		<msvc outfile="libRTI-NG"
+		      workdir="${hla13.build.dir}/release"
+		      outdir="${hla13.complete.dir}"
+		      compilerArgs="${msvc.dll.release.defaults}">
 			<fileset dir="${hla13.src.dir}">
 				<include name="**/*.cpp"/>
 				<exclude name="time/RTIfedTime.cpp"/>
@@ -174,12 +176,12 @@
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
 	<target name="test.compile.x86" depends="compile.x86.debug">
-		<cpp-win32 outfile="test13"
-		           workdir="${test13.build.dir}"
-		           outdir="${test13.complete.dir}"
-		           type="executable"
-				   compilerArgs="/Zi /Od /EHsc /GR /MD /W0"
-				   linkerArgs="">
+		<msvc outfile="test13"
+		      workdir="${test13.build.dir}"
+		      outdir="${test13.complete.dir}"
+		      type="executable"
+		      compilerArgs="/Zi /Od /EHsc /GR /MTd"
+		      linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
