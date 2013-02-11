@@ -22,6 +22,7 @@
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
 	<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
+	<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->
@@ -40,6 +41,23 @@
 	<property name="test13.build.dir"          location="${build.dir}/cpp/win32/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 
+	<!-- file sets -->
+	<!-- files to include in libFedTime -->
+	<fileset dir="${hla13.src.dir}" id="fileset.libFedTime">
+		<include name="time/RTIfedTime.cpp"/>
+		<include name="time/FedTime.cpp"/>
+		<include name="time/FedTimeFactory.cpp"/>
+		<include name="types/Exception.cpp"/>
+	</fileset>
+
+	<!-- files to include in libRTI-NG -->
+	<fileset dir="${hla13.src.dir}" id="fileset.libRTI-NG">
+		<include name="**/*.cpp"/>
+		<exclude name="time/RTIfedTime.cpp"/>
+		<exclude name="time/FedTime.cpp"/>
+		<exclude name="time/FedTimeFactory.cpp"/>
+	</fileset>
+
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
 	<!-- =========================================================== -->
@@ -48,6 +66,97 @@
 	<!-- <property name="cppunit.dir"     location="..."/> -->
 	<!-- <property name="cppunit.include" location="..."/> -->
 	<!-- <property name="cppunit.lib"     location="..."/> -->
+
+	<!-- ================================================================================= -->
+	<!--                               Macro: msvc-hla13                                   -->
+	<!-- ================================================================================= -->
+	<macrodef name="msvc-hla13" description="(HLA 1.3) Compile the libFedTime library">
+		<!-- Attributes -->
+		<attribute name="library"  description="libRTI-NG or libFedTime"/>
+		<attribute name="build"    description="release or debug"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="compiler" description="vc10, vc9, vc8"/>
+
+		<sequential>
+			<!-- local properties used in the compile and calculated below -->
+			<local name="_fileset"/>     <!-- the fileset ref pointing to the source to compile -->
+			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
+			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
+			<local name="_cargs"/>       <!-- compiler arguments -->
+			<local name="_largs"/>       <!-- linker arguments -->
+			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
+			<local name="_libsymbols"/>  <!-- adds BUILDING_RTI and/or BUILDING_FEDTIME -->
+			<local name="_libfedtime"/>  <!-- if building RTI-NG, ensures libFedTime is linked -->
+			<local name="_jdkhome"/>     <!-- path to either 32 or 64-bit JDK -->
+
+			<!-- Are we building for 32-bit or 64-bit? -->
+			<if><equals arg1="@{arch}" arg2="amd64"/>
+				<then>
+					<property name="_bitness" value="_64"/>
+					<property name="_jdkhome" value="${jdk.home.win64}"/>
+				</then>
+				<else>
+					<property name="_bitness" value=""/>
+					<property name="_jdkhome" value="${jdk.home.win32}"/>
+				</else>
+			</if>
+
+			<!-- Is this a Debug or Release build? -->
+			<if><equals arg1="@{build}" arg2="debug"/>
+				<then>
+				      <!-- Debug Build -->
+				      <property name="_d"           value="d"/>
+				      <property name="_cargs"       value="${msvc.debug.defaults}"/>
+				      <property name="_largs"       value="/DEBUG"/>
+					  <property name="_buildsymbol" value="DEBUG"/>
+				</then>
+				<else>
+				      <!-- Release Build -->
+				      <property name="_d"           value=""/>
+				      <property name="_cargs"       value="${msvc.release.defaults}"/>
+				      <property name="_largs"       value=""/>
+					  <property name="_buildsymbol" value="RELEASE"/>
+				</else>
+			</if>
+
+			<!-- Are we building libRTI-NG or libFedTime? -->
+			<if><equals arg1="@{library}" arg2="libRTI-NG"/>
+			    <then>
+					<!-- Building libRTI-NG -->
+					<property name="_fileset"    value="fileset.libRTI-NG"/>
+					<property name="_libsymbols" value="BUILDING_RTI"/>
+					<property name="_libfedtime" value="libFedTime${_bitness}${_d}"/>
+				</then>
+				<else>
+					<!-- Building libFedTime -->
+					<property name="_fileset"    value="fileset.libFedTime"/>
+					<property name="_libsymbols" value="BUILDING_RTI,BUILDING_FEDTIME"/>
+					<property name="_libfedtime" value=""/> <!-- nothing, we're building it! -->
+				</else>
+			</if>
+
+			<!-- Run the compilation task -->
+			<echo message="(HLA v1.3) Building @{library}${_bitness}${_d} (@{compiler})"/>
+			<cpptask outfile="@{library}${_bitness}${_d}"
+			         workdir="${hla13.build.dir}/@{build}"
+					 outdir="${hla13.complete.dir}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="@{compiler}"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}">
+				<fileset refid="${_fileset}"/>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="${_libsymbols}"/>
+				<define name="${_buildsymbol}"/>
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+				<library path="${hla13.build.dir}/complete" libs="${_libfedtime}"/>
+			</cpptask>
+		</sequential>
+	</macrodef>
 
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
@@ -66,112 +175,47 @@
 	-->
 	<target name="compile"
 	        extensionOf="cpp.compile"
+	        description="Compile all versions of the C++ HLA v1.3 Interface"
+	        depends="compile.x86,compile.amd64"/>
+	
+	<target name="compile.x86"
+	        extensionOf="cpp.compile"
 	        description="Compile 32-bit C++ HLA v1.3 Interface"
 	        depends="compile.x86.debug,
-	                 compile.x86.release,
-	                 test.compile.x86"/>
+	                 compile.x86.release"/>
+
+	<target name="compile.amd64"
+	        extensionOf="cpp.compile"
+	        description="Compile the 64-bit C++ HLA v1.3 Interface"
+	        depends="compile.amd64.debug,
+	                 compile.amd64.release"/>
 
 	<!-- ======================================= -->
 	<!--            HLA 1.3 Interface            -->
 	<!-- ======================================= -->
-	<!--                            -->
-	<!-- === Win32 32-bit Debug === -->
-	<!--                            -->
+	<!--                                 -->
+	<!-- === Visual Studio 10 Builds === -->
+	<!--                                 -->
 	<target name="compile.x86.debug">
-		<!-- Build the fedtime DLL -->
-		<msvc outfile="libFedTimed"
-		      workdir="${hla13.build.dir}/debug"
-		      outdir="${hla13.complete.dir}"
-		      compilerArgs="${msvc.dll.debug.defaults}"
-		      linkerArgs="/DEBUG">
-			<!-- Filesets and other settings -->
-			<fileset dir="${hla13.src.dir}">
-				<include name="time/RTIfedTime.cpp"/>
-				<include name="time/FedTime.cpp"/>
-				<include name="time/FedTimeFactory.cpp"/>
-				<include name="types/Exception.cpp"/>
-			</fileset>
-			<includepath path="${hla13.include.dir}"/>
-			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
-			<define name="BUILDING_RTI"/> <!-- needed to ensure Exception.cpp stuff works -->
-			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="DEBUG"/>
-			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
-
-		<!-- Build the main DLL -->
-		<msvc outfile="libRTI-NGd"
-		      workdir="${hla13.build.dir}/debug"
-		      outdir="${hla13.complete.dir}"
-		      compilerArgs="${msvc.dll.debug.defaults}"
-		      linkerArgs="/DEBUG">
-			<fileset dir="${hla13.src.dir}">
-				<include name="**/*.cpp"/>
-				<exclude name="time/RTIfedTime.cpp"/>
-				<exclude name="time/FedTime.cpp"/>
-				<exclude name="time/FedTimeFactory.cpp"/>
-			</fileset>
-			<includepath path="${hla13.include.dir}"/>
-			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
-			<define name="BUILDING_RTI"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="RTI_DISABLE_WARNINGS"/>
-			<define name="DEBUG"/>
-			<library path="${hla13.build.dir}/complete" libs="FedTimed"/>
-			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+		<msvc-hla13 library="libFedTime" build="debug" arch="x86" compiler="vc10"/>
+		<msvc-hla13 library="libRTI-NG"  build="debug" arch="x86" compiler="vc10"/>
+	</target>
+	
+	<target name="compile.x86.release">
+		<msvc-hla13 library="libFedTime" build="release" arch="x86" compiler="vc10"/>
+		<msvc-hla13 library="libRTI-NG"  build="release" arch="x86" compiler="vc10"/>
 	</target>
 
-	<!--                              -->
-	<!-- === Win32 32-bit Release === -->
-	<!--                              -->
-	<target name="compile.x86.release" if="build.release">
-		<!-- Build the fedtime DLL -->
-		<msvc outfile="libFedTime"
-		      workdir="${hla13.build.dir}/release"
-		      outdir="${hla13.complete.dir}"
-		      compilerArgs="${msvc.dll.release.defaults}">
-			<!-- Filesets and other settings -->
-			<fileset dir="${hla13.src.dir}">
-				<include name="time/RTIfedTime.cpp"/>
-				<include name="time/FedTime.cpp"/>
-				<include name="time/FedTimeFactory.cpp"/>
-				<include name="types/Exception.cpp"/>
-			</fileset>
-			<includepath path="${hla13.include.dir}"/>
-			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
-			<define name="BUILDING_RTI"/> <!-- needed to ensure Exception.cpp stuff works -->
-			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
-
-		<!-- Build the main DLL -->
-		<msvc outfile="libRTI-NG"
-		      workdir="${hla13.build.dir}/release"
-		      outdir="${hla13.complete.dir}"
-		      compilerArgs="${msvc.dll.release.defaults}">
-			<fileset dir="${hla13.src.dir}">
-				<include name="**/*.cpp"/>
-				<exclude name="time/RTIfedTime.cpp"/>
-				<exclude name="time/FedTime.cpp"/>
-				<exclude name="time/FedTimeFactory.cpp"/>
-			</fileset>
-			<includepath path="${hla13.include.dir}"/>
-			<includepath path="${hla13.src.dir}"/>
-			<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
-			<define name="BUILDING_RTI"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="RTI_DISABLE_WARNINGS"/>
-			<library path="${hla13.build.dir}/complete" libs="FedTime"/>
-			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+	<target name="compile.amd64.debug" if="platform.win64">
+		<msvc-hla13 library="libFedTime" build="debug" arch="amd64" compiler="vc10"/>
+		<msvc-hla13 library="libRTI-NG"  build="debug" arch="amd64" compiler="vc10"/>
 	</target>
-
+	
+	<target name="compile.amd64.release" if="platform.win64">
+		<msvc-hla13 library="libFedTime" build="release" arch="amd64" compiler="vc10"/>
+		<msvc-hla13 library="libRTI-NG"  build="release" arch="amd64" compiler="vc10"/>
+	</target>
+	
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
@@ -180,7 +224,8 @@
 		      workdir="${test13.build.dir}"
 		      outdir="${test13.complete.dir}"
 		      type="executable"
-		      compilerArgs="/Zi /Od /EHsc /GR /MTd"
+			  arch="x86"
+		      compilerArgs="${msvc.release.defaults}"
 		      linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
@@ -190,7 +235,7 @@
 			<define name="DEBUG"/>
 			<library path="${hla13.complete.dir}" libs="RTI-NGd,FedTimed"/>
 			<library path="${cppunit.dir}/win32/vc10" libs="cppunit"/>
-		</cpp-win32>
+		</msvc>
 	</target>
 
 	<!-- ================================================================================= -->

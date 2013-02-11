@@ -89,7 +89,7 @@
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<define name="DEBUG"/>
 			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+		</msvc>
 
 		<!-- Build the fedtime DLL -->
 		<msvc outfile="libfedtime1516ed"
@@ -110,7 +110,7 @@
 			<define name="DEBUG"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516ed"/>
 			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+		</msvc>
 	</target>
 
 	<!--                              -->
@@ -132,7 +132,7 @@
 			<define name="BUILDING_RTI"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+		</msvc>
 
 		<!-- Build the fedtime DLL -->
 		<msvc outfile="libfedtime1516e"
@@ -151,7 +151,7 @@
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e"/>
 			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+		</msvc>
 	</target>
 
 	<!-- ==================================== -->
@@ -169,7 +169,7 @@
 			<define name="DEBUG"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516ed,fedtime1516ed"/>
 			<library path="${jdk.home.win32}/lib" libs="jvm"/>
-		</cpp-win32>
+		</msvc>
 	</target>
 
 	<!-- ================================================================================= -->
