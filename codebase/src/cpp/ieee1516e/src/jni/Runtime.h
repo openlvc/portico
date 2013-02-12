@@ -43,6 +43,7 @@ class Runtime
 	public:
 		static jclass JCLASS_BYTE_ARRAY;
 		static jclass JCLASS_STRING_ARRAY;
+		static jclass JCLASS_STRING;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES

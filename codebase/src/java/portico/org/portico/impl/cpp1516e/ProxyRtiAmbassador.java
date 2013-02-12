@@ -231,7 +231,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 				
 			rtiamb.createFederationExecution( federationName, modules, timeName );
 		}
@@ -254,7 +257,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 			
 			rtiamb.createFederationExecution( federationName, modules, new URL(mimModule), timeName );
 		}
@@ -304,7 +310,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 			
 			FederateHandle handle =
 				rtiamb.joinFederationExecution( federateType, federationName, modules );
@@ -331,7 +340,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 			
 			FederateHandle handle = rtiamb.joinFederationExecution( federateName,
 			                                                        federateType,

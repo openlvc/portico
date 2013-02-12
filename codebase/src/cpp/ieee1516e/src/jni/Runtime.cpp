@@ -20,8 +20,9 @@ PORTICO1516E_NS_START
 
 // initialize our singleton - we'll lazy load it
 Runtime* Runtime::instance = NULL;
-jclass Runtime::JCLASS_BYTE_ARRAY = 0;
+jclass Runtime::JCLASS_BYTE_ARRAY   = 0;
 jclass Runtime::JCLASS_STRING_ARRAY = 0;
+jclass Runtime::JCLASS_STRING       = 0;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -499,6 +500,14 @@ void Runtime::cacheGlobalHandles() throw( RTIinternalError )
 	if( Runtime::JCLASS_STRING_ARRAY == NULL )
 	{
 		throw RTIinternalError( L"RTI initialization error: Failed while caching String[] JNI reference" );
+	}
+	
+	jclass stringClass = jnienv->FindClass( "java/lang/String" );
+	Runtime::JCLASS_STRING = (jclass)jnienv->NewGlobalRef( stringClass );
+	jnienv->DeleteLocalRef( stringClass );
+	if( Runtime::JCLASS_STRING == NULL )
+	{
+		throw RTIinternalError( L"RTI initialization error: Failed while caching java.lang.String JNI reference" );
 	}
 }
 
