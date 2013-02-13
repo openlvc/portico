@@ -14,6 +14,8 @@
  */
 package org.portico.impl.hla1516e.handlers;
 
+import hla.rti1516e.OrderType;
+
 import java.util.Map;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
@@ -69,9 +71,9 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			
 			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
 			                               request.getTag(),           // tag
-			                               null,                       // sent order
+			                               OrderType.TIMESTAMP,        // sent order
 			                               new DoubleTime(timestamp),  // time
-			                               null,                       // received order
+			                               OrderType.TIMESTAMP,        // received order
 			                               new SupplementalInfo() );   // supplemental remove info
 		}
 		else
@@ -81,7 +83,7 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			
 			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
 			                               request.getTag(),           // tag
-			                               null,                       // sent order
+			                               OrderType.RECEIVE,          // sent order
 			                               new SupplementalInfo() );   // supplemental remove info
 		}
 		

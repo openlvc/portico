@@ -14,8 +14,12 @@
  */
 package org.portico.impl.hla1516e.handlers;
 
+import hla.rti1516e.OrderType;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory.*;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
@@ -78,10 +82,10 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			fedamb().receiveInteraction( new HLA1516eHandle(classHandle),
 			                             received,                  // map
 			                             request.getTag(),          // tag
-			                             null,                      // sent order
-			                             null,                      // transport
+			                             OrderType.TIMESTAMP,       // sent order
+			                             RELIABLE,                  // transport
 			                             new DoubleTime(timestamp), // time 
-			                             null,                      // received order
+			                             OrderType.TIMESTAMP,       // received order
 			                             new SupplementalInfo() );  // supplemental receive info
 		}
 		else
@@ -95,8 +99,8 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			fedamb().receiveInteraction( new HLA1516eHandle(classHandle),
 			                             received,          // map
 			                             request.getTag(),  // tag
-			                             null,              // sent order
-			                             null,              // transport
+			                             OrderType.RECEIVE, // sent order
+			                             BEST_EFFORT,       // transport
 			                             new SupplementalInfo() ); // supplemental receive info
 		}
 		
