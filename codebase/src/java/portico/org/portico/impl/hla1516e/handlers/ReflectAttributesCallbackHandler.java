@@ -69,6 +69,8 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 
 		// convert the attributes into an appropriate form
 		HLA1516eAttributeHandleValueMap reflected = new HLA1516eAttributeHandleValueMap(attributes);
+		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
+		
 		
 		// do the callback
 		if( request.isTimestamped() )
@@ -87,7 +89,7 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 			                                 RELIABLE,                  // transport
 			                                 new DoubleTime(timestamp), // time
 			                                 OrderType.TIMESTAMP,       // received order
-			                                 new SupplementalInfo() );  // supplemental reflect info
+			                                 supplement );              // supplemental reflect info
 		}
 		else
 		{
@@ -102,7 +104,7 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 			                                 request.getTag(),          // tag
 			                                 OrderType.RECEIVE,         // sent order
 			                                 BEST_EFFORT,               // transport
-			                                 new SupplementalInfo() );  // supplemental reflect info
+			                                 supplement );              // supplemental reflect info
 		}
 		
 		context.success();

@@ -69,6 +69,9 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 		// convert the attributes into an appropriate form
 		HLA1516eParameterHandleValueMap received = new HLA1516eParameterHandleValueMap(parameters);
 		
+		// generate the Supplemental Information
+		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
+		
 		// do the callback
 		if( request.isTimestamped() )
 		{
@@ -86,7 +89,7 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			                             RELIABLE,                  // transport
 			                             new DoubleTime(timestamp), // time 
 			                             OrderType.TIMESTAMP,       // received order
-			                             new SupplementalInfo() );  // supplemental receive info
+			                             supplement );              // supplemental receive info
 		}
 		else
 		{
@@ -101,7 +104,7 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			                             request.getTag(),  // tag
 			                             OrderType.RECEIVE, // sent order
 			                             BEST_EFFORT,       // transport
-			                             new SupplementalInfo() ); // supplemental receive info
+			                             supplement );      // supplemental receive info
 		}
 		
 		context.success();

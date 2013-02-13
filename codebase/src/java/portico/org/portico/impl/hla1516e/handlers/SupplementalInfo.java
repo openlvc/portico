@@ -14,6 +14,9 @@
  */
 package org.portico.impl.hla1516e.handlers;
 
+import org.portico.impl.hla1516e.types.HLA1516eHandle;
+import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSet;
+
 import hla.rti1516e.FederateAmbassador;
 import hla.rti1516e.FederateHandle;
 import hla.rti1516e.RegionHandleSet;
@@ -49,9 +52,15 @@ public class SupplementalInfo implements FederateAmbassador.SupplementalReceiveI
 	protected SupplementalInfo()
 	{
 		this.producingFederate = null;
-		this.sentRegions = null;
+		this.sentRegions = new HLA1516eRegionHandleSet();
 	}
 
+	protected SupplementalInfo( int producingFederate )
+	{
+		this();
+		this.producingFederate = new HLA1516eHandle( producingFederate );
+	}
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------

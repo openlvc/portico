@@ -59,6 +59,9 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 		DeleteObject request = context.getRequest( DeleteObject.class, this );
 		int objectHandle = request.getObjectHandle();
 		double timestamp = request.getTimestamp();
+		
+		// generate the supplemental information
+		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
 
 		// do the callback
 		if( request.isTimestamped() )
@@ -74,7 +77,7 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			                               OrderType.TIMESTAMP,        // sent order
 			                               new DoubleTime(timestamp),  // time
 			                               OrderType.TIMESTAMP,        // received order
-			                               new SupplementalInfo() );   // supplemental remove info
+			                               supplement );               // supplemental remove info
 		}
 		else
 		{
@@ -84,7 +87,7 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
 			                               request.getTag(),           // tag
 			                               OrderType.RECEIVE,          // sent order
-			                               new SupplementalInfo() );   // supplemental remove info
+			                               supplement );               // supplemental remove info
 		}
 		
 		context.success();
