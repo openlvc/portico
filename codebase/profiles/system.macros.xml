@@ -229,7 +229,7 @@
 	        <define name="OTHER_SYMBOL_NAME"/>
 		</cpp-unix>
 	-->
-	<macrodef name="g++" description="C++ compile target for GCC on Linux and Mac OS X">
+	<macrodef name="cpp-unix" description="C++ compile target for GCC on Linux and Mac OS X">
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
 		<attribute name="workdir"   description="the location to put compiled and working files in"/>
