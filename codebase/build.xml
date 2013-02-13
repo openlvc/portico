@@ -101,8 +101,10 @@
 	<!-- Windows 32bit C++ and Installer profiles -->
 	<include file="profiles/win32/hla13.xml"         as="cpp.hla13"     if="platform.windows"/>
 	<include file="profiles/win32/ieee1516e.xml"     as="cpp.ieee1516e" if="platform.windows"/>
-	<include file="profiles/win32/installer.xml  "   as="installer"     if="platform.windows"/>
+	<include file="profiles/win32/installer.xml"     as="installer"     if="platform.windows"/>
 
+	
+	
 	<!-- Windows 64bit C++ and Installer profiles -->
 	<!--
 	<include file="profiles/windows/cpp64.xml"       as="cpp"          if="platform.win64"/>
