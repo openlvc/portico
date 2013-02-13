@@ -67,6 +67,7 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	public boolean regulating;
 	public double  logicalTime;
 	
+	protected HashMap<String,Boolean> objectNameReservations;	
 	protected HashMap<Integer,TestObject> instances;
 	protected List<TestObject> discovered;
 	protected HashSet<Integer> roUpdated;
@@ -162,7 +163,8 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		this.constrained = false;
 		this.regulating = false;
 		this.logicalTime = -1;
-		
+
+		this.objectNameReservations = new HashMap<String,Boolean>();
 		this.instances = new HashMap<Integer,TestObject>();
 		this.discovered = new Vector<TestObject>();
 		this.roUpdated = new HashSet<Integer>();
@@ -345,6 +347,46 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////// Object Management Helper Methods /////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Block until we get a notification that the name reservation succeeded. If we told that
+	 * the reservation failed, or we get no notification in time, fail the test.
+	 */
+	public void waitForObjectNameReservationSuccess( String name )
+	{
+		long finishTime = getTimeout();
+		while( this.objectNameReservations.containsKey(name) == false )
+		{
+			if( finishTime < System.currentTimeMillis() )
+				throw new TimeoutException( "Timeout waiting for name reservation notice ["+name+"]" );
+			
+			waitForEvent();
+		}
+		
+		if( objectNameReservations.get(name) == false )
+			Assert.fail( "Expected to be told that object name reservation was successful ["+name+
+			             "]: Name reservation failed" );
+	}
+	
+	/**
+	 * Block until we get a notification that the name reservation failed. If we told that
+	 * the reservation was a success, or we get no notification in time, fail the test.
+	 */
+	public void waitForObjectNameReservationFailure( String name )
+	{
+		long finishTime = getTimeout();
+		while( this.objectNameReservations.containsKey(name) == false )
+		{
+			if( finishTime < System.currentTimeMillis() )
+				throw new TimeoutException( "Timeout waiting for name reservation notice ["+name+"]" );
+			
+			waitForEvent();
+		}
+		
+		if( objectNameReservations.get(name) == true )
+			Assert.fail( "Expected to be told that object name reservation failed ["+name+
+			             "]: Name reservation was successful" );
+	}
+
 	/**
 	 * Block execution until we get a discovery of an instance with the given handle. Only wait
 	 * for the given number of seconds (in timeout). If we don't discover the instance by then,
@@ -1223,6 +1265,31 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		validateEventTime( TypeFactory.fromTime(time), "timeAdvanceGrant" );
 		this.logicalTime = TypeFactory.fromTime( time );
 		notifyEventListeners();
+	}
+
+	/////////////////////////////////////////////////////////////////////////
+	//////////////////// Object Name Reservation Methods ////////////////////
+	/////////////////////////////////////////////////////////////////////////
+	@Override
+	public void objectInstanceNameReservationSucceeded( String objectName )
+	{
+		this.objectNameReservations.put( objectName, true );
+	}
+
+	@Override
+	public void objectInstanceNameReservationFailed( String objectName )
+	{
+		this.objectNameReservations.put( objectName, false );
+	}
+
+	public void multipleObjectInstanceNameReservationSucceeded( Set<String> objectNames )
+	{
+		// not supported yet
+	}
+
+	public void multipleObjectInstanceNameReservationFailed( Set<String> objectNames )
+	{
+		// not supported yet
 	}
 
 	/////////////////////////////////////////////////////////////////////////
