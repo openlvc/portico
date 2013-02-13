@@ -26,8 +26,8 @@ public class HLA1516eTransportationTypeHandleFactory implements TransportationTy
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final TransportationTypeHandle BEST_EFFORT = new HLA1516eHandle(0);
 	public static final TransportationTypeHandle RELIABLE = new HLA1516eHandle(1);
+	public static final TransportationTypeHandle BEST_EFFORT = new HLA1516eHandle(2);
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
