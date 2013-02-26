@@ -3,6 +3,9 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711" moduleId="org.eclipse.cdt.core.settings" name="cpp-macosx-hla13">
+				<macros>
+					<stringMacro name="JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/Home"/>
+				</macros>
 				<externalSettings>
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
@@ -32,9 +35,9 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1054944220" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<option id="macosx.cpp.link.option.libs.1566321421" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="jvm"/>
-									<listOptionValue builtIn="false" value="jsig"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cppunit"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="&quot;${JAVA_HOME}/jre/lib/server/libjvm.dylib&quot;"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="&quot;${JAVA_HOME}/jre/lib/server/libjsig.dylib&quot;"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="&quot;${workspace_loc:/${ProjName}/codebase/lib/cppunit/cppunit-1.12.1/macosx/libcppunit.a}&quot;"/>
 								</option>
 								<option defaultValue="true" id="macosx.cpp.link.option.shared.544454829" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.option.shared" valueType="boolean"/>
 								<option id="macosx.cpp.link.option.paths.456236363" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
@@ -229,8 +232,8 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1040709887" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<option id="macosx.cpp.link.option.libs.1006816629" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jvm"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jsig"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="&quot;${JAVA_HOME}/jre/lib/server/libjvm.dylib&quot;"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="&quot;${JAVA_HOME}/jre/lib/server/libjsig.dylib&quot;"/>
 								</option>
 								<option defaultValue="true" id="macosx.cpp.link.option.shared.1805618852" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.option.shared" valueType="boolean"/>
 								<option id="macosx.cpp.link.option.paths.489343096" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
@@ -410,11 +413,11 @@
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
-		<configuration configurationName="cpp-macosx-ng6"/>
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-macosx-ng6"/>
 		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>

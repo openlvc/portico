@@ -99,7 +99,7 @@ public class NativeLibraryLoader
 		
 		// append for 64-bit
 		if( PorticoConstants.isCpp64bit() )
-			libraryName += "_64";
+			libraryName += "64";
 		
 		// append for a debug library
 		if( PorticoConstants.isCppDebugSession() )
@@ -153,7 +153,7 @@ public class NativeLibraryLoader
 		
 		// append for 64-bit
 		if( PorticoConstants.isCpp64bit() )
-			libraryName += "_64";
+			libraryName += "64";
 		
 		// append for a debug library
 		if( PorticoConstants.isCppDebugSession() )
