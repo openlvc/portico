@@ -79,7 +79,13 @@
 // include some platform-dependant headers
 #ifdef OS_WINDOWS
     #include <windows.h>
-	#include <stdint.h>
+	#include <cstdio>
+	// bring in stdint.h locally if we have to
+	#ifdef VC8
+		#include "platform/vc8/stdint.h"
+	#else
+		#include <stdint.h>
+	#endif
 #elif defined(OS_MACOSX)
     #include <malloc/malloc.h>
     #include <stdarg.h>
