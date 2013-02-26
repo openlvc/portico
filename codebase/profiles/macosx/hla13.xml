@@ -79,7 +79,7 @@
 	<!--            HLA 1.3 Interface            -->
 	<!-- ======================================= -->
 	<target name="compile.amd64.debug">
-		<cpp-unix outfile="RTI-NG_64d"
+		<cpp-unix outfile="RTI-NG64d"
 		          workdir="${hla13.build.dir}/debug"
 		          outdir="${hla13.complete.dir}"
 		          arch="amd64"
@@ -99,11 +99,11 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${hla13.complete.dir}" name="libRTI-NG_64d"/>
+		<symlink-dylib directory="${hla13.complete.dir}" name="libRTI-NG64d"/>
 	</target>
 
 	<target name="compile.amd64.release" if="build.release">
-		<cpp-unix outfile="RTI-NG_64"
+		<cpp-unix outfile="RTI-NG64"
 		          workdir="${hla13.build.dir}/release"
 		          outdir="${hla13.complete.dir}"
 		          arch="amd64">
@@ -121,7 +121,7 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${hla13.complete.dir}" name="libRTI-NG_64"/>
+		<symlink-dylib directory="${hla13.complete.dir}" name="libRTI-NG64"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -140,7 +140,7 @@
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}" libs="RTI-NG_64d"/>
+			<library path="${hla13.complete.dir}" libs="RTI-NG64d"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpp-unix>
 	</target>
@@ -217,8 +217,8 @@
 
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG_64"/>    <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG_64d"/>   <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64"/>    <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64d"/>   <!-- hla13 -->
 		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->

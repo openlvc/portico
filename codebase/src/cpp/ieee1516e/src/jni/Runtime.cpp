@@ -149,7 +149,7 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	/////////////////////////////////////////////
 	// other jvm options - remember to increment the option array size
 	// if you are going to add more
-	string stackSize( "-Xss8m" );
+	string stackSize( "-Xms8m" );
 	string mode = getMode();
 	string compiler = getCompiler();
 	string hlaVersion = getHlaVersion();
