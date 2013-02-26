@@ -73,7 +73,7 @@
 	<!--            1516e Interface           -->
 	<!-- ==================================== -->
 	<target name="compile.amd64.debug">
-		<cpp-unix outfile="librti1516e_64d"
+		<cpp-unix outfile="librti1516e64d"
 		          workdir="${ieee1516e.build.dir}/debug"
 		          outdir="${ieee1516e.complete.dir}"
 		          arch="amd64"
@@ -94,11 +94,11 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e_64d"/>
+		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e64d"/>
 	</target>
 
 	<target name="compile.amd64.release" if="build.release">
-		<cpp-unix outfile="librti1516e_64"
+		<cpp-unix outfile="librti1516e64"
 		          workdir="${ieee1516e.build.dir}/release"
 		          outdir="${ieee1516e.complete.dir}"
 		          arch="amd64"
@@ -118,7 +118,7 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e_64"/>
+		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e64"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -139,7 +139,7 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<define name="DEBUG"/>
-			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e_64d"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
 			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 	</target>
@@ -181,8 +181,8 @@
 
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e_64"/>  <!-- ieee1516e -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e_64d"/> <!-- ieee1516e -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e64"/>  <!-- ieee1516e -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e64d"/> <!-- ieee1516e -->
 		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->

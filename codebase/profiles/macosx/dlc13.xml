@@ -67,7 +67,7 @@
 	<!--            HLA 1.3 Interface            -->
 	<!-- ======================================= -->
 	<target name="compile.amd64.debug">
-		<cpp-unix outfile="rti13_64d"
+		<cpp-unix outfile="rti1364d"
 		          workdir="${dlc13.build.dir}"
 		          arch="amd64"
 		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
@@ -88,11 +88,11 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13_64d"/>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti1364d"/>
 	</target>
 
 	<target name="compile.amd64.release" if="build.release">
-		<cpp-unix outfile="rti13_64"
+		<cpp-unix outfile="rti1364"
 		          workdir="${dlc13.build.dir}"
 		          arch="amd64"
 		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
@@ -112,7 +112,7 @@
 		<!-- we can't use the symlink task because it will create links based
 		     on the full path name (whereas we want relative links) -->
 		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13_64"/>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti1364"/>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -152,8 +152,8 @@
 
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13_64"/>    <!-- dlc13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13_64d"/>   <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1364"/>    <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1364d"/>   <!-- dlc13 -->
 		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->
