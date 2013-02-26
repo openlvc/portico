@@ -72,6 +72,7 @@ import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JFederationTimeAlreadyPassed;
+import org.portico.lrc.compat.JIllegalName;
 import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JInteractionClassNotDefined;
 import org.portico.lrc.compat.JInteractionClassNotPublished;
@@ -111,6 +112,7 @@ import org.portico.lrc.services.object.msg.LocalDelete;
 import org.portico.lrc.services.object.msg.RegisterObject;
 import org.portico.lrc.services.object.msg.RequestClassUpdate;
 import org.portico.lrc.services.object.msg.RequestObjectUpdate;
+import org.portico.lrc.services.object.msg.ReserveObjectName;
 import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.lrc.services.ownership.msg.AttributeAcquire;
@@ -1795,7 +1797,51 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "reserveObjectInstanceName()" );
+		///////////////////////////////////////////////////////
+		// 1. create the message and pass it to the LRC sink //
+		///////////////////////////////////////////////////////
+		ReserveObjectName request = new ReserveObjectName( theObjectName );
+		ResponseMessage response = processMessage( request );
+
+		////////////////////////////
+		// 2. process the results //
+		////////////////////////////
+		// check to see if we got an error or a success
+		if( response.isError() == false )
+		{
+			// everything went fine!
+			return;
+		}
+		else
+		{
+			// an exception was caused :(
+			Throwable theException = ((ErrorResponse)response).getCause();
+
+			if( theException instanceof JRTIinternalError )
+			{
+				throw new RTIinternalError( theException );
+			}
+			else if( theException instanceof JIllegalName )
+			{
+				throw new IllegalName( theException );
+			}
+			else if( theException instanceof JFederateNotExecutionMember )
+			{
+				throw new FederateNotExecutionMember( theException );
+			}
+			else if( theException instanceof JSaveInProgress )
+			{
+				throw new SaveInProgress( theException );
+			}
+			else if( theException instanceof JRestoreInProgress )
+			{
+				throw new RestoreInProgress( theException );
+			}
+			else
+			{
+				logException( "reserveObjectInstanceName", theException );
+			}
+		}
 	}
 
 	// 6.4

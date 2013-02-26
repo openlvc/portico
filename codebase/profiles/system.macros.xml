@@ -19,64 +19,6 @@
 		Set of common macros that can be used in any of the project build profiles.
 	</description>
 
-	
-	<!-- ================================================================================= -->
-	<!--                                 Macro: jdk-home                                   -->
-	<!-- ================================================================================= -->
-	<!--
-	     Macro for ensuring that the environment variable JAVA_HOME is set and for
-	     setting the jdk.home property from it. If the JAVA_HOME environment variable
-	     is not set, this macro will fail the build. If the variable is set, it will
-	     attempt to confirm that the variable points to a valid JDK (not a JRE). Should
-	     this check fail, again, the build will be failed. Should this check pass, the
-	     value of the property "jdk.home" will be set to JAVA_HOME.
-		 
-	     Usage Example:
-         <jdk-home/>
-	-->
-	<macrodef name="jdk-home"
-	          description="Validate that JAVA_HOME is set and ensure jdk.home points to it">
-
-		<!-- Attributes -->
-		<!-- None -->
-		
-		<!-- Task Definition -->
-		<sequential>
-			<!-- check that jdk.home hasn't already been set (maybe from build.properties) -->
-			<if>
-				<isset property="jdk.home"/>
-				<then>
-					<echo>jdk.home already set (build.properties), skipping JAVA_HOME check</echo>
-					<echo>jdk.home is: ${jdk.home}</echo>
-				</then>
-				<else>
-					<!-- we can do the checks now, as jdk.home isn't set -->
-					<!-- make sure we have JAVA_HOME -->
-					<if>
-						<not><isset property="env.JAVA_HOME"/></not>
-						<then>
-						<fail message="The JAVA_HOME environment variable is not set (it must point to a valid JDK)"/>
-						</then>
-					</if>
-
-					<!-- make sure env.JAVA_HOME points to a JDK -->
-					<!-- we determine this by looking for a child jre directory -->
-					<if>
-						<resourceexists><file file="${env.JAVA_HOME}/jre"/></resourceexists>
-						<then>
-							<!-- we're cool! set the property -->
-							<property name="jdk.home" value="${env.JAVA_HOME}"/>
-							<echo>jdk.home set to: ${jdk.home}</echo>
-						</then>
-						<else>
-							<fail message="The JAVA_HOME environment variable is set, but does not point to a valid JDK"/>
-						</else>
-					</if>
-				</else>
-			</if>
-		</sequential>
-	</macrodef>
-	
 	<!-- ================================================================================= -->
 	<!--                               Macro: java-compile                                 -->
 	<!-- ================================================================================= -->
@@ -268,9 +210,6 @@
 	<!-- ================================================================================= -->
 	<!--                                  Macro: cpp-unix                                  -->
 	<!-- ================================================================================= -->
-	<!-- bring in the cpp compiling ant task -->
-	<taskdef name="cpptask" classname="com.lbf.cpptask.CppTask"/>
-
 	<!--
 	     Macro for compiling C++ source files on Linux using g++ and the custom
 	     cpptask Ant Task. This macro will generate libraries or executables and
@@ -279,10 +218,10 @@
 	     
 	     Usage Example:
 	     <cpp-unix outfile="libraryName"
-	               outdir="${output.dir}"
+	               workdir="${output.dir}"
 	               type="shared"
 	               compilerArgs="-Wall"
-	               linkerArgs="-framework JavaVM -arch i386">
+	               linkerArgs="-install_name @rpath/@{outfile}">
 	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
 	        <includepath path="${include.path.1}:${include.path.2}"/>
 	        <includepath path="${include.path.3}"/>
@@ -293,14 +232,16 @@
 	<macrodef name="cpp-unix" description="C++ compile target for GCC on Linux and Mac OS X">
 		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
-		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
+		<attribute name="workdir"   description="the location to put compiled and working files in"/>
+		<attribute name="outdir"    description="location for compiled output"   default="@{workdir}/complete"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
-		<attribute name="compilerArgs"
-		           description="arg list passed directly to compiler"
-		           default="-g -O2 -fPIC -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing"/>
-		<attribute name="linkerArgs"
-		           description="args passed to linker"
-		           default="-install_name @rpath/@{outfile}"/>
+		<attribute name="arch"      description="amd64 (default) or x86"         default="amd64"/>
+		<attribute name="compiler"  description="g++ (default) or gcc"           default="g++"/>
+		<attribute name="debug"     description="true or false (default)"        default="false"/>
+		<attribute name="compilerArgs" description="arg list passed directly to compiler"
+		                               default="-O0 -fPIC -Wall"/>
+		<attribute name="linkerArgs"   description="args passed to linker"
+		                               default=""/>
 
 		<!-- Child Elements -->
 		<element name="body"
@@ -310,14 +251,23 @@
 
 		<!-- Task Definition -->
 		<sequential>
-			<mkdir dir="@{outdir}/obj"/>
-			<mkdir dir="@{outdir}/complete"/>
-			<!-- run cpptask -->
-			<cpptask outfile="@{outdir}/complete/@{outfile}"
-			         objdir="@{outdir}/obj"
-			         outtype="@{type}"
-			         compiler="g++"
-			         compilerArgs="@{compilerArgs}"
+			<!-- ensure the debug information is on the compiler args if required -->
+			<local name="finalCompilerArgs"/>
+			<if><istrue value="@{debug}"/><then>
+				<property name="finalCompilerArgs" value="-g @{compilerArgs}"/>
+			</then><else>
+				<property name="finalCompilerArgs" value="@{compilerArgs}"/>
+			</else>
+			</if>
+
+			<!-- call the compiler -->
+			<cpptask outfile="@{outfile}"
+			         workdir="@{workdir}"
+			         outdir="@{outdir}"
+			         type="@{type}"
+			         arch="@{arch}"
+			         compiler="@{compiler}"
+			         compilerArgs="${finalCompilerArgs}"
 			         linkerArgs="@{linkerArgs}">
 				<body/>
 			</cpptask>
@@ -332,13 +282,19 @@
 	     cpptask Ant Task. This macro will generate libraries or executables and
 	     expects its body to be made of any valid cpptask sub-elements. You can
 	     also specify the specific compiler and linker arguments.
+
+	     NOTE: To use this, it is expected that the approrpriate Visual Studio
+	           version is pointed by by the environment variable VSxxCOMNTOOLS.
+	           This is set up by the Visual Studio installers, so should not be
+	           an issue.
 	     
 	     Usage Example:
-	     <cpp-win32 outfile="libraryName"
-	                outdir="${output.dir}"
-	                type="shared"
-	                compilerArgs="-Wall"
-	                linkerArgs="">
+	     <msvc outfile="libraryName"
+	           workdir="${output.dir}"
+	           type="shared"
+	           compiler="vc10"
+	           compilerArgs="${msvc.dll.release.defaults}"
+	           linkerArgs="">
 	        <fileset dir="${src.dir}" includes="**/*.cpp"/>
 	        <includepath path="${include.path.1}:${include.path.2}"/>
 	        <includepath path="${include.path.3}"/>
@@ -347,15 +303,17 @@
 			<library path="${jdk.home}/lib" libs="jvm"/>
 		</cpp-win32>
 	-->
-	<macrodef name="cpp-win32" description="C++ compile target for VC10 (32bit) on Windows">
-		<!-- Attributes -->                                                                                                                                                             
+	<macrodef name="msvc" description="C++ compile macro for MSVC on Windows">
+		<!-- Attributes -->
 		<attribute name="outfile"   description="name of the file to produce (relative to outdir)"/>
-		<attribute name="outdir"    description="the location to put the obj and linked products in"/>
+		<attribute name="workdir"   description="the location to put compiled and working files in"/>
+		<attribute name="outdir"    description="location for compiled output"   default="@{workdir}/complete"/>
 		<attribute name="type"      description="shared (default) or executable" default="shared"/>
-		<attribute name="compilerArgs"
-		           description="arg list passed directly to compiler"
-		           default="/O2 /EHsc /GR /MD /W0"/>
-		<attribute name="linkerArgs" description="args passed to linker" default=""/>
+		<attribute name="arch"      description="amd64 or x86 (default)"         default="x86"/>
+		<attribute name="compiler"  description="vc8, vc9, vc10"                 default="vc10"/>
+		<attribute name="debug"     description="true or false (default)"        default="false"/>
+		<attribute name="compilerArgs" description="arg list passed to compiler" default="${msvc.dll.release.defaults}"/>
+		<attribute name="linkerArgs"   description="args passed to linker"       default=""/>
 
 		<!-- Child Elements -->
 		<element name="body"
@@ -365,14 +323,13 @@
 
 		<!-- Task Definition -->
 		<sequential>
-			<mkdir dir="@{outdir}/obj"/>
-			<mkdir dir="@{outdir}/complete"/>
-			<!-- run cpptask -->
-			<cpptask outfile="@{outdir}/complete/@{outfile}"
-			         objdir="@{outdir}/obj"
-			         outtype="@{type}"
-					 outarch="x86"
-			         compiler="vc10"
+			<!-- call the compiler -->
+			<cpptask outfile="@{outfile}"
+			         workdir="@{workdir}"
+					 outdir="@{outdir}"
+			         type="@{type}"
+			         arch="@{arch}"
+			         compiler="@{compiler}"
 			         compilerArgs="@{compilerArgs}"
 			         linkerArgs="@{linkerArgs}">
 				<body/>
@@ -436,7 +393,7 @@
 	     with an absolute location that would pin the link to the location it was in when created.
 	     
 	     Usage example:
-	     <symlink-dylib directory="[directory where dylib reside]" name="libRTI-NG"/>
+	     <symlink-dylib directory="[directory]" name="libRTI-NG"/>
 
 		 This will CD into the directory and execute a "ln -sf ./libRTI-NG.dylib ./libRTI-NG.jnilib"
 	-->
@@ -448,9 +405,21 @@
 		
 		<!-- Task Definition -->
 		<sequential>
-			<exec executable="ln" dir="@{directory}" failonerror="true">
-				<arg line="-sf ./@{name}.dylib ./@{name}.jnilib"/>
-			</exec>	
+			<!-- If the file exists, create the link - otherwise print a message and skip -->
+			<if>
+				<resourceexists><file file="@{directory}/@{name}.dylib"/></resourceexists>
+				<then>
+					<!-- File exists, so create the link -->
+					<exec executable="ln" dir="@{directory}" failonerror="@{failonerror}">
+						<arg line="-sf ./@{name}.dylib ./@{name}.jnilib"/>
+					</exec> 
+					<echo message=" (@{name}.dylib) Linked to @{directory}/@{name}.jnilib"/>
+				</then>
+				<else>
+					<!-- File does not exist, do don't create the link -->
+					<echo message=" (@{name}.dylib) Skipping - doesn't exist"/>
+				</else>
+			</if>
 		</sequential>
 	</macrodef>
 

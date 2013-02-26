@@ -17,38 +17,104 @@
 
 #pragma once
 
-#ifdef WIN32
+// The following #defines are set to convey platform information
+//   DEBUG      : Set if this is a debug build. Set from the command line
+// Platform
+//   ARCH_X86   : Set if we are being built for 32-bit systems
+//   ARCH_AMD64 : Set if we are being built for 64-bit systems
+// Operating System
+//   OS_WINDOWS : Set if we are running on a Windows system
+//   OS_LINUX   : Set if we are running on a Linux system
+//   OS_MACOSX  : Set if we are running on a MacOS X system
+// Compiler
+//   VC8        : Set if we are compiling with VC8
+//   VC9        : Set if we are compiling with VC9
+//   VC10       : Set if we are compiling with VC10
+//   VC11       : Set if we are compiling with VC11
+
+///////////////////////////////////////
+// Operating System and Architecture //
+///////////////////////////////////////
+#if _WIN32 || _WIN64
+	#define OS_WINDOWS
     #define WIN32_LEAN_AND_MEAN
+
+	// determine the platform 
+	#if _WIN32
+		#define ARCH_X86
+	#elif _WIN64
+		#define ARCH_AMD64
+	#endif
+
+	// windows platform, determine the compiler version
+	#if _MSC_VER >= 1700
+		#define VC_VERSION vc11
+		#define VC11
+	#elif _MSC_VER >= 1600
+		#define VC_VERSION vc10
+		#define VC10
+	#elif _MSC_VER >= 1500
+		#define VC_VERSION vc9
+		#define VC9
+	#elif _MSC_VER >= 1400
+		#define VC_VERSION vc8
+		#define VC8
+	#endif
+#elif __GNUC__
+	// operating system
+	#if defined(__APPLE__)
+		#define OS_MACOSX
+	#elif
+		#define OS_LINUX
+	#endif
+
+	// architecture
+	#if __x86_64__
+		#define ARCH_AMD64
+	#else
+		#define ARCH_X86
+	#endif
+#endif
+
+// include some platform-dependant headers
+#ifdef OS_WINDOWS
     #include <windows.h>
-#elif defined(__APPLE__)
+	#include <cstdio>
+	// bring in stdint.h locally if we have to
+	#ifdef VC8
+		#include "platform/vc8/stdint.h"
+	#else
+		#include <stdint.h>
+	#endif
+#elif defined(OS_MACOSX)
     #include <malloc/malloc.h>
     #include <stdarg.h>
     #include <ctype.h>
+//	#include <float.h>
     #include <ext/hash_map>
-	#include <string>
-	#include <cstring>
 	#include <sys/time.h>
 #else
     #include <malloc.h>
     #include <stdarg.h>
     #include <ctype.h>
-	#include <ext/hash_map>
-	#include <string>
-	#include <cstring>
+    #include <ext/hash_map>
 	#include <sys/time.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <memory>
-#include <fstream>
-#include <set>
-#include <map>
-#include <typeinfo>
+//#include <stdlib.h>
+//#include <stdio.h>
 
+// standard library types
 using namespace std;
+#include <iostream>
+#include <map>
+#include <set>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <cstring>
+#include <memory>
+#include <typeinfo>
 
 #define PORTICO13_NS_START namespace portico13 {
 #define PORTICO13_NS_END };

@@ -31,39 +31,38 @@
 	<!-- =========================================================== -->
 	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
 	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
-
-	<jdk-home/> <!-- validate JAVA_HOME and set jdk.home property -->
+	<import file="profiles/project.libraries.xml"/>    <!-- project-specific libraries defs -->
 
 	<!-- =========================================================== -->
 	<!--                       Master Targets                        -->
 	<!-- =========================================================== -->
 	<target name="clean"
-	        description="Removes all generated build artefacts."
+	        description="Removes all generated build artefacts"
 	        depends="master.clean,common.clean"/>
 	
 	<target name="compile"
-	        description="Compile all the production code."
+	        description="Compile all the production code"
 	        depends="master.compile"/>
 
 	<target name="test"
-	        description="Compile and run the automated test suite."
+	        description="Compile and run the automated test suite"
 	        depends="master.test"/>
 
 	<target name="sandbox"
-	        description="Create a sandbox environment to test and validate in."
+	        description="Create a sandbox environment to test and validate in"
 	        depends="master.sandbox"/>
 
 	<target name="installer"
-	        description="Create an installer package from the sandbox."
+	        description="Create an installer package from the sandbox"
 	        depends="master.installer"/>
 
 	<target name="release"
-	        description="Create a production-ready release. Run all tests and generate installer."
-	        depends="clean,master.release,installer"/>
+	        description="Clean, run all test sand generate a standard release package"
+	        depends="clean,build.release,master.release,installer"/>
 
-	<target name="release-dev"
-	        description="Create a standard release package, but does not run the tests."
-	        depends="clean,sandbox,installer"/>
+	<target name="release.thin"
+	        description="Generate a standard release package, but skip the tests"
+	        depends="clean,build.release,sandbox,installer"/>
 			
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
@@ -90,19 +89,35 @@
 	<!-- Platform neutral java build -->
 	<include file="profiles/java.xml" as="java"/>
 
-	<!-- Mac OS X C++ and Installer profiles -->
-	<include file="profiles/macosx/cpp.xml"          as="cpp"          if="platform.macosx"/>
-	<include file="profiles/macosx/installer.xml"    as="installer"    if="platform.macosx"/>
-	
-	<!-- Windows 32bit C++ and Installer profiles -->
-	<include file="profiles/win32/cpp32.xml"         as="cpp"          if="platform.windows"/>
-	<include file="profiles/win32/installer32.xml"   as="installer"    if="platform.windows"/>
+	<!-- Parent C++ build scaffolding to attach to -->
+	<include file="profiles/cpp.xml" as="cpp"/>
 
+	<!-- Mac OS X C++ and Installer profiles -->
+	<include file="profiles/macosx/hla13.xml"        as="cpp.hla13"      if="platform.macosx"/>
+	<include file="profiles/macosx/dlc13.xml"        as="cpp.dlc13"      if="platform.macosx"/>
+	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e"  if="platform.macosx"/>
+	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
+
+	<!-- Windows 32bit C++ and Installer profiles -->
+	<include file="profiles/win32/hla13.xml"         as="cpp.hla13"     if="platform.windows"/>
+	<include file="profiles/win32/ieee1516e.xml"     as="cpp.ieee1516e" if="platform.windows"/>
+	<include file="profiles/win32/installer.xml"     as="installer"     if="platform.windows"/>
+
+	
+	
 	<!-- Windows 64bit C++ and Installer profiles -->
 	<!--
 	<include file="profiles/windows/cpp64.xml"       as="cpp"          if="platform.win64"/>
 	<include file="profiles/windows/installer64.xml" as="installer"    if="platform.win64"/>
 	-->
+
+	<!-- =========================================================== -->
+	<!-- Convenience targets for specifying debug or release builds. -->
+	<!-- =========================================================== -->
+	<target name="build.release" description="Set the release build flag for this run">
+		<echo>Build flagged as a release build. Setting build.release property to true</echo>
+		<property name="build.release" value="true"/>
+	</target>
 
 	<!-- =========================================================== -->
 	<!--      Private Internal Targets. Do not modify or extend.     -->

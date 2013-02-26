@@ -64,9 +64,6 @@ public class ProxyRtiAmbassador
 	 */
 	public ProxyRtiAmbassador( int id ) throws Exception
 	{
-		// load the C++ libraries
-		loadCppLibraries();
-		
 		// store the id
 		this.id = id;
 		
@@ -81,8 +78,11 @@ public class ProxyRtiAmbassador
 		this.rtiamb = new Rti13Ambassador();
 		
 		// fetch the LRC logger so that we have somewhere to notify of our events
-		this.logger = Logger.getLogger( "c++" );
+		this.logger = Logger.getLogger( "portico.lrc.cpp13" );
 		this.logger.debug( "C++ ProxyRtiAmbassador.class created (java-side)" );
+
+		// load the C++ libraries
+		NativeLibraryLoader.load();
 	}
 
 	//----------------------------------------------------------
@@ -2351,150 +2351,6 @@ public class ProxyRtiAmbassador
 		this.fedamb = null;
 	}
 	
-	////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////// C++ Library Loading Methods ///////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	private void loadCppLibraries()
-	{
-		// attempt to load the LRC system library
-		// all other classes where this could be loaded should defer to here
-		// rather than reimplement this logic
-		boolean windows =
-			System.getProperty("os.name").toUpperCase(java.util.Locale.ENGLISH).startsWith("WINDOWS");
-
-		// set the initial log level for the C++ impl side logger
-		Logger logger = Logger.getLogger( "c++" );
-		logger.setLevel( org.apache.log4j.Level.ERROR );
-		
-		// Try and load the portico C++ library, remembering that the 1.3 or DLC 1.3 interface
-		// could be in use. Try the normal 1.3 interface first.
-		if( !windows )
-		{
-			// try and load portico by the RTI-NG compatibility library name
-			try
-			{
-				System.loadLibrary( "RTI-NG" );
-				return;
-			}
-			catch( UnsatisfiedLinkError ule )
-			{
-				// ignore for now, we'll log about this below
-			}
-			catch( Throwable throwable )
-			{
-				System.out.println( "ERROR An unknown error ("+throwable.getClass().getName()+
-				                    ") occurred trying to load the C++ library from Java" );
-				throwable.printStackTrace();
-			}
-
-			// ok, now try with the dlc13 library
-			try
-			{
-				System.loadLibrary( "rti13" );
-				return;
-			}
-			catch( UnsatisfiedLinkError ule )
-			{
-				// ignore for now, we'll log about this below
-			}
-			catch( Throwable throwable )
-			{
-				System.out.println( "ERROR An unknown error ("+throwable.getClass().getName()+
-				                    ") occurred trying to load the C++ library from Java" );
-				throwable.printStackTrace();
-			}			
-			
-			System.out.println( "ERROR Could not locate Portico C++ library (libRTI-NG.so/librti13.so)" );
-			System.out.println( "ERROR Make sure $RTI_HOME is set and $RTI_HOME/lib is on you $LD_LIBRARY_PATH" );
-		}
-		else
-		{
-			// WINDOWS //
-			// firstly, try and load the library by NG name
-			try
-			{
-				System.loadLibrary( "libRTI-NG" );
-				return;
-			}
-			catch( UnsatisfiedLinkError ule )
-			{
-				// dammit!
-			}
-			catch( Throwable throwable )
-			{
-				System.out.println( "ERROR An unknown error ("+throwable.getClass().getName()+
-				                    ") occurred trying to load the C++ library from Java" );
-				throwable.printStackTrace();
-			}
-			
-			// ok, now try the DLC 1.3 interface
-			try
-			{
-				System.loadLibrary( "librti13" );
-				return;
-			}
-			catch( UnsatisfiedLinkError ule )
-			{
-				// dammit!
-			}
-			catch( Throwable throwable )
-			{
-				System.out.println( "ERROR An unknown error ("+throwable.getClass().getName()+
-				                    ") occurred trying to load the C++ library from Java" );
-				throwable.printStackTrace();
-			}
-			
-			// ok, fine, now try and load the NG library from its location, re: PORT-585
-			String rtiHome = System.getenv( "RTI_HOME" );
-			try
-			{
-				// last resort, try and load the dll directly
-				if( rtiHome != null )
-				{
-					String path = rtiHome + "\\bin\\libRTI-NG.dll";
-					System.load( path );
-					return;
-				}
-			}
-			catch ( UnsatisfiedLinkError ule )
-			{
-				// dammit again!
-			}
-			catch( Throwable throwable )
-			{
-				System.out.println( "ERROR An unknown error ("+throwable.getClass().getName()+
-				                    ") occurred trying to load the C++ library from Java" );
-				throwable.printStackTrace();
-			}
-			
-			// finally, try the same with the DLC 1.3 interface
-			try
-			{
-				// last resort, try and load the dll directly
-				if( rtiHome != null )
-				{
-					String path = rtiHome + "\\bin\\librti13.dll";
-					System.load( path );
-					return;
-				}
-			}
-			catch ( UnsatisfiedLinkError ule )
-			{
-				// dammit again!
-			}
-			catch( Throwable throwable )
-			{
-				System.out.println( "ERROR An unknown error ("+throwable.getClass().getName()+
-				                    ") occurred trying to load the C++ library from Java" );
-				throwable.printStackTrace();
-			}
-			
-			// fail!
-			System.out.println( "ERROR Could not locate Portico C++ library (libRTI-NG.dll/librti13.dll)" );
-			System.out.println( "ERROR Make sure %RTI_HOME% is set and %RTI_HOME%\\bin is on you %PATH%" );
-		}
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

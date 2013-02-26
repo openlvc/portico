@@ -256,7 +256,7 @@ public class RegisterObjectHandler extends LRCMessageHandler
 	 *   comfortable that we'll be ok most of the time.
 	 * </pre>
 	 */
-	private void reserveName( String name ) throws Exception
+	public void reserveName( String name ) throws Exception
 	{
 		//////////////////////////////
 		// check availability first //

@@ -140,6 +140,13 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 
 		return handles;
 	}
+	
+	private int convert( OrderType type )
+	{
+		// have to add one to the end because the STUPID IDIOT STANDARD DECLARES CONSTANT
+		// VALUES FOR THESE THINGS BUT DOES NOT PROVIDE A MEANS TO ACCESS THAT VALUE.
+		return type.ordinal()+1;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////// Federation Management Methods ////////////////////////////
@@ -409,7 +416,7 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 		                             attributeHandles,
 		                             attributeValues,
 		                             tag,
-		                             sentOrdering.ordinal(),
+		                             convert(sentOrdering),
 		                             fromHandle(theTransport),
 		                             fromHandle(reflectInfo.getProducingFederate()),
 		                             convert(reflectInfo.getSentRegions()) );
@@ -443,10 +450,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
     		                             attributeHandles,
     		                             attributeValues,
     		                             tag,
-    		                             sentOrdering.ordinal(),
+    		                             convert(sentOrdering),
     		                             fromHandle(theTransport),
     		                             toDouble(theTime),
-    		                             receivedOrdering.ordinal(),
+    		                             convert(receivedOrdering),
     		                             fromHandle(reflectInfo.getProducingFederate()),
     		                             convert(reflectInfo.getSentRegions()) );
 		}
@@ -457,10 +464,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
     		                             attributeHandles,
     		                             attributeValues,
     		                             tag,
-    		                             sentOrdering.ordinal(),
+    		                             convert(sentOrdering),
     		                             fromHandle(theTransport),
     		                             toLong(theTime),
-    		                             receivedOrdering.ordinal(),
+    		                             convert(receivedOrdering),
     		                             fromHandle(reflectInfo.getProducingFederate()),
     		                             convert(reflectInfo.getSentRegions()) );
 		}
@@ -495,10 +502,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
         	                             attributeHandles,
         	                             attributeValues,
         	                             tag,
-        	                             sentOrdering.ordinal(),
+        	                             convert(sentOrdering),
         	                             fromHandle(theTransport),
         	                             toDouble(theTime),
-        	                             receivedOrdering.ordinal(),
+        	                             convert(receivedOrdering),
         	                             fromHandle(retractionHandle),
         	                             fromHandle(reflectInfo.getProducingFederate()),
         	                             convert(reflectInfo.getSentRegions()) );
@@ -510,10 +517,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
         	                             attributeHandles,
         	                             attributeValues,
         	                             tag,
-        	                             sentOrdering.ordinal(),
+        	                             convert(sentOrdering),
         	                             fromHandle(theTransport),
         	                             toLong(theTime),
-        	                             receivedOrdering.ordinal(),
+        	                             convert(receivedOrdering),
         	                             fromHandle(retractionHandle),
         	                             fromHandle(reflectInfo.getProducingFederate()),
         	                             convert(reflectInfo.getSentRegions()) );
@@ -548,7 +555,7 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 		                         parameterHandles,
 		                         parameterValues,
 		                         tag,
-		                         sentOrdering.ordinal(),
+		                         convert(sentOrdering),
 		                         fromHandle(theTransport),
 		                         fromHandle(receiveInfo.getProducingFederate()),
 		                         convert(receiveInfo.getSentRegions()) );
@@ -582,10 +589,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
     		                         parameterHandles,
     		                         parameterValues,
     		                         tag,
-    		                         sentOrdering.ordinal(),
+    		                         convert(sentOrdering),
     		                         fromHandle(theTransport),
     		                         toDouble(theTime),
-    		                         receivedOrdering.ordinal(),
+    		                         convert(receivedOrdering),
     		                         fromHandle(receiveInfo.getProducingFederate()),
     		                         convert(receiveInfo.getSentRegions()) );
 		}
@@ -596,10 +603,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
     		                         parameterHandles,
     		                         parameterValues,
     		                         tag,
-    		                         sentOrdering.ordinal(),
+    		                         convert(sentOrdering),
     		                         fromHandle(theTransport),
     		                         toLong(theTime),
-    		                         receivedOrdering.ordinal(),
+    		                         convert(receivedOrdering),
     		                         fromHandle(receiveInfo.getProducingFederate()),
     		                         convert(receiveInfo.getSentRegions()) );
 		}
@@ -634,10 +641,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
     		                         parameterHandles,
     		                         parameterValues,
     		                         tag,
-    		                         sentOrdering.ordinal(),
+    		                         convert(sentOrdering),
     		                         fromHandle(theTransport),
     		                         toDouble(theTime),
-    		                         receivedOrdering.ordinal(),
+    		                         convert(receivedOrdering),
     		                         fromHandle(retractionHandle),
     		                         fromHandle(receiveInfo.getProducingFederate()),
     		                         convert(receiveInfo.getSentRegions()) );
@@ -649,10 +656,10 @@ public class ProxyFederateAmbassador implements FederateAmbassador
     		                         parameterHandles,
     		                         parameterValues,
     		                         tag,
-    		                         sentOrdering.ordinal(),
+    		                         convert(sentOrdering),
     		                         fromHandle(theTransport),
     		                         toLong(theTime),
-    		                         receivedOrdering.ordinal(),
+    		                         convert(receivedOrdering),
     		                         fromHandle(retractionHandle),
     		                         fromHandle(receiveInfo.getProducingFederate()),
     		                         convert(receiveInfo.getSentRegions()) );
@@ -672,7 +679,7 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 		link.removeObjectInstance( ambassadorId,
 		                           fromHandle(theObject),
 		                           tag,
-		                           sentOrdering.ordinal(),
+		                           convert(sentOrdering),
 		                           fromHandle(removeInfo.getProducingFederate()) );
 	}
 
@@ -689,9 +696,9 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			link.removeObjectInstance( ambassadorId,
 			                           fromHandle(theObject),
 			                           tag,
-			                           sentOrdering.ordinal(),
+			                           convert(sentOrdering),
 			                           toDouble(theTime),
-			                           receivedOrdering.ordinal(),
+			                           convert(receivedOrdering),
 			                           fromHandle(removeInfo.getProducingFederate()) );
 		}
 		else
@@ -699,9 +706,9 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			link.removeObjectInstance( ambassadorId,
 			                           fromHandle(theObject),
 			                           tag,
-			                           sentOrdering.ordinal(),
+			                           convert(sentOrdering),
 			                           toLong(theTime),
-			                           receivedOrdering.ordinal(),
+			                           convert(receivedOrdering),
 			                           fromHandle(removeInfo.getProducingFederate()) );
 		}
 	}
@@ -720,9 +727,9 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			link.removeObjectInstance( ambassadorId,
 			                           fromHandle(theObject),
 			                           tag,
-			                           sentOrdering.ordinal(),
+			                           convert(sentOrdering),
 			                           toDouble(theTime),
-			                           receivedOrdering.ordinal(),
+			                           convert(receivedOrdering),
 			                           fromHandle(retractionHandle),
 			                           fromHandle(removeInfo.getProducingFederate()) );
 		}
@@ -731,9 +738,9 @@ public class ProxyFederateAmbassador implements FederateAmbassador
 			link.removeObjectInstance( ambassadorId,
 			                           fromHandle(theObject),
 			                           tag,
-			                           sentOrdering.ordinal(),
+			                           convert(sentOrdering),
 			                           toLong(theTime),
-			                           receivedOrdering.ordinal(),
+			                           convert(receivedOrdering),
 			                           fromHandle(retractionHandle),
 			                           fromHandle(removeInfo.getProducingFederate()) );
 		}

@@ -6,29 +6,80 @@ gauge the level of community interest in the project. You can sign up from the U
 https://lists.sourceforge.net/lists/listinfo/portico-announce
 
 =================================== SPECIAL NOTE ===================================
-As of v0.9, Portico no longer uses a central RTI to run. All federates operate in a
-peer-to-peer manner so there is NO NEED TO START AN RTI.
+Portico is a fully decentralized RTI and does not require a central RTI to execute.
+Portico has no licensing requirements and no licensing server.
 ====================================================================================
 
 1. Getting Started
 -------------------
-   You should have the following environment variables set before running Portico federates:
+   This guide gives you some quick heads-up information to help you get started with
+   the Portico open source RTI. Portico supports several of the standard HLA interfaces:
+     * HLA v1.3:   Java and C++
+     * IEEE-1516:  Java
+     * IEEE-1516e: Java and C++
 
-   RTI_HOME       : Points to the same directory this file is in
-   JAVA_HOME      : Points to your java install**
-   PATH           : (win32-only) Add %RTI_HOME%\bin and JVM libraries** to your existing path
-   LD_LIBRARY_PATH: (linux-only) Add $RTI_HOME/lib to your LD_LIBRARY_PATH
+   For Java: Portico ships with a JRE, but you will need a JDK if you are writing federates.
+             Portico support a minimum of Java v7.0_07+.
 
-   ** If you installed the windows standalone version of Portico, a JRE came with it. In this
-      case you can point JAVA_HOME at %RTI_HOME%\jre. To run federates, the JVM dlls must be
-	  on your PATH. Add %RTI_HOME%\jre\bin\client to the PATH or sub in your JAVA_HOME (just
-	  look for the directory with jvm.dll in it)
+    For C++: Portico currently provides only 32-bit support, although 64-bit pre-packaged
+             releases are going to be available soon. Portico supports the following compilers:
+               * VC10, 32-bit
+               * GCC4, 32-bit
+
+   The following information explains the directory structure:
+
+   [RTI_HOME]
+     |-- LICENSE.portico
+     |-- README               (This file)
+     |-- README-examples      (More information about the example federates)
+     |-- SOURCE_CODE          (Details about where to get the source code)
+     |-- examples
+         `-- java
+             `-- hla13        (The Java HLA v1.3 example federate)
+             `-- ieee1516e    (The Java IEEE-1516e example federate)
+         `-- cpp
+             `-- hla13        (The C++ HLA v1.3 example federate)
+             `-- ieee1516e    (The C++ IEEE-1516e example federate)
+     |-- include
+         `-- hla13            (HLA v1.3 headers)
+         `-- dlc13            (DLC v1.3 headers) [*nix only]
+         `-- ieee1516e        (IEEE-1516e headers)
+     |-- lib
+         |-- portico.jar      (The main Portico jar file)
+         `-- gcc4             (GCC libraries for C++ interfaces)  [*nix only]
+         `-- vc10             (VC10 libraries for C++ interfaces) [windows only]
 
 
-2. Writing Federates for Portico
---------------------------------
-   Portico ships with some example federates if you don't have much HLA experience. For
-   complete instructions on writing federates for Portico, see the website:
+2. Running Federates with Portico
+----------------------------------
+   In most circumstances, Portico will be a drop-in replacement for any other RTI. To use
+   Portico at runtime with your federates, you just set the environment up correctly to allow
+   them to find Portico. This is achieved through common environment variable conventions.
+   You should have the following environment variables set before running Portico federates.
+   Note that you only need to set RTI_HOME if you are using Java federates:
+
+     *   (all) RTI_HOME          : This should point to the same directory that this file is in
+     *  (java) CLASSPATH         : Add RTI_HOME/lib/portico.jar
+     * (win32) PATH              : Add %RTI_HOME%\bin\[compiler] and %RTI_HOME%\jre\bin\client
+     * (win64) PATH              : Add %RTI_HOME%\bin\[compiler] and %RTI_HOME%\jre\bin\server
+     * (mac64) DYLD_LIBRARY_PATH : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/server
+     * (lin32) LD_LIBRARY_PATH   : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/client
+     * (lin64) LD_LIBRARY_PATH   : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/server
+
+   ** The JVM Libraries.
+      Portico is a Java-based RTI. The C++ interface is a wrapper around the core Java library.
+      To ensure that C++ federates can load the Java library, you have to tell Portico where
+      Java is located. For this reason, for C++ federates you have to add the Java libraries
+      to your path. Portico ships with a JRE located in RTI_HOME/jre. This can be used when
+      running federates. If you are writing and compiling federates, you will need a full JDK.
+
+
+3. Writing Federates for Portico
+---------------------------------
+   Portico ships with a set of small example federates (more below) to both help users get
+   started with the HLA, and to provide examples of how to set up your environment properly
+   to compile and execute Java and C++ federates with Portico.
+   For complete instructions on writing federates for Portico, see the website:
 
    http://porticoproject.org/index.php?title=Writing_Federates_for_Portico
 
@@ -37,16 +88,31 @@ peer-to-peer manner so there is NO NEED TO START AN RTI.
     file. Just throw it on your classpath.
 
    -Writing C++ Federates-
-    Portico uses JNI to provide a C++ interface wrapper around the main Java library.
-    The Portico C++ interface is binary drop-in compatible with RTI-NG6 on windows.
+    The Portico C++ interfaces are binary drop-in compatible with HLA v1.3 and IEEE-1516e
+    federates on Windows, Linux and Mac OS X. If you want to compile and link against Portico,
+    you will need the following:
 
-      The header files are located in RTI_HOME\include\ng6
-      The .lib and .so files are located in RTI_HOME\lib
-	  The dlls are located in RTI_HOME\bin
+      * Header files: Located in RTI_HOME/include/[HLA-version]
+      * Library files: Located in RTI_HOME/lib/[compiler]
 
+    Note that library files for all the supported HLA interfaces are grouped together under
+    the same directory. If you want to compile and link against the VC10 interface, the
+    libraries for 32/64-bit HLA v1.3 and IEEE-1516e are in the same directory.
 
-3. Example Federates
---------------------
+    ** Compiling on Windows **
+      When compiling C++ federates on Windows, you will need to have an appropriate version of
+      Visual Studio installed. The easiest way to set up the environment is to either use
+      Visual Studio, or execute compilation commands in a Visual Studio Command Prompt.
+
+    ** 64-bit Libraries **
+      Portico currently only provides packages for 64-bit libraries on Mac OS X. Newer
+      packages that provide support for Linux (GCC) and Windows (VC10) will be added shortly.
+      According to HLA convention, all 64-bit libraries contain a "_64" suffix. For example,
+      the IEEE-1516e 32- and 64-bit libraries would be: "librti1516e.lib" and "librti1516e_64.lib"
+      respectively.
+
+4. The Example Federates
+-------------------------
    Portico ships with some example federates for both Java and C++. Code and helper scripts
    are located in the RTI_HOME/examples directory.
 
@@ -54,39 +120,39 @@ peer-to-peer manner so there is NO NEED TO START AN RTI.
    federate. The scripts are either "linux.sh" or "win32.bat". The arguments they take are
    identical for both (linux used in these examples):
 
-   ./linux.sh compile  => compile the code for the federate
-   ./linux.sh execute  => run the federate. You can pass an optional argument specifying the
+   ./linux.sh compile  => Compile the code for the federate
+   ./linux.sh execute  => Run the federate. You can pass an optional argument specifying the
                           name for the federate (so you can run multiple instances if you wish)
-   ./linux.sh clean    => remove all the code/jars that were created
+   ./linux.sh clean    => Remove all the code/jars that were created
 
-   **NOTE** If you want to compile the Java federates, you'll need to have the JDK installed.
-            The JRE that ships with the standalone version of Portico on windows is not sufficient
+   **NOTE** If you want to compile the Java federates, you'll need to have a full JDK installed.
+            The JRE that ships with Portico is only sufficient for running existing federates.
 
    **NOTE** If you want to build the C++ example federates, you will need to have a supported
-            compiler installed (vc6, vc7, gcc4) and have your environment set up for it. On
-			windows you can run the win32.bat file from a "Visual Studio Command Prompt", or,
-			if you have vc6/7 installed in the default locations, there are batch files to
-			set up the environment in RTI_HOME\bin\win32. If you just run one of these batch
-			files in the prompt before trying to build, you'll be fine.
+            compiler installed (vc10, gcc4) and have your environment set up for it. On windows
+            you will need to ensure any command prompt it set up so that it can find the Visual
+            Studio compiler. The easiest way to do this is to run the scripts from a Visual Studio
+            command prompt.
 
+   **Windows C++ Example**
+     x. Open a Visual Studio Command Prompt
+     1. cd %RTI_HOME%\examples\cpp\ieee1516e
+     2. win32 compile
+     3. win32 execute
 
 4. Documentation and Help
 -------------------------
-   There are three main resources for documentation and help:
+   There are two main resources for documentation and help:
 
      http://porticoproject.org
-     Documentation about using and developing for Portico, in addition to
-	 architectural documentation
+       The main website containing documentation to help with using and developing with Portico
+       in addition to reference information about which parts of the various HLA specifications
+       are supported and how Portico is structured.
 	 
-	 http://forums.porticoproject.org
-     Get your questions answered here. I prefer this to a mailing list as it is easier
-	 to search and navigate than the list archives. If you have a question, check the website
-	 or forums first to see if someone else has had the same problem previously!
-	 
-	 https://lists.sourceforge.net/lists/listinfo/portico-user
-     The user mailing list you can join to ask questions about portico and let us know about
-	 problems, bugs or patches that you have!
-
+	   http://forums.porticoproject.org
+       Get your questions answered here. To prevent spam, user accounts have to be activated
+       by one of the core Portico developers after they've been created. If you have a question,
+       you can search the forums first to see if someone else has had the same problem previously!
 
 So there you go, we hope you enjoy using Portico :)
 

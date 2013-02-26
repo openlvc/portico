@@ -25,17 +25,24 @@
 	<target name="installer" extensionOf="master.installer">
 		<!-- check to make sure the jre dir exists -->
 		<echo>Checking to see if JRE is available for bundling</echo>
-		<available file="${macosx.jdk.home}/jre" property="jrefound"/>
+		<available file="${jdk.home.macosx}/jre" property="jrefound"/>
 		<fail unless="jrefound"
 		      message="Could not locate JRE dir. Set JAVA_HOME env var to point to JDK install"/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
+		<echo>creating ${dist.tgz.file}</echo>
+		<exec executable="tar" dir="${dist.dir}" failonerror="true">
+			<arg line="-czpf ${dist.tgz.file} -s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.macosx} ./jre"/>
+		</exec>
+
+		<!-- Can't use the regular tar task as we cannot preserve permissions
 		<tar destfile="${dist.tgz.file}"
 		     compression="gzip"
 		     longfile="gnu">
 			<tarfileset dir="${dist.sandbox.dir}" includes="**/*"/>
-			<tarfileset dir="${macosx.jdk.home}/jre" includes="**/*" prefix="/jre"/>
+			<tarfileset dir="${jdk.home.macosx}/jre" includes="**/*" prefix="/jre"/>
 		</tar>
+		-->
 
 		<!--<echo>Running MacOS DMG Generation</echo>-->
 		

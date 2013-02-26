@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Properties;
 
 import hla.rti1516e.CallbackModel;
@@ -30,9 +29,9 @@ import hla.rti1516e.OrderType;
 import hla.rti1516e.ResignAction;
 import hla.rti1516e.TimeQueryReturn;
 import hla.rti1516e.exceptions.AlreadyConnected;
-import hla.rti1516e.exceptions.RTIinternalError;
 
 import org.apache.log4j.Logger;
+import org.portico.impl.cpp1516e.NativeLibraryLoader;
 import org.portico.impl.hla1516e.Rti1516eAmbassador;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
@@ -104,11 +103,11 @@ public class ProxyRtiAmbassador
 		this.rtiamb = new Rti1516eAmbassador();
 
 		// fetch the LRC logger so that we have somewhere to notify of our events
-		this.logger = Logger.getLogger( "portico.cpp" );
+		this.logger = Logger.getLogger( "portico.lrc.cpp1516e" );
 		this.logger.debug( "C++ ProxyRtiAmbassador.class created (java-side)" );
 
 		// load the C++ libraries
-		loadCppLibraries();
+		NativeLibraryLoader.load();
 	}
 
 	//----------------------------------------------------------
@@ -232,7 +231,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 				
 			rtiamb.createFederationExecution( federationName, modules, timeName );
 		}
@@ -255,7 +257,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 			
 			rtiamb.createFederationExecution( federationName, modules, new URL(mimModule), timeName );
 		}
@@ -305,7 +310,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 			
 			FederateHandle handle =
 				rtiamb.joinFederationExecution( federateType, federationName, modules );
@@ -332,7 +340,10 @@ public class ProxyRtiAmbassador
 			// create an array of the modules to load
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
-				modules[i] = new URL( fomModules[i] );
+			{
+				File file = new File( fomModules[i] );
+				modules[i] = file.toURI().toURL();
+			}
 			
 			FederateHandle handle = rtiamb.joinFederationExecution( federateName,
 			                                                        federateType,
@@ -2159,119 +2170,6 @@ public class ProxyRtiAmbassador
 			ExceptionManager.pushException( this.id, e );
 			return "UNKNOWN";
 		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////// C++ Library Loading Methods ///////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	private void loadCppLibraries() throws RTIinternalError
-	{
-		// Load the C++ library so that we have a facility to call
-		// back into C++ federates. All other classes where this could be
-		// loaded should defer to here rather than reimplement this logic.
-		boolean windows =
-			System.getProperty("os.name").toUpperCase(Locale.ENGLISH).startsWith("WINDOWS");
-
-		// set the initial log level for the C++ impl side logger
-		Logger logger = Logger.getLogger( "cpp" );
-		logger.setLevel( org.apache.log4j.Level.ERROR );
-		
-		// Try and load the Portico C++ library using the library names defined in the standard
-		if( windows )
-			loadCppLibrariesWindows();
-		else
-			loadCppLibrariesUnix();
-	}
-
-	private void loadCppLibrariesWindows() throws RTIinternalError
-	{
-		// WINDOWS //
-		// let's assume that the library paths are set up properly in the first instance
-		logger.debug( "Attempting to load librti1516e.dll from system path" );
-		try
-		{
-			System.loadLibrary( "librti1516e" );
-			return;
-		}
-		catch( UnsatisfiedLinkError ule )
-		{
-			// dammit!
-			logger.debug( "Could not find librti1516e.dll on system path, searching RTI_HOME directly" );
-		}
-		catch( Throwable throwable )
-		{
-			logger.error( "An unknown error ("+throwable.getClass().getName()+
-			              ") occurred trying to load librti1516e.dll from Java", throwable );
-		}
-
-		// try and load the library from RTI_HOME directly
-		String rtihome = System.getenv( "RTI_HOME" );
-		if( rtihome != null )
-		{
-			try
-			{
-				System.load( rtihome+"\\bin\\librti1516e.dll" );
-			}
-			catch( UnsatisfiedLinkError ule )
-			{
-				// dammit again!
-			}
-			catch( Throwable throwable )
-			{
-				logger.error( "ERROR An unknown error ("+throwable.getClass().getName()+
-                    ") occurred trying to load librti1516e.dll from Java", throwable );
-			}
-		}
-		
-		// fail!
-		logger.error( "Fatal error: RTI_HOME not set and librti1516e.dll not on system path" );
-		logger.error( "Make sure %RTI_HOME% is set and/or %RTI_HOME%\\bin is on you %PATH%" );
-		throw new RTIinternalError( "RTI_HOME not set and librti1516e.dll not on system path" );
-	}
-
-	private void loadCppLibrariesUnix() throws RTIinternalError
-	{
-		// let's assume that the library paths are set up properly in the first instance
-		logger.debug( "Attempting to load librti1516e.so from system library path" );
-		try
-		{
-			System.loadLibrary( "rti1516e" );
-			return;
-		}
-		catch( UnsatisfiedLinkError ule )
-		{
-			// ignore for now, we'll log about this below
-			logger.debug( "Could not find librti1516e.so on system path, searching RTI_HOME directly" );
-		}
-		catch( Throwable throwable )
-		{
-			logger.error( "An unknown error ("+throwable.getClass().getName()+
-			              ") occurred trying to load librti1516e.so from Java", throwable );
-		}
-		
-		// try and load the library from RTI_HOME directly
-		String rtihome = System.getenv( "RTI_HOME" );
-		if( rtihome != null )
-		{
-			try
-			{
-				System.load( rtihome+"/lib/librti1516e.so" );
-			}
-			catch( UnsatisfiedLinkError ule )
-			{
-				// dammit again!
-			}
-			catch( Throwable throwable )
-			{
-				logger.error( "ERROR An unknown error ("+throwable.getClass().getName()+
-                    ") occurred trying to load librti1516e.so from Java", throwable );
-			}
-		}
-		
-		// fail!
-		logger.error( "Fatal error: RTI_HOME not set and librti1516e.so not on library path" );
-		logger.error( "Make sure $RTI_HOME is set and/or $RTI_HOME%/lib is on you LD_LIBRARY_PATH" );
-		throw new RTIinternalError( "RTI_HOME not set and librti1516e.so not on library path" );
 	}
 
 	private void notSupported( String name )

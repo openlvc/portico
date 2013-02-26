@@ -322,7 +322,7 @@ std::string Logger::toString( const AttributeHandleSet& theSet )
 	ss << "{";
 
 	// loop through all the handles, pumping them into the stream
-	AttributeHandleSet::iterator iterator;
+	AttributeHandleSet::const_iterator iterator;
 	for( iterator = theSet.begin(); iterator != theSet.end(); /*iterator++ we do below*/ )
 	{
 		ss << AttributeHandleFriend::toString( *iterator );
@@ -343,7 +343,7 @@ std::string Logger::toString( const DimensionHandleSet& theSet )
 	ss << "{";
 
 	// loop through all the handles, pumping them into the stream
-	DimensionHandleSet::iterator iterator;
+	DimensionHandleSet::const_iterator iterator;
 	for( iterator = theSet.begin(); iterator != theSet.end(); /*iterator++ we do below*/ )
 	{
 		ss << DimensionHandleFriend::toString( *iterator );
@@ -364,7 +364,7 @@ std::string Logger::toString( const FederateHandleSet& theSet )
 	ss << "{";
 
 	// loop through all the handles, pumping them into the stream
-	FederateHandleSet::iterator iterator;
+	FederateHandleSet::const_iterator iterator;
 	for( iterator = theSet.begin(); iterator != theSet.end(); /*iterator++ we do below*/ )
 	{
 		ss << FederateHandleFriend::toString( *iterator );
@@ -385,7 +385,7 @@ std::string Logger::toString( const ParameterHandleSet& theSet )
 	ss << "{";
 
 	// loop through all the handles, pumping them into the stream
-	ParameterHandleSet::iterator iterator;
+	ParameterHandleSet::const_iterator iterator;
 	for( iterator = theSet.begin(); iterator != theSet.end(); /*iterator++ we do below*/ )
 	{
 		ss << ParameterHandleFriend::toString( *iterator );
@@ -406,7 +406,7 @@ std::string Logger::toString( const RegionHandleSet& theSet )
 	ss << "{";
 
 	// loop through all the handles, pumping them into the stream
-	RegionHandleSet::iterator iterator;
+	RegionHandleSet::const_iterator iterator;
 	for( iterator = theSet.begin(); iterator != theSet.end(); /*iterator++ we do below*/ )
 	{
 		ss << RegionHandleFriend::toString( *iterator );
@@ -472,7 +472,7 @@ std::wstring Logger::toWString( std::vector<std::wstring> values )
 {
 	wstringstream wss;
 	wss << L"{";
-	vector<wstring>::iterator iterator;
+	vector<wstring>::const_iterator iterator;
 	for( iterator = values.begin(); iterator != values.end(); /*iterator++ we do below*/ )
 	{
 		wss << (*iterator);
@@ -490,7 +490,7 @@ std::wstring Logger::toWString( std::set<std::wstring> values )
 {
 	wstringstream wss;
 	wss << L"{";
-	set<wstring>::iterator iterator;
+	set<wstring>::const_iterator iterator;
 	for( iterator = values.begin(); iterator != values.end(); /*iterator++ we do below*/ )
 	{
 		wss << (*iterator);
