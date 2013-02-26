@@ -14,13 +14,15 @@
  */
 #include "jni/Runtime.h"
 #include "jni/JniUtils.h"
+#include <fstream>
 
 PORTICO1516E_NS_START
 
 // initialize our singleton - we'll lazy load it
 Runtime* Runtime::instance = NULL;
-jclass Runtime::JCLASS_BYTE_ARRAY = 0;
+jclass Runtime::JCLASS_BYTE_ARRAY   = 0;
 jclass Runtime::JCLASS_STRING_ARRAY = 0;
+jclass Runtime::JCLASS_STRING       = 0;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -148,14 +150,22 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	// other jvm options - remember to increment the option array size
 	// if you are going to add more
 	string stackSize( "-Xss8m" );
-	
+	string mode = getMode();
+	string compiler = getCompiler();
+	string hlaVersion = getHlaVersion();
+	string architecture = getArch();
+
 	// before we can create or connect to the JVM, we need to specify its environment
 	JavaVMInitArgs vmargs;
-	JavaVMOption options[3];
+	JavaVMOption options[7];
 	options[0].optionString = const_cast<char*>(paths.first.c_str());
 	options[1].optionString = const_cast<char*>(paths.second.c_str());
-	options[2].optionString = const_cast<char*>(stackSize.c_str());
-	vmargs.nOptions = 3;
+	options[2].optionString = const_cast<char*>(mode.c_str());         // build mode
+	options[3].optionString = const_cast<char*>(compiler.c_str());     // compiler version
+	options[4].optionString = const_cast<char*>(hlaVersion.c_str());   // hla interface version
+	options[5].optionString = const_cast<char*>(architecture.c_str()); // architecture
+	options[6].optionString = const_cast<char*>(stackSize.c_str());
+	vmargs.nOptions = 7;
 	vmargs.version = JNI_VERSION_1_6;
 	vmargs.options = options;
 	vmargs.ignoreUnrecognized = JNI_TRUE;
@@ -219,10 +229,20 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
 		logger->fatal( "RTI_HOME not set: this is *REQUIRED* to point to your Portico directory" );
 		throw RTIinternalError( L"RTI_HOME not set: this *must* point to your Portico directory" );
 	}
+	else
+	{
+		// check to make sure it is set to a valid location
+		if( pathExists(string(rtihome)) == false )
+		{
+			logger->fatal( "RTI_HOME doesn't exist: this is *REQUIRED* to point to your Portico directory" );
+			logger->fatal( "RTI_HOME set to [%s]", rtihome );
+			throw RTIinternalError( L"RTI_HOME set to directory that doesn't exist" );
+		}
+	}
 
 	// Get the class and library paths depending on the platform in use
-	#ifdef WIN32
-		return generateWin32Path( string(rtihome) );
+	#ifdef OS_WINDOWS
+		return generateWinPath( string(rtihome) );
 	#else
 		return generateUnixPath( string(rtihome) );
 	#endif
@@ -245,7 +265,7 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
  */
-pair<string,string> Runtime::generateWin32Path( string rtihome ) throw( RTIinternalError )
+pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinternalError )
 {
 	pair<string,string> paths;
 
@@ -263,41 +283,63 @@ pair<string,string> Runtime::generateWin32Path( string rtihome ) throw( RTIinter
 	// create out classpath
 	stringstream classpath;
 	classpath << "-Djava.class.path=.;"
-	          << string(systemClasspath) << ";"
-	          << rtihome << "\\lib\\portico.jar";
+	          << rtihome << "\\lib\\portico.jar;"    // %RTI_HOME%\lib\portico.jar
+	          << string(systemClasspath);            // system classpath
 	paths.first = classpath.str();
 
 	////////////////////////////////
 	// 2. Set up the library path //
 	////////////////////////////////
-	// Get the system path
-	const char *systemPath = getenv( "PATH" );
-	if( !systemPath )
-		systemPath = "";
+	// For the RTI to operate properly, the following must be on the path used to star the JVM:
+	//  * DLLs for the Portico C++ interface
+	//  * DLLs for the JVM
 	
-	// Get JAVA_HOME
-	// fall back to use RTI_HOME if not set
-	const char *javahome = getenv( "JAVA_HOME" );
-	if( !javahome )
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
+	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
+	stringstream jretest;
+	jretest << rtihome << "\\jre\\bin\\java.exe";
+	if( pathExists(jretest.str()) )
 	{
-		javahome = rtihome.c_str();
-		logger->warn( "WARNING Environment variable JAVA_HOME not set, assuming it is: %s\\jre",
-		              rtihome.c_str() );
+		jrelocation = string(rtihome).append("\\jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->debug( "JAVA_HOME set to %s", javahome );
+		logger->warn( "WARNING Could not locate bundled JRE, fallback on %JAVA_HOME%: %s",
+		              jrelocation.c_str() );
 	}
+
+	// Get the system path so we can ensure it is on our library path
+	const char *systemPath = getenv( "PATH" );
+	if( !systemPath )
+		systemPath = "";
 
 	// Create our system path
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.;"
-	          << string(systemPath) << ";"
-	          << rtihome << "\\bin;"
-	          << string(javahome) << "\\jre\\lib\\i386\\client;"
-	          << string(javahome) << "\\jre\\lib\\amd64\\server";
-	paths.second = libraryPath.str();
+	            << string(systemPath) << ";"
+	            << rtihome << "\\bin\\"
+#ifdef VC11
+	            << "vc11"
+#endif
+#ifdef VC10
+	            << "vc10"
+#endif
+#ifdef VC9
+	            << "vc9"
+#endif
+#ifdef VC8
+	            << "vc8"
+#endif
 
+#ifdef _WIN32
+	            << jrelocation << "\\lib\\i386\\client";
+#else
+	            << jrelocation << "\\lib\\amd64\\server";
+#endif	
+
+	paths.second = libraryPath.str();
 	return paths;
 }
 
@@ -345,7 +387,7 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	// 2. Set up the library path //
 	////////////////////////////////
 	// Get the system path
-	#ifdef __APPLE__
+	#ifdef OS_MACOSX
 	const char *systemPath = getenv( "DYLD_LIBRARY_PATH" );
 	#else
 	char *systemPath = getenv( "LD_LIBRARY_PATH" );
@@ -354,32 +396,88 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	// make sure we have a system path
 	if( !systemPath )
 		systemPath = "";
-	
-	// Get JAVA_HOME
-	// fall back to use RTI_HOME if not set
-	const char *javahome = getenv( "JAVA_HOME" );
-	if( !javahome )
+
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
+	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
+	stringstream jretest;
+	jretest << rtihome << "/jre/bin/java";
+	if( pathExists(jretest.str()) )
 	{
-		javahome = rtihome.c_str();
-		logger->warn( "WARNING Environment variable JAVA_HOME not set, assuming it is: %s/jre",
-		              rtihome.c_str() );
+		jrelocation = string(rtihome).append("/jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->debug( "JAVA_HOME set to %s", javahome );
+		logger->warn( "WARNING Could not locate bundled JRE, fallback on $JAVA_HOME: %s",
+		              jrelocation.c_str() );
 	}
 
 	// Create our system path
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
 	          << string(systemPath) << ":"
-	          << rtihome << "/lib:"
-	          << string(javahome) << "/jre/lib/server:"
-	          << string(javahome) << "/jre/lib/i386/client:"
-	          << string(javahome) << "/jre/lib/amd64/server";
+	          << rtihome << "/lib/gcc4:"
+	          << jrelocation << "/jre/lib/server:"
+	          << jrelocation << "/jre/lib/i386/client:"
+	          << jrelocation << "/jre/lib/amd64/server";
 	paths.second = libraryPath.str();
 	
 	return paths;
+}
+
+/*
+ * Return "-Dportico.cpp.mode=" debug or release
+ */
+string Runtime::getMode() throw( RTIinternalError )
+{
+#ifdef DEBUG
+	return string("-Dportico.cpp.mode=debug");
+#else
+	return string("-Dportico.cpp.mode=release");
+#endif
+}
+
+/*
+ * Return "-Dportico.cpp.compiler=" vc8, vc9, vc10, vc11, gcc4, ...
+ */
+string Runtime::getCompiler() throw( RTIinternalError )
+{
+#ifdef VC11
+	return string( "-Dportico.cpp.compiler=vc11" );
+#elif defined(VC10)
+	return string( "-Dportico.cpp.compiler=vc10" );
+#elif defined(VC9)
+	return string( "-Dportico.cpp.compiler=vc9" );
+#elif defined(VC8)
+	return string( "-Dportico.cpp.compiler=vc8" );
+#else
+	return string( "-Dportico.cpp.compiler=gcc4" );
+#endif
+}
+
+/*
+ * Return "-Dportico.cpp.hlaversion=" hla13, dlc13, ieee1516, ieee1516e, ...
+ */
+string Runtime::getHlaVersion() throw( RTIinternalError )
+{
+#ifdef BUILDING_DLC
+	return string( "-Dportico.cpp.hlaversion=dlc13" );
+#else
+	return string( "-Dportico.cpp.hlaversion=hla13" );
+#endif
+}
+
+/*
+ * Return "-Dportico.cpp.arch=" x86 or amd64
+ */
+string Runtime::getArch() throw( RTIinternalError )
+{
+#ifdef ARCH_X86
+	return string( "-Dportico.cpp.arch=x86" );
+#else
+	return string( "-Dportico.cpp.arch=amd64" );
+#endif
 }
 
 /*
@@ -402,6 +500,14 @@ void Runtime::cacheGlobalHandles() throw( RTIinternalError )
 	if( Runtime::JCLASS_STRING_ARRAY == NULL )
 	{
 		throw RTIinternalError( L"RTI initialization error: Failed while caching String[] JNI reference" );
+	}
+	
+	jclass stringClass = jnienv->FindClass( "java/lang/String" );
+	Runtime::JCLASS_STRING = (jclass)jnienv->NewGlobalRef( stringClass );
+	jnienv->DeleteLocalRef( stringClass );
+	if( Runtime::JCLASS_STRING == NULL )
+	{
+		throw RTIinternalError( L"RTI initialization error: Failed while caching java.lang.String JNI reference" );
 	}
 }
 
@@ -522,6 +628,28 @@ void Runtime::detachFromJVM()
 		logger->debug( "Detached curren thread from JVM" );
 	else
 		logger->fatal( "Couldn't detach current thread from JVM" );
+}
+
+/*
+ * Checks to see if a file exists, and if it does, returns true. Returns false otherwise
+ */
+bool Runtime::pathExists( string path )
+{
+#ifdef _WIN32
+	// if we're in windows, ifstream won't be happy if the
+	// path is a directory (booo) so we'll use something else
+	DWORD atts = GetFileAttributesA( path.c_str() );
+	if( atts == INVALID_FILE_ATTRIBUTES )
+		return false;  //something is wrong with your path!
+	else
+		return true;
+	//if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+	//return true;   // this is a directory!
+#else
+	// just try and open it - the object will be collected
+	ifstream thefile( path.c_str() );
+	return (bool)thefile;
+#endif
 }
 
 //------------------------------------------------------------------------------------------

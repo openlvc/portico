@@ -42,9 +42,15 @@
 	<!-- Build version identification properties (set if not in "build.version") -->
 	<property file="build.version"/>        <!-- bring in the build version information -->
 	<property name="app.shortname"          value="portico"/> <!-- set in build.version -->
-	<property name="app.version"            value="unknown"/> <!-- set in build.version -->
+	<property name="app.version.number"     value="unknown"/> <!-- set in build.version -->
+	<property name="app.version.tag"        value=""/>        <!-- set in build.version -->
+	<property name="app.version"            value="${app.version.number}${app.version.tag}"/>
 	<property name="app.license"            location="LICENSE.${ant.project.name}"/>
-	
+	<property name="build.number"           value="0"/>       <!-- overridden from command line-->
+
+	<!-- Bring in the common task-defs (cpptask contains many platform tasks) -->
+	<taskdef resource="cpptaskdef.properties"/>
+
 	<!-- Platform Determination Properties -->
 	<!-- These tasks will initialize a bunch of properties based
 	     on the system that the build is currently running on. The
@@ -56,18 +62,11 @@
 	       * ${platform.linux32} : "true" if we are running on 32-bit Linux
 	       * ${platform.linux64} : "true" if we are running on 64-bit Linux
 	-->
-	<condition property="platform.macosx" value="true"><os family="mac" arch="x86_64"/></condition>
-	<condition property="platform.windows" value="true"><os family="windows"/></condition>
-	<condition property="platform.win32" value="true"><os family="windows" arch="x86"/></condition>
-	<condition property="platform.win64" value="true"><os family="windows" arch="amd64"/></condition>
-	<condition property="platform.linux32" value="true"><os name="Linux" arch="x86_32"/></condition>
-	<condition property="platform.linux64" value="true"><os name="Linux" arch="x86_64"/></condition>
-	<condition property="platform" value="macosx"><isset property="platform.macosx"/></condition>
-	<condition property="platform" value="win32"><isset property="platform.win32"/></condition>
-	<condition property="platform" value="win64"><isset property="platform.win64"/></condition>
-	<condition property="platform" value="linux32"><isset property="platform.linux32"/></condition>
-	<condition property="platform" value="linux32"><isset property="platform.linux64"/></condition>
-	
+	<getOsPlatform/>
+
+	<!-- validate JAVA_HOME and set jdk.home property -->
+	<getJavaHome property="jdk.home"/>
+
 	<!-- =========================================================== -->
 	<!--                     Compiler Properties                     -->
 	<!-- =========================================================== -->
@@ -75,15 +74,22 @@
 	<!-- <property name="jdk.home" value="${env.JAVA_HOME}/> -->
 
 	<!-- java compiler properties -->
-	<property name="java.compiler.source" value="1.6"/>
-	<property name="java.compiler.target" value="1.6"/>
+	<property name="java.compiler.source" value="1.7"/>
+	<property name="java.compiler.target" value="1.7"/>
+
+	<!-- msvc compiler properties -->
+	<property name="msvc.debug.defaults"   value="/Zi /MDd /Od /EHsc /GR /W0"/>
+	<property name="msvc.release.defaults" value="/MD /Od /EHsc /GR /W0"/>
 
 	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
-	<property name="macosx.jdk.home" location="${env.JAVA_HOME}"/>
-	<property name="windows.jdk.home" location="${env.JAVA_HOME}"/>
+	<property name="jdk.default.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home"/>
+	<property name="jdk.default.win32"   location="c:\Program Files (x86)\Java\jdk1.7.0_13"/>
+	<property name="jdk.default.win64"   location="c:\Program Files\Java\jdk1.7.0_13"/>
+	<property name="jdk.default.linux32" location="${env.JAVA_HOME}"/>
+	<property name="jdk.default.linux64" location="${env.JAVA_HOME}"/>
 	
 	<!-- Location Properties -->
 	<property name="lib.dir"                   location="lib"/>

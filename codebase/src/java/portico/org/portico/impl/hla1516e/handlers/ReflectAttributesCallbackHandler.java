@@ -14,8 +14,12 @@
  */
 package org.portico.impl.hla1516e.handlers;
 
+import hla.rti1516e.OrderType;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory.*;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
@@ -65,6 +69,8 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 
 		// convert the attributes into an appropriate form
 		HLA1516eAttributeHandleValueMap reflected = new HLA1516eAttributeHandleValueMap(attributes);
+		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
+		
 		
 		// do the callback
 		if( request.isTimestamped() )
@@ -79,11 +85,11 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 			fedamb().reflectAttributeValues( new HLA1516eHandle(objectHandle),
 			                                 reflected,                 // attributes
 			                                 request.getTag(),          // tag
-			                                 null,                      // sent order
-			                                 null,                      // transport
+			                                 OrderType.TIMESTAMP,       // sent order
+			                                 RELIABLE,                  // transport
 			                                 new DoubleTime(timestamp), // time
-			                                 null,                      // received order
-			                                 new SupplementalInfo() );  // supplemental reflect info
+			                                 OrderType.TIMESTAMP,       // received order
+			                                 supplement );              // supplemental reflect info
 		}
 		else
 		{
@@ -96,9 +102,9 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 			fedamb().reflectAttributeValues( new HLA1516eHandle(objectHandle),
 			                                 reflected,                 // attributes
 			                                 request.getTag(),          // tag
-			                                 null,                      // sent order
-			                                 null,                      // transport
-			                                 new SupplementalInfo() );  // supplemental reflect info
+			                                 OrderType.RECEIVE,         // sent order
+			                                 BEST_EFFORT,               // transport
+			                                 supplement );              // supplemental reflect info
 		}
 		
 		context.success();

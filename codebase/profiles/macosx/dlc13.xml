@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="dlc13">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Mac OS X C++ build profile for HLA v1.3 (DLC) Interface
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+
+	<!-- ==================================== -->
+	<!-- ==== DLC13 Interface Properties ==== -->
+	<!-- ==================================== -->
+	<!-- source -->
+	<property name="dlc13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
+	<property name="dlc13.include.dir"         location="${cpp.src.dir}/hla13/include/dlc13"/>
+	
+	<!-- build -->
+	<property name="dlc13.build.dir"           location="${build.dir}/cpp/macosx/dlc13"/>
+	<property name="dlc13.complete.dir"        location="${dlc13.build.dir}/complete"/>
+
+	<!-- =========================================================== -->
+	<!--                     Project Libraries                       -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- See profiles/project.libraries.xml -->
+	<!-- <property name="cppunit.dir"     location="..."/> -->
+	<!-- <property name="cppunit.include" location="..."/> -->
+	<!-- <property name="cppunit.lib"     location="..."/> -->
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="cpp.clean">
+		<delete dir="${dlc13.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent compilation target. This will compile all the core Portico C++
+	     interface and the associated unit test suite code.
+	-->
+	<target name="compile"
+	        extensionOf="cpp.compile"
+	        description="Compile C++ HLA v1.3 (DLC) Interface"
+	        depends="compile.amd64.debug,
+	                 compile.amd64.release"/>
+
+	<!-- ======================================= -->
+	<!--            HLA 1.3 Interface            -->
+	<!-- ======================================= -->
+	<target name="compile.amd64.debug">
+		<cpp-unix outfile="rti13_64d"
+		          workdir="${dlc13.build.dir}"
+		          arch="amd64"
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs="-dynamiclib">
+			<fileset dir="${dlc13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${dlc13.include.dir}"/>
+			<includepath path="${dlc13.src.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEUBG"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13_64d"/>
+	</target>
+
+	<target name="compile.amd64.release" if="build.release">
+		<cpp-unix outfile="rti13_64"
+		          workdir="${dlc13.build.dir}"
+		          arch="amd64"
+		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		          linkerArgs="-dynamiclib">
+			<fileset dir="${dlc13.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${dlc13.include.dir}"/>
+			<includepath path="${dlc13.src.dir}"/>
+			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+			<define name="BUILDING_RTI"/>
+			<define name="BUILDING_DLC"/>
+			<define name="BUILDING_FEDTIME"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
+		</cpp-unix>
+
+		<!-- === Create the SymLink === -->
+		<!-- we can't use the symlink task because it will create links based
+		     on the full path name (whereas we want relative links) -->
+		<echo>creating symlinks...</echo>
+		<symlink-dylib directory="${hla13.build.dir}/complete" name="librti13_64"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+
+	<!-- Not implemented for DLC v1.3 Intefaces. Uses the same
+	     codebase as HLA v1.3 so all testing is handled there -->
+	<target name="test" extensionOf="cpp.test">
+		<echo>No unit test suite for the DLC v1.3 Interface</echo>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,compile">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${dist.sandbox.dir}/include/dlc13"/>
+		<copy todir="${dist.sandbox.dir}/include/dlc13">
+			<fileset dir="${dlc13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<mkdir dir="${dist.lib.dir}/gcc4"/>
+		<copy todir="${dist.lib.dir}/gcc4">
+			<fileset dir="${dlc13.complete.dir}" includes="**/*.dylib"/>
+		</copy>
+
+		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
+		     not copy them and recreate them in place. Booooooo. -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13_64"/>    <!-- dlc13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti13_64d"/>   <!-- dlc13 -->
+		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<!-- none provided -->
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                 Installer Targets                                 -->
+	<!-- ================================================================================= -->
+	<!-- Not required for an interface build -->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- Not required for an interface build -->
+
+</project>

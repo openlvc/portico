@@ -74,11 +74,52 @@ class Runtime
 
 	private:
 		void   initializeJVM() throw( HLA::RTIinternalError );
-		char** generatePaths() throw( HLA::RTIinternalError );
-		char** generateWin32Path( char* rtihome ) throw( HLA::RTIinternalError );
-		char** generateUnixPath( char* rtihome )  throw( HLA::RTIinternalError );
+		
+		/**
+		 * So the Java library can know what library name to use for load back we 
+		 * have to tell it the compiler version, HLA interface version and architecture
+		 * we are using. This helps it assemble the appropriate library names it needs
+		 * to load reference back into the C++ library.
+		 * 
+		 * These are passed into the JVM as system properties on startup
+		 */
+		string getMode() throw( HLA::RTIinternalError );         // debug or release
+		string getCompiler() throw( HLA::RTIinternalError );     // vc8, vc9, vc10, gcc4, ...
+		string getHlaVersion() throw( HLA::RTIinternalError );   // hla13, dlc13, ieee1516e, ...
+		string getArch() throw( HLA::RTIinternalError );         // x86, amd64
+
+		/**
+		 * These methods generate a pair of strings which are the paths that should be
+		 * used to start the JVM. The first is the classpath that should be used, the
+		 * second is the library path (so the Java side can load the C++ side back).
+		 * 
+		 * Both the windows and unix version work in much the same way. For the classpath,
+		 * the system classpath is first loaded, with $RTI_HOME/lib/portico.jar appended
+		 * to the end. For the library path, the following is constructed:
+		 * 
+		 *   * System path (PATH, LD_LIBRARY_PATH, DYLD_LIBRARY_PATH as appropriate)
+		 *   * $PWD
+		 *   * $RTI_HOME/lib                   (Linux only)
+		 *   * $RTI_HOME/bin                   (Windows only)
+		 *   * $JAVA_HOME/jre/lib/server       (Mac OS X 64-bit)
+		 *   * $JAVA_HOME/jre/lib/i386/client  (Win/Linux 32-bit)
+		 *   * $JAVA_HOME/jre/lib/amd64/server (Win/Linux 64-bit)
+		 * 
+		 * If JAVA_HOME isn't set, RTI_HOME is assumed so that we can link in with the
+		 * JRE that Portico ships with.
+		 */
+		pair<string,string> generatePaths() throw( HLA::RTIinternalError );
+		pair<string,string> generateWinPath( string rtihome ) throw( HLA::RTIinternalError );
+		pair<string,string> generateUnixPath( string rtihome )  throw( HLA::RTIinternalError );
+
+		/**
+		 * Invoke the Java class to load and parse the RID file, ignore if it doesn't exist.
+		 */
 		void   processRid() throw( HLA::RTIinternalError );
+	
+		// utility methods
 		char*  convertAndReleaseJString( jstring string );
+		bool pathExists( string path );
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

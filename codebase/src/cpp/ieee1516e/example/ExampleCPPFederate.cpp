@@ -86,7 +86,11 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	//       in that case, we'll just try and join it
 	try
 	{
-		rtiamb->createFederationExecution( L"ExampleFederation", L"testfom.fed" );
+		vector<wstring> foms;
+		foms.push_back( L"testfom.fed" );
+		
+		//rtiamb->createFederationExecution( L"ExampleFederation", L"testfom.fed" );
+		rtiamb->createFederationExecution( L"ExampleFederation", foms );
 		wcout << L"Created Federation" << endl;
 	}
 	catch( FederationExecutionAlreadyExists& exists )

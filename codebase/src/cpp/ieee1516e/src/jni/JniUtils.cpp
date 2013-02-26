@@ -313,15 +313,13 @@ RegionHandleSet JniUtils::toRegionSet( JNIEnv *jnienv, jintArray handles )
 jobjectArray JniUtils::fromVector( JNIEnv *jnienv, vector<wstring> stringVector )
 {
 	// create the array into which we'll dump the string contents
-	jobjectArray array = jnienv->NewObjectArray( stringVector.size(),
-	                                             Runtime::JCLASS_STRING_ARRAY,
-	                                             0 );
+	jobjectArray array = jnienv->NewObjectArray( stringVector.size(), Runtime::JCLASS_STRING, 0 );
 	
 	int count = 0;
 	vector<wstring>::iterator iterator;
 	for( iterator = stringVector.begin(); iterator != stringVector.end(); iterator++, count++ )
 	{
-		jstring temp = jnienv->NewString( (jchar*)(*iterator).c_str(), (*iterator).length() );
+		jstring temp = JniUtils::fromWideString( jnienv, *iterator );
 		jnienv->SetObjectArrayElement( array, count, temp );
 	}
 	

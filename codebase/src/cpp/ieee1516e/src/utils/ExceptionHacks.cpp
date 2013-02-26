@@ -29,10 +29,10 @@ PORTICO1516E_NS_START
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------
 #define CHECK_AND_THROW(Type)                             \
-	else if( name.compare("Type") == 0 )                  \
+	if( name.compare(#Type) == 0 )                        \
 	{                                                     \
 		throw Type( StringUtils::toWideString(reason) );  \
-	}                                                   
+	}
 
 /*
  * This method will throw an exception of the given name, supplying it the given reason.

@@ -14,6 +14,8 @@
  */
 package org.portico.impl.hla1516e.handlers;
 
+import hla.rti1516e.OrderType;
+
 import java.util.Map;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
@@ -57,6 +59,9 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 		DeleteObject request = context.getRequest( DeleteObject.class, this );
 		int objectHandle = request.getObjectHandle();
 		double timestamp = request.getTimestamp();
+		
+		// generate the supplemental information
+		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
 
 		// do the callback
 		if( request.isTimestamped() )
@@ -69,10 +74,10 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			
 			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
 			                               request.getTag(),           // tag
-			                               null,                       // sent order
+			                               OrderType.TIMESTAMP,        // sent order
 			                               new DoubleTime(timestamp),  // time
-			                               null,                       // received order
-			                               new SupplementalInfo() );   // supplemental remove info
+			                               OrderType.TIMESTAMP,        // received order
+			                               supplement );               // supplemental remove info
 		}
 		else
 		{
@@ -81,8 +86,8 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			
 			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
 			                               request.getTag(),           // tag
-			                               null,                       // sent order
-			                               new SupplementalInfo() );   // supplemental remove info
+			                               OrderType.RECEIVE,          // sent order
+			                               supplement );               // supplemental remove info
 		}
 		
 		context.success();
