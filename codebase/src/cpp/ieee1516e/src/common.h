@@ -82,7 +82,7 @@
 	#include <cstdio>
 	#include <cfloat>
 	// bring in stdint.h locally if we have to
-	#ifdef VC8
+	#if defined(VC8) || defined (VC9)
 		#include "platform/vc8/stdint.h"
 	#else
 		#include <stdint.h>

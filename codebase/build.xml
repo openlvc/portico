@@ -99,17 +99,9 @@
 	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
 
 	<!-- Windows 32bit C++ and Installer profiles -->
-	<include file="profiles/win32/hla13.xml"         as="cpp.hla13"     if="platform.windows"/>
-	<include file="profiles/win32/ieee1516e.xml"     as="cpp.ieee1516e" if="platform.windows"/>
-	<include file="profiles/win32/installer.xml"     as="installer"     if="platform.windows"/>
-
-	
-	
-	<!-- Windows 64bit C++ and Installer profiles -->
-	<!--
-	<include file="profiles/windows/cpp64.xml"       as="cpp"          if="platform.win64"/>
-	<include file="profiles/windows/installer64.xml" as="installer"    if="platform.win64"/>
-	-->
+	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
+	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>
+	<include file="profiles/windows/installer.xml"   as="installer"      if="platform.windows"/>
 
 	<!-- =========================================================== -->
 	<!-- Convenience targets for specifying debug or release builds. -->
