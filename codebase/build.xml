@@ -25,6 +25,9 @@
 
 	<!-- bring in the ant-contrib tasks -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	<!-- bring in our custom tasks -->
+	<taskdef resource="cpptaskdef.properties"/>
+	<typedef resource="cpptypedef.properties"/>
 
 	<!-- =========================================================== -->
 	<!--               System Properties and Utilities               -->
@@ -111,6 +114,10 @@
 		<property name="build.release" value="true"/>
 	</target>
 
+	<target name="build.debug" description="Set the debug build flag for this run">
+		<property name="build.debug" value="true"/>
+	</target>
+	
 	<!-- =========================================================== -->
 	<!--      Private Internal Targets. Do not modify or extend.     -->
 	<!-- =========================================================== -->

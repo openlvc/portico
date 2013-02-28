@@ -48,9 +48,6 @@
 	<property name="app.license"            location="LICENSE.${ant.project.name}"/>
 	<property name="build.number"           value="0"/>       <!-- overridden from command line-->
 
-	<!-- Bring in the common task-defs (cpptask contains many platform tasks) -->
-	<taskdef resource="cpptaskdef.properties"/>
-
 	<!-- Platform Determination Properties -->
 	<!-- These tasks will initialize a bunch of properties based
 	     on the system that the build is currently running on. The
