@@ -413,11 +413,11 @@
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-macosx-ng6"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="cpp-macosx-ng6"/>
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
@@ -471,11 +471,11 @@
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.;org.eclipse.cdt.msvc.cl.dll.debug.2063577613;org.eclipse.cdt.msvc.cl.inputType.605686804">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.144091529;org.eclipse.cdt.msvc.dll.debug.2103734852.144091529.;org.eclipse.cdt.msvc.cl.c.dll.debug.1950521306;org.eclipse.cdt.msvc.cl.inputType.c.841600015">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711;org.eclipse.cdt.msvc.dll.debug.2103734852.1053135711.;org.eclipse.cdt.msvc.cl.dll.debug.2063577613;org.eclipse.cdt.msvc.cl.inputType.605686804">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="org.eclipse.cdt.msvc.dll.debug.554976421;org.eclipse.cdt.msvc.dll.debug.554976421.;org.eclipse.cdt.msvc.cl.c.dll.release.1409344756;org.eclipse.cdt.msvc.cl.inputType.c.218156914">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.msw.build.clScannerInfo"/>

@@ -16,23 +16,45 @@
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Windows 32-bit installer generation.
+		Windows 32/64-bit installer generation.
 	</description>
 
 	<!-- ================================================================================= -->
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
-	<target name="installer" extensionOf="master.installer">
+	<extension-point name="installer" extensionOf="master.installer"/>
+	
+	<target name="installer.win32" extensionOf="installer">
+		<!-- locate the JDK -->
+		<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
+
 		<!-- check to make sure the jre dir exists -->
-		<echo>Checking to see if JRE is available for bundling</echo>
+		<echo>Checking to see if x86 JRE is available for bundling</echo>
 		<available file="${jdk.home.win32}/jre" property="jrefound"/>
 		<fail unless="jrefound"
-		      message="Could not locate JRE dir. Set JAVA_HOME env var to point to JDK install"/>
+		      message="Could not locate x86 JRE. ${jdk.home.win32} does not point to x86 JDK."/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
-		<zip destfile="${dist.zip.file}">
+		<zip destfile="${dist.dir}/${dist.name}-win32.zip">
 			<zipfileset dir="${dist.sandbox.dir}" includes="**/*" prefix="${dist.name}"/>
 			<zipfileset dir="${jdk.home.win32}/jre" includes="**/*" prefix="${dist.name}/jre"/>
+		</zip>
+	</target>
+	
+	<target name="installer.win64" extensionOf="installer">
+		<!-- locate the JDK -->
+		<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
+
+		<!-- check to make sure the jre dir exists -->
+		<echo>Checking to see if amd64 JRE is available for bundling</echo>
+		<available file="${jdk.home.win64}/jre" property="jrefound"/>
+		<fail unless="jrefound"
+		      message="Could not locate amd64 JRE. ${jdk.home.win64} does not point to amd64 JDK."/>
+
+		<!-- generate the tarball with the sandbox and the JRE in it -->
+		<zip destfile="${dist.dir}/${dist.name}-win64.zip">
+			<zipfileset dir="${dist.sandbox.dir}" includes="**/*" prefix="${dist.name}"/>
+			<zipfileset dir="${jdk.home.win64}/jre" includes="**/*" prefix="${dist.name}/jre"/>
 		</zip>
 	</target>
 

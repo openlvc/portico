@@ -111,7 +111,7 @@ void HLAoctetPairBE::decode( const VariableLengthData& inData )
 	if( inData.size() < 2 )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
-	const char* asChars = (const char*)inData.data();
+	const char* asChars = (const char*)&inData;
 	this->set( OctetPair(asChars[1], asChars[0]) );
 }
 
@@ -123,7 +123,7 @@ size_t HLAoctetPairBE::decodeFrom( const std::vector<Octet>& buffer, size_t inde
 	if( index + 2 > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
-	const char* asChars = (const char*)buffer.data();
+	const char* asChars = (const char*)&buffer;
 	this->set( OctetPair(asChars[1], asChars[0]) );
 
 	return index + 2;

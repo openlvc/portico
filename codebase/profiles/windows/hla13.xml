@@ -16,28 +16,33 @@
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Mac OS X C++ build profile for HLA v1.3 Interface
+		Windows C++ build profile for HLA v1.3 Interface
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
+	<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->
 	<!-- ==================================== -->
+	<!-- compiler properties -->
+	<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>
+	<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>
+
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
 	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include/hla13"/>
 	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
 	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
-	
+
 	<!-- build -->
-	<property name="hla13.build.dir"           location="${build.dir}/cpp/macosx/hla13"/>
+	<property name="hla13.build.dir"           location="${build.dir}/cpp/win32/hla13"/>
 	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
 
 	<!-- test build -->
-	<property name="test13.build.dir"          location="${build.dir}/cpp/macosx/test13"/>
+	<property name="test13.build.dir"          location="${build.dir}/cpp/win32/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 
 	<!-- =========================================================== -->
@@ -58,35 +63,75 @@
 	</target>
 
 	<!-- ================================================================================= -->
-	<!--                                  Compile Targets                                  -->
+	<!--                                 Compile Targets                                   -->
 	<!-- ================================================================================= -->
-	<!-- ==================================== -->
-	<!--         Main HLA 1.3 Interface       -->
-	<!-- ==================================== -->
-	<target name="compile">
-		<compile-hla13 arch="amd64" build="debug"/>
-		<compile-hla13 arch="amd64" build="release"/>
+	<!-- extends on the main cpp compiling extension point declared externally -->
+	<extension-point name="compile"
+	                 extensionOf="cpp.compile"
+					 description="Compile the full HLA v1.3 interface"/>
+	
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2010 (vc10) Compile Targets             -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2010 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc10" extensionOf="compile">
+		<compile-hla13 compiler="vc10" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc10" arch="x86" build="release"/>
+		<compile-hla13 compiler="vc10" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc10" arch="amd64" build="release"/>
 	</target>
 
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2008 (vc9) Compile Targets              -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2008 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc9" extensionOf="compile">
+		<compile-hla13 compiler="vc9" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc9" arch="x86" build="release"/>
+		<compile-hla13 compiler="vc9" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc9" arch="amd64" build="release"/>
+	</target>
+
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2005 (vc8) Compile Targets              -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2005 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc8" extensionOf="compile">
+		<compile-hla13 compiler="vc8" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc8" arch="x86" build="release"/>
+		<compile-hla13 compiler="vc8" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc8" arch="amd64" build="release"/>
+	</target>
+	
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.compile" depends="compile">
-		<cpptask compiler="g++"
+	<target name="test.compile" depends="compile.vc10" if="vc10.x86.debug">
+		<cpptask compiler="vc10"
 		         outfile="test13"
 		         workdir="${test13.build.dir}"
 		         outdir="${test13.complete.dir}"
 		         type="executable"
-		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall">
+			     arch="x86"
+		         compilerArgs="${msvc.release.defaults}"
+		         linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG64d,FedTime64d"/>
-			<library path="${cppunit.lib}" libs="cppunit"/>
+			<library path="${hla13.complete.dir}/vc10" libs="RTI-NGd,FedTimed"/>
+			<library path="${cppunit.dir}/win32/vc10" libs="cppunit"/>
 		</cpptask>
 	</target>
 
@@ -98,40 +143,36 @@
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
 	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile">
-		<!-- 1. copy the testing resources into test
-		     dir (RID file etc...).T he filtering is
-		     primarily used for the gdb environment file -->
+		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
 			<filterset begintoken="[" endtoken="]">
 				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
 			</filterset>
 		</copy>
-		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
 		<echo>Copied testing resources to ${test13.complete.dir}</echo>
 
 		<!-- 2. run the actual test application -->
 		<exec dir="${test13.complete.dir}"
-		      executable="${test13.complete.dir}/test13"
+		      executable="${test13.complete.dir}\test13.exe"
 		      failonerror="false"
 		      failifexecutionfails="false"
 		      resultproperty="test13.result">
-			<arg line="${test13.complete.dir}/test-results.xml"/>
+			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
-			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="PATH" path="${hla13.complete.dir};${jdk.home.win32}\jre\bin\client"/>
+			<env key="PORTICO_DEBUG" value="OFF"/>
+			<env key="CLASSPATH" path="${dist.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
 		</exec>
-		
+
 		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
-		<!--
 		<echo>Generating the Unit Test Report</echo>
 		<cppunit-report result="${test13.result}"
 		                xmlfile="${test13.complete.dir}/test-results.xml"
 		                xslfile="${test13.complete.dir}/xsl/results.xsl"
 		                outfile="${test13.complete.dir}/test-results.html"/>
-		-->
 	</target>
 
 	<!-- ================================================================================= -->
@@ -157,16 +198,13 @@
 		<!-- Copy across the C++ libraries -->
 		<mkdir dir="${dist.lib.dir}"/>
 		<copy todir="${dist.lib.dir}">
-			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>
+			<fileset dir="${hla13.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
 		</copy>
-
-		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
-		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
-		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<!-- Copy across the C++ dlls -->
+		<mkdir dir="${dist.bin.dir}"/>
+		<copy todir="${dist.bin.dir}">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.dll"/>
+		</copy>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
@@ -175,7 +213,6 @@
 		<copy todir="${dist.examples.dir}/cpp/hla13">
 			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
-		<chmod dir="${dist.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -188,6 +225,7 @@
 	<!-- ================================================================================= -->
 	<!-- Not required for an interface build -->
 
+	
 	<!-- ================================================================================= -->
 	<!--                            HLA v1.3 Helper Macros                                 -->
 	<!-- ================================================================================= -->
@@ -204,7 +242,7 @@
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="vc10, vc9, or vc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -215,8 +253,27 @@
 			<!-- Only run this if it's in the requested build profile -->
 			<if><isset property="@{compiler}.@{arch}.@{build}"/>
 			<then>
-				<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
-				<gcc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+				<!-- ========================== -->
+				<!-- 2. Check for Visual Studio -->
+				<!-- ========================== -->
+				<!-- Make sure the requested version of Visual Studio is present on the system -->
+				<if><isVisualStudioPresent version="@{compiler}"/>
+					<then>
+						<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
+						<msvc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+					</then>
+				<elseif><istrue value="${cpp.strict}"/>
+					<then>
+						<!-- Visual Studio NOT installed - strict build, fail out -->
+						<fail message="[Error] (HLA v1.3) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
+					</then>
+				</elseif>
+				<else>
+					<!-- This is not a strict build, just skip this compile -->
+					<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- @{compiler} is not installed"/>
+				</else>
+				</if>
+			
 			</then>
 			<else>
 				<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- not requested"/>
@@ -226,7 +283,7 @@
 	</macrodef>
 
 	<!-- ================================================ -->
-	<!--                Macro: gcc-hla13                  -->
+	<!--                Macro: msvc-hla13                 -->
 	<!-- ================================================ -->
 	<!-- 
 	     The various C++ compiling commands have a lot in common. They share the same
@@ -246,16 +303,16 @@
 		       only runs when it needs to.
 		 
 		 Usage:
-			* <gcc-hla13 compiler="gcc4" arch="x86" build="debug"/>
+			* <msvc-hla13 compiler="vc10" arch="x86" build="debug"/>
 			
 		 Arguments:
 			* compiler: The compiler to use (vc10, vc9 or vc8)
 			* arch:     The platform architecture (x86 or amd64)
 			* build:    The build type (debug or release)
 	-->	 
-	<macrodef name="gcc-hla13" description="(HLA 1.3) Compile the RTI libraries">
+	<macrodef name="msvc-hla13" description="(HLA 1.3) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="vc10, vc9, or vc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -266,28 +323,28 @@
 			<local name="_cargs"/>       <!-- compiler arguments -->
 			<local name="_largs"/>       <!-- linker arguments -->
 			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
-			<local name="_jdklib"/>      <!-- path to either 32 or 64-bit JDK libs -->
+			<local name="_jdkhome"/>     <!-- path to either 32 or 64-bit JDK -->
 
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
+				<property name="_jdkhome" value="${jdk.home.win64}"/>
 			</then><else>
 				<property name="_bitness" value=""/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/client"/>
+				<property name="_jdkhome" value="${jdk.home.win32}"/>
 			</else></if>
 
 			<!-- Is this a Debug or Release build? -->
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wall"/>
-				<property name="_largs"       value=""/>
+				<property name="_cargs"       value="${compiler.args.debug}"/>
+				<property name="_largs"       value="/DEBUG"/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wall"/>
+				<property name="_cargs"       value="${compiler.args.release}"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
@@ -295,13 +352,14 @@
 			<!-- ========================== -->
 			<!-- Do the library compilation -->
 			<!-- ========================== -->
-			<echo message="Building libFedTime${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<!-- library: libFedTime -->
+			<echo message="(HLA v1.3) Building libFedTime${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
 			<cpptask outfile="libFedTime${_bitness}${_d}"
 					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
 					 outdir="${hla13.complete.dir}/@{compiler}"
 					 type="shared"
 					 arch="@{arch}"
-					 compiler="g++"
+					 compiler="@{compiler}"
 					 compilerArgs="${_cargs}"
 					 linkerArgs="${_largs}">
 				<fileset dir="${hla13.src.dir}">
@@ -312,21 +370,21 @@
 				</fileset>
 				<includepath path="${hla13.include.dir}"/>
 				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="BUILDING_FEDTIME"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<library path="${_jdklib}" libs="jvm,jsig"/>
+				<library path="${_jdkhome}/lib" libs="jvm"/>
 			</cpptask>
 
-			<echo message="Building libRTI-NG${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<echo message="(HLA v1.3) Building libRTI-NG${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
 			<cpptask outfile="libRTI-NG${_bitness}${_d}"
 					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
 					 outdir="${hla13.complete.dir}/@{compiler}"
 					 type="shared"
 					 arch="@{arch}"
-					 compiler="g++"
+					 compiler="@{compiler}"
 					 compilerArgs="${_cargs}"
 					 linkerArgs="${_largs}">
 				<fileset dir="${hla13.src.dir}">
@@ -337,20 +395,14 @@
 				</fileset>
 				<includepath path="${hla13.include.dir}"/>
 				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<library path="${_jdklib}" libs="jvm,jsig"/>
-				<library path="${hla13.complete.dir}/@{compiler}" libs="FedTime${_bitness}${_d}"/>
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+				<library path="${hla13.complete.dir}/@{compiler}"
+						 libs="libFedTime${_bitness}${_d}"/>
 			</cpptask>
-
-			<!-- === Create the SymLink === -->
-			<!-- we can't use the symlink task because it will create links based
-			     on the full path name (whereas we want relative links) -->
-			<echo>creating symlinks...</echo>
-			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libFedTime${_bitness}${_d}"/>
-			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libRTI-NG${_bitness}${_d}"/>
 		</sequential>
 	</macrodef>
 

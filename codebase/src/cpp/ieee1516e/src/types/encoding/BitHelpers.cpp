@@ -74,7 +74,7 @@ float BitHelpers::decodeFloatBE( const std::vector<Octet>& buffer, size_t index 
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_FLOAT];
-	copyMemoryBE( asBytes, buffer.data() + index, LENGTH_FLOAT );
+	copyMemoryBE( asBytes, &buffer[index], LENGTH_FLOAT );
 
 	return *((float*)asBytes);
 }
@@ -110,7 +110,7 @@ float BitHelpers::decodeFloatLE( const std::vector<Octet>& buffer, size_t index 
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_FLOAT];
-	copyMemoryLE( asBytes, buffer.data() + index, LENGTH_FLOAT );
+	copyMemoryLE( asBytes, &buffer[index], LENGTH_FLOAT );
 
 	return *((float*)asBytes);
 }
@@ -149,7 +149,7 @@ double BitHelpers::decodeDoubleBE( const std::vector<Octet>& buffer, size_t inde
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_DOUBLE];
-	copyMemoryBE( asBytes, buffer.data() + index, LENGTH_DOUBLE );
+	copyMemoryBE( asBytes, &buffer[index], LENGTH_DOUBLE );
 
 	return *((double*)asBytes);
 }
@@ -185,7 +185,7 @@ double BitHelpers::decodeDoubleLE( const std::vector<Octet>& buffer, size_t inde
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_DOUBLE];
-	copyMemoryLE( asBytes, buffer.data() + index, LENGTH_DOUBLE );
+	copyMemoryLE( asBytes, &buffer[index], LENGTH_DOUBLE );
 
 	return *((double*)asBytes);
 }
@@ -224,7 +224,7 @@ short BitHelpers::decodeShortBE( const std::vector<Octet>& buffer, size_t index 
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_SHORT];
-	copyMemoryBE( asBytes, buffer.data() + index, LENGTH_SHORT );
+	copyMemoryBE( asBytes, &buffer[index], LENGTH_SHORT );
 
 	return *((short*)asBytes);
 }
@@ -260,7 +260,7 @@ short BitHelpers::decodeShortLE( const std::vector<Octet>& buffer, size_t index 
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_SHORT];
-	copyMemoryLE( asBytes, buffer.data() + index, LENGTH_SHORT );
+	copyMemoryLE( asBytes, &buffer[index], LENGTH_SHORT );
 
 	return *((short*)asBytes);
 }
@@ -299,7 +299,7 @@ int BitHelpers::decodeIntBE( const std::vector<Octet>& buffer, size_t index )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_INT];
-	copyMemoryBE( asBytes, buffer.data() + index, LENGTH_INT );
+	copyMemoryBE( asBytes, &buffer[index], LENGTH_INT );
 
 	return *((int*)asBytes);
 }
@@ -335,7 +335,7 @@ int BitHelpers::decodeIntLE( const std::vector<Octet>& buffer, size_t index )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_INT];
-	copyMemoryLE( asBytes, buffer.data() + index, LENGTH_INT );
+	copyMemoryLE( asBytes, &buffer[index], LENGTH_INT );
 
 	return *((int*)asBytes);
 }
@@ -374,7 +374,7 @@ long BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t index )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_LONG];
-	copyMemoryBE( asBytes, buffer.data() + index, LENGTH_LONG );
+	copyMemoryBE( asBytes, &buffer[index], LENGTH_LONG );
 
 	return *((long*)asBytes);
 }
@@ -410,7 +410,7 @@ long BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t index )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	char asBytes[LENGTH_LONG];
-	copyMemoryLE( asBytes, buffer.data() + index, LENGTH_LONG );
+	copyMemoryLE( asBytes, &buffer[index], LENGTH_LONG );
 
 	return *((long*)asBytes);
 }

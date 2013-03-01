@@ -25,6 +25,9 @@
 
 	<!-- bring in the ant-contrib tasks -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+	<!-- bring in our custom tasks -->
+	<taskdef resource="cpptaskdef.properties"/>
+	<typedef resource="cpptypedef.properties"/>
 
 	<!-- =========================================================== -->
 	<!--               System Properties and Utilities               -->
@@ -94,22 +97,14 @@
 
 	<!-- Mac OS X C++ and Installer profiles -->
 	<include file="profiles/macosx/hla13.xml"        as="cpp.hla13"      if="platform.macosx"/>
-	<include file="profiles/macosx/dlc13.xml"        as="cpp.dlc13"      if="platform.macosx"/>
+	<!--<include file="profiles/macosx/dlc13.xml"    as="cpp.dlc13"      if="platform.macosx"/>-->
 	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e"  if="platform.macosx"/>
 	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
 
-	<!-- Windows 32bit C++ and Installer profiles -->
-	<include file="profiles/win32/hla13.xml"         as="cpp.hla13"     if="platform.windows"/>
-	<include file="profiles/win32/ieee1516e.xml"     as="cpp.ieee1516e" if="platform.windows"/>
-	<include file="profiles/win32/installer.xml"     as="installer"     if="platform.windows"/>
-
-	
-	
-	<!-- Windows 64bit C++ and Installer profiles -->
-	<!--
-	<include file="profiles/windows/cpp64.xml"       as="cpp"          if="platform.win64"/>
-	<include file="profiles/windows/installer64.xml" as="installer"    if="platform.win64"/>
-	-->
+	<!-- Windows C++ and Installer profiles -->
+	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
+	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>
+	<include file="profiles/windows/installer.xml"   as="installer"      if="platform.windows"/>
 
 	<!-- =========================================================== -->
 	<!-- Convenience targets for specifying debug or release builds. -->
