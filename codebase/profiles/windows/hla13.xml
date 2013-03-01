@@ -116,13 +116,14 @@
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
 	<target name="test.compile" depends="compile.vc10" if="vc10.x86.debug">
-		<msvc outfile="test13"
-		      workdir="${test13.build.dir}"
-		      outdir="${test13.complete.dir}"
-		      type="executable"
-			  arch="x86"
-		      compilerArgs="${msvc.release.defaults}"
-		      linkerArgs="">
+		<cpptask compiler="vc10"
+		         outfile="test13"
+		         workdir="${test13.build.dir}"
+		         outdir="${test13.complete.dir}"
+		         type="executable"
+			     arch="x86"
+		         compilerArgs="${msvc.release.defaults}"
+		         linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
@@ -131,7 +132,7 @@
 			<define name="DEBUG"/>
 			<library path="${hla13.complete.dir}/vc10" libs="RTI-NGd,FedTimed"/>
 			<library path="${cppunit.dir}/win32/vc10" libs="cppunit"/>
-		</msvc>
+		</cpptask>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -264,7 +265,7 @@
 				<elseif><istrue value="${cpp.strict}"/>
 					<then>
 						<!-- Visual Studio NOT installed - strict build, fail out -->
-						<fail message="Compile failed @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
+						<fail message="[Error] (HLA v1.3) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
 					</then>
 				</elseif>
 				<else>
