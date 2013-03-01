@@ -51,7 +51,7 @@ then
 	echo "compiling example federate"
 	g++ -O1 -fPIC -I$RTI_HOME/include/hla13 \
 	    -DRTI_USES_STD_FSTREAM \
-		-lRTI-NG_64 -L$RTI_HOME/lib/gcc4 \
+		-lRTI-NG64 -lFedTime64 -L$RTI_HOME/lib/gcc4 \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
 	exit;	
 fi

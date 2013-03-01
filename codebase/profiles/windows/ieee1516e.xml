@@ -16,12 +16,13 @@
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Mac OS X C++ build profile for IEEE-1516 (2010) Interface [HLA Evolved]
+		Windows C++ build profile for IEEE-1516 (2010) Interface [HLA Evolved]
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
+	<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
 
 	<!-- ================================================ -->
 	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
@@ -30,9 +31,9 @@
 	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
 	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
 	<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>
-	
+
 	<!-- build -->
-	<property name="ieee1516e.build.dir"       location="${build.dir}/cpp/macosx/ieee1516e"/>
+	<property name="ieee1516e.build.dir"       location="${build.dir}/cpp/win32/ieee1516e"/>
 	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
 
 	<!-- =========================================================== -->
@@ -52,46 +53,81 @@
 	</target>
 
 	<!-- ================================================================================= -->
-	<!--                                  Compile Targets                                  -->
+	<!--                                 Compile Targets                                   -->
 	<!-- ================================================================================= -->
-	<!-- ==================================== -->
-	<!--       Main IEEE-1516e Interface      -->
-	<!-- ==================================== -->
-	<target name="compile">
-		<compile-ieee1516e arch="amd64" build="debug"/>
-		<compile-ieee1516e arch="amd64" build="release"/>
+	<!-- extends on the main cpp compiling extension point declared externally -->
+	<extension-point name="compile"
+	                 extensionOf="cpp.compile"
+					 description="Compile the full IEEE-1516e interface"/>
+	
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2010 (vc10) Compile Targets             -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2010 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc10" extensionOf="compile">
+		<compile-ieee1516 compiler="vc10" arch="x86" build="debug"/>
+		<compile-ieee1516 compiler="vc10" arch="x86" build="release"/>
+		<compile-ieee1516 compiler="vc10" arch="amd64" build="debug"/>
+		<compile-ieee1516 compiler="vc10" arch="amd64" build="release"/>
+	</target>
+
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2008 (vc9) Compile Targets              -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2008 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc9" extensionOf="compile">
+		<compile-ieee1516 compiler="vc9" arch="x86" build="debug"/>
+		<compile-ieee1516 compiler="vc9" arch="x86" build="release"/>
+		<compile-ieee1516 compiler="vc9" arch="amd64" build="debug"/>
+		<compile-ieee1516 compiler="vc9" arch="amd64" build="release"/>
+	</target>
+
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2005 (vc8) Compile Targets              -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2005 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc8" extensionOf="compile">
+		<compile-ieee1516 compiler="vc8" arch="x86" build="debug"/>
+		<compile-ieee1516 compiler="vc8" arch="x86" build="release"/>
+		<compile-ieee1516 compiler="vc8" arch="amd64" build="debug"/>
+		<compile-ieee1516 compiler="vc8" arch="amd64" build="release"/>
 	</target>
 
 	<!-- ==================================== -->
-	<!--        1516e Example Federate        -->
+	<!--      IEEE-1516e Example Federate     -->
 	<!-- ==================================== -->
 	<!-- Compiles the 1516e example federate. Doesn't do much except
-	     assure that we can actually compile and link it to Portico -->
-	<target name="example.compile" depends="compile">
-		<cpptask outfile="ieee1516e-example"
-		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
-		         type="executable"
-		         arch="amd64"
-		         compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		         linkerArgs="">
+	     assure that we can actually compile and link it to Portico.
+		 Only validates this with the latest supported compiler. -->
+	<target name="example.compile.x86" depends="compile.vc10" if="vc10.x86.debug">
+		<msvc outfile="ieee1516e-example"
+		      workdir="${ieee1516e.build.dir}/ieee1516e-example"
+		      type="executable"
+		      compilerArgs="/Zi /Od /EHsc /GR /MTd">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
-			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="RTI_DISABLE_WARNINGS"/>
 			<define name="DEBUG"/>
-			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
-			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
-		</cpptask>
+			<library path="${ieee1516e.complete.dir}/vc10" libs="rti1516ed,fedtime1516ed"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
+		</msvc>
 	</target>
 
 	<!-- ================================================================================= -->
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
 
-	<!-- Not implemented for C++ IEEE-1516e Inteface -->
+	<!-- Not implemented for IEEE-1516e Inteface -->
 	<target name="test" extensionOf="cpp.test">
-		<echo>No unit test suite for the IEEE-1516e Interface</echo>
+		<echo>No unit test suite for the C++ IEEE-1516e Interface</echo>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -117,14 +153,13 @@
 		<!-- Copy across the C++ libraries -->
 		<mkdir dir="${dist.lib.dir}"/>
 		<copy todir="${dist.lib.dir}">
-			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dylib"/>
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
 		</copy>
-
-		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
-		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e64"/>  <!-- ieee1516e -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1516e64d"/> <!-- ieee1516e -->
-		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<!-- Copy across the C++ dlls -->
+		<mkdir dir="${dist.bin.dir}"/>
+		<copy todir="${dist.bin.dir}">
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dll"/>
+		</copy>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
@@ -133,7 +168,6 @@
 		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
-		<chmod dir="${dist.examples.dir}/cpp/ieee1516e" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -153,16 +187,16 @@
 	<!--               Macro: compile-hla13               -->
 	<!-- ================================================ -->
 	<!--
-		 This macro is a simple wrapper for gcc-ieee1516. It performs two main tasks:
+		 This macro is a simple wrapper for msvc-ieee1516. It performs two main tasks:
 		   1. Checks to see whether the requested compiler/arch/build setting was requested
 		      in the cpp.profile and skips the build if it wasn't
 		   2. If it was requested, makes sure that the appropriate version of Visual Studio
 		      is installed. If it isn't, the compile  is skipped, unless this is a strict
 			  build, in which case the build will be failed
 	-->
-	<macrodef name="compile-ieee1516e">
+	<macrodef name="compile-ieee1516">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="vc10, vc9, or vc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -173,8 +207,27 @@
 			<!-- Only run this if it's in the requested build profile -->
 			<if><isset property="@{compiler}.@{arch}.@{build}"/>
 			<then>
-				<echo message="[Compile] (IEEE-1516e) @{compiler}.@{arch}.@{build}"/>
-				<gcc-ieee1516e compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+				<!-- ========================== -->
+				<!-- 2. Check for Visual Studio -->
+				<!-- ========================== -->
+				<!-- Make sure the requested version of Visual Studio is present on the system -->
+				<if><isVisualStudioPresent version="@{compiler}"/>
+					<then>
+						<echo message="[Compile] (IEEE-1516e) @{compiler}.@{arch}.@{build}"/>
+						<msvc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+					</then>
+				<elseif><istrue value="${cpp.strict}"/>
+					<then>
+						<!-- Visual Studio NOT installed - strict build, fail out -->
+						<fail message="[Error] (IEEE-1516e) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
+					</then>
+				</elseif>
+				<else>
+					<!-- This is not a strict build, just skip this compile -->
+					<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- @{compiler} is not installed"/>
+				</else>
+				</if>
+			
 			</then>
 			<else>
 				<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- not requested"/>
@@ -184,7 +237,7 @@
 	</macrodef>
 
 	<!-- ================================================ -->
-	<!--                Macro: gcc-ieee1516               -->
+	<!--               Macro: msvc-ieee1516               -->
 	<!-- ================================================ -->
 	<!-- 
 	     The various C++ compiling commands have a lot in common. They share the same
@@ -204,16 +257,16 @@
 		       only runs when it needs to.
 		 
 		 Usage:
-			* <gcc-ieee1516 compiler="vc10" arch="x86" build="debug"/>
+			* <msvc-ieee1516 compiler="vc10" arch="x86" build="debug"/>
 			
 		 Arguments:
 			* compiler: The compiler to use (vc10, vc9 or vc8)
 			* arch:     The platform architecture (x86 or amd64)
 			* build:    The build type (debug or release)
 	-->	 
-	<macrodef name="gcc-ieee1516e" description="(IEEE-1516e) Compile the RTI libraries">
+	<macrodef name="msvc-ieee1516e" description="(IEEE-1516e) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc" default="gcc"/>
+		<attribute name="compiler" description="vc10, vc9, or vc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -224,28 +277,28 @@
 			<local name="_cargs"/>       <!-- compiler arguments -->
 			<local name="_largs"/>       <!-- linker arguments -->
 			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
-			<local name="_jdklib"/>      <!-- path to either 32 or 64-bit JDK libs -->
+			<local name="_jdkhome"/>     <!-- path to either 32 or 64-bit JDK -->
 
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
+				<property name="_jdkhome" value="${jdk.home.win64}"/>
 			</then><else>
 				<property name="_bitness" value=""/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/client"/>
+				<property name="_jdkhome" value="${jdk.home.win32}"/>
 			</else></if>
 
 			<!-- Is this a Debug or Release build? -->
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wall"/>
-				<property name="_largs"       value=""/>
+				<property name="_cargs"       value="${compiler.args.debug}"/>
+				<property name="_largs"       value="/DEBUG"/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wall"/>
+				<property name="_cargs"       value="${compiler.args.release}"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
@@ -253,13 +306,14 @@
 			<!-- ========================== -->
 			<!-- Do the library compilation -->
 			<!-- ========================== -->
+			<!-- Build the main DLL -->
 			<echo message="(IEEE-1516e) Building librti1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
 			<cpptask outfile="librti1516e${_bitness}${_d}"
 			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
 					 outdir="${ieee1516e.complete.dir}/@{compiler}"
 			         type="shared"
 			         arch="@{arch}"
-			         compiler="g++"
+			         compiler="@{compiler}"
 			         compilerArgs="${_cargs}"
 			         linkerArgs="${_largs}">
 				<fileset dir="${ieee1516e.src.dir}">
@@ -268,11 +322,11 @@
 				</fileset>
 				<includepath path="${ieee1516e.include.dir}"/>
 				<includepath path="${ieee1516e.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 				<define name="BUILDING_RTI"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<library path="${_jdklib}" libs="jvm,jsig"/>
+				<library path="${_jdkhome}/lib" libs="jvm"/>
 			</cpptask>			
 
 			<!-- library: libfedtime -->
@@ -282,7 +336,7 @@
 					 outdir="${ieee1516e.complete.dir}/@{compiler}"
 			         type="shared"
 			         arch="@{arch}"
-			         compiler="g++"
+			         compiler="@{compiler}"
 			         compilerArgs="${_cargs}"
 			         linkerArgs="${_largs}">
 				<fileset dir="${ieee1516e.src.dir}">
@@ -290,20 +344,14 @@
 				</fileset>
 				<includepath path="${ieee1516e.include.dir}"/>
 				<includepath path="${ieee1516e.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
 				<define name="BUILDING_FEDTIME"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<library path="${_jdklib}" libs="jvm,jsig"/>
-				<library path="${ieee1516e.complete.dir}/@{compiler}" libs="rti1516e${_bitness}${_d}"/>
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+				<library path="${ieee1516e.complete.dir}/@{compiler}"
+				         libs="rti1516e${_bitness}${_d}"/>
 			</cpptask>
-
-			<!-- === Create the SymLink === -->
-			<!-- we can't use the symlink task because it will create links based
-			     on the full path name (whereas we want relative links) -->
-			<echo>creating symlinks...</echo>
-			<symlink-dylib directory="${ieee1516e.complete.dir}/@{compiler}" name="librti1516e${_bitness}${_d}"/>
-			<symlink-dylib directory="${ieee1516e.complete.dir}/@{compiler}" name="libfedtime1516e${_bitness}${_d}"/>
 		</sequential>
 	</macrodef>
 

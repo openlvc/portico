@@ -132,7 +132,7 @@ void HLAASCIIstring::decode( const VariableLengthData& inData )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	// Read the string length from the buffer
-	char* asBytes = (char*)inData.data();
+	char* asBytes = (char*)&inData;
 	size_t len = BitHelpers::decodeIntBE( asBytes, 0 );
 
 	if( (availableLength - BitHelpers::LENGTH_INT) < len )
@@ -154,7 +154,7 @@ size_t HLAASCIIstring::decodeFrom( const std::vector<Octet>& buffer, size_t inde
 	if( stringStartIndex + size > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
-	const char* stringStartPtr = buffer.data() + stringStartIndex;
+	const char* stringStartPtr = &buffer[stringStartIndex];
 
 	std::string value( stringStartPtr, len );
 	this->set( value );
