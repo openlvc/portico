@@ -39,7 +39,11 @@
 	<generateCppBuildProfile supportedCompilers="gcc4,vc8,vc9,vc10"
 	                         supportedArchitectures="x86,amd64"
 	                         supportedBuilds="debug,release"/>
-	
+
+
+	<!-- ================================================= -->
+	<!--                task: cpp.strict                   -->
+	<!-- ================================================= -->
 	<!-- Tasks to enable the strict or relaxed build style -->
 	<!-- In a strict build, if a compiler we require is not installed the build will be failed.
 	     By default, builds are not strict -->
