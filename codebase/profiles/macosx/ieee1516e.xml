@@ -54,71 +54,12 @@
 	<!-- ================================================================================= -->
 	<!--                                  Compile Targets                                  -->
 	<!-- ================================================================================= -->
-	<!-- 
-	     The parent compilation target. This will compile all the core Portico C++
-	     interface and the associated unit test suite code.
-	-->
-	<target name="compile"
-	        extensionOf="cpp.compile"
-	        description="Compile C++ IEEE-1516e Interface"
-	        depends="compile.x86,
-	                 compile.amd64.debug,
-	                 compile.amd64.release,
-	                 example.compile"/>
-
-	<!-- Let people known that 32-bit builds are not supported -->
-	<target name="compile.x86"><echo>Mac OS X 32-bit builds are not supported</echo></target>
-
 	<!-- ==================================== -->
-	<!--            1516e Interface           -->
+	<!--       Main IEEE-1516e Interface      -->
 	<!-- ==================================== -->
-	<target name="compile.amd64.debug">
-		<cpp-unix outfile="librti1516e64d"
-		          workdir="${ieee1516e.build.dir}/debug"
-		          outdir="${ieee1516e.complete.dir}"
-		          arch="amd64"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor">
-			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${ieee1516e.include.dir}"/>
-			<includepath path="${ieee1516e.src.dir}"/>
-			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
-			<define name="BUILDING_RTI"/>
-			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="RTI_DISABLE_WARNINGS"/>
-			<define name="DEBUG"/>
-			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
-		</cpp-unix>
-
-		<!-- === Create the SymLink === -->
-		<!-- we can't use the symlink task because it will create links based
-		     on the full path name (whereas we want relative links) -->
-		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e64d"/>
-	</target>
-
-	<target name="compile.amd64.release" if="build.release">
-		<cpp-unix outfile="librti1516e64"
-		          workdir="${ieee1516e.build.dir}/release"
-		          outdir="${ieee1516e.complete.dir}"
-		          arch="amd64"
-		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor">
-			<fileset dir="${ieee1516e.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${ieee1516e.include.dir}"/>
-			<includepath path="${ieee1516e.src.dir}"/>
-			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
-			<define name="BUILDING_RTI"/>
-			<define name="BUILDING_FEDTIME"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="RTI_DISABLE_WARNINGS"/>
-			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
-		</cpp-unix>
-
-		<!-- === Create the SymLink === -->
-		<!-- we can't use the symlink task because it will create links based
-		     on the full path name (whereas we want relative links) -->
-		<echo>creating symlinks...</echo>
-		<symlink-dylib directory="${ieee1516e.build.dir}/complete" name="librti1516e64"/>
+	<target name="compile">
+		<compile-ieee1516e arch="amd64" build="debug"/>
+		<compile-ieee1516e arch="amd64" build="release"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -126,13 +67,13 @@
 	<!-- ==================================== -->
 	<!-- Compiles the 1516e example federate. Doesn't do much except
 	     assure that we can actually compile and link it to Portico -->
-	<target name="example.compile" depends="compile.amd64.debug">
-		<cpp-unix outfile="ieee1516e-example"
-		          workdir="${ieee1516e.build.dir}/ieee1516e-example"
-		          type="executable"
-		          arch="amd64"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		          linkerArgs="">
+	<target name="example.compile" depends="compile">
+		<cpptask outfile="ieee1516e-example"
+		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
+		         type="executable"
+		         arch="amd64"
+		         compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		         linkerArgs="">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
@@ -141,7 +82,7 @@
 			<define name="DEBUG"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
 			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
-		</cpp-unix>
+		</cpptask>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -174,8 +115,8 @@
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
 		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${dist.lib.dir}/gcc4"/>
-		<copy todir="${dist.lib.dir}/gcc4">
+		<mkdir dir="${dist.lib.dir}"/>
+		<copy todir="${dist.lib.dir}">
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dylib"/>
 		</copy>
 
@@ -204,5 +145,166 @@
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
 	<!-- Not required for an interface build -->
+
+	<!-- ================================================================================= -->
+	<!--                           IEEE-1516e Helper Macros                                -->
+	<!-- ================================================================================= -->
+	<!-- ================================================ -->
+	<!--               Macro: compile-hla13               -->
+	<!-- ================================================ -->
+	<!--
+		 This macro is a simple wrapper for gcc-ieee1516. It performs two main tasks:
+		   1. Checks to see whether the requested compiler/arch/build setting was requested
+		      in the cpp.profile and skips the build if it wasn't
+		   2. If it was requested, makes sure that the appropriate version of Visual Studio
+		      is installed. If it isn't, the compile  is skipped, unless this is a strict
+			  build, in which case the build will be failed
+	-->
+	<macrodef name="compile-ieee1516e">
+		<!-- Attributes -->
+		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- ========================== -->
+			<!-- 1. Check the build profile -->
+			<!-- ========================== -->
+			<!-- Only run this if it's in the requested build profile -->
+			<if><isset property="@{compiler}.@{arch}.@{build}"/>
+			<then>
+				<echo message="[Compile] (IEEE-1516e) @{compiler}.@{arch}.@{build}"/>
+				<gcc-ieee1516e compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+			</then>
+			<else>
+				<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- not requested"/>
+			</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================ -->
+	<!--                Macro: gcc-ieee1516               -->
+	<!-- ================================================ -->
+	<!-- 
+	     The various C++ compiling commands have a lot in common. They share the same
+		 source and include base, the same preprocessor definitions, very similar library
+		 names and similar library dependencies. Despite being *very* similar, each of the
+		 builds requires something just a little bit different.
+		 
+		 This macro hides all the little details and give a target compiler, architecture
+		 and build type, generates the appropriate libraries (adusting library names,
+		 working directories, preprocessor definitions, compiler args, etc...)
+		 
+		 The output from running this macro will be the libRTI-NG and libFedTime
+		 libraries (names updated approrpiate for debug/release and 32/64-bit)
+		 dropped into ${ieee1516e.complete.dir}.
+		 
+		 NOTE: This macro should always be wrapped in a <compile-ieee1516e> task to ensure it
+		       only runs when it needs to.
+		 
+		 Usage:
+			* <gcc-ieee1516 compiler="vc10" arch="x86" build="debug"/>
+			
+		 Arguments:
+			* compiler: The compiler to use (vc10, vc9 or vc8)
+			* arch:     The platform architecture (x86 or amd64)
+			* build:    The build type (debug or release)
+	-->	 
+	<macrodef name="gcc-ieee1516e" description="(IEEE-1516e) Compile the RTI libraries">
+		<!-- Attributes -->
+		<attribute name="compiler" description="gcc" default="gcc"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- Local properties used in the macro -->
+			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
+			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
+			<local name="_cargs"/>       <!-- compiler arguments -->
+			<local name="_largs"/>       <!-- linker arguments -->
+			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
+			<local name="_jdklib"/>      <!-- path to either 32 or 64-bit JDK libs -->
+
+			<!-- Are we building for 32-bit or 64-bit? -->
+			<if><equals arg1="@{arch}" arg2="amd64"/><then>
+				<property name="_bitness" value="64"/>
+				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
+			</then><else>
+				<property name="_bitness" value=""/>
+				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/client"/>
+			</else></if>
+
+			<!-- Is this a Debug or Release build? -->
+			<if><equals arg1="@{build}" arg2="debug"/><then>
+				<!-- Debug Build -->
+				<property name="_d"           value="d"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wall"/>
+				<property name="_largs"       value=""/>
+				<property name="_buildsymbol" value="DEBUG"/>
+			</then><else>
+				<!-- Release Build -->
+				<property name="_d"           value=""/>
+				<property name="_cargs"       value="-O0 -fPIC -Wall"/>
+				<property name="_largs"       value=""/>
+				<property name="_buildsymbol" value="RELEASE"/>
+			</else></if>
+
+			<!-- ========================== -->
+			<!-- Do the library compilation -->
+			<!-- ========================== -->
+			<echo message="(IEEE-1516e) Building librti1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="librti1516e${_bitness}${_d}"
+			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${ieee1516e.complete.dir}/@{compiler}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="g++"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}">
+				<fileset dir="${ieee1516e.src.dir}">
+					<include name="**/*.cpp"/>
+					<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
+				</fileset>
+				<includepath path="${ieee1516e.include.dir}"/>
+				<includepath path="${ieee1516e.src.dir}"/>
+				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<define name="BUILDING_RTI"/>
+				<define name="RTI_DISABLE_WARNINGS"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+			</cpptask>			
+
+			<!-- library: libfedtime -->
+			<echo message="(IEEE-1516e) Building libfedtime1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libfedtime1516e${_bitness}${_d}"
+			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${ieee1516e.complete.dir}/@{compiler}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="g++"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}">
+				<fileset dir="${ieee1516e.src.dir}">
+					<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
+				</fileset>
+				<includepath path="${ieee1516e.include.dir}"/>
+				<includepath path="${ieee1516e.src.dir}"/>
+				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<define name="BUILDING_FEDTIME"/>
+				<define name="RTI_DISABLE_WARNINGS"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+				<library path="${ieee1516e.complete.dir}/@{compiler}" libs="rti1516e${_bitness}${_d}"/>
+			</cpptask>
+
+			<!-- === Create the SymLink === -->
+			<!-- we can't use the symlink task because it will create links based
+			     on the full path name (whereas we want relative links) -->
+			<echo>creating symlinks...</echo>
+			<symlink-dylib directory="${ieee1516e.complete.dir}/@{compiler}" name="librti1516e${_bitness}${_d}"/>
+			<symlink-dylib directory="${ieee1516e.complete.dir}/@{compiler}" name="libfedtime1516e${_bitness}${_d}"/>
+		</sequential>
+	</macrodef>
 
 </project>

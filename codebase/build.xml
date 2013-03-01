@@ -97,15 +97,23 @@
 
 	<!-- Mac OS X C++ and Installer profiles -->
 	<include file="profiles/macosx/hla13.xml"        as="cpp.hla13"      if="platform.macosx"/>
-	<include file="profiles/macosx/dlc13.xml"        as="cpp.dlc13"      if="platform.macosx"/>
+	<!--<include file="profiles/macosx/dlc13.xml"    as="cpp.dlc13"      if="platform.macosx"/>-->
 	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e"  if="platform.macosx"/>
 	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
 
-	<!-- Windows 32bit C++ and Installer profiles -->
+	<!-- Windows C++ and Installer profiles -->
 	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
 	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>
 	<include file="profiles/windows/installer.xml"   as="installer"      if="platform.windows"/>
-	
+
+	<!-- =========================================================== -->
+	<!-- Convenience targets for specifying debug or release builds. -->
+	<!-- =========================================================== -->
+	<target name="build.release" description="Set the release build flag for this run">
+		<echo>Build flagged as a release build. Setting build.release property to true</echo>
+		<property name="build.release" value="true"/>
+	</target>
+
 	<!-- =========================================================== -->
 	<!--      Private Internal Targets. Do not modify or extend.     -->
 	<!-- =========================================================== -->

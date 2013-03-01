@@ -317,10 +317,7 @@
 		<attribute name="build"    description="release or debug"/>
 
 		<sequential>
-			<!-- Local properties used in the compile. This declares them so
-				 that any previous value is hidden. In the sections below we
-				 will give them values depending on whether we are compiling
-				 up a 32/64-bit, debug/release library. -->
+			<!-- Local properties used in the macro -->
 			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
 			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
 			<local name="_cargs"/>       <!-- compiler arguments -->
