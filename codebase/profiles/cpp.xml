@@ -29,7 +29,20 @@
 		C++ sandbox targets run.
 	</description>
 
-	<!-- exception points for C++ child builds to attach to -->
+	<!-- ================================================= -->
+	<!--                Common Properties                  -->
+	<!-- ================================================= -->
+	<!-- Common Properties -->
+	<property name="cpp.src.dir"               location="${src.dir}/cpp"/>
+
+	<!-- msvc compiler properties -->
+	<property name="msvc.debug.defaults"   value="/Zi /MDd /Od /EHsc /GR /W0"/>
+	<property name="msvc.release.defaults" value="/MD /Od /EHsc /GR /W0"/>
+
+	<!-- ================================================= -->
+	<!--                Extension Points                   -->
+	<!-- ================================================= -->
+	<!-- extension points for C++ child builds to attach to -->
 	<extension-point name="clean"   extensionOf="master.clean"/>
 	<extension-point name="compile" extensionOf="master.compile" description="Compile all C++ interfaces and tests"/>
 	<extension-point name="test"    extensionOf="master.test"/>

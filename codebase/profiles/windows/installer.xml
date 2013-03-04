@@ -36,8 +36,13 @@
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
 		<zip destfile="${dist.dir}/${dist.name}-win32.zip">
-			<zipfileset dir="${dist.sandbox.dir}" includes="**/*" prefix="${dist.name}"/>
-			<zipfileset dir="${jdk.home.win32}/jre" includes="**/*" prefix="${dist.name}/jre"/>
+			<zipfileset dir="${dist.sandbox.dir}"
+			            includes="**/*"
+			            excludes="lib/**/*64*;bin/**/*64*"
+			            prefix="${dist.name}"/>
+			<zipfileset dir="${jdk.home.win32}/jre"
+			            includes="**/*"
+			            prefix="${dist.name}/jre"/>
 		</zip>
 	</target>
 	
@@ -52,9 +57,18 @@
 		      message="Could not locate amd64 JRE. ${jdk.home.win64} does not point to amd64 JDK."/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
+		<!-- we handle lib/bin separately so we can ensure only 64-bit stuff gets in -->
 		<zip destfile="${dist.dir}/${dist.name}-win64.zip">
-			<zipfileset dir="${dist.sandbox.dir}" includes="**/*" prefix="${dist.name}"/>
-			<zipfileset dir="${jdk.home.win64}/jre" includes="**/*" prefix="${dist.name}/jre"/>
+			<zipfileset dir="${dist.sandbox.dir}"
+			            includes="**/*"
+			            excludes="lib;bin"
+			            prefix="${dist.name}"/>
+			<zipfileset dir="${dist.sandbox.dir}"
+			            includes="lib/**/*64*;bin/**/*64*"
+			            prefix="${dist.name}"/>
+			<zipfileset dir="${jdk.home.win64}/jre"
+			            includes="**/*"
+			            prefix="${dist.name}/jre"/>
 		</zip>
 	</target>
 

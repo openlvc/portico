@@ -135,7 +135,7 @@ typedef double Float64;
 //////////////////////////////////////////
 
 // java native interface
-#include <jni.h>
+#include "jni.h"
 
 // defines for the portico namespace - I like this because it stands out a bit
 #define PORTICO1516E_NS portico1516e

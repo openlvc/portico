@@ -163,8 +163,8 @@
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
 		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
 		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
+		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
 		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
 		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 

@@ -49,7 +49,7 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -g -fPIC -I$RTI_HOME/include/ieee1516e -lrti1516e64 -lfedtime1516e64 -L$RTI_HOME/lib/gcc4 \
+	g++ -g -fPIC -I$RTI_HOME/include/ieee1516e -lrti1516e64d -lfedtime1516e64d -L$RTI_HOME/lib/gcc4 \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
 	exit;	
 fi
@@ -60,7 +60,7 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/server" ./example-federate $*
+	PORTICO_DEBUG=OFF DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/server" ./example-federate $*
 	exit;
 fi
 
