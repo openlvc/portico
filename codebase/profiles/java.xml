@@ -20,7 +20,13 @@
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
+	<property name="java.src.dir"             location="${src.dir}/java"/>
 	<property name="java.build.dir"           location="${build.dir}/java"/>
+	<property name="resources.jars.dir"       location="${resources.dir}/jars"/>
+
+	<!-- java compiler properties -->
+	<property name="java.compiler.source" value="1.7"/>
+	<property name="java.compiler.target" value="1.7"/>
 
 	<!-- ==== Source Related Properties ==== -->
 	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
@@ -46,7 +52,17 @@
 	<!-- ==== Onejar Related Properties ==== -->
 	<!-- To provide a single jar, we extract all deps here and copy them into the portico jar -->
 	<property name="onejar.dir"               location="${build.dir}/onejar"/>
-	
+
+	<!-- ==== Javadoc Related Properties ==== -->
+	<property name="javadoc.oracle"           value="http://docs.oracle.com/javase/7/docs/api/"/>
+	<property name="javadoc.sisocopyright"    value="Copyright Simulation Interoperability Standard Organization"/>
+	<property name="javadoc.ppcopyright"      value="Copyright The Portico Project ${YEAR}."/>
+	<property name="javadoc.ppwindow"         value="${app.shortname} [${app.version} build] Javadoc"/>
+	<!-- defaults used by the macro -->
+	<property name="javadoc.windowtitle"      value="The Portico Project [${app.version} build]"/>
+	<property name="javadoc.header"           value="${javadoc.windowtitle}"/>
+	<property name="javadoc.footer"           value="${javadoc.windowtitle}"/>
+
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
 	<!-- =========================================================== -->

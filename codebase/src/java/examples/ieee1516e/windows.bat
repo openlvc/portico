@@ -34,7 +34,7 @@ if not "%RTI_HOME%" == "" goto run
 :nortihome
 cd ..\..\..
 set RTI_HOME=%CD%
-cd examples\java\hla13java1
+cd examples\java\ieee1516e
 echo WARNING Your RTI_HOME environment variable is not set, using %RTI_HOME%
 goto run
 
@@ -48,8 +48,8 @@ rem ### (target) clean #########################
 rem ############################################
 :clean
 echo "deleting example federate jar file and left over logs"
-del src\hla13java1\*.class
-del java-hla13java1.jar
+del src\ieee1516e\*.class
+del java-ieee1516e.jar
 rd /S /Q logs
 goto finish
 
@@ -59,8 +59,8 @@ rem ############################################
 :compile
 echo "compiling example federate"
 cd src
-%JAVAC% -cp ".;%RTI_HOME%\lib\portico.jar" hla13java1\*.java
-%JAR% -cf ..\java-hla13java1.jar hla13java1\*.class
+%JAVAC% -cp ".;%RTI_HOME%\lib\portico.jar" ieee1516e\*.java
+%JAR% -cf ..\java-ieee1516e.jar ieee1516e\*.class
 cd ..
 goto finish
 
@@ -69,13 +69,13 @@ rem ### (target) execute #######################
 rem ############################################
 :execute
 SHIFT
-%JAVA% -cp "java-hla13java1.jar;%RTI_HOME%\lib\portico.jar" hla13java1.ExampleJava1Federate %1 %2 %3 %4 %5 %6 %7 %8 %9
+%JAVA% -cp "java-ieee1516e.jar;%RTI_HOME%\lib\portico.jar" ieee1516e.ExampleFederate %1 %2 %3 %4 %5 %6 %7 %8 %9
 goto finish
 
 
 
 :usage
-echo usage: win32.bat [compile] [clean] [execute [federate-name]]
+echo usage: windows.bat [compile] [clean] [execute [federate-name]]
 
 :finish
 

@@ -294,19 +294,21 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	//  * DLLs for the Portico C++ interface
 	//  * DLLs for the JVM
 	
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	string jrelocation( getenv("JAVA_HOME") );
+	
 	// Portico ships a JRE with it, but we might be building in a development environment
-	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
-	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
-	stringstream jretest;
-	jretest << rtihome << "\\jre\\bin\\java.exe";
-	if( pathExists(jretest.str()) )
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
+	string temp = string(rtihome).append( "\\jre\\bin\\java.exe" );
+	if( pathExists(temp) )
 	{
 		jrelocation = string(rtihome).append("\\jre");
 		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->warn( "WARNING Could not locate bundled JRE, fallback on %JAVA_HOME%: %s",
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME%: [%s]",
 		              jrelocation.c_str() );
 	}
 
@@ -397,19 +399,21 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	if( !systemPath )
 		systemPath = "";
 
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	string jrelocation( getenv("JAVA_HOME") );
+	
 	// Portico ships a JRE with it, but we might be building in a development environment
-	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME
-	string jrelocation( getenv("JAVA_HOME") ); // set to this by default
-	stringstream jretest;
-	jretest << rtihome << "/jre/bin/java";
-	if( pathExists(jretest.str()) )
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
+	string temp = string(rtihome).append( "/jre/bin/java" );
+	if( pathExists(temp) )
 	{
 		jrelocation = string(rtihome).append("/jre");
 		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
 	}
 	else
 	{
-		logger->warn( "WARNING Could not locate bundled JRE, fallback on $JAVA_HOME: %s",
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on $JAVA_HOME: [%s]",
 		              jrelocation.c_str() );
 	}
 
@@ -418,9 +422,9 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	libraryPath << "-Djava.library.path=.:"
 	          << string(systemPath) << ":"
 	          << rtihome << "/lib/gcc4:"
-	          << jrelocation << "/jre/lib/server:"
-	          << jrelocation << "/jre/lib/i386/client:"
-	          << jrelocation << "/jre/lib/amd64/server";
+	          << jrelocation << "/lib/server:"
+	          << jrelocation << "/lib/i386/client:"
+	          << jrelocation << "/lib/amd64/server";
 	paths.second = libraryPath.str();
 	
 	return paths;
