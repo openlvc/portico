@@ -413,11 +413,11 @@
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
 		<configuration configurationName="(ng6 win32) libFedTime.dll"/>
-		<configuration configurationName="cpp-macosx-ng6"/>
+		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
 		<configuration configurationName="(ng6 macosx) libRTI-NG.dylib">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
-		<configuration configurationName="(ieee1516e macosx) librti1516e.dylib"/>
+		<configuration configurationName="cpp-macosx-ng6"/>
 		<configuration configurationName="cpp-win32-ieee1516e">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>

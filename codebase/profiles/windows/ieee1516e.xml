@@ -68,10 +68,10 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc10" extensionOf="compile">
-		<compile-ieee1516 compiler="vc10" arch="x86" build="debug"/>
-		<compile-ieee1516 compiler="vc10" arch="x86" build="release"/>
-		<compile-ieee1516 compiler="vc10" arch="amd64" build="debug"/>
-		<compile-ieee1516 compiler="vc10" arch="amd64" build="release"/>
+		<compile-ieee1516e compiler="vc10" arch="x86" build="debug"/>
+		<compile-ieee1516e compiler="vc10" arch="x86" build="release"/>
+		<compile-ieee1516e compiler="vc10" arch="amd64" build="debug"/>
+		<compile-ieee1516e compiler="vc10" arch="amd64" build="release"/>
 	</target>
 
 	<!-- ================================================================= -->
@@ -82,10 +82,10 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc9" extensionOf="compile">
-		<compile-ieee1516 compiler="vc9" arch="x86" build="debug"/>
-		<compile-ieee1516 compiler="vc9" arch="x86" build="release"/>
-		<compile-ieee1516 compiler="vc9" arch="amd64" build="debug"/>
-		<compile-ieee1516 compiler="vc9" arch="amd64" build="release"/>
+		<compile-ieee1516e compiler="vc9" arch="x86" build="debug"/>
+		<compile-ieee1516e compiler="vc9" arch="x86" build="release"/>
+		<compile-ieee1516e compiler="vc9" arch="amd64" build="debug"/>
+		<compile-ieee1516e compiler="vc9" arch="amd64" build="release"/>
 	</target>
 
 	<!-- ================================================================= -->
@@ -96,10 +96,10 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc8" extensionOf="compile">
-		<compile-ieee1516 compiler="vc8" arch="x86" build="debug"/>
-		<compile-ieee1516 compiler="vc8" arch="x86" build="release"/>
-		<compile-ieee1516 compiler="vc8" arch="amd64" build="debug"/>
-		<compile-ieee1516 compiler="vc8" arch="amd64" build="release"/>
+		<compile-ieee1516e compiler="vc8" arch="x86" build="debug"/>
+		<compile-ieee1516e compiler="vc8" arch="x86" build="release"/>
+		<compile-ieee1516e compiler="vc8" arch="amd64" build="debug"/>
+		<compile-ieee1516e compiler="vc8" arch="amd64" build="release"/>
 	</target>
 
 	<!-- ==================================== -->
@@ -194,7 +194,7 @@
 		      is installed. If it isn't, the compile  is skipped, unless this is a strict
 			  build, in which case the build will be failed
 	-->
-	<macrodef name="compile-ieee1516">
+	<macrodef name="compile-ieee1516e">
 		<!-- Attributes -->
 		<attribute name="compiler" description="vc10, vc9, or vc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
@@ -214,7 +214,7 @@
 				<if><isVisualStudioPresent version="@{compiler}"/>
 					<then>
 						<echo message="[Compile] (IEEE-1516e) @{compiler}.@{arch}.@{build}"/>
-						<msvc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+						<msvc-ieee1516e compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
 					</then>
 				<elseif><istrue value="${cpp.strict}"/>
 					<then>

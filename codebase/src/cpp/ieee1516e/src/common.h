@@ -40,10 +40,10 @@
     #define WIN32_LEAN_AND_MEAN
 
 	// determine the platform 
-	#if _WIN32
-		#define ARCH_X86
-	#elif _WIN64
+	#if _WIN64
 		#define ARCH_AMD64
+	#elif _WIN32
+		#define ARCH_X86
 	#endif
 
 	// windows platform, determine the compiler version
@@ -135,7 +135,7 @@ typedef double Float64;
 //////////////////////////////////////////
 
 // java native interface
-#include <jni.h>
+#include "jni.h"
 
 // defines for the portico namespace - I like this because it stands out a bit
 #define PORTICO1516E_NS portico1516e

@@ -65,24 +65,10 @@
 	<getJavaHome property="jdk.home"/>
 
 	<!-- =========================================================== -->
-	<!--                     Compiler Properties                     -->
-	<!-- =========================================================== -->
-	<!-- jdk properties, set in build.properties or via call to <jdk-home/> macro in build.xml -->
-	<!-- <property name="jdk.home" value="${env.JAVA_HOME}/> -->
-
-	<!-- java compiler properties -->
-	<property name="java.compiler.source" value="1.7"/>
-	<property name="java.compiler.target" value="1.7"/>
-
-	<!-- msvc compiler properties -->
-	<property name="msvc.debug.defaults"   value="/Zi /MDd /Od /EHsc /GR /W0"/>
-	<property name="msvc.release.defaults" value="/MD /Od /EHsc /GR /W0"/>
-
-	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
-	<property name="jdk.default.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.7.0_07.jdk/Contents/Home"/>
+	<property name="jdk.default.macosx"  location="/Library/Java/Home"/>
 	<property name="jdk.default.win32"   location="c:\Program Files (x86)\Java\jdk1.7.0_13"/>
 	<property name="jdk.default.win64"   location="c:\Program Files\Java\jdk1.7.0_13"/>
 	<property name="jdk.default.linux32" location="${env.JAVA_HOME}"/>
@@ -91,12 +77,9 @@
 	<!-- Location Properties -->
 	<property name="lib.dir"                   location="lib"/>
 	<property name="src.dir"                   location="src"/>
-	<property name="java.src.dir"              location="${src.dir}/java"/>
-	<property name="cpp.src.dir"               location="${src.dir}/cpp"/>
 
 	<!-- Resources Directories -->
 	<property name="resources.dir"             location="resources"/>
-	<property name="resources.jars.dir"        location="${resources.dir}/jars"/>
 	<property name="resources.dist.dir"        location="${resources.dir}/dist"/>
 	<property name="resources.installers.dir"  location="${resources.dir}/installers"/>
 	<property name="resources.testdata.dir"    location="${resources.dir}/test-data"/>
@@ -114,15 +97,4 @@
 	<property name="dist.examples.dir"      location="${dist.sandbox.dir}/examples"/>
 	<property name="dist.zip.file"          location="${dist.dir}/${dist.name}-${platform}.zip"/>
 	<property name="dist.tgz.file"          location="${dist.dir}/${dist.name}-${platform}.tar.gz"/>
-
-	<!-- ==== Javadoc Related Properties ==== -->
-	<property name="javadoc.oracle"           value="http://docs.oracle.com/javase/7/docs/api/"/>
-	<property name="javadoc.sisocopyright"    value="Copyright Simulation Interoperability Standard Organization"/>
-	<property name="javadoc.ppcopyright"      value="Copyright The Portico Project ${YEAR}."/>
-	<property name="javadoc.ppwindow"         value="${app.shortname} [${app.version} build] Javadoc"/>
-	<!-- defaults used by the macro -->
-	<property name="javadoc.windowtitle"      value="The Portico Project [${app.version} build]"/>
-	<property name="javadoc.header"           value="${javadoc.windowtitle}"/>
-	<property name="javadoc.footer"           value="${javadoc.windowtitle}"/>
-
 </project>
