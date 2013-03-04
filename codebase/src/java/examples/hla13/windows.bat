@@ -75,7 +75,7 @@ goto finish
 
 
 :usage
-echo usage: win32.bat [compile] [clean] [execute [federate-name]]
+echo usage: windows.bat [compile] [clean] [execute [federate-name]]
 
 :finish
 
