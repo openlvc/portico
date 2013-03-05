@@ -39,7 +39,7 @@
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
 		<zip destfile="${dist.dir}/${dist.name}-win32.zip">
-			<zipfileset dir="${dist.sandbox.dir}"
+			<zipfileset dir="${sandbox.dir}"
 			            includes="**/*"
 			            excludes="lib/**/*64*,bin/**/*64*"
 			            prefix="${dist.name}"/>
@@ -65,11 +65,11 @@
 		<!-- generate the tarball with the sandbox and the JRE in it -->
 		<!-- we handle lib/bin separately so we can ensure only 64-bit stuff gets in -->
 		<zip destfile="${dist.dir}/${dist.name}-win64.zip">
-			<zipfileset dir="${dist.sandbox.dir}"
+			<zipfileset dir="${sandbox.dir}"
 			            includes="**/*"
 			            excludes="lib/**/*,bin/**/*"
 			            prefix="${dist.name}"/>
-			<zipfileset dir="${dist.sandbox.dir}"
+			<zipfileset dir="${sandbox.dir}"
 			            includes="lib/**/*64*,bin/**/*64*"
 			            prefix="${dist.name}"/>
 			<zipfileset dir="${jdk.home.win64}/jre"

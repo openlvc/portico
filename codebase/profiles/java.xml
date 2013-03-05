@@ -235,19 +235,19 @@
 	<target name="sandbox" extensionOf="master.sandbox" depends="compile,jars">
 		<!-- create the required directories -->
 		<mkdir dir="${dist.dir}"/>
-		<mkdir dir="${dist.sandbox.dir}"/>
-		<mkdir dir="${dist.sandbox.dir}/plugins"/>
+		<mkdir dir="${sandbox.dir}"/>
+		<mkdir dir="${sandbox.dir}/plugins"/>
 
 		<!-- copy across the dependant libraries -->
 		<mkdir dir="${dist.lib.dir}"/>
 
 		<!-- copy across the resources -->
-		<copy todir="${dist.sandbox.dir}">
+		<copy todir="${sandbox.dir}">
 			<fileset dir="${resources.dist.dir}/common" includes="**/*"/>
 		</copy>
 
 		<!-- chmod anything in a bin directory -->
-		<chmod dir="${dist.sandbox.dir}" perm="777" includes="bin/**/*"/>
+		<chmod dir="${sandbox.dir}" perm="777" includes="bin/**/*"/>
 
 		<!-- ================= -->
 		<!-- Example Federates -->
@@ -281,7 +281,7 @@
 	<!-- build the main portico jar file -->
 	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
 		<!-- construct the main portico jar file -->
-		<jar destfile="${dist.sandbox.dir}/lib/portico.jar">
+		<jar destfile="${sandbox.dir}/lib/portico.jar">
 			<!-- portico code -->
 			<fileset dir="${portico.classes.dir}" includes="**/*.class"/>
 			
@@ -355,7 +355,7 @@
 	     build because of the amount of time it takes -->
 	<target name="javadoc" depends="sandbox">
 		<!-- Make room in the sandbox for the javadoc. Create a property for shortcut purposes -->
-		<property name="javadoc.dir" value="${dist.sandbox.dir}/documentation/javadoc"/>
+		<property name="javadoc.dir" value="${sandbox.dir}/documentation/javadoc"/>
 		<mkdir dir="${javadoc.dir}"/>
 		
 		<echo>Generating HLA API documentatin for HLA v1.3 Java Interface</echo>
