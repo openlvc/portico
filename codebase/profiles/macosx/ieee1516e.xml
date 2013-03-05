@@ -106,8 +106,8 @@
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
-		<mkdir dir="${dist.sandbox.dir}/include/ieee1516e"/>
-		<copy todir="${dist.sandbox.dir}/include/ieee1516e">
+		<mkdir dir="${sandbox.dir}/include/ieee1516e"/>
+		<copy todir="${sandbox.dir}/include/ieee1516e">
 			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 

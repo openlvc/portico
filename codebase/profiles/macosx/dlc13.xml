@@ -137,8 +137,8 @@
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
-		<mkdir dir="${dist.sandbox.dir}/include/dlc13"/>
-		<copy todir="${dist.sandbox.dir}/include/dlc13">
+		<mkdir dir="${sandbox.dir}/include/dlc13"/>
+		<copy todir="${sandbox.dir}/include/dlc13">
 			<fileset dir="${dlc13.include.dir}" includes="**/*"/>
 		</copy>
 

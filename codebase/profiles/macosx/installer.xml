@@ -42,7 +42,7 @@
 		<!--
 		<echo>Copying Portico.app into distribution</echo>
 		<exec executable="cp" failonerror="true">
-			<arg line="-R ${resources.installers.dir}/macosx/dmg/Portico.app ${dist.sandbox.dir}/"/>
+			<arg line="-R ${resources.installers.dir}/macosx/dmg/Portico.app ${sandbox.dir}/"/>
 		</exec>
 		-->
 
@@ -52,7 +52,7 @@
 		<exec executable="hdiutil">
 			<arg value="create"/>
 			<arg value="-srcfolder"/>
-			<arg value="${dist.sandbox.dir}"/>
+			<arg value="${sandbox.dir}"/>
 			<arg value="-ov"/>
 			<arg value="${dist.dir}/${dist.name}.dmg"/>
 		</exec>
