@@ -274,7 +274,7 @@ public class PorticoConstants
 	}
 	
 	/**
-	 * Load the properties file "build.version" into the system properties and return
+	 * Load the properties file "build.properties" into the system properties and return
 	 * the value of the value of "${build.version} (build ${build.number})"
 	 */
 	private static String getRtiVersion()
@@ -283,7 +283,7 @@ public class PorticoConstants
 		{
 			try
 			{
-				ResourceLocator.loadPropertiesResource( "build.version" );
+				ResourceLocator.loadPropertiesResource( "build.properties" );
 			}
 			catch( Exception e )
 			{

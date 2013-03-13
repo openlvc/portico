@@ -295,7 +295,7 @@
 			<fileset dir="${basedir}" includes="LICENSE.portico"/>
 
 			<!-- build.properties file for version information -->
-			<fileset dir="${basedir}" includes="build.version"/>
+			<fileset dir="${basedir}" includes="build.properties"/>
 
 			<!-- MANIFEST -->
 			<manifest>

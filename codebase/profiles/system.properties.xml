@@ -33,14 +33,15 @@
 	<!-- load the environment variables -->
 	<property environment="env"/>
 	
-	<!-- load our local build.properties file if it exists -->
-	<property file="build.properties"/>
+	<!-- Load the various property override files -->
+	<property file="local.properties"/>  <!-- local machine settings -->
+	<property file="build.properties"/>  <!-- project-specific settings -->
+	<property file="build.version"/>     <!-- project version settings -->
 
 	<!-- get date and time information -->
 	<tstamp><format property="YEAR" pattern="yyyy"/></tstamp>
 
 	<!-- Build version identification properties (set if not in "build.version") -->
-	<property file="build.version"/>        <!-- bring in the build version information -->
 	<property name="build.longname"         value="Unknown"/> <!-- set in build.version -->
 	<property name="build.shortname"        value="unknown"/> <!-- set in build.version -->
 	<property name="build.version"          value=""/>        <!-- set in build.version -->
@@ -69,6 +70,7 @@
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
+	<!-- Note that these properties are loaded from build.properties -->
 	<property name="jdk.default.macosx"  location="/Library/Java/Home"/>
 	<property name="jdk.default.win32"   location="c:\Program Files (x86)\Java\jdk1.7.0_13"/>
 	<property name="jdk.default.win64"   location="c:\Program Files\Java\jdk1.7.0_13"/>
