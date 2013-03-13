@@ -274,16 +274,16 @@ public class PorticoConstants
 	}
 	
 	/**
-	 * Load the file "etc/portico.properties" into the system properties and then return the
-	 * value of portico.version.
+	 * Load the properties file "build.version" into the system properties and return
+	 * the value of the value of "${build.version} (build ${build.number})"
 	 */
 	private static String getRtiVersion()
 	{
-		if( System.getProperty("app.version") == null )
+		if( System.getProperty("build.version") == null )
 		{
 			try
 			{
-				ResourceLocator.loadPropertiesResource( "build.properties" );
+				ResourceLocator.loadPropertiesResource( "build.version" );
 			}
 			catch( Exception e )
 			{
@@ -291,7 +291,10 @@ public class PorticoConstants
 			}
 		}
 		
-		return System.getProperty( "app.version", "unknown" );
+		//  
+		String buildVersion = System.getProperty( "build.version", "unknown" );
+		String buildNumber = System.getProperty( "build.number", "unknown" );
+		return buildVersion + " (build "+buildNumber+")";
 	}
 
 	/**

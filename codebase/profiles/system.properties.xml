@@ -41,12 +41,13 @@
 
 	<!-- Build version identification properties (set if not in "build.version") -->
 	<property file="build.version"/>        <!-- bring in the build version information -->
-	<property name="app.shortname"          value="portico"/> <!-- set in build.version -->
-	<property name="app.version.number"     value="unknown"/> <!-- set in build.version -->
-	<property name="app.version.tag"        value=""/>        <!-- set in build.version -->
-	<property name="app.version"            value="${app.version.number}${app.version.tag}"/>
-	<property name="app.license"            location="LICENSE.${ant.project.name}"/>
-	<property name="build.number"           value="0"/>       <!-- overridden from command line-->
+	<property name="build.longname"         value="Unknown"/> <!-- set in build.version -->
+	<property name="build.shortname"        value="unknown"/> <!-- set in build.version -->
+	<property name="build.version"          value=""/>        <!-- set in build.version -->
+	<property name="build.number"           value="0"/>       <!-- overridden from command line -->
+	<property name="license"                location="LICENSE.${ant.project.name}"/>
+	<!-- Distribution Name - compiled from information above -->
+	<property name="dist.name"              value="${build.shortname}-${build.version}"/>
 
 	<!-- Platform Determination Properties -->
 	<!-- These tasks will initialize a bunch of properties based
@@ -86,15 +87,11 @@
 	
 	<!-- Generated Build and Distribution Properties -->
 	<property name="build.dir"              location="build"/>
-	<property name="dist.name"              value="${app.shortname}-${app.version}"/>
-	
 	<property name="dist.dir"               location="dist"/>
 	<property name="sandbox.dir"            location="${dist.dir}/${dist.name}"/>
-	<property name="dist.lib.dir"           location="${sandbox.dir}/lib"/>
-	<property name="dist.bin.dir"           location="${sandbox.dir}/bin"/>
-	<property name="dist.etc.dir"           location="${sandbox.dir}/etc"/>
-	<property name="dist.include.dir"       location="${sandbox.dir}/include"/>
-	<property name="dist.examples.dir"      location="${sandbox.dir}/examples"/>
-	<property name="dist.zip.file"          location="${dist.dir}/${dist.name}-${platform}.zip"/>
-	<property name="dist.tgz.file"          location="${dist.dir}/${dist.name}-${platform}.tar.gz"/>
+	<property name="sandbox.lib.dir"        location="${sandbox.dir}/lib"/>
+	<property name="sandbox.bin.dir"        location="${sandbox.dir}/bin"/>
+	<property name="sandbox.etc.dir"        location="${sandbox.dir}/etc"/>
+	<property name="sandbox.include.dir"    location="${sandbox.dir}/include"/>
+	<property name="sandbox.examples.dir"   location="${sandbox.dir}/examples"/>
 </project>

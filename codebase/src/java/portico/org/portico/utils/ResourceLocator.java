@@ -89,6 +89,25 @@ public class ResourceLocator
 	 */
 	public static Properties loadPropertiesFile( String filename ) throws JConfigurationException
 	{
+		return loadPropertiesFile( filename, "" );
+	}
+
+	/**
+	 * Load the specified properties file into a properties instance, prefixing all found
+	 * properties with the given string. If the string is null or empty, no prefix will be added.
+	 * If the prefix contains a value, it will be put on the front of each key, separated by a "."
+	 * character. For example, the prefix of "portico" would cause "portico." to be prefixed to
+	 * all keys found in the properties file.
+	 * 
+	 * If the file cannot be open or read, or a general error occurs, a
+	 * {@link JConfigurationException} will be thrown.
+	 *  
+	 * @param filename The name of the properties file to load
+	 * @param prefix The prefix to apply to all properties found in the specified properties file
+	 */
+	public static Properties loadPropertiesFile( String filename, String prefix )
+		throws JConfigurationException
+	{
 		// check to see if the file exists //
 		File file = new File( filename );
 		if( file.canRead() == false )
@@ -107,6 +126,20 @@ public class ResourceLocator
 		{
 			throw new JConfigurationException( "Error opening properties file [" +
 			                                   file.getAbsolutePath() + "]: "+ io.getMessage(), io );
+		}
+		
+		// apply the prefix
+		if( prefix != null && !prefix.trim().isEmpty() )
+		{
+			prefix = prefix.trim();
+			Properties prefixedProperties = new Properties();
+			for( Object key : properties.keySet() )
+			{
+				prefixedProperties.put( prefix+"."+key.toString(), properties.get(key) );
+			}
+			
+			// replace the properties with the new set
+			properties = prefixedProperties;
 		}
 		
 		// load the properties as system properties //
@@ -129,6 +162,29 @@ public class ResourceLocator
 	 */
 	public static Properties loadPropertiesResource( String resource ) throws JConfigurationException
 	{
+		return loadPropertiesResource( resource, "" );
+	}
+
+	/**
+	 * Load the specified properties resource into a properties instance, prefixing all found
+	 * properties with the given string. If the string is null or empty, no prefix will be added.
+	 * If the prefix contains a value, it will be put on the front of each key, separated by a "."
+	 * character. For example, the prefix of "portico" would cause "portico." to be prefixed to
+	 * all keys found in the properties file.
+	 * 
+	 * If the file cannot be open or read, {@link JConfigurationException} will be thrown.
+	 * 
+	 * NOTE: This differs from {@link #loadPropertiesFile(String)} in that it will try to
+	 * find the file as a system resource (located on the classpath and within jar/archives on the
+	 * classpath) where the other method will only load a file that exists direclty on the
+	 * filesystem.
+	 *  
+	 * @param resource The name of the resource representing the properties to load
+	 * @param prefix The prefix to apply to all properties found in the specified properties file
+	 */
+	public static Properties loadPropertiesResource( String resource, String prefix )
+		throws JConfigurationException
+	{
 		// find the resource //
 		URL url = ResourceLocator.locateResource( resource );
 		if( url == null )
@@ -147,10 +203,23 @@ public class ResourceLocator
 			throw new JConfigurationException( "Error opening properties resource [" + url + "]: " +
 			                                   io.getMessage(), io );
 		}
+		
+		// apply the prefix
+		if( prefix != null && !prefix.trim().isEmpty() )
+		{
+			prefix = prefix.trim();
+			Properties prefixedProperties = new Properties();
+			for( Object key : properties.keySet() )
+			{
+				prefixedProperties.put( prefix+"."+key.toString(), properties.get(key) );
+			}
+			
+			// replace the properties with the new set
+			properties = prefixedProperties;
+		}
 
 		// load the properties into the system properties and return
 		System.getProperties().putAll( properties );
 		return properties;
 	}
-	
 }

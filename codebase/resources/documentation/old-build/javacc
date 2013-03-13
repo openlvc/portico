@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# for 1.3 parser command is:
-#./javacc -OUTPUT_DIRECTORY=./src-java/portico/org/portico/impl/hla13/fomparser/ resources/fomparser/hla13/FOM.jj
-
-./support/javacc/javacc-4.0beta1/bin/javacc $*

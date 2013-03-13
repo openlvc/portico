@@ -147,7 +147,7 @@
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
 			<filterset begintoken="[" endtoken="]">
-				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
+				<filter token="jarfile" value="${sandbox.lib.dir}/portico.jar"/>
 			</filterset>
 		</copy>
 		<echo>Copied testing resources to ${test13.complete.dir}</echo>
@@ -162,7 +162,7 @@
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
 			<env key="PATH" path="${hla13.complete.dir};${jdk.home.win32}\jre\bin\client"/>
 			<env key="PORTICO_DEBUG" value="OFF"/>
-			<env key="CLASSPATH" path="${dist.lib.dir}\portico.jar"/>
+			<env key="CLASSPATH" path="${sandbox.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
 		</exec>
@@ -196,21 +196,21 @@
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
 		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${dist.lib.dir}"/>
-		<copy todir="${dist.lib.dir}">
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
 			<fileset dir="${hla13.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
 		</copy>
 		<!-- Copy across the C++ dlls -->
-		<mkdir dir="${dist.bin.dir}"/>
-		<copy todir="${dist.bin.dir}">
+		<mkdir dir="${sandbox.bin.dir}"/>
+		<copy todir="${sandbox.bin.dir}">
 			<fileset dir="${hla13.complete.dir}" includes="**/*.dll"/>
 		</copy>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
 		<!-- ================================= -->
-		<mkdir dir="${dist.examples.dir}/cpp/hla13"/>
-		<copy todir="${dist.examples.dir}/cpp/hla13">
+		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
+		<copy todir="${sandbox.examples.dir}/cpp/hla13">
 			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
 	</target>

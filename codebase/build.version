@@ -1,16 +1,17 @@
-# The application used on archives and installers
-app.shortname=portico
+# This file contains details used to configure various version properties
+# of the build. This feeds into things like installer names, versions
+# stamped on DLLs, copyright notices and the like. You can control all
+# these properties from this file if you wish, although some of them are
+# designed to be overridden from the command line by the build system.
 
-# The build process uses a build number for a number of tasks.
-# The full version string is built from these two properties.
-#
-# e.g. To get "2.0-dev" you'd have:
-#   app.version.number = 2.0
-#   app.version.tag = -dev
-#   
-# You can override any of these values from the command line
-# with the -Dapp.version.number=xxxx argument.
-#
-app.version.number=2.0
-app.version.tag=-development
+# Long name - full name of the project
+build.longname = The Portico Project
 
+# Short name - used for the installer file name
+build.shortname = portico
+
+# Build Version - numerical version of the software
+build.version = 2.0.0-dev
+
+# Build Number - set by CI server, official build number (0 for dev builds)
+build.number = 0

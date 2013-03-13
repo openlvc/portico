@@ -145,16 +145,16 @@
 		<!-- ========================= -->
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
-		<mkdir dir="${dist.lib.dir}/gcc4"/>
-		<copy todir="${dist.lib.dir}/gcc4">
+		<mkdir dir="${sandbox.lib.dir}/gcc4"/>
+		<copy todir="${sandbox.lib.dir}/gcc4">
 			<fileset dir="${dlc13.complete.dir}" includes="**/*.dylib"/>
 		</copy>
 
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1364"/>    <!-- dlc13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="librti1364d"/>   <!-- dlc13 -->
-		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="librti1364"/>    <!-- dlc13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="librti1364d"/>   <!-- dlc13 -->
+		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->

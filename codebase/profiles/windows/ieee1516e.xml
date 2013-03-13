@@ -151,21 +151,21 @@
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
 		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${dist.lib.dir}"/>
-		<copy todir="${dist.lib.dir}">
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
 		</copy>
 		<!-- Copy across the C++ dlls -->
-		<mkdir dir="${dist.bin.dir}"/>
-		<copy todir="${dist.bin.dir}">
+		<mkdir dir="${sandbox.bin.dir}"/>
+		<copy todir="${sandbox.bin.dir}">
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dll"/>
 		</copy>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
 		<!-- ================================= -->
-		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
-		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
+		<mkdir dir="${sandbox.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${sandbox.examples.dir}/cpp/ieee1516e">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
 	</target>

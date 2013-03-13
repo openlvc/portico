@@ -31,9 +31,11 @@
 		<!-- Generate the tarball with the sandbox and the JRE in it -->
 		<!-- We have to use exec as the result tar task gives us problems with
 		     permissions and symlinks -->
-		<echo>Creating ${dist.tgz.file}</echo>
+		<property name="tarball.file" location="${dist.dir}/${dist.name}-macosx.tar.gz"/>
+
+		<echo>Creating tarball: ${tarball.file}</echo>
 		<exec executable="tar" dir="${dist.dir}" failonerror="true">
-			<arg line="-czpf ${dist.tgz.file} -s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.macosx} ./jre"/>
+			<arg line="-czpf ${tarball.file} -s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.macosx} ./jre"/>
 		</exec>
 
 		<!--<echo>Running MacOS DMG Generation</echo>-->
