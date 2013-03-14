@@ -30,6 +30,9 @@
 	<!-- compiler properties -->
 	<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>
 	<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>
+	<!-- Sets property to value safe for visual studio build numbers: 1,1,1,1 -->
+	<visualStudioBuildNumber property="compiler.product.version"
+	                         value="${build.version}.${build.number}"/>
 
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
@@ -363,6 +366,7 @@
 					 compilerArgs="${_cargs}"
 					 linkerArgs="${_largs}">
 				<fileset dir="${hla13.src.dir}">
+					<include name="**/*.rc"/>
 					<include name="time/RTIfedTime.cpp"/>
 					<include name="time/FedTime.cpp"/>
 					<include name="time/FedTimeFactory.cpp"/>
@@ -375,6 +379,8 @@
 				<define name="BUILDING_RTI"/>
 				<define name="BUILDING_FEDTIME"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
+				<define name="PRODUCT_INTERNAL_NAME=libFedTime${_bitness}${_d}"/>
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 			</cpptask>
 
@@ -389,6 +395,7 @@
 					 linkerArgs="${_largs}">
 				<fileset dir="${hla13.src.dir}">
 					<include name="**/*.cpp"/>
+					<include name="**/*.rc"/>
 					<exclude name="time/RTIfedTime.cpp"/>
 					<exclude name="time/FedTime.cpp"/>
 					<exclude name="time/FedTimeFactory.cpp"/>
@@ -399,6 +406,8 @@
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
+				<define name="PRODUCT_INTERNAL_NAME=libRTI-NG${_bitness}${_d}"/>
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 				<library path="${hla13.complete.dir}/@{compiler}"
 						 libs="libFedTime${_bitness}${_d}"/>
