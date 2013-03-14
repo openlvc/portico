@@ -17,6 +17,7 @@ package hlaunit.hla13.declaration;
 import hlaunit.hla13.common.Abstract13Test;
 import hlaunit.hla13.common.Test13Federate;
 
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -108,6 +109,7 @@ public class DeclarationManagementSaveRestoreTest extends Abstract13Test
 		// make sure the publication was restored
 		defaultFederate.quickReflect( objectHandle, "aa" );
 		secondFederate.fedamb.waitForUpdate( objectHandle );
+		Assert.fail( "Failing on purpose" );
 	}
 
 	/////////////////////////////////////////////////////////////////////
