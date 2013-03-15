@@ -49,6 +49,7 @@
 	<property name="license"                location="LICENSE.${ant.project.name}"/>
 	<!-- Distribution Name - compiled from information above -->
 	<property name="dist.name"              value="${build.shortname}-${build.version}"/>
+	<echo>Build Version: ${build.shortname}-${build.version} (build ${build.number})</echo>
 
 	<!-- Platform Determination Properties -->
 	<!-- These tasks will initialize a bunch of properties based
