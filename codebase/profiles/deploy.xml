@@ -61,7 +61,7 @@
 		     trust="true"
 		     verbose="false"
 		     sftp="true">
-			<fileset dir="${ssh.from.dir}" includes="*.tar.gz,*.zip,*.exe"/>
+			<fileset dir="${ssh.from.dir}" includes="*.tar.gz,*.zip,*.exe, build-*.txt"/>
 		</scp>
 	</target>
 
