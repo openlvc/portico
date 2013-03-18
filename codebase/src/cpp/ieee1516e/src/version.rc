@@ -1,0 +1,101 @@
+/////////////////////////////////////////////////////////////////////////////
+// DLL property settings
+//  This includes a bunch of macro jiggery-pokery to ensure we have
+//  sensible defaults, but that these can be overriden as part of
+//  the application build
+
+// String generating macros
+// Two levels of macro because I want to use a macro expansion in
+// the argument for a marco
+//    - http://gcc.gnu.org/onlinedocs/cpp/Stringification.html
+#define wrapMacroInString(value) wrapInString(value)
+#define wrapInString(value) #value
+
+// Product Name
+#ifndef PRODUCT_NAME
+	#define PRODUCT_NAME The Portico Project
+#endif
+
+// Company
+#ifndef PRODUCT_COMPANY
+	#define PRODUCT_COMPANY Calytrix Technologies
+#endif
+
+// Comments
+#ifndef PRODUCT_COMMENTS
+	#define PRODUCT_COMMENTS IEEE-1516e Portico Open Source RTI
+#endif
+
+// File Description
+#ifndef PRODUCT_DESCRIPTION
+	#define PRODUCT_DESCRIPTION IEEE-1516e Portico Open Source RTI
+#endif
+
+// Legal Copyright
+#ifndef PRODUCT_COPYRIGHT
+	#define PRODUCT_COPYRIGHT Copyright (C) 2013
+#endif
+
+// Legal Trademarks
+#ifndef PRODUCT_TRADEMARKS
+	#define PRODUCT_TRADEMARKS Empty
+#endif
+
+// Product Version -- PLEASE PROVIDE
+#ifndef PRODUCT_VERSION
+	#define PRODUCT_VERSION 0,0,0,0
+#endif
+
+// File Version -- defaults to product version
+#ifndef FILE_VERSION
+	#define FILE_VERSION PRODUCT_VERSION
+#endif
+
+// Product Internal Name -- PLEASE PROVIDE
+#ifndef PRODUCT_INTERNAL_NAME
+	#define PRODUCT_INTERNAL_NAME librti1516e
+#endif
+
+// InternalName -- defaults to "internalName.dll"
+#ifndef PRODUCT_ORIGINAL_NAME
+	#define PRODUCT_ORIGINAL_NAME PRODUCT_INTERNAL_NAME.dll
+#endif
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+1 VERSIONINFO
+ FILEVERSION PRODUCT_VERSION
+ PRODUCTVERSION PRODUCT_VERSION
+ FILEFLAGSMASK 0x17L
+
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904b0"
+		BEGIN
+			VALUE "Comments", wrapMacroInString(PRODUCT_COMMENTS)
+			VALUE "CompanyName", wrapMacroInString(PRODUCT_COMPANY)
+			VALUE "FileDescription", wrapMacroInString(PRODUCT_DESCRIPTION)
+			VALUE "FileVersion", wrapMacroInString(FILE_VERSION)
+			VALUE "InternalName", wrapMacroInString(PRODUCT_INTERNAL_NAME)
+			VALUE "LegalCopyright", wrapMacroInString(PRODUCT_COPYRIGHT)
+			VALUE "LegalTrademarks", wrapMacroInString(PRODUCT_TRADEMARKS)
+			VALUE "OriginalFilename", wrapMacroInString(PRODUCT_ORIGINAL_NAME)
+			VALUE "ProductName", wrapMacroInString(PRODUCT_NAME)
+			VALUE "ProductVersion", wrapMacroInString(PRODUCT_VERSION)
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x409, 1200
+	END
+END

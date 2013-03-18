@@ -158,6 +158,8 @@ public class LRC
 		this.specHelper = specHelper;
 		this.logger = Logger.getLogger( "portico.lrc" );
 		this.logger.debug( "Creating new LRC" );
+		this.logger.debug( "Portico version: "+PorticoConstants.RTI_VERSION );
+		this.logger.debug( "Interface: "+specHelper.getHlaVersion() );
 
 		// create the notification manager
 		this.notificationManager = NotificationManager.newNotificationManager();

@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="deploy">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		This build script provides targets that will deploy local artefacts
+		to a build server and perform all the necessary steps to automatate
+		the required interactions.
+	</description>
+
+	<!-- ================================================= -->
+	<!--                Common Properties                  -->
+	<!-- ================================================= -->
+	<!-- Common Properties -->
+
+
+	<!-- ================================================= -->
+	<!--              task: deploy.nightly                 -->
+	<!-- ================================================= -->
+	<target name="nightly" description="Deploy the build artefacts to the nightly archive via ssh">
+		<!--<property name="ssh.host"        value=""/>-->
+		<property name="ssh.port"        value="22"/>
+		<!--<property name="ssh.user"        value=""/>-->
+		<!--<property name="ssh.pass"        value=""/>-->
+		<!--<property name="ssh.nightly.dir" value=""/>-->
+		<property name="ssh.from.dir"    value="${dist.dir}"/> <!-- local dir with resources -->
+
+		<!-- Validate Settings -->
+		<fail unless="ssh.host" message="You must set the property ssh.host"/>
+		<fail unless="ssh.user" message="You must set the property ssh.user"/>
+		<fail unless="ssh.pass" message="You must set the property ssh.pass"/>
+		<fail unless="ssh.nightly.dir" message="Property ssh.nightly.dir must point to remote directory"/>
+
+		<!-- Create the directory and remove any one that needs to be pruned -->
+		<echo>Creating nightly build directory on host</echo>
+		<sshexec host="${ssh.host}"
+		         port="${ssh.port}"
+		         username="${ssh.user}"
+		         password="${ssh.pass}"
+		         trust="true"
+		         command="mkdir -p ${ssh.nightly.dir}/${DSTAMP}"/>
+
+		<!-- Copy up the distribution resources -->
+		<echo>Copying installers to nightly build directory</echo>
+		<scp todir="${ssh.user}@${ssh.host}:${ssh.nightly.dir}/${DSTAMP}"
+		     password="${ssh.pass}"
+		     port="${ssh.port}"
+		     trust="true"
+		     verbose="false"
+		     sftp="true">
+			<fileset dir="${ssh.from.dir}" includes="*.tar.gz,*.zip,*.exe, build-*.txt"/>
+		</scp>
+	</target>
+
+	<!-- ================================================= -->
+	<!--                 task: deploy.ftp                  -->
+	<!-- ================================================= -->
+	<!-- This was a work-in-progress until it became apparent that it is SO slow -->
+	<!-- Left here in case we ever want to resurrect it -->
+	<target name="ftp">
+		<property name="ftp.server"      value="remoteftp.calytrix.com"/>
+		<property name="ftp.user"        value="swuser@calytrix.com"/>
+		<property name="ftp.pass"        value="7r3cREka"/>
+
+		<local name="prune"/>
+		<tstamp><format property="prune" pattern="yyyyMMdd" offset="-3" unit="day"/></tstamp>
+		<property name="ftp.nightly.dir" value="Products/Portico/nightly/${DSTAMP}"/>
+		<property name="ftp.prune.dir"   value="Products/Portico/nightly/${prune}"/>
+
+
+		<!-- Create the directory for this new nightly -->
+		<echo>Creating nightly build directory</echo>
+		<ftp action="mkdir"
+		     remotedir="${ftp.nightly.dir}"
+		     server="${ftp.server}"
+		     userid="${ftp.user}"
+		     password="${ftp.pass}"/>
+
+		<!-- Upload the nightly builds -->
+		<echo>Uploading nightly build files</echo>
+		<ftp action="put"
+		     remotedir="${ftp.nightly.dir}"
+		     binary="yes"
+		     passive="yes"
+		     skipFailedTransfers="true"
+		     verbose="true"
+		     server="${ftp.server}"
+		     userid="${ftp.user}"
+		     password="${ftp.pass}">
+		     <!-- everything in the dist directory -->
+			<fileset dir="${dist.dir}" includes="*.tar.gz,*.zip,*.exe"/>
+		</ftp>
+
+		<!-- *** NOTE*** -->
+		<!--  Pruning was added to prevent the build-up of nightlies consuming
+		      too much disk space over time, however fighting with the FTP plugin
+		      to ensure that the process can tolerate failure (such as a directory
+		      not existing or the like) has proven harder than expected. Will
+		      pursue through a server-side, cronjob solution -->
+		<!-- Prune the folder for nightlies from 7 days ago -->
+  		<!-- 1. create the directory - in case it doesn't exist - this just means the removal
+  		     works, because if it fails, the stupid ftp task borks and fails the build -->
+		<!--
+		<ftp action="mkdir"
+		     remotedir="${ftp.prune.dir}"
+		     server="${ftp.server}"
+		     userid="${ftp.user}"
+		     password="${ftp.pass}"/>
+		-->
+
+		<!-- 2. delete all files in the directory -->
+		<!--
+  		<ftp action="delete"
+  			 server="${ftp.server}"
+  			 userid="${ftp.user}"
+  			 password="${ftp.pass}">
+  			<fileset>
+  				<include name="${ftp.prune.dir}/*.*"/>
+  			</fileset>
+  		</ftp>
+  		-->
+
+  		<!-- 3. remove the actual directory -->
+  		<!--
+		<ftp action="rmdir"
+		     remotedir="${ftp.prune.dir}"
+		     server="${ftp.server}"
+		     userid="${ftp.user}"
+		     password="${ftp.pass}">
+			<fileset>
+				<include name="${prune}/**"/>
+			</fileset>
+		</ftp>
+		-->
+	</target>
+
+</project>
