@@ -239,7 +239,7 @@
 		<mkdir dir="${sandbox.dir}/plugins"/>
 
 		<!-- copy across the dependant libraries -->
-		<mkdir dir="${dist.lib.dir}"/>
+		<mkdir dir="${sandbox.lib.dir}"/>
 
 		<!-- copy across the resources -->
 		<copy todir="${sandbox.dir}">
@@ -253,17 +253,17 @@
 		<!-- Example Federates -->
 		<!-- ================= -->
 		<!-- copy across the HLA1.3 example federate -->
-		<mkdir dir="${dist.examples.dir}/java/hla13"/>
-		<copy todir="${dist.examples.dir}/java/hla13">
+		<mkdir dir="${sandbox.examples.dir}/java/hla13"/>
+		<copy todir="${sandbox.examples.dir}/java/hla13">
 			<fileset dir="${examples.hla13.dir}" includes="**/*"/>
 		</copy>
 		<!-- copy across the IEEE-1516e example federate -->
-		<mkdir dir="${dist.examples.dir}/java/ieee1516e"/>
-		<copy todir="${dist.examples.dir}/java/ieee1516e">
+		<mkdir dir="${sandbox.examples.dir}/java/ieee1516e"/>
+		<copy todir="${sandbox.examples.dir}/java/ieee1516e">
 			<fileset dir="${examples.ieee1516e.dir}" includes="**/*"/>
 		</copy>
 
-		<chmod dir="${dist.examples.dir}" perm="777" includes="**/*.sh"/>
+		<chmod dir="${sandbox.examples.dir}" perm="777" includes="**/*.sh"/>
 		
 		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->
 	</target>

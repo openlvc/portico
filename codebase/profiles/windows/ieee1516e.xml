@@ -27,6 +27,13 @@
 	<!-- ================================================ -->
 	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
 	<!-- ================================================ -->
+	<!-- compiler properties -->
+	<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>
+	<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>
+	<!-- Sets property to value safe for visual studio build numbers: 1,1,1,1 -->
+	<visualStudioBuildNumber property="compiler.product.version"
+	                         value="${build.version}.${build.number}"/>
+
 	<!-- source -->
 	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
 	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
@@ -151,21 +158,21 @@
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
 		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${dist.lib.dir}"/>
-		<copy todir="${dist.lib.dir}">
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
 		</copy>
 		<!-- Copy across the C++ dlls -->
-		<mkdir dir="${dist.bin.dir}"/>
-		<copy todir="${dist.bin.dir}">
+		<mkdir dir="${sandbox.bin.dir}"/>
+		<copy todir="${sandbox.bin.dir}">
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dll"/>
 		</copy>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
 		<!-- ================================= -->
-		<mkdir dir="${dist.examples.dir}/cpp/ieee1516e"/>
-		<copy todir="${dist.examples.dir}/cpp/ieee1516e">
+		<mkdir dir="${sandbox.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${sandbox.examples.dir}/cpp/ieee1516e">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
 	</target>
@@ -318,6 +325,7 @@
 			         linkerArgs="${_largs}">
 				<fileset dir="${ieee1516e.src.dir}">
 					<include name="**/*.cpp"/>
+					<include name="**/*.rc"/>
 					<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
 				</fileset>
 				<includepath path="${ieee1516e.include.dir}"/>
@@ -326,6 +334,8 @@
 				<define name="BUILDING_RTI"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
+				<define name="PRODUCT_INTERNAL_NAME=librti1516e${_bitness}${_d}"/>
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 			</cpptask>			
 
@@ -341,6 +351,7 @@
 			         linkerArgs="${_largs}">
 				<fileset dir="${ieee1516e.src.dir}">
 					<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
+					<include name="**/*.rc"/>
 				</fileset>
 				<includepath path="${ieee1516e.include.dir}"/>
 				<includepath path="${ieee1516e.src.dir}"/>
@@ -348,6 +359,8 @@
 				<define name="BUILDING_FEDTIME"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
+				<define name="PRODUCT_INTERNAL_NAME=libfedtime1516e${_bitness}${_d}"/>
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 				<library path="${ieee1516e.complete.dir}/@{compiler}"
 				         libs="rti1516e${_bitness}${_d}"/>

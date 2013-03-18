@@ -12,10 +12,10 @@
 /.settings/org.eclipse.wst.validation.prefs
 
 # /codebase/
+/codebase/local.properties
 /codebase/build
 /codebase/logs
 /codebase/dist
-/codebase/build.properties
 /codebase/savedata
 
 # /codebase/documentation/

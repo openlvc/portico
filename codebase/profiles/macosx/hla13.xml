@@ -104,7 +104,7 @@
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
 			<filterset begintoken="[" endtoken="]">
-				<filter token="jarfile" value="${dist.lib.dir}/portico.jar"/>
+				<filter token="jarfile" value="${sandbox.lib.dir}/portico.jar"/>
 			</filterset>
 		</copy>
 		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
@@ -119,7 +119,7 @@
 			<arg line="${test13.complete.dir}/test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
 			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
-			<env key="CLASSPATH" path="${dist.lib.dir}/portico.jar"/>
+			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
 		</exec>
@@ -155,27 +155,27 @@
 		<!-- Copy across the libraries -->
 		<!-- ========================= -->
 		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${dist.lib.dir}"/>
-		<copy todir="${dist.lib.dir}">
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
 			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>
 		</copy>
 
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
-		<symlink-dylib directory="${dist.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
-		<chmod dir="${dist.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
+		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
 		<!-- ================================= -->
-		<mkdir dir="${dist.examples.dir}/cpp/hla13"/>
-		<copy todir="${dist.examples.dir}/cpp/hla13">
+		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
+		<copy todir="${sandbox.examples.dir}/cpp/hla13">
 			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
-		<chmod dir="${dist.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
+		<chmod dir="${sandbox.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->

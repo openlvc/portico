@@ -106,6 +106,9 @@
 	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>
 	<include file="profiles/windows/installer.xml"   as="installer"      if="platform.windows"/>
 
+	<!-- Deployment Tasks -->
+	<include file="profiles/deploy.xml"              as="deploy"/>
+
 	<!-- =========================================================== -->
 	<!-- Convenience targets for specifying debug or release builds. -->
 	<!-- =========================================================== -->
