@@ -145,7 +145,7 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile">
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" unless="build.release">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
@@ -226,9 +226,15 @@
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
-	<!-- Not required for an interface build -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts in with it as
+		 preparation for release.
+	-->
+	<target name="release"
+	        extensionOf="master.release"
+	        depends="clean,test,sandbox"/>
 
-	
 	<!-- ================================================================================= -->
 	<!--                            HLA v1.3 Helper Macros                                 -->
 	<!-- ================================================================================= -->
