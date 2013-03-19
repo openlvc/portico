@@ -133,7 +133,7 @@
 	<!-- ================================================================================= -->
 
 	<!-- Not implemented for IEEE-1516e Inteface -->
-	<target name="test" extensionOf="cpp.test">
+	<target name="test" extensionOf="cpp.test" unless="build.release">
 		<echo>No unit test suite for the C++ IEEE-1516e Interface</echo>
 	</target>
 
@@ -185,7 +185,14 @@
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
-	<!-- Not required for an interface build -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts in with it as
+		 preparation for release.
+	-->
+	<target name="release"
+	        extensionOf="master.release"
+	        depends="clean,test,sandbox"/>
 
 	<!-- ================================================================================= -->
 	<!--                           IEEE-1516e Helper Macros                                -->
