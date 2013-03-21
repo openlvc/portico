@@ -145,7 +145,7 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" unless="build.release">
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" if="disabled">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>

@@ -353,7 +353,7 @@
 
 	<!-- Generate the javadocs and place them in the sandbox. We only do this for a release
 	     build because of the amount of time it takes -->
-	<target name="javadoc" depends="sandbox">
+	<target name="javadoc" depends="sandbox" if="build.release">
 		<!-- Make room in the sandbox for the javadoc. Create a property for shortcut purposes -->
 		<property name="javadoc.dir" value="${sandbox.dir}/documentation/javadoc"/>
 		<mkdir dir="${javadoc.dir}"/>
