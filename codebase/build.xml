@@ -102,7 +102,7 @@
 	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
 
 	<!-- Linux C++ and Installer profiles -->
-	<include file="profiles/linux/installer.xml"     as="installer"      if="platform.linux"/>
+	<include file="profiles/linux/installer.xml"     as="installer"      if="platform.linux64"/>
 
 	<!-- Windows C++ and Installer profiles -->
 	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
