@@ -28,6 +28,7 @@
 
 		<!-- check to make sure the jre dir exists -->
 		<echo>Checking to see if JRE is available for bundling</echo>
+		<echo>  searching in... ${jdk.home.linux64}/jre</echo>
 		<available file="${jdk.home.linux64}/jre" property="jrefound"/>
 		<fail unless="jrefound" message="Could not locate JRE for bundling."/>
 
