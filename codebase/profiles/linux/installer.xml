@@ -23,6 +23,9 @@
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
 	<target name="installer" extensionOf="master.installer">
+		<!-- find the location of the local JRE -->
+		<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
+
 		<!-- check to make sure the jre dir exists -->
 		<echo>Checking to see if JRE is available for bundling</echo>
 		<available file="${jdk.home.linux64}/jre" property="jrefound"/>
@@ -35,7 +38,7 @@
 
 		<echo>Creating tarball: ${tarball.file}</echo>
 		<exec executable="tar" dir="${dist.dir}" failonerror="true">
-			<arg line="-czpf ${tarball.file} -s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.linux64} ./jre"/>
+			<arg line="-czpf ${tarball.file} --transform=s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.linux64} ./jre"/>
 		</exec>
 	</target>
 </project>
