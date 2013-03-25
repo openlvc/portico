@@ -1,7 +1,7 @@
 
-                (IEEE-1516e) The Portico C++ Example Federate
+                  (HLA v1.3) The Portico Java Example Federate
 				
-This file contains information on the IEEE-1516e Portico C++ example federate and how
+This file contains information on the HLA v1.3 Portico Java example federate and how
 to compile and run it.
 
  NOTE: Knowledge of the HLA is assumed, but if you are just getting started out,
@@ -24,34 +24,31 @@ Table of Contents:
  of the HLA API.
  
  The example federate consists of three main files:
-   * main.cpp                   // code to kick the federate off
-   * ExampleCppFederate.cpp     // the bulk of the federate code
-   * ExampleFedAmb.cpp          // example Federate Ambassador
-
- The bulk of the federate code is contained inside the ExampleCppFederate class.
+   * src/hla13/Example13Federate.java           // the bulk of the federate code
+   * src/hla13/Example13FederateAmbassador.java // example Federate Ambassador (callbacks)
+   
+ The bulk of the federate code is contained inside the Example13Federate class.
  This class pretty basic structure and flow designed to show you, in very simple
  terms, code for performing common HLA actions. The main workflow of the federate
  is as follows:
  
    a. Create the RTIambassador
-   b. Connect to the RTI
-   c. Create the Federation (skip if one exists)
-   d. Join the Federation
-   e. Initialize all handles
-   f. Announce a Synchronization Point
-   g. Wait for the user to press Enter
-   h. Achieve the Synchronization Point
-   i. Enable federate's time settings
-   j. Publish and Subscribe
-   k. Register an Object Instance
-   l. Loop 20 times, doing the following each step:
+   b. Create the Federation (skip if one exists)
+   c. Join the Federation
+   d. Initialize all handles
+   e. Announce a Synchronization Point
+   f. Wait for the user to press Enter
+   g. Achieve the Synchronization Point
+   h. Enable federate's time settings
+   i. Publish and Subscribe
+   j. Register an Object Instance
+   k. Loop 20 times, doing the following each step:
        * Update the object's attributes (timestampped and receive order)
        * Send an Interaction            (timestampped and receive order)
        * Request a time advance of 1.0
-   m. Delete the object instance
-   n. Resign from the Federation
-   o. Destroy the Federation (if possible)
-   p. Disconnect from the RTI
+   l. Delete the object instance
+   m. Resign from the Federation
+   n. Destroy the Federation (if possible)
 
  The actual design of the federate is very basic. It just registers an object
  and loops around 20 times, updating its attributes, sending an interaction and
@@ -65,11 +62,25 @@ Table of Contents:
  2. Supported Platforms
 -------------------------------------------------------------------------------
 
- The Portico C++ example federate is supported on:
+ The Portico Java example federate is officially supported on:
 
+  * Java JDK 7 (version 7u17+)
   * Ubuntu 12.04 LTS for 32 and 64-bit
   * Mac OS X Mountain Lion (10.8)+ for 64-bit
-  * Windows 7 32/64-bit with Visual Studio 10
+  * Windows 7 32/64-bit
+
+ --- JDK Requirements ---
+ Please note that you need to have a JDK installed on your system and have
+ the environment variable JAVA_HOME set to point to it in order to compile
+ the example federates. Portico ships with a JRE, but this only supports
+ running Java applications, not compiling them.
+
+ --- JDK Version ---
+ Portico has been built against Java 7 and requires a Java 7 JDK to compile
+ federates for. If you are deploying against a Java 6 environment
+ The federate may work happily with earlier versions of Java, but these are
+ not officially supported, and if you are targeting a Java v6 platform, may
+ require a recompile of the RTI from source.
 
 -------------------------------------------------------------------------------
  3. Compiling and Running the Example Federate
@@ -78,10 +89,9 @@ Table of Contents:
  To help with the process of compilng and running the federate, a number
  of helper scripts have been provided:
  
-   * win32-vc10.bat    // Compile and run on Windows 32-bit
-   * win64-vc10.bat    // Compile and run on Windows 64-bit
-   * linux.sh          // Compile and run on Ubuntu 12.04 LTS
-   * macos.sh          // Compile and run on Mac OS X 10.8+
+   * windows.bat    // Compile and run on Windows
+   * linux.sh       // Compile and run on Ubuntu 12.04 LTS
+   * macos.sh       // Compile and run on Mac OS X 10.8+
 
  Each of the scripts takes the same basic commands:
    
@@ -91,32 +101,33 @@ Table of Contents:
 
  Running on Windows
  -------------------
- To run on Windows, you must have Visual Studio 2010 installed. To properly use
- the helper scripts you MUST open a "Visual Studio 2010 Command Prompt" (ensure
- you open the correct one for 32/64-bit depending on what you hope to compile).
- Once the prompt is open, change into the example directory and you can run the
- helper script: 
+ To run on Windows, you must have an appropriate JDK installed and have the
+ environment variable JAVA_HOME set up to point to it. To use the helper you
+ open a command prompt, change into the example directory and run the batch
+ file from there:
  
-   * [Open Visual Studio 2010 Command Prompt]
-   * cd %RTI_HOME%\examples\cpp\ieee1516e
-   * winXX-vc10 compile                        // win32-vc10 or win64-vc10
-   * winXX-vc10 execute                        // win32-vc10 or win64-vc10                  
+   * [Open Command Prompt]
+   * cd %RTI_HOME%\examples\java\hla13
+   * windows compile
+   * windows execute
 
  Running on Unbuntu 12.04 LTS
  -----------------------------
- To run on Ubuntu, ensure you have g++ installed and then open a command prompt,
+ To run on Ubuntu, ensure you an appropriate JDK installed and have the
+ environment variable JAVA_HOME set up to point at it. From a prompt,
  change into the directory, compile and run using the script:
 
-   * cd $RTI_HOME/examples/cpp/ieee1516e
+   * cd $RTI_HOME/examples/java/hla13
    * ./linux.sh compile
    * ./linux.sh execute
 
  Running on Mac OS X 10.8+
  --------------------------
- To run on Mac OS X, ensure you have the XCode tools (gcc) installed, open a
- termincal and then run the helper script:
+ To run on Mac OS X, ensure you an appropriate JDK installed and have the
+ environment variable JAVA_HOME set up to point at it. From a prompt,
+ change into the directory, compile and run using the script:
 
-   * cd $RTI_HOME/examples/cpp/ieee1516e
+   * cd $RTI_HOME/examples/java/hla13
    * ./macos.sh compile
    * ./macos.sh execute
 
@@ -127,7 +138,7 @@ Table of Contents:
  
    * Start the first example federate (don't hit enter when it says so)
    * Start a second example federate
-      * winXX-vc10 execute secondFederate
+      * windows execute secondFederate
       * ./linux.sh execute secondFederate
       * ./macos.sh execute secondFederate
    * Wait until the second federate is ready, then hit enter in both screens.
@@ -144,7 +155,7 @@ Table of Contents:
  To figure out which commands you need to compile with and properly link to
  the RTI, see the various execution helper scripts. You can also consult the
  documentation online at http://www.porticoproject.org.
-
+ 
  Visual Studio Compiler Support
  -------------------------------
  If you want to use a different version of the Visual Studio compiler, you can.
