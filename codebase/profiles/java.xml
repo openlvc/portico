@@ -299,6 +299,7 @@
 
 			<!-- MANIFEST -->
 			<manifest>
+				<attribute name="Main-Class" value="org.portico.Main"/>
 				<attribute name="Built-By" value="Calytrix Technologies"/>
 				<section name="org/portico">
 					<attribute name="Implementation-Title" value="portico"/>
