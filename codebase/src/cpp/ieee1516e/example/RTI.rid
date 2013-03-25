@@ -1,0 +1,259 @@
+# ================================
+# Portico RTI Initialization Data
+# ================================
+# This file contains all the configuration options for Portico. They are initially all
+# commented out, so you can selectively enable the relevant pieces of configuration you require.
+#
+# All options are formatted as name=value pairs, the '#' and '!' characters mark a line as a comment
+#
+# To make use of this file, put it in the directory that your federate is executed from, or set the
+# RTI_RID_FILE environment variable to point at wherever it is located.
+#
+
+# ===================================
+# 1. General Portico Logging Options
+# ===================================
+# (NOTE) Some sub-components have their own log settings. See the sections relaing to them for
+#        those particular properties.
+
+# (1.1) Portico Log Directory
+#        Specify the directory to put the Portico log-files into. This defaults to "logs" and
+#        if a relative path is used, it will be releative to the location of the process that
+#        executed Portico
+#
+# portico.logdir = logs
+
+# (1.2) Portico Log Level
+#        Specify the level that Portico will log at. Valid values are: TRACE, DEBUG, INFO, WARN,
+#        ERROR, FATAL, OFF. The default value is "WARN".
+#
+# portico.loglevel = INFO
+
+# (1.3) Portico Container Log Level
+#        Specify the log level that Portico will use for its infrastructure elements (like the
+#        messaging framework, configuration, etc...). By default, this logger is disabled. 
+#
+# portico.container.loglevel = OFF
+
+# (1.4) Print FOM when federate Joins
+#        When a federate joins a federation, Portico can pretty-print the FOM data of that
+#        federation. If this is enabled, the FOM is logged to the INFO level (so make sure you
+#        have logging turned up high enough). By default this is disabled.
+#
+# portico.fom.print = disabled
+
+# (1.5) Logging by Handle/Name
+#        Making sense of log files can be difficult. To help make sense of this data, various bits
+#        of HLA information can be logged by their HLA handle or their name. For example, an HLA
+#        object class can be logged by its handle, or by its name.
+#
+#        Any items specified in logWithHandles are logged using their handles (and vice versa for
+#        logWithNames). The format of these properties is a comma-separated list containing any of
+#        the following identifiers (defaults specified in parentheses):
+#
+#        objectClass       (handle)
+#        attributeClass    (handle)
+#        interactionClass  (handle)
+#        parameterClass    (handle)
+#        objectInstance    (name)
+#        space             (handle)
+#        dimension         (handle)
+#        federate          (name)
+#
+#        (NOTE) You only have to specify the bits you want. If a value isn't specified in either
+#               list, it will assume its default value. If a value is specified in both lists, the
+#               logWithNames takes precedence.
+#
+# portico.logWithHandles=objectClass,attributeClass,interactionClass,parameterClass,space,dimension
+# portico.logWithNames=objectInstance,federate
+
+
+# ================================
+# 2. HLA Related RTI Properties
+# ================================
+# These settings relate to how the RTI works with regard to HLA operations
+
+# (2.1) Management Object Model
+#        This controls whether or not the MOM is enabled. By default it is turned on, but if you
+#        don't want it you can turn it off. Valid values are "enabled" and "disabled"
+#
+# portico.mom = enabled
+
+# (2.2) Save/Restore Data Files Directory
+#        This specifies the path to the directory where federate save/restore data files are stored.
+#        By default, this is the "savedata" directory relative to the directory that the federate
+#        was launched from. Any valid operating system path can be specified, as long as it is
+#        writeable by the operating system user under which the federate is executing
+#
+# portico.saveDirectory = ./savedata
+
+# (2.3) Unsupported Methods Throw Exceptions
+#        Portico does not support all the RTIambassador methods in all interface versions. To alert
+#        users to situations where a method is called that isn't support, Portico will log a warning
+#        and take no action. This is often a non-fatal action, but in some situations it may cause
+#        federates to stall or misbehave. As such, if this value is set to true, an RTIinternalError
+#        will be thrown when an unsupported method is called. By default, this is false.
+#
+# portico.unsupportedExceptions = false
+
+# (2.4) Object Names Negotiated With Federation
+#        When registering an object with a specific name, to ensure that name is unique, the
+#        federate much negotiate with the rest of the federation. This incurs a performance hit.
+#        By default, this negotiation is turned off. If you have problems with conflicting names,
+#        set this property to true. In the default mode (negotiation disabled) the RTI is not
+#        totally standards compliant, and conflicts can occur if federates try to register objects
+#        with the same name at the same time (if the requests are sufficiently spaced out in time,
+#        this problem shouldn't occur).
+#
+# portico.object.negotiateNames = false
+
+# (2.5) Unique Federate Names
+#        By default, Portico, like other RTIs, will ensure that all federates in a federation have
+#        unique names. However, in some situations this is not desirable (like running Portico with
+#        JSAF or VBS2). In this case, you can turn the unique name checking to false. When you do
+#        this, what happens is that when Portico sees a name conflict, rather than throwing an
+#        exception it will change the requested name from "name" to "name (handle)" thus making it
+#        unique. Default is true, set to false to turn unique name checking off.
+#
+# portico.uniqueFederateNames = true
+
+
+# ================================
+# 3. Advanced Options
+# ================================
+# These really shouldn't be changed unless you really know what you want
+
+# (3.1) Portico Plugin Path
+#        This is a path that should be searched for Portico plugins. The format is a ";" separated
+#        list of locations for windows, or a ":" separated list for *nix. The default value is empty.
+#        (NOTE) Two locations are *ALWAYS* searched: ./plugins and $RTI_HOME/plugins
+#
+# portico.pluginpath = /opt/portico/plugins
+
+# (3.2) Portico Communications Binding
+#        This defines the communications binding Portico uses to talk to the federation. Two
+#        implementations are provided with Portico: "jgroups" (default) and "jvm". If you have
+#        a different binding, you can specify the fully-qualified name of the class that implements
+#        IConnection (e.g. an alternate way to specify the default JGroups communications binding
+#        would be "org.portico.bindings.jgroups.JGroupsConnection")
+#        DEFAULT = jgroups
+#
+# portico.connection = jgroups
+
+# (3.3) LRC Tick Timeout
+#        When a federate calls tick() and there is no work to do, the LRC will wait for a period of
+#        time to allow work to arrive before it returns. This is designed to avoid a busy-looping
+#        situation where people are calling tick in a loop while waiting for some event.
+#
+#        The period of time the LRC will wait is specified by this value (in *MILLISECONDS*).
+#        DEFAULT = 5
+#
+#        (NOTE) This does not apply to the tick(min,max) call (in that case, the LRC will wait
+#               for at most "min" seconds for work to arrive).
+#
+# portico.lrc.tt = 5
+
+
+# =========================================
+# 4. JGroups Network Binding Options
+# =========================================
+# The JGroups XML configuration is contained within the jar file at the location
+# "etc/jgroups-udp.xml". If you want to replace that configuration wholesale, you can put an
+# alternate configuration file at this location on the filesystem and it will be found ahead
+# of the one in the jar-file. Alternatively, you can just set these properties to control some
+# of the more prominent properties as it relates to Portico.
+
+# (4.1) JGroups Binding Log Level
+#        The log level used by the internal JGroups logger. By default this is turned off, but if
+#        you want to see more information about what is happening at a network level, you can lower
+#        the threshold for this level (down to something like DEBUG or even TRACE). Note that this
+#        will only alter the JGroups logger, not the general Portico logger.
+#        DEFAULT: OFF
+# portico.jgroups.loglevel = OFF
+
+# (4.2) JGroups Response Timeout
+#        Certain operations Portico uses wait for a specific amount of time for a response. The
+#        length of time a JGroups binding will wait for is specified by this property (in
+#        milliseconds). If you are having reliability problems, try making this value larger, but
+#        note that actions like sync point registration, or registering an object with a name will
+#        take longer if you do.
+#        DEFAULT = 1000
+#
+# portico.jgroups.timeout = 1000
+
+# (4.3) JGroups UDP Address
+#        The UDP address the JGroups binding will communicate on.
+#        DEFAULT: 228.10.10.10
+#
+# portico.jgroups.udp.address = 228.10.10.10 
+
+# (4.4) JGroups UDP Port
+#        The UDP port the JGroups binding will communicate on.
+#        DEFAULT: 20913
+#
+# portico.jgroups.udp.port = 20913
+
+# (4.5) JGroups Bind Address
+#        The address/NIC JGroups should use. Try setting this to your desired NIC if setting
+#        the send/receive interfaces don't work.
+#
+# portico.jgroups.udp.bindAddress = 
+
+# (4.6) JGroups UDP Receive Buffer Size
+#        The size of the buffer that incoming messages are stored in before they're passed in to
+#        the LRC. If you find that you are sending messages that are quite large or quite small,
+#        you may want to adjust this value appropriately. Default is quite large (about 24mb).
+#
+# portico.jgroups.udp.receiveBuffer = 25000000
+
+# (4.7) JGroups UDP Send Buffer Size
+#        The size of the buffer that messages are put in before they are sent out. Don't modify
+#        this unless you know what you're doing. 640k is enough for everything (ZING!)
+#
+# portico.jgroups.udp.sendBuffer = 640000
+
+# (4.8) JGroups Bundling Support
+#         If you are sending lots of smaller messages, higher overall throughput can be obtained by
+#         bundling them together into a fewer number of larger messages. However, doing so comes at
+#         the cost of latency. Messages will be stored up until either a timeout period is reached,
+#         or the total size of the messages exceeds a threshold. By default, the JGroups binding
+#         has bundling ENABLED. To disable bundling, set this to false.
+#
+# portico.jgroups.bundling = true
+
+# (4.9) JGroups Bundling Max Size
+#         If bundling is enabled, messages will be queued until their total size exceeds this
+#         threshold value (or a timeout occurs, see below). Once the total size reaches this point,
+#         all queued messages will be bundled together and sent out in one packet.
+#         *Bundling must be enabled* if you want to configure this value.
+#         NOTE: Values over 63000 are not allowed by JGroups on some platforms.
+#
+# portico.jgroups.bundling.maxSize = 63000
+
+# (4.10) JGroups Bundling Max Timeout
+#         If bundling is enabled, messages will be queue either until their total size exceeds a
+#         threshold (see above) or the time that a message has been queued exceeds this value
+#         (provided in milliseconds). When this time is passed, a message is sent out, regardless
+#         of whether or not the bunding size threshold has been reached. Default: 25 milliseconds.
+#
+# portico.jgroups.bundling.maxTime = 25
+
+# (4.11) JGroups Flow Control
+#         Flow control is used to limit the rate at which messages are sent so that slow receivers
+#         don't get overwhelmed, causing them to drop messages and requiring potentially expensive
+#         retransmission. This value sets the maximum number of bytes that can be sent by a federate
+#         before it needs to request more tokens from the other federates (which won't happen until
+#         they consume pending messages and thus have free capacity). Setting this higher will allow
+#         a federate to send more before it gets choked off, but runs the risk of overflowing
+#         receiving federates. Consider a value for this in conjunction with UDP receive buffer
+#         size (bigger the buffer there, the more messages that can be held before dropped messages
+#         start becoming a problem).
+#
+#         Note: If you start experiencing unstable behaviour, turn this value down. Flow control
+#               can be sensitive to the number of messages you try to send out in a hurry. If
+#               bundling is enabled, you can have a higher value for this, because although you are
+#               requesting more messages to be sent, the actual number hitting the network is smaller.
+#
+# portico.jgroups.flow.credits = 1000000
+
+
