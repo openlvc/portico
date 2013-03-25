@@ -200,7 +200,7 @@
 
 	<!-- Run the IEEE 1516 test suite -->
 	<target name="test.ieee1516" depends="compile.tests">
-		<java-test suite="hlaunit/hla1516"
+		<java-test suite="hlaunit/ieee1516"
 		           classdir="${test.classes.dir}"
 		           outdir="${test.reports.dir}"
 		           classpath="test.classpath">
@@ -213,7 +213,7 @@
 
 	<!-- Run the IEEE 1516e (Evolved) test suite -->
 	<target name="test.ieee1516e" depends="compile.tests">
-		<java-test suite="hlaunit/hla1516e"
+		<java-test suite="hlaunit/ieee1516e"
 		           classdir="${test.classes.dir}"
 		           outdir="${test.reports.dir}"
 		           classpath="test.classpath">
