@@ -52,7 +52,7 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug.2117964184" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug">
-								<option id="gnu.both.asm.option.include.paths.1757195470" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.1757195470" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1097221244" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1970521160" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
@@ -113,6 +113,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/ieee1516e (Mac OS X)"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/portico/cpp-ieee1516e-macosx"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="portico" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -153,7 +154,7 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug.1224579684" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug">
-								<option id="gnu.both.asm.option.include.paths.1283719151" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath"/>
+								<option id="gnu.both.asm.option.include.paths.1283719151" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1903894576" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.522104322" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
