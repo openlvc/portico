@@ -16,6 +16,7 @@ package hlaunit.ieee1516e.federation;
 
 import java.net.URL;
 
+import hla.rti1516e.exceptions.CouldNotCreateLogicalTimeFactory;
 import hla.rti1516e.exceptions.CouldNotOpenFDD;
 import hla.rti1516e.exceptions.ErrorReadingFDD;
 import hla.rti1516e.exceptions.FederationExecutionAlreadyExists;
@@ -448,6 +449,38 @@ public class CreateFederationTest extends Abstract1516eTest
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
 	}
 
+	//////////////////////////////////////////////////////////////////////
+	// TEST: testCreateFederationWithModulesMimAndNonStandardTimeType() //
+	//////////////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesMimAndNonStandardTimeType()
+	{
+		// create a link to the FOM //
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName,
+			                                                  modules,
+			                                                  "ANonStandardTimeType" );
+		}
+		catch( CouldNotCreateLogicalTimeFactory expected )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			wrongException( e, CouldNotCreateLogicalTimeFactory.class );
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////////
 	// createFederationExecution( String, URL[], MIM, TimeType ) /////////////////
 	//////////////////////////////////////////////////////////////////////////////
@@ -499,6 +532,39 @@ public class CreateFederationTest extends Abstract1516eTest
 		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.Appetizers.Soup.ClamChowder.NewEngland" );
 	}
 
+	//////////////////////////////////////////////////////////////////
+	// TEST: testCreateFederationWithModulesMimAndInvalidTimeType() //
+	//////////////////////////////////////////////////////////////////
+	@Test
+	public void testCreateFederationWithModulesMimAndInvalidTimeType()
+	{
+		// create a link to the FOM //
+		URL mim = ClassLoader.getSystemResource( "fom/ieee1516e/HLAstandardMIM.xml" );
+		URL[] modules = new URL[]{
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantProcesses.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantFood.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantDrinks.xml" ),
+			ClassLoader.getSystemResource( "fom/ieee1516e/restaurant/RestaurantSoup.xml" ),
+		};
+		
+		// try and create a valid federation //
+		try
+		{
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName,
+			                                                  modules,
+			                                                  mim, 
+			                                                  "ANonStandardTimeType");
+		}
+		catch( CouldNotCreateLogicalTimeFactory expected )
+		{
+			// success!
+		}
+		catch( Exception e )
+		{
+			wrongException( e, CouldNotCreateLogicalTimeFactory.class );
+		}
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

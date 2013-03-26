@@ -433,8 +433,8 @@ public class Rti1516eAmbassador implements RTIambassador
 			if( timeName.equals("HLAfloat64Time") == false &&
 				timeName.equals("HLAinteger64Time") == false )
 			{
-				throw new RTIinternalError( "Invalid time implementation: Must be "+
-				                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
+				throw new CouldNotCreateLogicalTimeFactory( "Invalid time implementation: Must be "+
+				                                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
 			}
 		}
 
@@ -465,8 +465,8 @@ public class Rti1516eAmbassador implements RTIambassador
 			if( timeName.equals("HLAfloat64Time") == false &&
 				timeName.equals("HLAinteger64Time") == false )
 			{
-				throw new RTIinternalError( "Invalid time implementation: Must be "+
-				                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
+				throw new CouldNotCreateLogicalTimeFactory( "Invalid time implementation: Must be "+
+				                                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
 			}
 		}
 
