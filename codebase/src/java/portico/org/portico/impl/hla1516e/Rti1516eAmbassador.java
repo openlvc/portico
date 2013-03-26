@@ -4884,8 +4884,13 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		featureNotSupported( "getKnownObjectClassHandle()" );
-		return null;
+		helper.checkJoined();
+		
+		OCInstance instance = helper.getState().getRepository().getInstance( theObject.hashCode() );
+		if( instance == null )
+			throw new ObjectInstanceNotKnown( "handle: " + theObject );
+		else
+			return new HLA1516eHandle( instance.getDiscoveredClassHandle() );
 	}
 
 	// 10.9
@@ -5401,13 +5406,19 @@ public class Rti1516eAmbassador implements RTIambassador
 	// 10.43
 	public void enableCallbacks() throws SaveInProgress, RestoreInProgress, RTIinternalError
 	{
-		featureNotSupported( "enableCallbacks()" );
+		helper.checkSave();
+		helper.checkRestore();
+		helper.getState().setCallbacksEnabled( true );
+		logger.debug( "enableCallbacks invoked(): callbacks turned on" );
 	}
 
 	// 10.44
 	public void disableCallbacks() throws SaveInProgress, RestoreInProgress, RTIinternalError
 	{
-		featureNotSupported( "disableCallbacks()" );
+		helper.checkSave();
+		helper.checkRestore();
+		helper.getState().setCallbacksEnabled( false );
+		logger.debug( "disableCallbacks invoked(): callbacks turned off" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////

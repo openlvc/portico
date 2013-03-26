@@ -100,6 +100,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	private TimeManager timeManager;
 	private TimeStatus timeStatus;
 	private boolean ticking;
+	private boolean callbacksEnabled;
 	private boolean immediateCallbacks;
 	
 	// Pub&Sub settings //
@@ -172,6 +173,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		this.timeManager = new TimeManager();
 		this.timeStatus = new TimeStatus(); // give us a dummy status with default values for now
 		this.ticking = false;
+		this.callbacksEnabled = true;
 		this.immediateCallbacks = false;
 		
 		// Pub&Sub settings //
@@ -487,6 +489,16 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	////////////////////////////////////////////////////////////
 	////////////////// Time Shortcut Settings //////////////////
 	////////////////////////////////////////////////////////////
+	public boolean areCallbacksEnabled()
+	{
+		return this.callbacksEnabled;
+	}
+	
+	public void setCallbacksEnabled( boolean enabled )
+	{
+		this.callbacksEnabled = enabled;
+	}
+
 	public boolean isImmediateCallbackDeliveryEnabled()
 	{
 		return this.immediateCallbacks;
