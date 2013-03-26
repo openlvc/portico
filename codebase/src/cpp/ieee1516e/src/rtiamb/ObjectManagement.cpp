@@ -30,8 +30,8 @@ void PorticoRtiAmbassador::reserveObjectInstanceName( const std::wstring& name )
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
-		logger->debug( "[Starting] reserveObjectInstanceName(): name=%ls", name.c_str() );
+	if( logger->isTraceEnabled() )
+		logger->trace( "[Starting] reserveObjectInstanceName(): name=%ls", name.c_str() );
 	
 	// get java versions of the parameters
 	jstring jname = JniUtils::fromWideString( jnienv, name );
@@ -45,8 +45,8 @@ void PorticoRtiAmbassador::reserveObjectInstanceName( const std::wstring& name )
 	jnienv->DeleteLocalRef( jname );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
-		logger->info( "[Finished] reserveObjectInstanceName(): name=%ls", name.c_str() );
+	if( logger->isTraceEnabled() )
+		logger->trace( "[Finished] reserveObjectInstanceName(): name=%ls", name.c_str() );
 }
 
 // 6.4
@@ -58,8 +58,8 @@ void PorticoRtiAmbassador::releaseObjectInstanceName( const std::wstring& name )
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
-		logger->debug( "[Starting] releaseObjectInstanceName(): name=%ls", name.c_str() );
+	if( logger->isTraceEnabled() )
+		logger->trace( "[Starting] releaseObjectInstanceName(): name=%ls", name.c_str() );
 	
 	// get java versions of the parameters
 	jstring jname = JniUtils::fromWideString( jnienv, name );
@@ -73,8 +73,8 @@ void PorticoRtiAmbassador::releaseObjectInstanceName( const std::wstring& name )
 	jnienv->DeleteLocalRef( jname );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
-		logger->info( "[Finished] releaseObjectInstanceName(): name=%ls", name.c_str() );
+	if( logger->isTraceEnabled() )
+		logger->trace( "[Finished] releaseObjectInstanceName(): name=%ls", name.c_str() );
 }
 
 // 6.5
@@ -87,9 +87,9 @@ void PorticoRtiAmbassador::reserveMultipleObjectInstanceName( const std::set<std
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] reserveMultipleObjectInstanceName(): names=%ls",
+		logger->trace( "[Starting] reserveMultipleObjectInstanceName(): names=%ls",
 		               Logger::toWString(names).c_str() );
 	}
 	
@@ -105,9 +105,9 @@ void PorticoRtiAmbassador::reserveMultipleObjectInstanceName( const std::set<std
 	JniUtils::deleteJniArray( jnienv, jnames );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] reserveMultipleObjectInstanceName(): names=%ls",
+		logger->trace( "[Finished] reserveMultipleObjectInstanceName(): names=%ls",
 		              Logger::toWString(names).c_str() );
 	}
 }
@@ -121,9 +121,9 @@ void PorticoRtiAmbassador::releaseMultipleObjectInstanceName( const std::set<std
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] releaseMultipleObjectInstanceName(): names=%ls",
+		logger->trace( "[Starting] releaseMultipleObjectInstanceName(): names=%ls",
 		               Logger::toWString(names).c_str() );
 	}
 	
@@ -139,9 +139,9 @@ void PorticoRtiAmbassador::releaseMultipleObjectInstanceName( const std::set<std
 	JniUtils::deleteJniArray( jnienv, jnames );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] releaseMultipleObjectInstanceName(): names=%ls",
+		logger->trace( "[Finished] releaseMultipleObjectInstanceName(): names=%ls",
 		              Logger::toWString(names).c_str() );
 	}
 }
@@ -159,8 +159,8 @@ ObjectInstanceHandle PorticoRtiAmbassador::registerObjectInstance( ObjectClassHa
 	// convert it now so we can use it in the log message - stupid, eh?
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 	
-	if( logger->isDebugEnabled() )
-		logger->debug( "[Starting] registerObjectInstance(): class=%d", jclassHandle );
+	if( logger->isTraceEnabled() )
+		logger->trace( "[Starting] registerObjectInstance(): class=%d", jclassHandle );
 	
 	// call the method
 	jint jobjectHandle = jnienv->CallIntMethod( javarti->jproxy,
@@ -170,8 +170,8 @@ ObjectInstanceHandle PorticoRtiAmbassador::registerObjectInstance( ObjectClassHa
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
-		logger->info( "[Finished] registerObjectInstance(): class=%d", jclassHandle );
+	if( logger->isTraceEnabled() )
+		logger->trace( "[Finished] registerObjectInstance(): class=%d", jclassHandle );
 	
 	return JniUtils::toObjectHandle( jobjectHandle );
 }
@@ -192,9 +192,9 @@ ObjectInstanceHandle PorticoRtiAmbassador::registerObjectInstance( ObjectClassHa
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 	jstring jname = JniUtils::fromWideString( jnienv, name );
 	
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] registerObjectInstance(): class=%d, name=%ls",
+		logger->trace( "[Starting] registerObjectInstance(): class=%d, name=%ls",
 		               jclassHandle, name.c_str() );
 	}
 	
@@ -208,9 +208,9 @@ ObjectInstanceHandle PorticoRtiAmbassador::registerObjectInstance( ObjectClassHa
 	jnienv->DeleteLocalRef( jname );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] registerObjectInstance(): class=%d, name=%ls",
+		logger->trace( "[Finished] registerObjectInstance(): class=%d, name=%ls",
 		              jclassHandle, name.c_str() );
 	}
 	
@@ -230,9 +230,9 @@ void PorticoRtiAmbassador::updateAttributeValues( ObjectInstanceHandle theObject
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] updateAttributeValues(): class=%ls, attributes=%s",
+		logger->trace( "[Starting] updateAttributeValues(): class=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -255,9 +255,9 @@ void PorticoRtiAmbassador::updateAttributeValues( ObjectInstanceHandle theObject
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] updateAttributeValues(): class=%d, attributes=%s",
+		logger->trace( "[Finished] updateAttributeValues(): class=%d, attributes=%s",
 		               jobjectHandle,
 		               Logger::toString(attributes).c_str() );
 	}
@@ -278,9 +278,9 @@ MessageRetractionHandle PorticoRtiAmbassador::updateAttributeValues(
 		   NotConnected,
 		   RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] updateAttributeValues(): class=%ls, attributes=%s, time=%f",
+		logger->trace( "[Starting] updateAttributeValues(): class=%ls, attributes=%s, time=%f",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str(),
 		               JniUtils::fromTime(theTime) );
@@ -306,9 +306,9 @@ MessageRetractionHandle PorticoRtiAmbassador::updateAttributeValues(
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] updateAttributeValues(): class=%d, attributes=%s, time=%f",
+		logger->trace( "[Finished] updateAttributeValues(): class=%d, attributes=%s, time=%f",
 		               jobjectHandle,
 		               Logger::toString(attributes).c_str(),
 		               jtime );
@@ -330,9 +330,9 @@ void PorticoRtiAmbassador::sendInteraction( InteractionClassHandle theInteractio
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] sendInteraction(): class=%ls, parameters=%s",
+		logger->trace( "[Starting] sendInteraction(): class=%ls, parameters=%s",
 		               theInteraction.toString().c_str(),
 		               Logger::toString(parameters).c_str() );
 	}
@@ -355,9 +355,9 @@ void PorticoRtiAmbassador::sendInteraction( InteractionClassHandle theInteractio
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] jparameters(): class=%d, parameters=%s",
+		logger->trace( "[Finished] jparameters(): class=%d, parameters=%s",
 		               jinteraction,
 		               Logger::toString(parameters).c_str() );
 	}
@@ -378,9 +378,9 @@ MessageRetractionHandle PorticoRtiAmbassador::sendInteraction(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] sendInteraction(): class=%ls, parameters=%s, time=%f",
+		logger->trace( "[Starting] sendInteraction(): class=%ls, parameters=%s, time=%f",
 		               theInteraction.toString().c_str(),
 		               Logger::toString(parameters).c_str(),
 		               JniUtils::fromTime(theTime) );
@@ -406,9 +406,9 @@ MessageRetractionHandle PorticoRtiAmbassador::sendInteraction(
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] sendInteraction(): class=%d, attributes=%s, time=%f",
+		logger->trace( "[Finished] sendInteraction(): class=%d, attributes=%s, time=%f",
 		               jinteraction,
 		               Logger::toString(parameters).c_str(),
 		               jtime );
@@ -428,9 +428,9 @@ void PorticoRtiAmbassador::deleteObjectInstance( ObjectInstanceHandle theObject,
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] deleteObjectInstance(): object=%ls",
+		logger->trace( "[Starting] deleteObjectInstance(): object=%ls",
 		               theObject.toString().c_str() );
 	}
 
@@ -448,9 +448,9 @@ void PorticoRtiAmbassador::deleteObjectInstance( ObjectInstanceHandle theObject,
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] deleteObjectInstance(): object=%d", jobjectHandle );
+		logger->trace( "[Finished] deleteObjectInstance(): object=%d", jobjectHandle );
 	}
 }
 
@@ -466,9 +466,9 @@ MessageRetractionHandle PorticoRtiAmbassador::deleteObjectInstance( ObjectInstan
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] deleteObjectInstance(): object=%ls, time=%d",
+		logger->trace( "[Starting] deleteObjectInstance(): object=%ls, time=%d",
 		               theObject.toString().c_str(),
 		               JniUtils::fromTime(theTime) );
 	}
@@ -489,9 +489,9 @@ MessageRetractionHandle PorticoRtiAmbassador::deleteObjectInstance( ObjectInstan
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] deleteObjectInstance(): object=%d, time=%d", jobjectHandle, jtime );
+		logger->trace( "[Finished] deleteObjectInstance(): object=%d, time=%d", jobjectHandle, jtime );
 	}
 	
 	return JniUtils::toRetractionHandle( handle );
@@ -508,9 +508,9 @@ void PorticoRtiAmbassador::localDeleteObjectInstance( ObjectInstanceHandle theOb
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] localDeleteObjectInstance(): object=%ls",
+		logger->trace( "[Starting] localDeleteObjectInstance(): object=%ls",
 		               theObject.toString().c_str() );
 	}
 
@@ -525,9 +525,9 @@ void PorticoRtiAmbassador::localDeleteObjectInstance( ObjectInstanceHandle theOb
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] localDeleteObjectInstance(): object=%d", jobjectHandle );
+		logger->trace( "[Finished] localDeleteObjectInstance(): object=%d", jobjectHandle );
 	}
 }
 
@@ -543,9 +543,9 @@ void PorticoRtiAmbassador::requestAttributeValueUpdate( ObjectInstanceHandle the
 		   NotConnected,
 		   RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] requestAttributeValueUpdate(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] requestAttributeValueUpdate(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -567,9 +567,9 @@ void PorticoRtiAmbassador::requestAttributeValueUpdate( ObjectInstanceHandle the
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] requestAttributeValueUpdate(): object=%d, attributes=%s",
+		logger->trace( "[Finished] requestAttributeValueUpdate(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(attributes).c_str() );
 	}
@@ -586,9 +586,9 @@ void PorticoRtiAmbassador::requestAttributeValueUpdate( ObjectClassHandle theCla
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] requestAttributeValueUpdate(): class=%ls, attributes=%s",
+		logger->trace( "[Starting] requestAttributeValueUpdate(): class=%ls, attributes=%s",
 		               theClass.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -610,9 +610,9 @@ void PorticoRtiAmbassador::requestAttributeValueUpdate( ObjectClassHandle theCla
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] requestAttributeValueUpdate(): class=%d, attributes=%s",
+		logger->trace( "[Finished] requestAttributeValueUpdate(): class=%d, attributes=%s",
 		              jclassHandle,
 		              Logger::toString(attributes).c_str() );
 	}
@@ -634,9 +634,9 @@ void PorticoRtiAmbassador::requestAttributeTransportationTypeChange(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] requestAttributeTransportationTypeChange(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] requestAttributeTransportationTypeChange(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -658,9 +658,9 @@ void PorticoRtiAmbassador::requestAttributeTransportationTypeChange(
 	jnienv->DeleteLocalRef( jtransport );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] requestAttributeTransportationTypeChange(): object=%d, attributes=%s",
+		logger->trace( "[Finished] requestAttributeTransportationTypeChange(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(attributes).c_str() );
 	}
@@ -677,9 +677,9 @@ void PorticoRtiAmbassador::queryAttributeTransportationType( ObjectInstanceHandl
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] queryAttributeTransportationType(): object=%ls, attribute=%ls",
+		logger->trace( "[Starting] queryAttributeTransportationType(): object=%ls, attribute=%ls",
 		               theObject.toString().c_str(),
 		               theAttribute.toString().c_str() );
 	}
@@ -697,9 +697,9 @@ void PorticoRtiAmbassador::queryAttributeTransportationType( ObjectInstanceHandl
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] queryAttributeTransportationType(): object=%d, attribute=%d",
+		logger->trace( "[Finished] queryAttributeTransportationType(): object=%d, attribute=%d",
 		              jobjectHandle,
 		              jattribute );
 	}
@@ -718,9 +718,9 @@ void PorticoRtiAmbassador::requestInteractionTransportationTypeChange( Interacti
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] requestInteractionTransportationTypeChange(): interaction=%ls",
+		logger->trace( "[Starting] requestInteractionTransportationTypeChange(): interaction=%ls",
 		               theClass.toString().c_str() );
 	}
 
@@ -738,9 +738,9 @@ void PorticoRtiAmbassador::requestInteractionTransportationTypeChange( Interacti
 	jnienv->DeleteLocalRef( jtransport );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] requestInteractionTransportationTypeChange(): interaction=%d",
+		logger->trace( "[Finished] requestInteractionTransportationTypeChange(): interaction=%d",
 		              jinteraction );
 	}
 }
@@ -755,9 +755,9 @@ void PorticoRtiAmbassador::queryInteractionTransportationType( FederateHandle th
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] queryInteractionTransportationType(): federate=%ls, interaction=%ls",
+		logger->trace( "[Starting] queryInteractionTransportationType(): federate=%ls, interaction=%ls",
 		               theFederate.toString().c_str(),
 		               theFederate.toString().c_str() );
 	}
@@ -775,9 +775,9 @@ void PorticoRtiAmbassador::queryInteractionTransportationType( FederateHandle th
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] queryInteractionTransportationType(): federate=%d, interaction=%d",
+		logger->trace( "[Finished] queryInteractionTransportationType(): federate=%d, interaction=%d",
 		              jfederate,
 		              jinteraction );
 	}

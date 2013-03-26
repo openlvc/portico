@@ -29,7 +29,7 @@ void RTI::RTIambassador::createFederationExecution( const char* executionName, c
 	       RTI::ConcurrentAccessAttempted,
 	       RTI::RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
+	logger->trace( "[Starting] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
 	
 	// get java versions of the parameters
 	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
@@ -46,7 +46,7 @@ void RTI::RTIambassador::createFederationExecution( const char* executionName, c
 	privateRefs->env->DeleteLocalRef( jFED );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
+	logger->trace( "[Finished] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
 }
 
 void RTI::RTIambassador::destroyFederationExecution( const char *executionName )
@@ -55,7 +55,7 @@ void RTI::RTIambassador::destroyFederationExecution( const char *executionName )
 	       RTI::ConcurrentAccessAttempted,
 	       RTI::RTIinternalError )
 {
-	logger->debug( "[Starting] destroyFederationExecution(): name=%s", executionName );
+	logger->trace( "[Starting] destroyFederationExecution(): name=%s", executionName );
 	
 	// get java versions of the parameters
 	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
@@ -69,7 +69,7 @@ void RTI::RTIambassador::destroyFederationExecution( const char *executionName )
 	privateRefs->env->DeleteLocalRef( jExecutionName );
 	privateRefs->rti->exceptionCheck();
 
-	logger->info( "[Finished] destroyFederationExecution(): name=%s", executionName );
+	logger->trace( "[Finished] destroyFederationExecution(): name=%s", executionName );
 }
 
 // 4.4
@@ -86,7 +86,7 @@ RTI::RTIambassador::joinFederationExecution( const char *federateName,
 	       RTI::RestoreInProgress,
 	       RTI::RTIinternalError )
 {
-	logger->debug( "[Starting] joinFederationExecution(): federationName=%s, federateName=%s",
+	logger->trace( "[Starting] joinFederationExecution(): federationName=%s, federateName=%s",
 	               executionName, federateName );
 	
 	// check the federate ambassador
@@ -111,8 +111,8 @@ RTI::RTIambassador::joinFederationExecution( const char *federateName,
 	privateRefs->env->DeleteLocalRef( jExecutionName );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->info( "[Finished] joinFederationExecution(): federationName=%s, federateName=%s",
-	              executionName, federateName );
+	logger->trace( "[Finished] joinFederationExecution(): federationName=%s, federateName=%s",
+	               executionName, federateName );
 
 	return federateHandle;
 }
@@ -125,7 +125,7 @@ void RTI::RTIambassador::resignFederationExecution( RTI::ResignAction theAction 
 	       RTI::ConcurrentAccessAttempted,
 	       RTI::RTIinternalError )
 {
-	logger->debug( "[Starting] resignFederationExecution(): action=%d", theAction );
+	logger->trace( "[Starting] resignFederationExecution(): action=%d", theAction );
 	
 	// call the method
 	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
@@ -138,7 +138,7 @@ void RTI::RTIambassador::resignFederationExecution( RTI::ResignAction theAction 
 	// remove our reference to the user federate ambassador
 	privateRefs->rti->fedamb = NULL;
 
-	logger->info( "[Finished] resignFederationExecution(): action=%d", theAction );	
+	logger->trace( "[Finished] resignFederationExecution(): action=%d", theAction );	
 }
 
 // 4.6
@@ -167,7 +167,7 @@ void RTI::RTIambassador::registerFederationSynchronizationPoint( const char *lab
 	privateRefs->env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finsihed] registerFederationSynchronizationPoint(): label=%s", label );
+	logger->trace( "[Finsihed] registerFederationSynchronizationPoint(): label=%s", label );
 }
 
 void RTI::RTIambassador::registerFederationSynchronizationPoint( const char *label,
@@ -205,7 +205,7 @@ void RTI::RTIambassador::registerFederationSynchronizationPoint( const char *lab
 	privateRefs->env->DeleteLocalRef( jSyncSet );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] registerFederationSynchronizationPoint(FederateHandleSet): label=%s",
+	logger->trace( "[Finished] registerFederationSynchronizationPoint(FederateHandleSet): label=%s",
 	               label );
 }
 
@@ -232,7 +232,7 @@ void RTI::RTIambassador::synchronizationPointAchieved( const char *label )
 	privateRefs->env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] synchronizationPointAchieved(): label=%s", label );
+	logger->trace( "[Finished] synchronizationPointAchieved(): label=%s", label );
 }
 
 // 4.11
@@ -261,7 +261,7 @@ void RTI::RTIambassador::requestFederationSave( const char *label, const RTI::Fe
 	privateRefs->env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] requestFederationSave(withTime): label=%s", label );
+	logger->trace( "[Finished] requestFederationSave(withTime): label=%s", label );
 }
 
 void RTI::RTIambassador::requestFederationSave( const char *label )
@@ -285,7 +285,7 @@ void RTI::RTIambassador::requestFederationSave( const char *label )
 	privateRefs->env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] requestFederationSave(): label=%s", label );
+	logger->trace( "[Finished] requestFederationSave(): label=%s", label );
 }
 
 // 4.13
@@ -305,7 +305,7 @@ void RTI::RTIambassador::federateSaveBegun()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] federateSaveBegun()" );
+	logger->trace( "[Finished] federateSaveBegun()" );
 }
 
 // 4.14
@@ -325,7 +325,7 @@ void RTI::RTIambassador::federateSaveComplete()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] federateSaveComplete()" );
+	logger->trace( "[Finished] federateSaveComplete()" );
 }
 
 void RTI::RTIambassador::federateSaveNotComplete()
@@ -344,7 +344,7 @@ void RTI::RTIambassador::federateSaveNotComplete()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] federateSaveNotComplete()" );
+	logger->trace( "[Finished] federateSaveNotComplete()" );
 }
 
 // 4.16
@@ -369,7 +369,7 @@ void RTI::RTIambassador::requestFederationRestore( const char *label )
 	privateRefs->env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] requestFederationRestore(): label=%s", label );
+	logger->trace( "[Finished] requestFederationRestore(): label=%s", label );
 }
 
 // 4.20
@@ -389,7 +389,7 @@ void RTI::RTIambassador::federateRestoreComplete()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] federateRestoreComplete()" );
+	logger->trace( "[Finished] federateRestoreComplete()" );
 }
 
 void RTI::RTIambassador::federateRestoreNotComplete()

@@ -28,7 +28,7 @@ void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] requestFederationSave(): label=%ls", label.c_str() );
+	logger->trace( "[Starting] requestFederationSave(): label=%ls", label.c_str() );
 	
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
@@ -42,7 +42,7 @@ void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label )
 	jnienv->DeleteLocalRef( jlabel );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] requestFederationSave(): label=%ls", label.c_str() );
+	logger->trace( "[Finished] requestFederationSave(): label=%ls", label.c_str() );
 }
 
 void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label,
@@ -56,7 +56,7 @@ void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label,
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] requestFederationSave(time): label=%ls", label.c_str() );
+	logger->trace( "[Starting] requestFederationSave(time): label=%ls", label.c_str() );
 	
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
@@ -72,7 +72,7 @@ void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label,
 	jnienv->DeleteLocalRef( jlabel );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] requestFederationSave(time): label=%ls", label.c_str() );
+	logger->trace( "[Finished] requestFederationSave(time): label=%ls", label.c_str() );
 }
 
 
@@ -84,13 +84,13 @@ void PorticoRtiAmbassador::federateSaveBegun()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] federateSaveBegun()" );
+	logger->trace( "[Starting] federateSaveBegun()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_BEGUN );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] federateSaveBegun()" );
+	logger->trace( "[Finished] federateSaveBegun()" );
 }
 
 
@@ -102,13 +102,13 @@ void PorticoRtiAmbassador::federateSaveComplete()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] federateSaveComplete()" );
+	logger->trace( "[Starting] federateSaveComplete()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_COMPLETE );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] federateSaveComplete()" );
+	logger->trace( "[Finished] federateSaveComplete()" );
 }
 
 
@@ -119,13 +119,13 @@ void PorticoRtiAmbassador::federateSaveNotComplete()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] federateSaveNotComplete()" );
+	logger->trace( "[Starting] federateSaveNotComplete()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_NOT_COMPLETE );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] federateSaveNotComplete()" );
+	logger->trace( "[Finished] federateSaveNotComplete()" );
 }
 
 
@@ -136,13 +136,13 @@ void PorticoRtiAmbassador::abortFederationSave()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] abortFederationSave()" );
+	logger->trace( "[Starting] abortFederationSave()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_ABORT );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] abortFederationSave()" );
+	logger->trace( "[Finished] abortFederationSave()" );
 }
 
 
@@ -153,13 +153,13 @@ void PorticoRtiAmbassador::queryFederationSaveStatus()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] queryFederationSaveStatus()" );
+	logger->trace( "[Starting] queryFederationSaveStatus()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_QUERY );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] queryFederationSaveStatus()" );
+	logger->trace( "[Finished] queryFederationSaveStatus()" );
 }
 
 
@@ -171,7 +171,7 @@ void PorticoRtiAmbassador::requestFederationRestore( const std::wstring& label )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] requestFederationRestore(): label=%ls", label.c_str() );
+	logger->trace( "[Starting] requestFederationRestore(): label=%ls", label.c_str() );
 	
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
@@ -185,7 +185,7 @@ void PorticoRtiAmbassador::requestFederationRestore( const std::wstring& label )
 	jnienv->DeleteLocalRef( jlabel );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] requestFederationRestore(): label=%ls", label.c_str() );
+	logger->trace( "[Finished] requestFederationRestore(): label=%ls", label.c_str() );
 }
 
 
@@ -197,13 +197,13 @@ void PorticoRtiAmbassador::federateRestoreComplete()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] federateRestoreComplete()" );
+	logger->trace( "[Starting] federateRestoreComplete()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_COMPLETE );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] federateRestoreComplete()" );
+	logger->trace( "[Finished] federateRestoreComplete()" );
 }
 
 
@@ -214,13 +214,13 @@ void PorticoRtiAmbassador::federateRestoreNotComplete()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] federateRestoreNotComplete()" );
+	logger->trace( "[Starting] federateRestoreNotComplete()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_NOT_COMPLETE );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] federateRestoreNotComplete()" );
+	logger->trace( "[Finished] federateRestoreNotComplete()" );
 }
 
 
@@ -231,13 +231,13 @@ void PorticoRtiAmbassador::abortFederationRestore()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] abortFederationRestore()" );
+	logger->trace( "[Starting] abortFederationRestore()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_ABORT );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] abortFederationRestore()" );
+	logger->trace( "[Finished] abortFederationRestore()" );
 }
 
 
@@ -248,13 +248,13 @@ void PorticoRtiAmbassador::queryFederationRestoreStatus()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] queryFederationRestoreStatus()" );
+	logger->trace( "[Starting] queryFederationRestoreStatus()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_QUERY );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] queryFederationRestoreStatus()" );
+	logger->trace( "[Finished] queryFederationRestoreStatus()" );
 }
 
 

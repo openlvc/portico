@@ -52,7 +52,7 @@ void RTI::RTIambassador::publishObjectClass( RTI::ObjectClassHandle theClass,
 	privateRefs->env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] publishObjectClass(): objectClass=%d", theClass ); 
+	logger->trace( "[Finished] publishObjectClass(): objectClass=%d", theClass ); 
 }
 
 // 5.3
@@ -76,7 +76,7 @@ void RTI::RTIambassador::unpublishObjectClass( RTI::ObjectClassHandle theClass )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] unpublishObjectClass(): classHandle=%d", theClass );
+	logger->trace( "[Finished] unpublishObjectClass(): classHandle=%d", theClass );
 }
 
 // 5.4
@@ -98,7 +98,7 @@ void RTI::RTIambassador::publishInteractionClass( RTI::InteractionClassHandle th
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] publishInteractionClass(): classHandle=%d", theClass );
+	logger->trace( "[Finished] publishInteractionClass(): classHandle=%d", theClass );
 }
 
 // 5.5
@@ -121,7 +121,7 @@ void RTI::RTIambassador::unpublishInteractionClass( RTI::InteractionClassHandle 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] unpublishInteractionClass(): classHandle=%d", theClass );
+	logger->trace( "[Finished] unpublishInteractionClass(): classHandle=%d", theClass );
 }
 
 // 5.6
@@ -182,7 +182,7 @@ void RTI::RTIambassador::subscribeObjectClassAttributes( RTI::ObjectClassHandle 
 	privateRefs->env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] subscribeObjectClassAttributes(): classHandle=%d", theClass );
+	logger->trace( "[Finished] subscribeObjectClassAttributes(): classHandle=%d", theClass );
 }
 
 // 5.7
@@ -205,7 +205,7 @@ void RTI::RTIambassador::unsubscribeObjectClass( RTI::ObjectClassHandle theClass
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] unsubscribeObjectClass(): classHandle=%d", theClass );
+	logger->trace( "[Finished] unsubscribeObjectClass(): classHandle=%d", theClass );
 }
 
 // 5.8
@@ -251,7 +251,7 @@ void RTI::RTIambassador::subscribeInteractionClass( RTI::InteractionClassHandle 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] subscribeInteractionClass(): classHandle=%d", theClass );
+	logger->trace( "[Finished] subscribeInteractionClass(): classHandle=%d", theClass );
 }
 
 // 5.9
@@ -274,5 +274,5 @@ void RTI::RTIambassador::unsubscribeInteractionClass( RTI::InteractionClassHandl
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] unsubscribeInteractionClass(): classHandle=%d", theClass );
+	logger->trace( "[Finished] unsubscribeInteractionClass(): classHandle=%d", theClass );
 }

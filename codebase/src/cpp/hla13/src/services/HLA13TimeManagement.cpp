@@ -50,7 +50,7 @@ void RTI::RTIambassador::enableTimeRegulation( const RTI::FedTime& theFederateTi
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableTimeRegulation(): federateTime=%f, lookahead=%f",
+	logger->trace( "[Finished] enableTimeRegulation(): federateTime=%f, lookahead=%f",
 	               jTime, jLookahead );
 }
 
@@ -72,7 +72,7 @@ void RTI::RTIambassador::disableTimeRegulation()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] disableTimeRegulation()" );
+	logger->trace( "[Finished] disableTimeRegulation()" );
 }
 
 // 8.5
@@ -95,7 +95,7 @@ void RTI::RTIambassador::enableTimeConstrained()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableTimeConstrained()" );
+	logger->trace( "[Finished] enableTimeConstrained()" );
 }
 
 // 8.7
@@ -116,7 +116,7 @@ void RTI::RTIambassador::disableTimeConstrained()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] disableTimeConstrained()" );
+	logger->trace( "[Finished] disableTimeConstrained()" );
 }
 
 // 8.8
@@ -145,7 +145,7 @@ void RTI::RTIambassador::timeAdvanceRequest( const RTI::FedTime& theTime )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] timeAdvanceRequest(): time=%f", jTime );
+	logger->trace( "[Finished] timeAdvanceRequest(): time=%f", jTime );
 }
 
 // 8.9
@@ -174,7 +174,7 @@ void RTI::RTIambassador::timeAdvanceRequestAvailable( const RTI::FedTime& theTim
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] timeAdvanceRequestAvailable(): time=%f", jTime );
+	logger->trace( "[Finished] timeAdvanceRequestAvailable(): time=%f", jTime );
 }
 
 // 8.10
@@ -203,7 +203,7 @@ void RTI::RTIambassador::nextEventRequest( const RTI::FedTime& theTime )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] nextEventRequest(): time=%f", jTime );
+	logger->trace( "[Finished] nextEventRequest(): time=%f", jTime );
 }
 
 // 8.11
@@ -232,7 +232,7 @@ void RTI::RTIambassador::nextEventRequestAvailable( const RTI::FedTime& theTime 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] nextEventRequestAvailable(): time=%f", jTime );
+	logger->trace( "[Finished] nextEventRequestAvailable(): time=%f", jTime );
 }
 
 // 8.12
@@ -261,7 +261,7 @@ void RTI::RTIambassador::flushQueueRequest( const RTI::FedTime& theTime )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] flushQueueRequest(): time=%f", jTime );
+	logger->trace( "[Finished] flushQueueRequest(): time=%f", jTime );
 }
 
 // 8.14
@@ -282,7 +282,7 @@ void RTI::RTIambassador::enableAsynchronousDelivery()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableAsynchronousDelivery()" );
+	logger->trace( "[Finished] enableAsynchronousDelivery()" );
 }
 
 // 8.15
@@ -303,7 +303,7 @@ void RTI::RTIambassador::disableAsynchronousDelivery()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] disableAsynchronousDelivery()" );
+	logger->trace( "[Finished] disableAsynchronousDelivery()" );
 }
 
 // 8.16
@@ -326,7 +326,7 @@ void RTI::RTIambassador::queryLBTS( RTI::FedTime& theTime )
 	// store the result in the provided location
 	privateRefs->rti->pushTime( retval, theTime );
 	
-	logger->debug( "[Finished] queryLBTS()" );
+	logger->trace( "[Finished] queryLBTS()" );
 }
 
 // 8.17
@@ -349,7 +349,7 @@ void RTI::RTIambassador::queryFederateTime( RTI::FedTime& theTime )
 	// store the result in the provided location
 	privateRefs->rti->pushTime( retval, theTime );
 	
-	logger->debug( "[Finished] queryFederateTime()" );
+	logger->trace( "[Finished] queryFederateTime()" );
 }
 
 // 8.18
@@ -373,7 +373,7 @@ void RTI::RTIambassador::queryMinNextEventTime( RTI::FedTime& theTime )
 	// store the result in the provided location
 	privateRefs->rti->pushTime( retval, theTime );
 
-	logger->debug( "[Finished] queryNextMinEventTime()" );
+	logger->trace( "[Finished] queryNextMinEventTime()" );
 }
 
 // 8.19
@@ -398,7 +398,7 @@ void RTI::RTIambassador::modifyLookahead( const RTI::FedTime& theLookahead )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] modifyLookahead(): lookahead=%f", jTime );
+	logger->trace( "[Finished] modifyLookahead(): lookahead=%f", jTime );
 }
 
 // 8.20
@@ -421,7 +421,7 @@ void RTI::RTIambassador::queryLookahead( RTI::FedTime& theTime )
 	// store the result in the provided location
 	privateRefs->rti->pushTime( retval, theTime );
 	
-	logger->debug( "[Finished] queryLookahead()" );
+	logger->trace( "[Finished] queryLookahead()" );
 }
 
 // 8.21
@@ -443,7 +443,7 @@ void RTI::RTIambassador::retract( RTI::EventRetractionHandle theHandle )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] retract()" );
+	logger->trace( "[Finished] retract()" );
 }
 
 // 8.23
@@ -476,7 +476,7 @@ void RTI::RTIambassador::changeAttributeOrderType( RTI::ObjectHandle theObject,
 	privateRefs->env->DeleteLocalRef( jSyncSet );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] changeAttributeOrderType()" );
+	logger->trace( "[Finished] changeAttributeOrderType()" );
 }
 
 // 8.24
@@ -503,7 +503,7 @@ void RTI::RTIambassador::changeInteractionOrderType( RTI::InteractionClassHandle
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] changeInteractionOrderType(): class=%d, orderHandle=%d",
+	logger->trace( "[Finished] changeInteractionOrderType(): class=%d, orderHandle=%d",
 	               theClass, theType );
 }
 
