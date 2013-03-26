@@ -426,6 +426,18 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
+		// validate the time type, ensuring it is one of the standard ones
+		if( timeName != null )
+		{
+			timeName = timeName.trim();
+			if( timeName.equals("HLAfloat64Time") == false &&
+				timeName.equals("HLAinteger64Time") == false )
+			{
+				throw new RTIinternalError( "Invalid time implementation: Must be "+
+				                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
+			}
+		}
+
 		// validate the time type and hand off to the (String,URL[]) overload
 		createFederationExecution( federationName, fomModules );
 	}
@@ -446,6 +458,18 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
+		// validate the time type, ensuring it is one of the standard ones
+		if( timeName != null )
+		{
+			timeName = timeName.trim();
+			if( timeName.equals("HLAfloat64Time") == false &&
+				timeName.equals("HLAinteger64Time") == false )
+			{
+				throw new RTIinternalError( "Invalid time implementation: Must be "+
+				                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
+			}
+		}
+
 		// validate the time parameter and hand off to the (String,URL[],URL) overload
 		createFederationExecution( federationName, fomModules, mimModule );
 	}
