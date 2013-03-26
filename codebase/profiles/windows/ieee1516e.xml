@@ -31,8 +31,8 @@
 	<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>
 	<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>
 	<!-- Sets property to value safe for visual studio build numbers: 1,1,1,1 -->
-	<visualStudioBuildNumber property="compiler.product.version"
-	                         value="${build.version}.${build.number}"/>
+
+	<visualStudioBuildNumber property="product.version" value="${build.version}.${build.number}"/>
 
 	<!-- source -->
 	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
@@ -341,8 +341,10 @@
 				<define name="BUILDING_RTI"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
-				<define name="PRODUCT_INTERNAL_NAME=librti1516e${_bitness}${_d}"/>
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>                <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=librti1516e${_bitness}${_d}"/> <!-- for DLL -->
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 			</cpptask>			
 
@@ -366,8 +368,10 @@
 				<define name="BUILDING_FEDTIME"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
-				<define name="PRODUCT_INTERNAL_NAME=libfedtime1516e${_bitness}${_d}"/>
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>                    <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=libfedtime1516e${_bitness}${_d}"/> <!-- for DLL -->
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 				<library path="${ieee1516e.complete.dir}/@{compiler}"
 				         libs="rti1516e${_bitness}${_d}"/>

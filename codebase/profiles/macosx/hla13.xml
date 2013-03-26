@@ -317,6 +317,8 @@
 				<define name="BUILDING_RTI"/>
 				<define name="BUILDING_FEDTIME"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 				<library path="${_jdklib}" libs="jvm,jsig"/>
 			</cpptask>
 
@@ -341,6 +343,8 @@
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 				<library path="${_jdklib}" libs="jvm,jsig"/>
 				<library path="${hla13.complete.dir}/@{compiler}" libs="FedTime${_bitness}${_d}"/>
 			</cpptask>

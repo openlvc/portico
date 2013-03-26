@@ -13,6 +13,7 @@
  *
  */
 #include "common.h"
+#include "utils/StringUtils.h"
 
 IEEE1516E_NS_START
 
@@ -26,7 +27,12 @@ std::wstring rtiName()
 
 std::wstring rtiVersion()
 {
-	return L"1.0";
+	stringstream ss;
+	ss << STRING_FROM_MACRO(PORTICO_VERSION);
+	ss << " (build ";
+	ss << STRING_FROM_MACRO(PORTICO_BUILD_NUMBER);
+	ss << ")";
+	return portico1516e::StringUtils::toWideString( ss.str() );
 }
 
 IEEE1516E_NS_END
