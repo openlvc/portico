@@ -78,7 +78,7 @@
 	// operating system
 	#if defined(__APPLE__)
 		#define OS_MACOSX
-	#elif
+	#else
 		#define OS_LINUX
 	#endif
 
@@ -111,7 +111,7 @@
     #include <malloc.h>
     #include <stdarg.h>
     #include <ctype.h>
-    #include <ext/hash_map>
+    #include <backward/hash_map> // deprecated since GCC 4.3
 	#include <sys/time.h>
 #endif
 

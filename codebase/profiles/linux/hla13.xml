@@ -1,0 +1,349 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="hla13">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Linux C++ build profile for HLA v1.3 Interface
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
+
+	<!-- ==================================== -->
+	<!-- ==== HLA13 Interface Properties ==== -->
+	<!-- ==================================== -->
+	<!-- source -->
+	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
+	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include/hla13"/>
+	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
+	
+	<!-- build -->
+	<property name="hla13.build.dir"           location="${build.dir}/cpp/linux64/hla13"/>
+	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
+
+	<!-- test build -->
+	<property name="test13.build.dir"          location="${build.dir}/cpp/linux64/test13"/>
+	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
+
+	<!-- =========================================================== -->
+	<!--                     Project Libraries                       -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- See profiles/project.libraries.xml -->
+	<!-- <property name="cppunit.dir"     location="..."/> -->
+	<!-- <property name="cppunit.include" location="..."/> -->
+	<!-- <property name="cppunit.lib"     location="..."/> -->
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="cpp.clean">
+		<delete dir="${hla13.build.dir}"/>
+		<delete dir="${test13.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- ==================================== -->
+	<!--         Main HLA 1.3 Interface       -->
+	<!-- ==================================== -->
+	<target name="compile">
+		<compile-hla13 arch="amd64" build="debug"/>
+		<compile-hla13 arch="amd64" build="release"/>
+	</target>
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test.compile" depends="compile">
+		<cpptask compiler="g++"
+		         outfile="test13"
+		         workdir="${test13.build.dir}"
+		         outdir="${test13.complete.dir}"
+		         type="executable"
+		         arch="amd64"
+		         compilerArgs="-g -O0 -fPIC -Wall"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
+			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${hla13.include.dir}"/>
+			<includepath path="${hla13.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG64d,FedTime64d"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+		</cpptask>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile">
+		<!-- 1. copy the testing resources into test
+		     dir (RID file etc...).T he filtering is
+		     primarily used for the gdb environment file -->
+		<copy todir="${test13.complete.dir}">
+			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${sandbox.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
+		<echo>Copied testing resources to ${test13.complete.dir}</echo>
+
+		<!-- 2. run the actual test application -->
+		<exec dir="${test13.complete.dir}"
+		      executable="${test13.complete.dir}/test13"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="test13.result">
+			<arg line="${test13.complete.dir}/test-results.xml"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="LD_LIBRARY_PATH" path="${jdk.home.linux64}/jre/lib/amd64/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+		
+		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
+		<!--
+		<echo>Generating the Unit Test Report</echo>
+		<cppunit-report result="${test13.result}"
+		                xmlfile="${test13.complete.dir}/test-results.xml"
+		                xslfile="${test13.complete.dir}/xsl/results.xsl"
+		                outfile="${test13.complete.dir}/test-results.html"/>
+		-->
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,compile">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${sandbox.dir}/include/hla13"/>
+		<copy todir="${sandbox.dir}/include/hla13">
+			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.so"/>
+		</copy>
+
+		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.so"/>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
+		<copy todir="${sandbox.examples.dir}/cpp/hla13">
+			<fileset dir="${hla13.example.dir}" includes="**/*"/>
+		</copy>
+		<chmod dir="${sandbox.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                 Installer Targets                                 -->
+	<!-- ================================================================================= -->
+	<!-- Not required for an interface build -->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- Not required for an interface build -->
+
+	<!-- ================================================================================= -->
+	<!--                            HLA v1.3 Helper Macros                                 -->
+	<!-- ================================================================================= -->
+	<!-- ================================================ -->
+	<!--               Macro: compile-hla13               -->
+	<!-- ================================================ -->
+	<!--
+		 This macro is a simple wrapper for gcc-hla13. It performs two main tasks:
+		   1. Checks to see whether the requested compiler/arch/build setting was requested
+		      in the cpp.profile and skips the build if it wasn't.
+		   2. If it was requested, makes sure that the appropriate version of the compiler
+		      is installed. If it isn't, the compile  is skipped, unless this is a strict
+			  build, in which case the build will be failed.
+	-->
+	<macrodef name="compile-hla13">
+		<!-- Attributes -->
+		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- ========================== -->
+			<!-- 1. Check the build profile -->
+			<!-- ========================== -->
+			<!-- Only run this if it's in the requested build profile -->
+			<if><isset property="@{compiler}.@{arch}.@{build}"/>
+			<then>
+				<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
+				<gcc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+			</then>
+			<else>
+				<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- not requested"/>
+			</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================ -->
+	<!--                Macro: gcc-hla13                  -->
+	<!-- ================================================ -->
+	<!-- 
+	     The various C++ compiling commands have a lot in common. They share the same
+		 source and include base, the same preprocessor definitions, very similar library
+		 names and similar library dependencies. Despite being *very* similar, each of the
+		 builds requires something just a little bit different.
+		 
+		 This macro hides all the little details and give a target compiler, architecture
+		 and build type, generates the appropriate libraries (adusting library names,
+		 working directories, preprocessor definitions, compiler args, etc...)
+		 
+		 The output from running this macro will be the libRTI-NG and libFedTime
+		 libraries (names updated approrpiate for debug/release and 32/64-bit)
+		 dropped into ${hla13.complete.dir}.
+		 
+		 NOTE: This macro should always be wrapped in a <compile-hl13> task to ensure it
+		       only runs when it needs to.
+		 
+		 Usage:
+			* <gcc-hla13 compiler="gcc4" arch="x86" build="debug"/>
+			
+		 Arguments:
+			* compiler: The compiler to use (vc10, vc9 or vc8)
+			* arch:     The platform architecture (x86 or amd64)
+			* build:    The build type (debug or release)
+	-->	 
+	<macrodef name="gcc-hla13" description="(HLA 1.3) Compile the RTI libraries">
+		<!-- Attributes -->
+		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- Local properties used in the macro -->
+			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
+			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
+			<local name="_cargs"/>       <!-- compiler arguments -->
+			<local name="_largs"/>       <!-- linker arguments -->
+			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
+			<local name="_jdklib"/>      <!-- path to either 32 or 64-bit JDK libs -->
+
+			<!-- Are we building for 32-bit or 64-bit? -->
+			<if><equals arg1="@{arch}" arg2="amd64"/><then>
+				<property name="_bitness" value="64"/>
+				<property name="_jdklib" value="${jdk.home.linux64}/jre/lib/amd64/server"/>
+			</then><else>
+				<property name="_bitness" value=""/>
+				<property name="_jdklib" value="${jdk.home.linux32}/jre/lib/i586/client"/>
+			</else></if>
+
+			<!-- Is this a Debug or Release build? -->
+			<if><equals arg1="@{build}" arg2="debug"/><then>
+				<!-- Debug Build -->
+				<property name="_d"           value="d"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall"/>
+				<property name="_largs"       value=""/>
+				<property name="_buildsymbol" value="DEBUG"/>
+			</then><else>
+				<!-- Release Build -->
+				<property name="_d"           value=""/>
+				<property name="_cargs"       value="-O0 -fPIC -Wno-deprecated -Wall"/>
+				<property name="_largs"       value=""/>
+				<property name="_buildsymbol" value="RELEASE"/>
+			</else></if>
+
+			<!-- ========================== -->
+			<!-- Do the library compilation -->
+			<!-- ========================== -->
+			<echo message="Building libFedTime${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libFedTime${_bitness}${_d}"
+					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${hla13.complete.dir}/@{compiler}"
+					 type="shared"
+					 arch="@{arch}"
+					 compiler="g++"
+					 compilerArgs="${_cargs}"
+					 linkerArgs="${_largs}">
+				<fileset dir="${hla13.src.dir}">
+					<include name="time/RTIfedTime.cpp"/>
+					<include name="time/FedTime.cpp"/>
+					<include name="time/FedTimeFactory.cpp"/>
+					<include name="types/Exception.cpp"/>
+				</fileset>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="BUILDING_RTI"/>
+				<define name="BUILDING_FEDTIME"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+			</cpptask>
+
+			<echo message="Building libRTI-NG${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libRTI-NG${_bitness}${_d}"
+					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${hla13.complete.dir}/@{compiler}"
+					 type="shared"
+					 arch="@{arch}"
+					 compiler="g++"
+					 compilerArgs="${_cargs}"
+					 linkerArgs="${_largs}">
+				<fileset dir="${hla13.src.dir}">
+					<include name="**/*.cpp"/>
+					<exclude name="time/RTIfedTime.cpp"/>
+					<exclude name="time/FedTime.cpp"/>
+					<exclude name="time/FedTimeFactory.cpp"/>
+				</fileset>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="BUILDING_RTI"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+				<library path="${hla13.complete.dir}/@{compiler}" libs="FedTime${_bitness}${_d}"/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+</project>
