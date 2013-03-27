@@ -32,7 +32,7 @@ void PorticoRtiAmbassador::publishObjectClassAttributes( ObjectClassHandle theCl
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] publishObjectClassAttributes(): class=%ls, attributes=%s",
+	logger->trace( "[Starting] publishObjectClassAttributes(): class=%ls, attributes=%s",
 	               theClass.toString().c_str(),
 	               Logger::toString(attributes).c_str() );
 	
@@ -50,9 +50,9 @@ void PorticoRtiAmbassador::publishObjectClassAttributes( ObjectClassHandle theCl
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] publishObjectClassAttributes(): class=%ls, attributes=%s",
-	               theClass.toString().c_str(),
-	               Logger::toString(attributes).c_str() );
+	logger->trace( "[Finished] publishObjectClassAttributes(): class=%ls, attributes=%s",
+	                theClass.toString().c_str(),
+	                Logger::toString(attributes).c_str() );
 }
 
 // 5.3
@@ -65,7 +65,7 @@ void PorticoRtiAmbassador::unpublishObjectClass( ObjectClassHandle theClass )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Starting] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -78,7 +78,7 @@ void PorticoRtiAmbassador::unpublishObjectClass( ObjectClassHandle theClass )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Finished] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
 }
 
 
@@ -93,7 +93,7 @@ void PorticoRtiAmbassador::unpublishObjectClassAttributes( ObjectClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
+	logger->trace( "[Starting] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
 	               theClass.toString().c_str(),
 	               Logger::toString(attributes).c_str() );
 	
@@ -111,9 +111,9 @@ void PorticoRtiAmbassador::unpublishObjectClassAttributes( ObjectClassHandle the
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
-	               theClass.toString().c_str(),
-	               Logger::toString(attributes).c_str() );
+	logger->trace( "[Finished] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
+	                theClass.toString().c_str(),
+	                Logger::toString(attributes).c_str() );
 }
 
 // 5.4
@@ -125,7 +125,7 @@ void PorticoRtiAmbassador::publishInteractionClass( InteractionClassHandle theCl
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Starting] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -138,7 +138,7 @@ void PorticoRtiAmbassador::publishInteractionClass( InteractionClassHandle theCl
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Finished] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
 }
 
 // 5.5
@@ -150,7 +150,7 @@ void PorticoRtiAmbassador::unpublishInteractionClass( InteractionClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Starting] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -163,7 +163,7 @@ void PorticoRtiAmbassador::unpublishInteractionClass( InteractionClassHandle the
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Finished] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
 }
 
 // 5.6
@@ -180,11 +180,11 @@ void PorticoRtiAmbassador::subscribeObjectClassAttributes( ObjectClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] subscribeObjectClassAttributes(): class=%ls, attributes=%s, active=%d, rate=%ls",
-	               theClass.toString().c_str(),
-	               Logger::toString(attributes).c_str(),
-	               active,
-	               updateRate.c_str() );
+	logger->trace( "[Starting] subscribeObjectClassAttributes(): class=%ls, attributes=%s, active=%d, rate=%ls",
+	                theClass.toString().c_str(),
+	                Logger::toString(attributes).c_str(),
+	                active,
+	                updateRate.c_str() );
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -214,11 +214,11 @@ void PorticoRtiAmbassador::subscribeObjectClassAttributes( ObjectClassHandle the
 	jnienv->DeleteLocalRef( jrate );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] subscribeObjectClassAttributes(): class=%ls, attributes=%s, active=%d, rate=%ls",
-	               theClass.toString().c_str(),
-	               Logger::toString(attributes).c_str(),
-	               active,
-	               updateRate.c_str() );
+	logger->trace( "[Finished] subscribeObjectClassAttributes(): class=%ls, attributes=%s, active=%d, rate=%ls",
+	                theClass.toString().c_str(),
+	                Logger::toString(attributes).c_str(),
+	                active,
+	                updateRate.c_str() );
 }
 
 // 5.7
@@ -230,7 +230,7 @@ void PorticoRtiAmbassador::unsubscribeObjectClass( ObjectClassHandle theClass )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Starting] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -243,7 +243,7 @@ void PorticoRtiAmbassador::unsubscribeObjectClass( ObjectClassHandle theClass )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Finished] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
 }
 
 void PorticoRtiAmbassador::unsubscribeObjectClassAttributes( ObjectClassHandle theClass,
@@ -256,7 +256,7 @@ void PorticoRtiAmbassador::unsubscribeObjectClassAttributes( ObjectClassHandle t
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
+	logger->trace( "[Starting] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
 	               theClass.toString().c_str(),
 	               Logger::toString(attributes).c_str() );
 	
@@ -274,9 +274,9 @@ void PorticoRtiAmbassador::unsubscribeObjectClassAttributes( ObjectClassHandle t
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
-	               theClass.toString().c_str(),
-	               Logger::toString(attributes).c_str() );
+	logger->trace( "[Finished] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
+	                theClass.toString().c_str(),
+	                Logger::toString(attributes).c_str() );
 }
 
 // 5.8
@@ -290,7 +290,7 @@ void PorticoRtiAmbassador::subscribeInteractionClass( InteractionClassHandle the
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] subscribeInteractionClass(): class=%ls, active=%d",
+	logger->trace( "[Starting] subscribeInteractionClass(): class=%ls, active=%d",
 	               theClass.toString().c_str(),
 	               active );
 	
@@ -307,9 +307,9 @@ void PorticoRtiAmbassador::subscribeInteractionClass( InteractionClassHandle the
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] subscribeInteractionClass(): class=%ls, active=%d",
-	              theClass.toString().c_str(),
-	              active );
+	logger->trace( "[Finished] subscribeInteractionClass(): class=%ls, active=%d",
+	               theClass.toString().c_str(),
+	               active );
 }
 
 // 5.9
@@ -321,7 +321,7 @@ void PorticoRtiAmbassador::unsubscribeInteractionClass( InteractionClassHandle t
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Starting] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -334,7 +334,7 @@ void PorticoRtiAmbassador::unsubscribeInteractionClass( InteractionClassHandle t
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
+	logger->trace( "[Finished] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
 }
 
 PORTICO1516E_NS_END

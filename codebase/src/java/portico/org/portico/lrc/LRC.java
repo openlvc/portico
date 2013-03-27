@@ -462,6 +462,10 @@ public class LRC
 	 */
 	public int tickUntilEmpty( long nanoWait ) throws JRTIinternalError, JConcurrentAccessAttempted
 	{
+		// don't process anything if callbacks aren't enabled
+		if( state.areCallbacksEnabled() == false )
+			return 0;
+		
 		// check for a concurrent access issue
 		state.checkAccess();
 		
@@ -516,6 +520,10 @@ public class LRC
 	public boolean tick( double minSeconds, double maxSeconds )
 		throws JRTIinternalError, JConcurrentAccessAttempted
 	{
+		// don't process anything if callbacks aren't enabled
+		if( state.areCallbacksEnabled() == false )
+			return true;
+		
 		// check for a concurrent access issue
 		state.checkAccess();
 
@@ -570,6 +578,16 @@ public class LRC
 	 */
 	public double tickFlush( double maxTime ) throws JRTIinternalError, JConcurrentAccessAttempted
 	{
+		// don't process anything if callbacks aren't enabled
+		if( state.areCallbacksEnabled() == false )
+		{
+			PorticoMessage next = state.messageQueue.peekTSO();
+			if( next != null && (next.getTimestamp() < maxTime) )
+				return next.getTimestamp();
+			else
+				return maxTime;
+		}
+
 		// check for a concurrent access issue
 		state.checkAccess();
 
@@ -615,6 +633,9 @@ public class LRC
 	 */
 	public boolean tickSingle( double wait ) throws JRTIinternalError, JConcurrentAccessAttempted
 	{
+		if( state.areCallbacksEnabled() == false )
+			return !state.messageQueue.isEmpty();
+
 		// check for a concurrent access issue
 		state.checkAccess();
 		
@@ -776,6 +797,18 @@ public class LRC
 			{
 				try
 				{
+					// If callbacks are currently not enabled, sleep for a bit and come back
+					// You mean just block!? Yes. I do. It's fine. Really. The stated use case
+					// for enabled/disable callbacks it to allow the federate to initiate a
+					// block on callbacks temporarily, so if unblocking takes a brief moment,
+					// it's really not an issue. Relax, tiger.
+					if( state.areCallbacksEnabled() == false )
+					{
+						Thread.sleep( 500 ); // sleep for half a second
+						continue;
+					}
+
+					// if callbacks are enabled, get bizzay processing them
 					PorticoMessage message = state.messageQueue.pollUntilNextMessage();
 					
 					if( message != null )

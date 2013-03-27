@@ -34,9 +34,9 @@ void PorticoRtiAmbassador::unconditionalAttributeOwnershipDivestiture(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] unconditionalAttributeOwnershipDivestiture(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] unconditionalAttributeOwnershipDivestiture(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -55,9 +55,9 @@ void PorticoRtiAmbassador::unconditionalAttributeOwnershipDivestiture(
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] unconditionalAttributeOwnershipDivestiture(): object=%d, attributes=%s",
+		logger->trace( "[Finished] unconditionalAttributeOwnershipDivestiture(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(attributes).c_str() );
 	}
@@ -78,9 +78,9 @@ void PorticoRtiAmbassador::negotiatedAttributeOwnershipDivestiture(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] negotiatedAttributeOwnershipDivestiture(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] negotiatedAttributeOwnershipDivestiture(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -102,9 +102,9 @@ void PorticoRtiAmbassador::negotiatedAttributeOwnershipDivestiture(
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] negotiatedAttributeOwnershipDivestiture(): object=%d, attributes=%s",
+		logger->trace( "[Finished] negotiatedAttributeOwnershipDivestiture(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(attributes).c_str() );
 	}
@@ -125,9 +125,9 @@ void PorticoRtiAmbassador::confirmDivestiture( ObjectInstanceHandle theObject,
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] confirmDivestiture(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] confirmDivestiture(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
@@ -149,9 +149,9 @@ void PorticoRtiAmbassador::confirmDivestiture( ObjectInstanceHandle theObject,
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] confirmDivestiture(): object=%d, attributes=%s",
+		logger->trace( "[Finished] confirmDivestiture(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(attributes).c_str() );
 	}
@@ -172,9 +172,9 @@ void PorticoRtiAmbassador::attributeOwnershipAcquisition( ObjectInstanceHandle t
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] attributeOwnershipAcquisition(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] attributeOwnershipAcquisition(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(desiredAttributes).c_str() );
 	}
@@ -196,9 +196,9 @@ void PorticoRtiAmbassador::attributeOwnershipAcquisition( ObjectInstanceHandle t
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] attributeOwnershipAcquisition(): object=%d, attributes=%s",
+		logger->trace( "[Finished] attributeOwnershipAcquisition(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(desiredAttributes).c_str() );
 	}
@@ -220,9 +220,9 @@ void PorticoRtiAmbassador::attributeOwnershipAcquisitionIfAvailable(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] attributeOwnershipAcquisitionIfAvailable(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] attributeOwnershipAcquisitionIfAvailable(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(desiredAttributes).c_str() );
 	}
@@ -241,9 +241,9 @@ void PorticoRtiAmbassador::attributeOwnershipAcquisitionIfAvailable(
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] attributeOwnershipAcquisitionIfAvailable(): object=%d, attributes=%s",
+		logger->trace( "[Finished] attributeOwnershipAcquisitionIfAvailable(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(desiredAttributes).c_str() );
 	}
@@ -261,9 +261,9 @@ void PorticoRtiAmbassador::attributeOwnershipReleaseDenied( ObjectInstanceHandle
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] attributeOwnershipReleaseDenied(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] attributeOwnershipReleaseDenied(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(theAttributes).c_str() );
 	}
@@ -282,9 +282,9 @@ void PorticoRtiAmbassador::attributeOwnershipReleaseDenied( ObjectInstanceHandle
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] attributeOwnershipReleaseDenied(): object=%d, attributes=%s",
+		logger->trace( "[Finished] attributeOwnershipReleaseDenied(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(theAttributes).c_str() );
 	}
@@ -321,9 +321,9 @@ void PorticoRtiAmbassador::cancelNegotiatedAttributeOwnershipDivestiture(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] cancelNegotiatedAttributeOwnershipDivestiture(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] cancelNegotiatedAttributeOwnershipDivestiture(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(theAttributes).c_str() );
 	}
@@ -342,9 +342,9 @@ void PorticoRtiAmbassador::cancelNegotiatedAttributeOwnershipDivestiture(
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] cancelNegotiatedAttributeOwnershipDivestiture(): object=%d, attributes=%s",
+		logger->trace( "[Finished] cancelNegotiatedAttributeOwnershipDivestiture(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(theAttributes).c_str() );
 	}
@@ -364,9 +364,9 @@ void PorticoRtiAmbassador::cancelAttributeOwnershipAcquisition(
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] cancelAttributeOwnershipAcquisition(): object=%ls, attributes=%s",
+		logger->trace( "[Starting] cancelAttributeOwnershipAcquisition(): object=%ls, attributes=%s",
 		               theObject.toString().c_str(),
 		               Logger::toString(theAttributes).c_str() );
 	}
@@ -385,9 +385,9 @@ void PorticoRtiAmbassador::cancelAttributeOwnershipAcquisition(
 	jnienv->DeleteLocalRef( jattributes );
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] cancelAttributeOwnershipAcquisition(): object=%d, attributes=%s",
+		logger->trace( "[Finished] cancelAttributeOwnershipAcquisition(): object=%d, attributes=%s",
 		              jobjectHandle,
 		              Logger::toString(theAttributes).c_str() );
 	}
@@ -404,9 +404,9 @@ void PorticoRtiAmbassador::queryAttributeOwnership( ObjectInstanceHandle theObje
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] queryAttributeOwnership(): object=%ls, attributes=%ls",
+		logger->trace( "[Starting] queryAttributeOwnership(): object=%ls, attributes=%ls",
 		               theObject.toString().c_str(),
 		               theAttribute.toString().c_str() );
 	}
@@ -424,9 +424,9 @@ void PorticoRtiAmbassador::queryAttributeOwnership( ObjectInstanceHandle theObje
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] queryAttributeOwnership(): object=%d, attributes=%d",
+		logger->trace( "[Finished] queryAttributeOwnership(): object=%d, attributes=%d",
 		              jobjectHandle,
 		              jattribute );
 	}
@@ -443,9 +443,9 @@ bool PorticoRtiAmbassador::isAttributeOwnedByFederate( ObjectInstanceHandle theO
 	       NotConnected,
 	       RTIinternalError )
 {
-	if( logger->isDebugEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->debug( "[Starting] isAttributeOwnedByFederate(): object=%ls, attributes=%ls",
+		logger->trace( "[Starting] isAttributeOwnedByFederate(): object=%ls, attributes=%ls",
 		               theObject.toString().c_str(),
 		               theAttribute.toString().c_str() );
 	}
@@ -463,9 +463,9 @@ bool PorticoRtiAmbassador::isAttributeOwnedByFederate( ObjectInstanceHandle theO
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	if( logger->isInfoEnabled() )
+	if( logger->isTraceEnabled() )
 	{
-		logger->info( "[Finished] isAttributeOwnedByFederate(): object=%d, attributes=%d",
+		logger->trace( "[Finished] isAttributeOwnedByFederate(): object=%d, attributes=%d",
 		              jobjectHandle,
 		              jattribute );
 	}

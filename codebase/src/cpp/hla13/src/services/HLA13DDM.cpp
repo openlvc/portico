@@ -34,7 +34,7 @@ RTI::RegionToken RTI::RTIambassador::getRegionToken( RTI::Region *theRegion )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] getRegionToken(): token=%u", token );
+	logger->trace( "[Finished] getRegionToken(): token=%u", token );
 
 	return token;
 }
@@ -58,7 +58,7 @@ RTI::Region* RTI::RTIambassador::getRegion( RTI::RegionToken token )
 	// create a new region to return
 	RTI::Region *region = new portico13::Region( privateRefs->getRti(), &(*proxy) );
 
-	logger->debug( "[Finished] getRegion(): token=%u", token );
+	logger->trace( "[Finished] getRegion(): token=%u", token );
 
 	return region;
 }
@@ -90,7 +90,7 @@ RTI::Region* RTI::RTIambassador::createRegion( RTI::SpaceHandle space, RTI::ULon
 	// create a new region to return
 	RTI::Region *region = new portico13::Region( privateRefs->rti, proxy );
 	
-	logger->debug( "[Finished] createRegion(): spaceHandle=%u, extents=%u", space, extents );
+	logger->trace( "[Finished] createRegion(): spaceHandle=%u, extents=%u", space, extents );
 
 	return region;
 }
@@ -115,7 +115,7 @@ void RTI::RTIambassador::notifyAboutRegionModification( RTI::Region &theRegion )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] modifyRegion(): regionAddress=%p", &theRegion );
+	logger->trace( "[Finished] modifyRegion(): regionAddress=%p", &theRegion );
 }
 
 // 9.4
@@ -138,7 +138,7 @@ void RTI::RTIambassador::deleteRegion( RTI::Region *theRegion )
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] deleteRegion(): regionAddress=%p", theRegion );
+	logger->trace( "[Finished] deleteRegion(): regionAddress=%p", theRegion );
 }
 
 // 9.5
@@ -191,7 +191,7 @@ RTI::RTIambassador::registerObjectInstanceWithRegion( RTI::ObjectClassHandle the
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] registerObjectInstanceWithRegion(): objectHandle=%d", handle );
+	logger->trace( "[Finished] registerObjectInstanceWithRegion(): objectHandle=%d", handle );
 	return handle;
 }
 
@@ -238,7 +238,7 @@ RTI::RTIambassador::registerObjectInstanceWithRegion( RTI::ObjectClassHandle the
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] registerObjectInstanceWithRegion(): objectHandle=%d", handle );
+	logger->trace( "[Finished] registerObjectInstanceWithRegion(): objectHandle=%d", handle );
 	return handle;
 }
 
@@ -277,7 +277,7 @@ void RTI::RTIambassador::associateRegionForUpdates( RTI::Region &theRegion,
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] associateRegionForUpdates(): regionAddress=%p, object=%d",
+	logger->trace( "[Finished] associateRegionForUpdates(): regionAddress=%p, object=%d",
 	               &theRegion, theObject );
 }
 
@@ -372,7 +372,7 @@ void RTI::RTIambassador::subscribeObjectClassAttributesWithRegion(
 	privateRefs->env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] subscribeObjectClassAttributesWithRegion(): classHandle=%d", theClass );
+	logger->trace( "[Finished] subscribeObjectClassAttributesWithRegion(): classHandle=%d", theClass );
 }
 
 // 9.9
@@ -399,7 +399,7 @@ void RTI::RTIambassador::unsubscribeObjectClassWithRegion( RTI::ObjectClassHandl
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] unsubscribeObjectClassWithRegion(): classHandle=%d, regionAddress=%p",
+	logger->trace( "[Finished] unsubscribeObjectClassWithRegion(): classHandle=%d, regionAddress=%p",
 	               theClass, &theRegion );
 }
 
@@ -451,7 +451,7 @@ void RTI::RTIambassador::subscribeInteractionClassWithRegion( RTI::InteractionCl
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] subscribeInteractionClassWithRegion(): classHandle=%d", theClass );
+	logger->trace( "[Finished] subscribeInteractionClassWithRegion(): classHandle=%d", theClass );
 }
 
 // 9.11
@@ -478,7 +478,7 @@ RTI::RTIambassador::unsubscribeInteractionClassWithRegion( RTI::InteractionClass
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] unsubscribeInteractionClassWithRegion(): classHandle=%d", theClass );
+	logger->trace( "[Finished] unsubscribeInteractionClassWithRegion(): classHandle=%d", theClass );
 }
 
 // 9.12
@@ -530,7 +530,7 @@ RTI::RTIambassador::sendInteractionWithRegion( RTI::InteractionClassHandle theIn
 	privateRefs->env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] sendInteractionWithRegion(TSO): classHandle=%d", theInteraction );
+	logger->trace( "[Finished] sendInteractionWithRegion(TSO): classHandle=%d", theInteraction );
 
 	// return an empty retraction handle
 	return RTI::EventRetractionHandle();
@@ -579,7 +579,7 @@ RTI::RTIambassador::sendInteractionWithRegion( RTI::InteractionClassHandle theIn
 	privateRefs->env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] sendInteractionWithRegion(RO): classHandle=%d", theInteraction );
+	logger->trace( "[Finished] sendInteractionWithRegion(RO): classHandle=%d", theInteraction );
 }
 
 // 9.13
@@ -617,7 +617,7 @@ void RTI::RTIambassador::requestClassAttributeValueUpdateWithRegion(
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] requestClassAttributeValueUpdateWithRegion(): theClass=%d regionAddress=%p",
+	logger->trace( "[Finished] requestClassAttributeValueUpdateWithRegion(): theClass=%d regionAddress=%p",
 	               theClass, &theRegion );
 }
 

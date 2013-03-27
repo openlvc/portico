@@ -42,7 +42,7 @@ RTI::ObjectClassHandle RTI::RTIambassador::getObjectClassHandle( const char *the
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getObjectClassHandle(): className=%s (return: %d)",
+	logger->trace( "[Finished] getObjectClassHandle(): className=%s (return: %d)",
 	               theName, classHandle );
 
 	// return the handle
@@ -68,7 +68,7 @@ char* RTI::RTIambassador::getObjectClassName( RTI::ObjectClassHandle theHandle )
 	privateRefs->rti->exceptionCheck();
 	
 	char* oName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getObjectClassName(): classHandle=%d (return: %s)",
+	logger->trace( "[Finished] getObjectClassName(): classHandle=%d (return: %s)",
 	               theHandle, oName );
 	return oName;
 }
@@ -98,7 +98,7 @@ RTI::AttributeHandle RTI::RTIambassador::getAttributeHandle( const char *theName
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getAttributeHandle(): attribute=%s, whichClass=%d (return: %d)",
+	logger->trace( "[Finished] getAttributeHandle(): attribute=%s, whichClass=%d (return: %d)",
 	               theName, whichClass, handle );
 
 	// return the handle
@@ -128,7 +128,7 @@ char* RTI::RTIambassador::getAttributeName( RTI::AttributeHandle theHandle,
 	privateRefs->rti->exceptionCheck();
 	
 	char* oName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getAttributeName(): attribute=%d, whichClass=%d (return: %s)",
+	logger->trace( "[Finished] getAttributeName(): attribute=%d, whichClass=%d (return: %s)",
 	               theHandle, whichClass, oName );
 	return oName;
 }
@@ -154,7 +154,7 @@ RTI::InteractionClassHandle RTI::RTIambassador::getInteractionClassHandle( const
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getInteractionClassHandle(): className=%s (return: %d)",
+	logger->trace( "[Finished] getInteractionClassHandle(): className=%s (return: %d)",
 	               theName, handle );
 	
 	// return the handle
@@ -180,7 +180,7 @@ char* RTI::RTIambassador::getInteractionClassName( RTI::InteractionClassHandle t
 	privateRefs->rti->exceptionCheck();
 	
 	char* cName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getInteractionClassName(): handle=%d (return: %s)",
+	logger->trace( "[Finished] getInteractionClassName(): handle=%d (return: %s)",
 	               theHandle, cName );
 	return cName;
 }
@@ -211,7 +211,7 @@ RTI::RTIambassador::getParameterHandle( const char *theName,
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getParameterHandle(): parameterName=%s, whichClass=%d (return: %d)", 
+	logger->trace( "[Finished] getParameterHandle(): parameterName=%s, whichClass=%d (return: %d)", 
 	               theName, whichClass, handle );
 
 	// return the handle
@@ -241,7 +241,7 @@ char* RTI::RTIambassador::getParameterName( RTI::ParameterHandle theHandle,
 	privateRefs->rti->exceptionCheck();
 
 	char* pName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getParameterName(): parameterHandle=%d, whichClass=%d",
+	logger->trace( "[Finished] getParameterName(): parameterHandle=%d, whichClass=%d",
 	               theHandle, whichClass, pName );
 	return pName;
 }
@@ -267,7 +267,7 @@ RTI::ObjectHandle RTI::RTIambassador::getObjectInstanceHandle( const char *theNa
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getObjectInstanceHandle(): objectName=%s (return: %d)",
+	logger->trace( "[Finished] getObjectInstanceHandle(): objectName=%s (return: %d)",
 	               theName, handle );
 
 	// return the handle
@@ -293,7 +293,7 @@ char* RTI::RTIambassador::getObjectInstanceName( RTI::ObjectHandle theHandle )
 	privateRefs->rti->exceptionCheck();
 	
 	char* oName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getObjectInstanceName(): objectHandle=%d (return: %s)",
+	logger->trace( "[Finished] getObjectInstanceName(): objectHandle=%d (return: %s)",
 	               theHandle, oName );
 	return oName;
 }
@@ -319,7 +319,7 @@ RTI::SpaceHandle RTI::RTIambassador::getRoutingSpaceHandle( const char *theName 
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getRoutingSpaceHandle(): spaceName=%s (return: %d)",\
+	logger->trace( "[Finished] getRoutingSpaceHandle(): spaceName=%s (return: %d)",\
 	               theName, handle );
 
 	// return the handle
@@ -345,7 +345,7 @@ char* RTI::RTIambassador::getRoutingSpaceName( RTI::SpaceHandle theHandle )
 	privateRefs->rti->exceptionCheck();
 	
 	char* sName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getRoutingSpaceName(): spaceHandle=%d (return: %s)",
+	logger->trace( "[Finished] getRoutingSpaceName(): spaceHandle=%d (return: %s)",
 	               theHandle, sName );
 	return sName;
 }
@@ -375,7 +375,7 @@ RTI::DimensionHandle RTI::RTIambassador::getDimensionHandle( const char *theName
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getDimensionHandle(): dimensionName=%s, whichSpace=%d (return: %d)",
+	logger->trace( "[Finished] getDimensionHandle(): dimensionName=%s, whichSpace=%d (return: %d)",
 	               theName, whichSpace, handle );
 	
 	// return the handle
@@ -405,7 +405,7 @@ char* RTI::RTIambassador::getDimensionName( RTI::DimensionHandle theHandle,
 	privateRefs->rti->exceptionCheck();
 	
 	char* dName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getDimensionName(): dimensionHandle=%d, whichSpace=%d (return: %s)",
+	logger->trace( "[Finished] getDimensionName(): dimensionHandle=%d, whichSpace=%d (return: %s)",
 	               theHandle, whichSpace, dName );
 	return dName;
 }
@@ -432,7 +432,7 @@ RTI::RTIambassador::getAttributeRoutingSpaceHandle( RTI::AttributeHandle theHand
 	// clean up and run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getAttributeRoutingSpaceHandle(): attributeHandle=%d, whichClass=%d (return: %d)",
+	logger->trace( "[Finished] getAttributeRoutingSpaceHandle(): attributeHandle=%d, whichClass=%d (return: %d)",
 	               theHandle, whichClass, handle );
 	
 	// return the handle
@@ -456,7 +456,7 @@ RTI::ObjectClassHandle RTI::RTIambassador::getObjectClass( RTI::ObjectHandle the
 	// clean up and run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getObjectClass(): objectHandle=%d (return: %d)", theObject, handle );
+	logger->trace( "[Finished] getObjectClass(): objectHandle=%d (return: %d)", theObject, handle );
 
 	// return the handle
 	return handle;
@@ -480,7 +480,7 @@ RTI::RTIambassador::getInteractionRoutingSpaceHandle( RTI::InteractionClassHandl
 	// clean up and run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getInteractionRoutingSpaceHandle(): classHandle=%d (return: %d)",
+	logger->trace( "[Finished] getInteractionRoutingSpaceHandle(): classHandle=%d (return: %d)",
 	               theHandle, handle );
 
 	// return the handle
@@ -508,7 +508,7 @@ RTI::TransportationHandle RTI::RTIambassador::getTransportationHandle( const cha
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getTransportationHandle(): transportName=%s (return: %d)",
+	logger->trace( "[Finished] getTransportationHandle(): transportName=%s (return: %d)",
 	               theName, handle );
 
 	// return the handle
@@ -534,7 +534,7 @@ char* RTI::RTIambassador::getTransportationName( RTI::TransportationHandle theHa
 	privateRefs->rti->exceptionCheck();
 	
 	char* tName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getTransportationName(): transportHandle=%d (return: %s)",
+	logger->trace( "[Finished] getTransportationName(): transportHandle=%d (return: %s)",
 	               theHandle, tName );
 	return tName;
 }
@@ -560,7 +560,7 @@ RTI::OrderingHandle RTI::RTIambassador::getOrderingHandle( const char *theName )
 	privateRefs->env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] getOrderingHandle(): name=%s (return: %d)", theName, handle );
+	logger->trace( "[Finished] getOrderingHandle(): name=%s (return: %d)", theName, handle );
 
 	// return the handle
 	return handle;
@@ -585,7 +585,7 @@ char* RTI::RTIambassador::getOrderingName( RTI::OrderingHandle theHandle )
 	privateRefs->rti->exceptionCheck();
 	
 	char* oName = privateRefs->rti->convertAndReleaseJString( name );
-	logger->debug( "[Finished] getOrderingName(): orderHandle=%d (return: %s)", theHandle, oName );
+	logger->trace( "[Finished] getOrderingName(): orderHandle=%d (return: %s)", theHandle, oName );
 	return oName;
 }
 
@@ -606,7 +606,7 @@ void RTI::RTIambassador::enableClassRelevanceAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableClassRelevanceAdvisorySwitch()" );
+	logger->trace( "[Finished] enableClassRelevanceAdvisorySwitch()" );
 }
 
 // 10.24
@@ -626,7 +626,7 @@ void RTI::RTIambassador::disableClassRelevanceAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] disableClassRelevanceAdvisorySwitch()" );
+	logger->trace( "[Finished] disableClassRelevanceAdvisorySwitch()" );
 }
 
 // 10.25
@@ -646,7 +646,7 @@ void RTI::RTIambassador::enableAttributeRelevanceAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableAttributeRelevanceAdvisorySwitch()" );
+	logger->trace( "[Finished] enableAttributeRelevanceAdvisorySwitch()" );
 }
 
 // 10.26
@@ -666,7 +666,7 @@ void RTI::RTIambassador::disableAttributeRelevanceAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] disableAttributeRelevanceAdvisorySwitch()" );
+	logger->trace( "[Finished] disableAttributeRelevanceAdvisorySwitch()" );
 }
 
 // 10.27
@@ -686,7 +686,7 @@ void RTI::RTIambassador::enableAttributeScopeAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableAttributeScopeAdvisorySwitch()" );
+	logger->trace( "[Finished] enableAttributeScopeAdvisorySwitch()" );
 }
 
 // 10.28
@@ -706,7 +706,7 @@ void RTI::RTIambassador::disableAttributeScopeAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] disableAttributeScopeAdvisorySwitch()" );
+	logger->trace( "[Finished] disableAttributeScopeAdvisorySwitch()" );
 }
 
 // 10.29
@@ -726,7 +726,7 @@ void RTI::RTIambassador::enableInteractionRelevanceAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] enableInteractionRelevanceAdvisorySwitch()" );
+	logger->trace( "[Finished] enableInteractionRelevanceAdvisorySwitch()" );
 }
 
 // 10.30
@@ -746,7 +746,7 @@ void RTI::RTIambassador::disableInteractionRelevanceAdvisorySwitch()
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] disableInteractionRelevanceAdvisorySwitch()" );
+	logger->trace( "[Finished] disableInteractionRelevanceAdvisorySwitch()" );
 }
 
 //

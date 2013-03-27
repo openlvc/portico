@@ -6,7 +6,7 @@ to compile and run it.
 
  NOTE: Knowledge of the HLA is assumed, but if you are just getting started out,
        there are some resources contained at the end of this README that you may
-	   find helpful.
+	     find helpful.
 
 Table of Contents:
   1. Getting Started

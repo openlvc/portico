@@ -245,8 +245,7 @@ public class HLA13Set implements Serializable
 			}
 			else
 			{
-				throw new ArrayIndexOutOfBoundsException( "position= " + pos +
-				                                          ", size=" + handles.size() );
+				return -1;
 			}
 		}
 
@@ -257,12 +256,7 @@ public class HLA13Set implements Serializable
 		 */
 		public boolean isValid()
 		{
-			if( (pos+1) <= handles.size() )
-			{
-				return true;
-			}
-			
-			return false;
+			return pos < handles.size();
 		}
 
 		/**
@@ -277,11 +271,8 @@ public class HLA13Set implements Serializable
 			}
 			else
 			{
-				throw new ArrayIndexOutOfBoundsException( "position= " + pos +
-				                                          ", size=" + handles.size() );
+				return -1;
 			}
 		}
 	}
-
-	
 }

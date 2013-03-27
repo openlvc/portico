@@ -81,6 +81,8 @@
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEUBG"/>
+			<define name="PORTICO_VERSION=${build.version}"/>
+			<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 
@@ -105,6 +107,8 @@
 			<define name="BUILDING_DLC"/>
 			<define name="BUILDING_FEDTIME"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="PORTICO_VERSION=${build.version}"/>
+			<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 			<library path="${jdk.home.macosx}/jre/lib/server" libs="jvm,jsig"/>
 		</cpp-unix>
 

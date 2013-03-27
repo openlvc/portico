@@ -101,6 +101,9 @@
 	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e"  if="platform.macosx"/>
 	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
 
+	<!-- Linux C++ and Installer profiles -->
+	<include file="profiles/linux/installer.xml"     as="installer"      if="platform.linux64"/>
+
 	<!-- Windows C++ and Installer profiles -->
 	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
 	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>

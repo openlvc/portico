@@ -200,7 +200,7 @@
 
 	<!-- Run the IEEE 1516 test suite -->
 	<target name="test.ieee1516" depends="compile.tests">
-		<java-test suite="hlaunit/hla1516"
+		<java-test suite="hlaunit/ieee1516"
 		           classdir="${test.classes.dir}"
 		           outdir="${test.reports.dir}"
 		           classpath="test.classpath">
@@ -213,7 +213,7 @@
 
 	<!-- Run the IEEE 1516e (Evolved) test suite -->
 	<target name="test.ieee1516e" depends="compile.tests">
-		<java-test suite="hlaunit/hla1516e"
+		<java-test suite="hlaunit/ieee1516e"
 		           classdir="${test.classes.dir}"
 		           outdir="${test.reports.dir}"
 		           classpath="test.classpath">
@@ -299,6 +299,7 @@
 
 			<!-- MANIFEST -->
 			<manifest>
+				<attribute name="Main-Class" value="org.portico.Main"/>
 				<attribute name="Built-By" value="Calytrix Technologies"/>
 				<section name="org/portico">
 					<attribute name="Implementation-Title" value="portico"/>
@@ -353,7 +354,7 @@
 
 	<!-- Generate the javadocs and place them in the sandbox. We only do this for a release
 	     build because of the amount of time it takes -->
-	<target name="javadoc" depends="sandbox">
+	<target name="javadoc" depends="sandbox" if="build.release">
 		<!-- Make room in the sandbox for the javadoc. Create a property for shortcut purposes -->
 		<property name="javadoc.dir" value="${sandbox.dir}/documentation/javadoc"/>
 		<mkdir dir="${javadoc.dir}"/>

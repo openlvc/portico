@@ -27,7 +27,12 @@ const char* rti13::RTIname()
 // identical to MOM attributes of same name
 const char* rti13::RTIversion()
 {
-	return "1.0";
+	stringstream ss;
+	ss << STRING_FROM_MACRO(PORTICO_VERSION);
+	ss << " (build ";
+	ss << STRING_FROM_MACRO(PORTICO_BUILD_NUMBER);
+	ss << ")";
+	ss.str();
 }
 
 #endif
