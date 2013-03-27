@@ -17,6 +17,24 @@
 
 #pragma once
 
+// Crappy String manipulation macros
+#define STRING(value) #value
+#define STRING_FROM_MACRO(macro) STRING(macro)
+
+/////////////////////////////////
+// Portico Version Information //
+/////////////////////////////////
+#ifndef PORTICO_VERSION
+	#define PORTICO_VERSION 0.0.0
+#endif
+
+#ifndef PORTICO_BUILD_NUMBER
+	#define PORTICO_BUILD_NUMBER 0
+#endif
+
+///////////////////////////////////////
+// Operating System and Architecture //
+///////////////////////////////////////
 // The following #defines are set to convey platform information
 //   DEBUG      : Set if this is a debug build. Set from the command line
 // Platform
@@ -31,10 +49,6 @@
 //   VC9        : Set if we are compiling with VC9
 //   VC10       : Set if we are compiling with VC10
 //   VC11       : Set if we are compiling with VC11
-
-///////////////////////////////////////
-// Operating System and Architecture //
-///////////////////////////////////////
 #if _WIN32 || _WIN64
 	#define OS_WINDOWS
     #define WIN32_LEAN_AND_MEAN

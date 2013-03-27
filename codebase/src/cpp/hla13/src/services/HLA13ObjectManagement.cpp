@@ -47,7 +47,7 @@ RTI::ObjectHandle RTI::RTIambassador::registerObjectInstance( RTI::ObjectClassHa
 	privateRefs->env->DeleteLocalRef( jObjectName );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] registerObjectInstance(): classHandle=%d, name=%s (return: %d)",
+	logger->trace( "[Finished] registerObjectInstance(): classHandle=%d, name=%s (return: %d)",
 	               theClass, theObject, handle );
 
 	// return the handle
@@ -73,7 +73,7 @@ RTI::ObjectHandle RTI::RTIambassador::registerObjectInstance( RTI::ObjectClassHa
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] registerObjectInstance(): classHandle=%d (return: %d)",
+	logger->trace( "[Finished] registerObjectInstance(): classHandle=%d (return: %d)",
 	               theClass, handle );
 
 	// return the handle
@@ -125,7 +125,7 @@ RTI::RTIambassador::updateAttributeValues( RTI::ObjectHandle theObject,
 	privateRefs->env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] updateAttributeValues(TSO): objectHandle=%d", theObject );
+	logger->trace( "[Finished] updateAttributeValues(TSO): objectHandle=%d", theObject );
 
 	// return an empty retraction handle
 	return RTI::EventRetractionHandle();
@@ -169,7 +169,7 @@ void RTI::RTIambassador::updateAttributeValues( RTI::ObjectHandle theObject,
 	privateRefs->env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] updateAttributeValues(RO): objectHandle=%d", theObject );
+	logger->trace( "[Finished] updateAttributeValues(RO): objectHandle=%d", theObject );
 }
 
 // 6.6
@@ -217,7 +217,7 @@ RTI::RTIambassador::sendInteraction( RTI::InteractionClassHandle theInteraction,
 	privateRefs->env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] sendInteraction(TSO): classHandle=%d", theInteraction );
+	logger->trace( "[Finished] sendInteraction(TSO): classHandle=%d", theInteraction );
 
 	// return an empty retraction handle
 	return RTI::EventRetractionHandle();
@@ -261,7 +261,7 @@ void RTI::RTIambassador::sendInteraction( RTI::InteractionClassHandle theInterac
 	privateRefs->env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] sendInteraction(RO): classHandle=%d", theInteraction );
+	logger->trace( "[Finished] sendInteraction(RO): classHandle=%d", theInteraction );
 }
 
 // 6.8
@@ -298,7 +298,7 @@ RTI::RTIambassador::deleteObjectInstance( RTI::ObjectHandle theObject,
 	privateRefs->env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] deleteObjectInstance(TSO): objectHandle=%d", theObject );
+	logger->trace( "[Finished] deleteObjectInstance(TSO): objectHandle=%d", theObject );
 
 	// return the handle
 	return RTI::EventRetractionHandle();
@@ -329,7 +329,7 @@ void RTI::RTIambassador::deleteObjectInstance( RTI::ObjectHandle theObject, cons
 	privateRefs->env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] deleteObjectInstance(RO): objectHandle=%d" );
+	logger->trace( "[Finished] deleteObjectInstance(RO): objectHandle=%d" );
 }
 
 // 6.10
@@ -352,7 +352,7 @@ void RTI::RTIambassador::localDeleteObjectInstance( RTI::ObjectHandle theObject 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] localDeleteObjectInstance(): objectHandle=%d", theObject );
+	logger->trace( "[Finished] localDeleteObjectInstance(): objectHandle=%d", theObject );
 }
 
 // 6.11
@@ -392,7 +392,7 @@ RTI::RTIambassador::changeAttributeTransportationType( RTI::ObjectHandle theObje
 	privateRefs->env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] changeAttributeTransportationType(): objectHandle=%d, transportHandle=%d",
+	logger->trace( "[Finished] changeAttributeTransportationType(): objectHandle=%d, transportHandle=%d",
 	               theObject, theType );
 }
 
@@ -420,7 +420,7 @@ void RTI::RTIambassador::changeInteractionTransportationType( RTI::InteractionCl
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] changeInteractionTransportationType(): classHandle=%d, transportHandle=%d",
+	logger->trace( "[Finished] changeInteractionTransportationType(): classHandle=%d, transportHandle=%d",
 	               theClass, theType );
 }
 
@@ -457,7 +457,7 @@ RTI::RTIambassador::requestObjectAttributeValueUpdate( RTI::ObjectHandle theObje
 	privateRefs->env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 	
-	logger->debug( "[Finished] requestObjectAttributeValueUpdate(): objectHandle=%d", theObject );
+	logger->trace( "[Finished] requestObjectAttributeValueUpdate(): objectHandle=%d", theObject );
 }
 
 void
@@ -492,5 +492,5 @@ RTI::RTIambassador::requestClassAttributeValueUpdate( RTI::ObjectClassHandle the
 	privateRefs->env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 
-	logger->debug( "[Finished] requestClassAttributeValueUpdate(): classHandle=%d", theClass );
+	logger->trace( "[Finished] requestClassAttributeValueUpdate(): classHandle=%d", theClass );
 }

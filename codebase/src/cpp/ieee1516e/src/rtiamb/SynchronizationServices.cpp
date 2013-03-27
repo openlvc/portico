@@ -30,7 +30,7 @@ void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::ws
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] registerFederationSynchronizationPoint(): label=%ls",label.c_str() );
+	logger->trace( "[Starting] registerFederationSynchronizationPoint(): label=%ls",label.c_str() );
 	
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
@@ -47,7 +47,7 @@ void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::ws
 	jnienv->DeleteLocalRef( jtag );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] registerFederationSynchronizationPoint(): label=%ls", label.c_str() );
+	logger->trace( "[Finished] registerFederationSynchronizationPoint(): label=%ls", label.c_str() );
 }
 
 void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::wstring& label,
@@ -60,7 +60,7 @@ void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::ws
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] registerFederationSynchronizationPoint(): label=%ls, set=%s",
+	logger->trace( "[Starting] registerFederationSynchronizationPoint(): label=%ls, set=%s",
 	               label.c_str(),
 	               Logger::toString(syncset).c_str() );
 	
@@ -82,9 +82,9 @@ void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::ws
 	jnienv->DeleteLocalRef( jfederates );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] registerFederationSynchronizationPoint(): label=%ls, set=%s",
-	              label.c_str(),
-	              Logger::toString(syncset).c_str() );
+	logger->trace( "[Finished] registerFederationSynchronizationPoint(): label=%ls, set=%s",
+	               label.c_str(),
+	               Logger::toString(syncset).c_str() );
 }
 
 // 4.14
@@ -97,7 +97,7 @@ void PorticoRtiAmbassador::synchronizationPointAchieved( const std::wstring& lab
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] synchronizationPointAchieved(): label=%ls, success=%d",
+	logger->trace( "[Starting] synchronizationPointAchieved(): label=%ls, success=%d",
 	               label.c_str(),
 	               successfully );
 	
@@ -114,9 +114,9 @@ void PorticoRtiAmbassador::synchronizationPointAchieved( const std::wstring& lab
 	jnienv->DeleteLocalRef( jlabel );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] synchronizationPointAchieved(): label=%ls, success=%d",
-	              label.c_str(),
-	              successfully );
+	logger->trace( "[Finished] synchronizationPointAchieved(): label=%ls, success=%d",
+	               label.c_str(),
+	               successfully );
 }
 
 PORTICO1516E_NS_END

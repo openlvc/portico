@@ -32,7 +32,7 @@ void PorticoRtiAmbassador::enableTimeRegulation( const LogicalTimeInterval& theL
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] enableTimeRegulation(): lookahead=%ls",
+	logger->trace( "[Starting] enableTimeRegulation(): lookahead=%ls",
 	               theLookahead.toString().c_str() );
 	
 	// get java versions of the parameters
@@ -46,8 +46,8 @@ void PorticoRtiAmbassador::enableTimeRegulation( const LogicalTimeInterval& theL
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] enableTimeRegulation(): lookahead=%ls",
-	              theLookahead.toString().c_str() );
+	logger->trace( "[Finished] enableTimeRegulation(): lookahead=%ls",
+	               theLookahead.toString().c_str() );
 }
 
 // 8.4
@@ -59,13 +59,13 @@ void PorticoRtiAmbassador::disableTimeRegulation()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] disableTimeRegulation()" );
+	logger->trace( "[Starting] disableTimeRegulation()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISABLE_TIME_REGULATION );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] disableTimeRegulation()" );
+	logger->trace( "[Finished] disableTimeRegulation()" );
 
 }
 
@@ -80,13 +80,13 @@ void PorticoRtiAmbassador::enableTimeConstrained()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] enableTimeConstrained()" );
+	logger->trace( "[Starting] enableTimeConstrained()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->ENABLE_TIME_CONSTRAINED );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] enableTimeConstrained()" );
+	logger->trace( "[Finished] enableTimeConstrained()" );
 }
 
 // 8.7
@@ -98,13 +98,13 @@ void PorticoRtiAmbassador::disableTimeConstrained()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] disableTimeConstrained()" );
+	logger->trace( "[Starting] disableTimeConstrained()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISABLE_TIME_CONSTRAINED );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] disableTimeConstrained()" );
+	logger->trace( "[Finished] disableTimeConstrained()" );
 }
 
 // 8.8
@@ -120,7 +120,7 @@ void PorticoRtiAmbassador::timeAdvanceRequest( const LogicalTime& theTime )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] timeAdvanceRequest(): time=%ls", theTime.toString().c_str() );
+	logger->trace( "[Starting] timeAdvanceRequest(): time=%ls", theTime.toString().c_str() );
 	
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
@@ -133,7 +133,7 @@ void PorticoRtiAmbassador::timeAdvanceRequest( const LogicalTime& theTime )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] timeAdvanceRequest(): time=%ls", theTime.toString().c_str() );
+	logger->trace( "[Finished] timeAdvanceRequest(): time=%ls", theTime.toString().c_str() );
 }
 
 // 8.9
@@ -149,7 +149,7 @@ void PorticoRtiAmbassador::timeAdvanceRequestAvailable( const LogicalTime& theTi
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] timeAdvanceRequestAvailable(): time=%ls",
+	logger->trace( "[Starting] timeAdvanceRequestAvailable(): time=%ls",
 	               theTime.toString().c_str() );
 	
 	// get java versions of the parameters
@@ -163,8 +163,8 @@ void PorticoRtiAmbassador::timeAdvanceRequestAvailable( const LogicalTime& theTi
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] timeAdvanceRequestAvailable(): time=%ls",
-	              theTime.toString().c_str() );
+	logger->trace( "[Finished] timeAdvanceRequestAvailable(): time=%ls",
+	               theTime.toString().c_str() );
 }
 
 // 8.10
@@ -180,7 +180,7 @@ void PorticoRtiAmbassador::nextMessageRequest( const LogicalTime& theTime )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] nextMessageRequest(): time=%ls", theTime.toString().c_str() );
+	logger->trace( "[Starting] nextMessageRequest(): time=%ls", theTime.toString().c_str() );
 	
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
@@ -193,7 +193,7 @@ void PorticoRtiAmbassador::nextMessageRequest( const LogicalTime& theTime )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] nextMessageRequest(): time=%ls", theTime.toString().c_str() );
+	logger->trace( "[Finished] nextMessageRequest(): time=%ls", theTime.toString().c_str() );
 }
 
 // 8.11
@@ -209,7 +209,7 @@ void PorticoRtiAmbassador::nextMessageRequestAvailable( const LogicalTime& theTi
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] nextMessageRequestAvailable(): time=%ls",
+	logger->trace( "[Starting] nextMessageRequestAvailable(): time=%ls",
 	               theTime.toString().c_str() );
 	
 	// get java versions of the parameters
@@ -223,8 +223,8 @@ void PorticoRtiAmbassador::nextMessageRequestAvailable( const LogicalTime& theTi
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] nextMessageRequestAvailable(): time=%ls",
-	              theTime.toString().c_str() );
+	logger->trace( "[Finished] nextMessageRequestAvailable(): time=%ls",
+	               theTime.toString().c_str() );
 }
 
 // 8.12
@@ -240,7 +240,7 @@ void PorticoRtiAmbassador::flushQueueRequest( const LogicalTime& theTime )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] flushQueueRequest(): time=%ls", theTime.toString().c_str() );
+	logger->trace( "[Starting] flushQueueRequest(): time=%ls", theTime.toString().c_str() );
 	
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
@@ -253,7 +253,7 @@ void PorticoRtiAmbassador::flushQueueRequest( const LogicalTime& theTime )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] flushQueueRequest(): time=%ls", theTime.toString().c_str() );
+	logger->trace( "[Finished] flushQueueRequest(): time=%ls", theTime.toString().c_str() );
 }
 
 // 8.14
@@ -265,13 +265,13 @@ void PorticoRtiAmbassador::enableAsynchronousDelivery()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] enableAsynchronousDelivery()" );
+	logger->trace( "[Starting] enableAsynchronousDelivery()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->ENABLE_ASYNCHRONOUS_DELIVERY );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] enableAsynchronousDelivery()" );
+	logger->trace( "[Finished] enableAsynchronousDelivery()" );
 }
 
 // 8.15
@@ -283,13 +283,13 @@ void PorticoRtiAmbassador::disableAsynchronousDelivery()
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] disableAsynchronousDelivery()" );
+	logger->trace( "[Starting] disableAsynchronousDelivery()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISABLE_ASYNCHRONOUS_DELIVERY );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] disableAsynchronousDelivery()" );
+	logger->trace( "[Finished] disableAsynchronousDelivery()" );
 }
 
 // 8.16
@@ -300,7 +300,7 @@ bool PorticoRtiAmbassador::queryGALT( LogicalTime& theTime )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] queryGALT()" );
+	logger->trace( "[Starting] queryGALT()" );
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_GALT );
@@ -309,12 +309,12 @@ bool PorticoRtiAmbassador::queryGALT( LogicalTime& theTime )
 
 	if( jtime == -1 )
 	{
-		logger->info( "[Finished] queryGALT()" );
+		logger->trace( "[Finished] queryGALT()" );
 		return false;
 	}
 	else
 	{
-		logger->info( "[Finished] queryGALT()" );
+		logger->trace( "[Finished] queryGALT()" );
 		theTime = HLAfloat64Time( jtime );
 		return true;
 	}
@@ -328,7 +328,7 @@ void PorticoRtiAmbassador::queryLogicalTime( LogicalTime& theTime )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] queryLogicalTime()" );
+	logger->trace( "[Starting] queryLogicalTime()" );
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_TIME );
@@ -336,7 +336,7 @@ void PorticoRtiAmbassador::queryLogicalTime( LogicalTime& theTime )
 	javarti->exceptionCheck();
 
 	theTime = HLAfloat64Time( jtime );
-	logger->info( "[Finished] queryLogicalTime()" );
+	logger->trace( "[Finished] queryLogicalTime()" );
 }
 
 // 8.18
@@ -347,7 +347,7 @@ bool PorticoRtiAmbassador::queryLITS( LogicalTime& theTime )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] queryLITS()" );
+	logger->trace( "[Starting] queryLITS()" );
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_LITS );
@@ -356,12 +356,12 @@ bool PorticoRtiAmbassador::queryLITS( LogicalTime& theTime )
 
 	if( jtime == -1 )
 	{
-		logger->info( "[Finished] queryLITS()" );
+		logger->trace( "[Finished] queryLITS()" );
 		return false;
 	}
 	else
 	{
-		logger->info( "[Finished] queryLITS()" );
+		logger->trace( "[Finished] queryLITS()" );
 		theTime = HLAfloat64Time( jtime );
 		return true;
 	}
@@ -378,7 +378,7 @@ void PorticoRtiAmbassador::modifyLookahead( const LogicalTimeInterval& theLookah
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] modifyLookahead(): lookahead=%ls", theLookahead.toString().c_str() );
+	logger->trace( "[Starting] modifyLookahead(): lookahead=%ls", theLookahead.toString().c_str() );
 	
 	// get java versions of the parameters
 	jdouble jlookahead = JniUtils::fromInterval( theLookahead );
@@ -391,7 +391,7 @@ void PorticoRtiAmbassador::modifyLookahead( const LogicalTimeInterval& theLookah
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] modifyLookahead(): lookahead=%ls", theLookahead.toString().c_str() );
+	logger->trace( "[Finished] modifyLookahead(): lookahead=%ls", theLookahead.toString().c_str() );
 }
 
 // 8.20
@@ -403,7 +403,7 @@ void PorticoRtiAmbassador::queryLookahead( LogicalTimeInterval& interval )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] queryLookahead()" );
+	logger->trace( "[Starting] queryLookahead()" );
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_LOOKAHEAD );
@@ -411,7 +411,7 @@ void PorticoRtiAmbassador::queryLookahead( LogicalTimeInterval& interval )
 	javarti->exceptionCheck();
 
 	interval = HLAfloat64Interval( jtime );
-	logger->info( "[Finished] queryLookahead()" );
+	logger->trace( "[Finished] queryLookahead()" );
 }
 
 // 8.21
@@ -425,7 +425,7 @@ void PorticoRtiAmbassador::retract( MessageRetractionHandle theHandle )
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] retract() handle=%ls", theHandle.toString().c_str() );
+	logger->trace( "[Starting] retract() handle=%ls", theHandle.toString().c_str() );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy,
@@ -434,7 +434,7 @@ void PorticoRtiAmbassador::retract( MessageRetractionHandle theHandle )
 
 	// clean up and run the exception check
 	javarti->exceptionCheck();
-	logger->debug( "[Finished] retract() handle=%ls", theHandle.toString().c_str() );
+	logger->trace( "[Finished] retract() handle=%ls", theHandle.toString().c_str() );
 }
 
 // 8.23
@@ -450,7 +450,7 @@ void PorticoRtiAmbassador::changeAttributeOrderType( ObjectInstanceHandle theObj
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] changeAttributeOrderType(): theObject=%ls, theAttributes=%s, order=%d",
+	logger->trace( "[Starting] changeAttributeOrderType(): theObject=%ls, theAttributes=%s, order=%d",
 	               theObject.toString().c_str(),
 	               Logger::toString(theAttributes).c_str(),
 	               theType );
@@ -472,10 +472,10 @@ void PorticoRtiAmbassador::changeAttributeOrderType( ObjectInstanceHandle theObj
 	jnienv->DeleteLocalRef( jorder );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] changeAttributeOrderType(): theObject=%ls, theAttributes=%s, order=%d",
-	              theObject.toString().c_str(),
-	              Logger::toString(theAttributes).c_str(),
-	              theType );
+	logger->trace( "[Finished] changeAttributeOrderType(): theObject=%ls, theAttributes=%s, order=%d",
+	               theObject.toString().c_str(),
+	               Logger::toString(theAttributes).c_str(),
+	               theType );
 }
 
 // 8.24
@@ -489,7 +489,7 @@ void PorticoRtiAmbassador::changeInteractionOrderType( InteractionClassHandle th
 	       NotConnected,
 	       RTIinternalError )
 {
-	logger->debug( "[Starting] changeInteractionOrderType(): theClass=%ls, order=%d",
+	logger->trace( "[Starting] changeInteractionOrderType(): theClass=%ls, order=%d",
 	               theClass.toString().c_str(), theType );
 	
 	// get java versions of the parameters
@@ -507,8 +507,8 @@ void PorticoRtiAmbassador::changeInteractionOrderType( InteractionClassHandle th
 	jnienv->DeleteLocalRef( jorder );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] changeInteractionOrderType(): theClass=%ls, order=%d",
-	              theClass.toString().c_str(), theType );
+	logger->trace( "[Finished] changeInteractionOrderType(): theClass=%ls, order=%d",
+	               theClass.toString().c_str(), theType );
 }
 
 PORTICO1516E_NS_END

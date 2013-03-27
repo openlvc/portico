@@ -272,6 +272,8 @@
 				<define name="BUILDING_RTI"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 				<library path="${_jdklib}" libs="jvm,jsig"/>
 			</cpptask>			
 
@@ -294,6 +296,8 @@
 				<define name="BUILDING_FEDTIME"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 				<library path="${_jdklib}" libs="jvm,jsig"/>
 				<library path="${ieee1516e.complete.dir}/@{compiler}" libs="rti1516e${_bitness}${_d}"/>
 			</cpptask>

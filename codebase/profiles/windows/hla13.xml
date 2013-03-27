@@ -31,8 +31,7 @@
 	<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>
 	<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>
 	<!-- Sets property to value safe for visual studio build numbers: 1,1,1,1 -->
-	<visualStudioBuildNumber property="compiler.product.version"
-	                         value="${build.version}.${build.number}"/>
+	<visualStudioBuildNumber property="product.version" value="${build.version}.${build.number}"/>
 
 	<!-- source -->
 	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
@@ -145,7 +144,7 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" unless="build.release">
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" if="disabled">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
@@ -385,8 +384,10 @@
 				<define name="BUILDING_RTI"/>
 				<define name="BUILDING_FEDTIME"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
-				<define name="PRODUCT_INTERNAL_NAME=libFedTime${_bitness}${_d}"/>
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>       <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=libFedTime${_bitness}${_d}"/>  <!-- for DLL -->
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 			</cpptask>
 
@@ -412,8 +413,10 @@
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<define name="PRODUCT_VERSION=${compiler.product.version}"/>
-				<define name="PRODUCT_INTERNAL_NAME=libRTI-NG${_bitness}${_d}"/>
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>              <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=libRTI-NG${_bitness}${_d}"/> <!-- for DLL -->
 				<library path="${_jdkhome}/lib" libs="jvm"/>
 				<library path="${hla13.complete.dir}/@{compiler}"
 						 libs="libFedTime${_bitness}${_d}"/>

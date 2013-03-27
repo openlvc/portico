@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="installer.linux">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Linux installation generation.
+	</description>
+
+	<!-- ================================================================================= -->
+	<!--                             Installer Creation Targets                            -->
+	<!-- ================================================================================= -->
+	<target name="installer" extensionOf="master.installer">
+		<!-- find the location of the local JRE -->
+		<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
+
+		<!-- check to make sure the jre dir exists -->
+		<echo>Checking to see if JRE is available for bundling</echo>
+		<echo>  searching in... ${jdk.home.linux64}/jre</echo>
+		<available file="${jdk.home.linux64}/jre" property="jrefound"/>
+		<fail unless="jrefound" message="Could not locate JRE for bundling."/>
+
+		<!-- Generate the tarball with the sandbox and the JRE in it -->
+		<!-- We have to use exec as the result tar task gives us problems with
+		     permissions and symlinks -->
+		<property name="tarball.file" location="${dist.dir}/${dist.name}-linux64.tar.gz"/>
+
+		<echo>Creating tarball: ${tarball.file}</echo>
+		<exec executable="tar" dir="${dist.dir}" failonerror="true">
+			<arg line="-czpf ${tarball.file} --transform=s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.linux64} ./jre"/>
+		</exec>
+	</target>
+</project>

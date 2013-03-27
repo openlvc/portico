@@ -32,7 +32,7 @@ void PorticoRtiAmbassador::connect( FederateAmbassador& federateAmbassador,
 		   CallNotAllowedFromWithinCallback,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] connect(): callback=%d", theCallbackModel );
+	logger->trace( "[Starting] connect(): callback=%d", theCallbackModel );
 	
 	// get java versions of the parameters
 	jstring jmodel = JniUtils::fromCallbackModel( jnienv, theCallbackModel );
@@ -50,7 +50,7 @@ void PorticoRtiAmbassador::connect( FederateAmbassador& federateAmbassador,
 	jnienv->DeleteLocalRef( jmodel );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] connect(): callback=%d", theCallbackModel );
+	logger->trace( "[Finished] connect(): callback=%d", theCallbackModel );
 }
 
 // 4.3
@@ -58,14 +58,14 @@ void PorticoRtiAmbassador::disconnect() throw( FederateIsExecutionMember,
                                                CallNotAllowedFromWithinCallback,
                                                RTIinternalError )
 {
-	logger->debug( "[Starting] disconnect()" );
+	logger->trace( "[Starting] disconnect()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISCONNECT );
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] disconnect()" );
+	logger->trace( "[Finished] disconnect()" );
 }
 
 // 4.5
@@ -80,7 +80,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(federation,fom): name=%ls, fedfile=%ls, time=%ls",
+	logger->trace( "[Starting] createFederationExecution(federation,fom): name=%ls, fedfile=%ls, time=%ls",
 	               federationName.c_str(),
 	               fomModule.c_str(),
 	               timeImplementation.c_str() );
@@ -103,7 +103,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 	jnienv->DeleteLocalRef( jtime );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution(federation,fom): name=%ls", federationName.c_str() );
+	logger->trace( "[Finished] createFederationExecution(federation,fom): name=%ls", federationName.c_str() );
 }
 
 void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federationName,
@@ -117,7 +117,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(federation,modules): name=%ls, fedfiles=%ls, time=%ls",
+	logger->trace( "[Starting] createFederationExecution(federation,modules): name=%ls, fedfiles=%ls, time=%ls",
 	               federationName.c_str(),
 	               Logger::toWString(fomModules).c_str(),
 	               timeImplementation.c_str() );
@@ -140,7 +140,7 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 	JniUtils::deleteJniArray( jnienv, jfoms );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution(federation,modules) name=%ls", federationName.c_str() );
+	logger->trace( "[Finished] createFederationExecution(federation,modules) name=%ls", federationName.c_str() );
 }
 
 void PorticoRtiAmbassador::createFederationExecutionWithMIM(
@@ -159,7 +159,7 @@ void PorticoRtiAmbassador::createFederationExecutionWithMIM(
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] createFederationExecution(federation,modules,mim): name=%ls, fedfiles=%ls, mim=%ls, time=%ls",
+	logger->trace( "[Starting] createFederationExecution(federation,modules,mim): name=%ls, fedfiles=%ls, mim=%ls, time=%ls",
 	               federationName.c_str(),
 	               Logger::toWString(fomModules).c_str(),
 	               mimModule.c_str(),
@@ -186,7 +186,7 @@ void PorticoRtiAmbassador::createFederationExecutionWithMIM(
 	jnienv->DeleteLocalRef( jtime );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] createFederationExecution(federation,modules,mim) name=%ls", federationName.c_str() );
+	logger->trace( "[Finished] createFederationExecution(federation,modules,mim) name=%ls", federationName.c_str() );
 }
 
 // 4.6
@@ -196,7 +196,7 @@ void PorticoRtiAmbassador::destroyFederationExecution( const std::wstring& feder
 		   NotConnected,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] destroyFederationExecution(): name=%ls", federationName.c_str() );
+	logger->trace( "[Starting] destroyFederationExecution(): name=%ls", federationName.c_str() );
 	
 	// get java versions of the parameters
 	jstring jfederation = JniUtils::fromWideString( jnienv, federationName );
@@ -210,20 +210,20 @@ void PorticoRtiAmbassador::destroyFederationExecution( const std::wstring& feder
 	jnienv->DeleteLocalRef( jfederation );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] destroyFederationExecution(): name=%ls", federationName.c_str() );
+	logger->trace( "[Finished] destroyFederationExecution(): name=%ls", federationName.c_str() );
 }
 
 // 4.7
 void PorticoRtiAmbassador::listFederationExecutions() throw( NotConnected, RTIinternalError )
 {
-	logger->debug( "[Starting] listFederationExecutions()" );
+	logger->trace( "[Starting] listFederationExecutions()" );
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->LIST_FEDERATIONS );
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] listFederationExecutions()" );
+	logger->trace( "[Finished] listFederationExecutions()" );
 }
 
 // 4.9
@@ -243,7 +243,7 @@ FederateHandle PorticoRtiAmbassador::joinFederationExecution(
 		   CallNotAllowedFromWithinCallback,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] joinFederationExecution(): federateType=%ls, federation=%ls",
+	logger->trace( "[Starting] joinFederationExecution(): federateType=%ls, federation=%ls",
 	               federateType.c_str(),
 	               federationName.c_str() );
 	
@@ -265,7 +265,7 @@ FederateHandle PorticoRtiAmbassador::joinFederationExecution(
 	JniUtils::deleteJniArray( jnienv, jfoms );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] joinFederationExecution(): federation=%ls", federationName.c_str() );
+	logger->trace( "[Finished] joinFederationExecution(): federation=%ls", federationName.c_str() );
 	
 	// return the handle
 	return JniUtils::toFederateHandle( handle );
@@ -289,7 +289,7 @@ FederateHandle PorticoRtiAmbassador::joinFederationExecution(
 		   CallNotAllowedFromWithinCallback,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] joinFederationExecution(): federateType=%ls, federation=%ls",
+	logger->trace( "[Starting] joinFederationExecution(): federateType=%ls, federation=%ls",
 	               federateType.c_str(),
 	               federationName.c_str() );
 	
@@ -314,7 +314,7 @@ FederateHandle PorticoRtiAmbassador::joinFederationExecution(
 	JniUtils::deleteJniArray( jnienv, jfoms );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] joinFederationExecution(): federation=%ls", federationName.c_str() );
+	logger->trace( "[Finished] joinFederationExecution(): federation=%ls", federationName.c_str() );
 	
 	// return the handle
 	return JniUtils::toFederateHandle( handle );
@@ -330,7 +330,7 @@ void PorticoRtiAmbassador::resignFederationExecution( ResignAction resignAction 
 		   CallNotAllowedFromWithinCallback,
 		   RTIinternalError )
 {
-	logger->debug( "[Starting] resignFederationExecution(): action=%d", resignAction );
+	logger->trace( "[Starting] resignFederationExecution(): action=%d", resignAction );
 	
 	// get java versions of the parameters
 	jstring jaction = JniUtils::fromResignAction( jnienv, resignAction );
@@ -344,7 +344,7 @@ void PorticoRtiAmbassador::resignFederationExecution( ResignAction resignAction 
 	jnienv->DeleteLocalRef( jaction );
 	javarti->exceptionCheck();
 	
-	logger->info( "[Finished] resignFederationExecution(): action=%d", resignAction );
+	logger->trace( "[Finished] resignFederationExecution(): action=%d", resignAction );
 }
 
 PORTICO1516E_NS_END
