@@ -103,6 +103,7 @@
 
 	<!-- Linux C++ and Installer profiles -->
 	<include file="profiles/linux/hla13.xml"         as="cpp.hla13"      if="platform.linux64"/>
+	<include file="profiles/linux/ieee1516e.xml"     as="cpp.ieee1516e"  if="platform.linux64"/>
 	<include file="profiles/linux/installer.xml"     as="installer"      if="platform.linux64"/>
 
 	<!-- Windows C++ and Installer profiles -->

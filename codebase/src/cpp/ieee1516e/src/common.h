@@ -78,7 +78,7 @@
 	// operating system
 	#if defined(__APPLE__)
 		#define OS_MACOSX
-	#elif
+	#else
 		#define OS_LINUX
 	#endif
 
@@ -108,6 +108,12 @@
 #else
     #include <stdarg.h>
     #include <ctype.h>
+ 	#include <string.h> // memcpy
+ 	#include <stdint.h> // int32_t
+ 	#include <stdlib.h> // getenv()
+ 	#include <typeinfo> // typeid in DataElement.cpp
+ 	#include <float.h>  // DBL_MIN
+ 	#include <limits.h> // LONG_MAX
 #endif
 
 // standard library types
