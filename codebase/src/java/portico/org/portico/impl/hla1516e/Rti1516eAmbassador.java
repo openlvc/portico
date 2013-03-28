@@ -427,7 +427,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	           RTIinternalError
 	{
 		// validate the time type, ensuring it is one of the standard ones
-		if( timeName != null )
+		if( timeName != null && (timeName.trim().equals("") == false) )
 		{
 			timeName = timeName.trim();
 			if( timeName.equals("HLAfloat64Time") == false &&

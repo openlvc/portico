@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="usage: linux.sh [compile] [clean] [execute [federate-name]]"
+USAGE="usage: linux64.sh [compile] [clean] [execute [federate-name]]"
 
 ################################
 # check command line arguments #
@@ -11,25 +11,13 @@ then
 	exit;
 fi
 
-######################
-# test for JAVA_HOME #
-######################
-JAVA=java
-if [ "$JAVA_HOME" = "" ]
-then
-	echo WARNING Your JAVA_HOME environment variable is not set!
-	#exit;
-else
-        JAVA=$JAVA_HOME/bin/java
-fi
-
 ###################
 # Set up RTI_HOME #
 ###################
 cd ../../..
 RTI_HOME=$PWD
 export RTI_HOME
-cd examples/cpp/cpp1516e
+cd examples/cpp/hla13
 echo RTI_HOME environment variable is set to $RTI_HOME
 
 ############################################
@@ -49,12 +37,12 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -O2 -fPIC -I$RTI_HOME/include/ieee1516e \
+	g++ -O1 -fPIC -I$RTI_HOME/include/hla13 \
 	    -DRTI_USES_STD_FSTREAM \
-	    -lRTI-NG -lFedTime -L$RTI_HOME/lib/gcc4 \
-	    -ljvm -L$JAVA_HOME/jre/lib/client \
-	    main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
-	exit;	
+		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate \
+		-L$RTI_HOME/lib/gcc4 -lRTI-NG64 -lFedTime64 \
+		-L$RTI_HOME/jre/lib/amd64/server -ljvm -ljsig 
+	exit;
 fi
 
 ############################################
@@ -63,7 +51,7 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	LD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/client" ./example-federate $*
+	LD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$RTI_HOME/jre/lib/amd64/server" ./example-federate $*
 	exit;
 fi
 
