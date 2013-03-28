@@ -140,7 +140,8 @@
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
-	<!-- Not required for an interface build -->
+	<!-- Target to kick off the release process -->
+	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
 
 	<!-- ================================================================================= -->
 	<!--                           IEEE-1516e Helper Macros                                -->
