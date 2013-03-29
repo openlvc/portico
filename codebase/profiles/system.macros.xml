@@ -292,4 +292,33 @@
 		</sequential>
 	</macrodef>
 
+	<!-- ================================================================================= -->
+	<!--                              Macro: nsis-installer                                -->
+	<!-- ================================================================================= -->
+	<!-- bring in the nsis ant task (it currently lives in the support/ant-optional dir) -->
+	<taskdef name="nsis" classname="com.danielreese.nsisant.Task"/>
+
+	<!--
+	     This macro will run the Nullsoft Installer Ant task, appropriately configured to
+		 reference the local NSIS executables, and generate an installer using the provided
+		 script.
+		 
+		 All child tags are passed directly to the <nsis> task.
+	     
+	     Usage example:
+	     <nsis-installer script="path/to/nsis/script"/>
+	-->
+	<macrodef name="nsis-installer" description="General a windows installer using NSIS">
+		<!-- Attributes and Child Elements -->
+		<attribute name="script" description="The NSIS installer script to use"/>
+		<element name="body" implicit="yes" optional="yes"/>
+
+		<!-- Task Definition -->
+		<sequential>
+			<nsis script="@{script}" verbosity="1" path="system/nsis/">
+				<body/>
+			</nsis>
+		</sequential>
+	</macrodef>
+
 </project>

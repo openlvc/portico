@@ -62,7 +62,7 @@
 	       * ${platform.linux32} : "true" if we are running on 32-bit Linux
 	       * ${platform.linux64} : "true" if we are running on 64-bit Linux
 	-->
-	<getOsPlatform/>
+	<platform/>
 
 	<!-- validate JAVA_HOME and set jdk.home property -->
 	<getJavaHome property="jdk.home"/>

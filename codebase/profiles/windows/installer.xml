@@ -19,23 +19,82 @@
 		Windows 32/64-bit installer generation.
 	</description>
 
+	<!-- NSIS Installer Properties -->
+	<property name="nsis.resources.dir"    location="${resources.dir}/installers/windows/nsis"/>
+	<property name="nsis.script.win32"     location="${nsis.resources.dir}/portico-installer.nsi"/>
+
 	<!-- ================================================================================= -->
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
 	<extension-point name="installer" extensionOf="master.installer"/>
-	
+
+	<target name="prep">
+		<!-- copy the installer resources into the sandbox -->
+		<copy todir="${sandbox.dir}">
+			<fileset dir="${nsis.resources.dir}" includes="*.url"/> 
+		</copy>
+	</target>
+
 	<!--                                     -->
 	<!-- Windows 32-bit Installer Generation -->
 	<!--                                     -->
-	<target name="installer.win32" extensionOf="installer">
+	<target name="installer.win32" extensionOf="installer" depends="prep" if="no">
 		<!-- locate the JDK -->
 		<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
 
 		<!-- check to make sure the jre dir exists -->
-		<echo>Checking to see if x86 JRE is available for bundling</echo>
+		<echo>Validating x86 JRE is available for bundling</echo>
 		<available file="${jdk.home.win32}/jre" property="jrefound"/>
-		<fail unless="jrefound"
-		      message="Could not locate x86 JRE. ${jdk.home.win32} does not point to x86 JDK."/>
+		<fail unless="jrefound" message="Could not locate 32-bit JRE. Searched ${jdk.home.win32}"/>
+
+		<!-- run the NSIS script for the installer -->
+		<echo>Creating Windows 32-bit Installer</echo>
+		<nsis-installer script="${nsis.resources.dir}/installer-win32.nsi">
+			<define name="OUTDIR"  value="${dist.dir}"/>           <!-- put installer here       -->
+			<define name="VERSION" value="${build.version}"/>      <!-- e.g. "2.0.0"             -->
+			<define name="LICENSE" value="${license}"/>            <!-- presented during install -->
+			<define name="SANDBOX" value="${sandbox.dir}"/>        <!-- contents of the app      -->
+			<define name="JREPATH" value="${jdk.home.win32}\jre"/> <!-- jre to bundle            -->
+		</nsis-installer>
+	</target>
+
+	<!--                                     -->
+	<!-- Windows 64-bit Installer Generation -->
+	<!--                                     -->
+	<target name="installer.win64" extensionOf="installer" depends="prep">
+		<!-- locate the JDK -->
+		<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
+
+		<!-- check to make sure the jre dir exists -->
+		<echo>Validating amd64 JRE is available for bundling</echo>
+		<available file="${jdk.home.win64}/jre" property="jrefound"/>
+		<fail unless="jrefound" message="Could not locate 64-bit JRE. Searched ${jdk.home.win64}"/>
+
+		<!-- run the NSIS script for the installer -->
+		<echo>Creating Windows 64-bit Installer</echo>
+		<nsis-installer script="${nsis.resources.dir}/installer-win64.nsi">
+			<define name="OUTDIR"  value="${dist.dir}"/>           <!-- put installer here       -->
+			<define name="VERSION" value="${build.version}"/>      <!-- e.g. "2.0.0"             -->
+			<define name="LICENSE" value="${license}"/>            <!-- presented during install -->
+			<define name="SANDBOX" value="${sandbox.dir}"/>        <!-- contents of the app      -->
+			<define name="JREPATH" value="${jdk.home.win64}\jre"/> <!-- jre to bundle            -->
+		</nsis-installer>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                             Zip-File Creation Targets                             -->
+	<!-- ================================================================================= -->
+	<!--                                    -->
+	<!-- Windows 32-bit Zip FIle Generation -->
+	<!--                                    -->
+	<target name="zip.win32">
+		<!-- locate the JDK -->
+		<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
+
+		<!-- check to make sure the jre dir exists -->
+		<echo>Validating x86 JRE is available for bundling</echo>
+		<available file="${jdk.home.win32}/jre" property="jrefound"/>
+		<fail unless="jrefound" message="Could not locate 32-bit JRE. Searched ${jdk.home.win32}"/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
 		<zip destfile="${dist.dir}/${dist.name}-win32.zip">
@@ -49,18 +108,17 @@
 		</zip>
 	</target>
 
-	<!--                                     -->
-	<!-- Windows 64-bit Installer Generation -->
-	<!--                                     -->
-	<target name="installer.win64" extensionOf="installer">
+	<!--                                    -->
+	<!-- Windows 64-bit Zip File Generation -->
+	<!--                                    -->
+	<target name="zip.win64">
 		<!-- locate the JDK -->
 		<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
 
 		<!-- check to make sure the jre dir exists -->
-		<echo>Checking to see if amd64 JRE is available for bundling</echo>
+		<echo>Validating amd64 JRE is available for bundling</echo>
 		<available file="${jdk.home.win64}/jre" property="jrefound"/>
-		<fail unless="jrefound"
-		      message="Could not locate amd64 JRE. ${jdk.home.win64} does not point to amd64 JDK."/>
+		<fail unless="jrefound" message="Could not locate 64-bit JRE. Searched ${jdk.home.win64}"/>
 
 		<!-- generate the tarball with the sandbox and the JRE in it -->
 		<!-- we handle lib/bin separately so we can ensure only 64-bit stuff gets in -->
@@ -70,7 +128,7 @@
 			            excludes="lib/**/*,bin/**/*"
 			            prefix="${dist.name}"/>
 			<zipfileset dir="${sandbox.dir}"
-			            includes="lib/**/*64*,bin/**/*64*"
+			            includes="lib/*.jar,lib/**/*64*,bin/**/*64*"
 			            prefix="${dist.name}"/>
 			<zipfileset dir="${jdk.home.win64}/jre"
 			            includes="**/*"
