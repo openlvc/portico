@@ -26,13 +26,13 @@
   ;Other Misc properties
   BrandingText /TRIMRIGHT "Portico v${VERSION} (32-bit)"
 
-  ;VIProductVersion "${VERSION}"
-  ;VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Portico"
-  ;VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "The Portico Open Source RTI"
-  ;VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Calytrix Technologies"
-  ;VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© Calytrix Technologies"
-  ;VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" ""
-  ;VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
+  VIProductVersion "${VERSION}.${BUILD_NUMBER}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Portico"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "The Portico Open Source RTI"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Calytrix Technologies"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Calytrix Technologies"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Portico Installer"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}.${BUILD_NUMBER}"
 
 ;--------------------------------
 ;Interface Settings
@@ -65,8 +65,8 @@ Section "Portico" SecPORTICO
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File /r /x "*64*.exp" /x "*64*.lib" /x "*64*.pdb" /x "*64*.dll" "${SANDBOX}\*.*" ; sandbox contents
-  File /r "${JREPATH}" ;copy the jre in
+;  File /r /x "*64*.exp" /x "*64*.lib" /x "*64*.pdb" /x "*64*.dll" "${SANDBOX}\*.*" ; sandbox contents
+;  File /r "${JREPATH}" ;copy the jre in
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
