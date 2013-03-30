@@ -36,7 +36,6 @@
 	<!-- Load the various property override files -->
 	<property file="local.properties"/>  <!-- local machine settings -->
 	<property file="build.properties"/>  <!-- project-specific settings -->
-	<property file="build.version"/>     <!-- project version settings -->
 
 	<!-- get date and time information -->
 	<tstamp><format property="YEAR" pattern="yyyy"/></tstamp>

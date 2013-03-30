@@ -57,9 +57,9 @@
 	<property name="javadoc.oracle"           value="http://docs.oracle.com/javase/7/docs/api/"/>
 	<property name="javadoc.sisocopyright"    value="Copyright Simulation Interoperability Standard Organization"/>
 	<property name="javadoc.ppcopyright"      value="Copyright The Portico Project ${YEAR}."/>
-	<property name="javadoc.ppwindow"         value="${app.shortname} [${app.version} build] Javadoc"/>
+	<property name="javadoc.ppwindow"         value="${build.shortname} [${build.version} build] Javadoc"/>
 	<!-- defaults used by the macro -->
-	<property name="javadoc.windowtitle"      value="The Portico Project [${app.version} build]"/>
+	<property name="javadoc.windowtitle"      value="The Portico Project [${build.version} build]"/>
 	<property name="javadoc.header"           value="${javadoc.windowtitle}"/>
 	<property name="javadoc.footer"           value="${javadoc.windowtitle}"/>
 
@@ -303,7 +303,7 @@
 				<attribute name="Built-By" value="Calytrix Technologies"/>
 				<section name="org/portico">
 					<attribute name="Implementation-Title" value="portico"/>
-					<attribute name="Implementation-Version" value="${app.version} ${TODAY}"/>
+					<attribute name="Implementation-Version" value="${build.version} (build ${build.number}) ${TODAY}"/>
 					<attribute name="Implementation-Vendor" value="Calytrix Technologies"/>
 				</section>
 			</manifest>
