@@ -78,7 +78,8 @@ Table of Contents:
  
    * win32-vc10.bat    // Compile and run on Windows 32-bit
    * win64-vc10.bat    // Compile and run on Windows 64-bit
-   * linux.sh          // Compile and run on Ubuntu 12.04 LTS
+   * linux32.sh        // Compile and run on Ubuntu 12.04 LTS x86
+   * linux64.sh        // Compile and run on Ubuntu 12.04 LTS amd64
    * macos.sh          // Compile and run on Mac OS X 10.8+
 
  Each of the scripts takes the same basic commands:
@@ -106,8 +107,8 @@ Table of Contents:
  change into the directory, compile and run using the script:
 
    * cd $RTI_HOME/examples/cpp/hla13
-   * ./linux.sh compile
-   * ./linux.sh execute
+   * ./linux64.sh compile
+   * ./linux64.sh execute
 
  Running on Mac OS X 10.8+
  --------------------------
@@ -126,7 +127,7 @@ Table of Contents:
    * Start the first example federate (don't hit enter when it says so)
    * Start a second example federate
       * winXX-vc10 execute secondFederate
-      * ./linux.sh execute secondFederate
+      * ./linux64.sh execute secondFederate
       * ./macos.sh execute secondFederate
    * Wait until the second federate is ready, then hit enter in both screens.
  

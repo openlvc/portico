@@ -16,12 +16,12 @@
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Mac OS X C++ build profile for HLA v1.3 Interface
+		Linux C++ build profile for HLA v1.3 Interface
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->
@@ -33,11 +33,11 @@
 	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
 	
 	<!-- build -->
-	<property name="hla13.build.dir"           location="${build.dir}/cpp/macosx/hla13"/>
+	<property name="hla13.build.dir"           location="${build.dir}/cpp/linux64/hla13"/>
 	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
 
 	<!-- test build -->
-	<property name="test13.build.dir"          location="${build.dir}/cpp/macosx/test13"/>
+	<property name="test13.build.dir"          location="${build.dir}/cpp/linux64/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 
 	<!-- =========================================================== -->
@@ -78,7 +78,8 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall">
+		         compilerArgs="-g -O0 -fPIC -Wall"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
@@ -118,7 +119,7 @@
 		      resultproperty="test13.result">
 			<arg line="${test13.complete.dir}/test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
+			<env key="LD_LIBRARY_PATH" path="${jdk.home.linux64}/jre/lib/amd64/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
 			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
@@ -157,16 +158,10 @@
 		<!-- Copy across the C++ libraries -->
 		<mkdir dir="${sandbox.lib.dir}"/>
 		<copy todir="${sandbox.lib.dir}">
-			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>
+			<fileset dir="${hla13.complete.dir}" includes="**/*.so"/>
 		</copy>
 
-		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
-		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
-		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
@@ -196,12 +191,12 @@
 	<!--               Macro: compile-hla13               -->
 	<!-- ================================================ -->
 	<!--
-		 This macro is a simple wrapper for msvc-hla13. It performs two main tasks:
+		 This macro is a simple wrapper for gcc-hla13. It performs two main tasks:
 		   1. Checks to see whether the requested compiler/arch/build setting was requested
-		      in the cpp.profile and skips the build if it wasn't
-		   2. If it was requested, makes sure that the appropriate version of Visual Studio
+		      in the cpp.profile and skips the build if it wasn't.
+		   2. If it was requested, makes sure that the appropriate version of the compiler
 		      is installed. If it isn't, the compile  is skipped, unless this is a strict
-			  build, in which case the build will be failed
+			  build, in which case the build will be failed.
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
@@ -272,23 +267,23 @@
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
+				<property name="_jdklib" value="${jdk.home.linux64}/jre/lib/amd64/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/client"/>
+				<property name="_jdklib" value="${jdk.home.linux32}/jre/lib/i586/client"/>
 			</else></if>
 
 			<!-- Is this a Debug or Release build? -->
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wall"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wall"/>
+				<property name="_cargs"       value="-O0 -fPIC -Wno-deprecated -Wall"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
@@ -313,7 +308,7 @@
 				</fileset>
 				<includepath path="${hla13.include.dir}"/>
 				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="BUILDING_FEDTIME"/>
@@ -340,7 +335,7 @@
 				</fileset>
 				<includepath path="${hla13.include.dir}"/>
 				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
@@ -349,13 +344,6 @@
 				<library path="${_jdklib}" libs="jvm,jsig"/>
 				<library path="${hla13.complete.dir}/@{compiler}" libs="FedTime${_bitness}${_d}"/>
 			</cpptask>
-
-			<!-- === Create the SymLink === -->
-			<!-- we can't use the symlink task because it will create links based
-			     on the full path name (whereas we want relative links) -->
-			<echo>creating symlinks...</echo>
-			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libFedTime${_bitness}${_d}"/>
-			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libRTI-NG${_bitness}${_d}"/>
 		</sequential>
 	</macrodef>
 

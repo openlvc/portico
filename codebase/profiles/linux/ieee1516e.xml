@@ -10,35 +10,30 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="hla13">
+<project name="ieee1516e">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Mac OS X C++ build profile for HLA v1.3 Interface
+		Linux C++ build profile for IEEE-1516 (2010) Interface [HLA Evolved]
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
 
-	<!-- ==================================== -->
-	<!-- ==== HLA13 Interface Properties ==== -->
-	<!-- ==================================== -->
+	<!-- ================================================ -->
+	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
+	<!-- ================================================ -->
 	<!-- source -->
-	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
-	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include/hla13"/>
-	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
-	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
+	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
+	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
+	<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>
 	
 	<!-- build -->
-	<property name="hla13.build.dir"           location="${build.dir}/cpp/macosx/hla13"/>
-	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
-
-	<!-- test build -->
-	<property name="test13.build.dir"          location="${build.dir}/cpp/macosx/test13"/>
-	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
+	<property name="ieee1516e.build.dir"       location="${build.dir}/cpp/linux64/ieee1516e"/>
+	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
 
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
@@ -53,40 +48,40 @@
 	<!--                                   Clean Targets                                   -->
 	<!-- ================================================================================= -->
 	<target name="clean" extensionOf="cpp.clean">
-		<delete dir="${hla13.build.dir}"/>
-		<delete dir="${test13.build.dir}"/>
+		<delete dir="${ieee1516e.build.dir}"/>
 	</target>
 
 	<!-- ================================================================================= -->
 	<!--                                  Compile Targets                                  -->
 	<!-- ================================================================================= -->
 	<!-- ==================================== -->
-	<!--         Main HLA 1.3 Interface       -->
+	<!--       Main IEEE-1516e Interface      -->
 	<!-- ==================================== -->
 	<target name="compile">
-		<compile-hla13 arch="amd64" build="debug"/>
-		<compile-hla13 arch="amd64" build="release"/>
+		<compile-ieee1516e arch="amd64" build="debug"/>
+		<compile-ieee1516e arch="amd64" build="release"/>
 	</target>
 
 	<!-- ==================================== -->
-	<!--          HLA 1.3 Test Suite          -->
+	<!--        1516e Example Federate        -->
 	<!-- ==================================== -->
-	<target name="test.compile" depends="compile">
-		<cpptask compiler="g++"
-		         outfile="test13"
-		         workdir="${test13.build.dir}"
-		         outdir="${test13.complete.dir}"
+	<!-- Compiles the 1516e example federate. Doesn't do much except
+	     assure that we can actually compile and link it to Portico -->
+	<target name="example.compile" depends="compile">
+		<cpptask outfile="ieee1516e-example"
+		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall">
-			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${hla13.include.dir}"/>
-			<includepath path="${hla13.src.dir}/hla/time"/>
-			<includepath path="${cppunit.include}"/>
+		         compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="RTI_DISABLE_WARNINGS"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG64d,FedTime64d"/>
-			<library path="${cppunit.lib}" libs="cppunit"/>
+			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
+			<library path="${jdk.home.linux64}/jre/lib/amd64/server" libs="jvm,jsig"/>
 		</cpptask>
 	</target>
 
@@ -94,44 +89,9 @@
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
 
-	<!-- ==================================== -->
-	<!--          HLA 1.3 Test Suite          -->
-	<!-- ==================================== -->
-	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile">
-		<!-- 1. copy the testing resources into test
-		     dir (RID file etc...).T he filtering is
-		     primarily used for the gdb environment file -->
-		<copy todir="${test13.complete.dir}">
-			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
-			<filterset begintoken="[" endtoken="]">
-				<filter token="jarfile" value="${sandbox.lib.dir}/portico.jar"/>
-			</filterset>
-		</copy>
-		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
-		<echo>Copied testing resources to ${test13.complete.dir}</echo>
-
-		<!-- 2. run the actual test application -->
-		<exec dir="${test13.complete.dir}"
-		      executable="${test13.complete.dir}/test13"
-		      failonerror="false"
-		      failifexecutionfails="false"
-		      resultproperty="test13.result">
-			<arg line="${test13.complete.dir}/test-results.xml"/>
-			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
-			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
-			<env key="PORTICO_JNICHECK" value="true"/>
-			<env key="TEST.GROUP" value="${test.group}"/>
-		</exec>
-		
-		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
-		<!--
-		<echo>Generating the Unit Test Report</echo>
-		<cppunit-report result="${test13.result}"
-		                xmlfile="${test13.complete.dir}/test-results.xml"
-		                xslfile="${test13.complete.dir}/xsl/results.xsl"
-		                outfile="${test13.complete.dir}/test-results.html"/>
-		-->
+	<!-- Not implemented for C++ IEEE-1516e Inteface -->
+	<target name="test" extensionOf="cpp.test">
+		<echo>No unit test suite for the IEEE-1516e Interface</echo>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -146,9 +106,9 @@
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
-		<mkdir dir="${sandbox.dir}/include/hla13"/>
-		<copy todir="${sandbox.dir}/include/hla13">
-			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		<mkdir dir="${sandbox.dir}/include/ieee1516e"/>
+		<copy todir="${sandbox.dir}/include/ieee1516e">
+			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
 		</copy>
 
 		<!-- ========================= -->
@@ -157,25 +117,19 @@
 		<!-- Copy across the C++ libraries -->
 		<mkdir dir="${sandbox.lib.dir}"/>
 		<copy todir="${sandbox.lib.dir}">
-			<fileset dir="${hla13.complete.dir}" includes="**/*.dylib"/>
+			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.so"/>
 		</copy>
 
-		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
-		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
-		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
+		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
 		<!-- ================================= -->
-		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
-		<copy todir="${sandbox.examples.dir}/cpp/hla13">
-			<fileset dir="${hla13.example.dir}" includes="**/*"/>
+		<mkdir dir="${sandbox.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${sandbox.examples.dir}/cpp/ieee1516e">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
 		</copy>
-		<chmod dir="${sandbox.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
+		<chmod dir="${sandbox.examples.dir}/cpp/ieee1516e" perm="777" includes="**/*.sh"/>
 	</target>
 
 	<!-- ================================================================================= -->
@@ -190,44 +144,42 @@
 	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
 
 	<!-- ================================================================================= -->
-	<!--                            HLA v1.3 Helper Macros                                 -->
+	<!--                           IEEE-1516e Helper Macros                                -->
 	<!-- ================================================================================= -->
 	<!-- ================================================ -->
 	<!--               Macro: compile-hla13               -->
 	<!-- ================================================ -->
 	<!--
-		 This macro is a simple wrapper for msvc-hla13. It performs two main tasks:
+		 This macro is a simple wrapper for gcc-ieee1516. It performs two main tasks:
 		   1. Checks to see whether the requested compiler/arch/build setting was requested
-		      in the cpp.profile and skips the build if it wasn't
-		   2. If it was requested, makes sure that the appropriate version of Visual Studio
+		      in the cpp.profile and skips the build if it wasn't.
+		   2. If it was requested, makes sure that the appropriate version of the compiler
 		      is installed. If it isn't, the compile  is skipped, unless this is a strict
-			  build, in which case the build will be failed
+			  build, in which case the build will be failed.
 	-->
-	<macrodef name="compile-hla13">
+	<macrodef name="compile-ieee1516e">
 		<!-- Attributes -->
 		<attribute name="compiler" description="gcc4" default="gcc4"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
 		<sequential>
-			<!-- ========================== -->
 			<!-- 1. Check the build profile -->
-			<!-- ========================== -->
 			<!-- Only run this if it's in the requested build profile -->
 			<if><isset property="@{compiler}.@{arch}.@{build}"/>
 			<then>
-				<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
-				<gcc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+				<echo message="[Compile] (IEEE-1516e) @{compiler}.@{arch}.@{build}"/>
+				<gcc-ieee1516e compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
 			</then>
 			<else>
-				<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- not requested"/>
+				<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- not requested"/>
 			</else>
 			</if>
 		</sequential>
 	</macrodef>
 
 	<!-- ================================================ -->
-	<!--                Macro: gcc-hla13                  -->
+	<!--                Macro: gcc-ieee1516               -->
 	<!-- ================================================ -->
 	<!-- 
 	     The various C++ compiling commands have a lot in common. They share the same
@@ -241,22 +193,22 @@
 		 
 		 The output from running this macro will be the libRTI-NG and libFedTime
 		 libraries (names updated approrpiate for debug/release and 32/64-bit)
-		 dropped into ${hla13.complete.dir}.
+		 dropped into ${ieee1516e.complete.dir}.
 		 
-		 NOTE: This macro should always be wrapped in a <compile-hl13> task to ensure it
+		 NOTE: This macro should always be wrapped in a <compile-ieee1516e> task to ensure it
 		       only runs when it needs to.
 		 
 		 Usage:
-			* <gcc-hla13 compiler="gcc4" arch="x86" build="debug"/>
+			* <gcc-ieee1516 compiler="gcc4" arch="x86" build="debug"/>
 			
 		 Arguments:
 			* compiler: The compiler to use (vc10, vc9 or vc8)
 			* arch:     The platform architecture (x86 or amd64)
 			* build:    The build type (debug or release)
 	-->	 
-	<macrodef name="gcc-hla13" description="(HLA 1.3) Compile the RTI libraries">
+	<macrodef name="gcc-ieee1516e" description="(IEEE-1516e) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="gcc" default="gcc"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -272,23 +224,23 @@
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
+				<property name="_jdklib" value="${jdk.home.linux64}/jre/lib/amd64/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
-				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/client"/>
+				<property name="_jdklib" value="${jdk.home.linux32}/jre/lib/i586/client"/>
 			</else></if>
 
 			<!-- Is this a Debug or Release build? -->
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wall"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wall -Wno-deprecated"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wall"/>
+				<property name="_cargs"       value="-O0 -fPIC -Wall -Wno-deprecated"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
@@ -296,66 +248,54 @@
 			<!-- ========================== -->
 			<!-- Do the library compilation -->
 			<!-- ========================== -->
-			<echo message="Building libFedTime${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
-			<cpptask outfile="libFedTime${_bitness}${_d}"
-					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
-					 outdir="${hla13.complete.dir}/@{compiler}"
-					 type="shared"
-					 arch="@{arch}"
-					 compiler="g++"
-					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
-				<fileset dir="${hla13.src.dir}">
-					<include name="time/RTIfedTime.cpp"/>
-					<include name="time/FedTime.cpp"/>
-					<include name="time/FedTimeFactory.cpp"/>
-					<include name="types/Exception.cpp"/>
-				</fileset>
-				<includepath path="${hla13.include.dir}"/>
-				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
-				<define name="RTI_USES_STD_FSTREAM"/>
-				<define name="BUILDING_RTI"/>
-				<define name="BUILDING_FEDTIME"/>
-				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
-				<define name="PORTICO_VERSION=${build.version}"/>
-				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
-				<library path="${_jdklib}" libs="jvm,jsig"/>
-			</cpptask>
-
-			<echo message="Building libRTI-NG${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
-			<cpptask outfile="libRTI-NG${_bitness}${_d}"
-					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
-					 outdir="${hla13.complete.dir}/@{compiler}"
-					 type="shared"
-					 arch="@{arch}"
-					 compiler="g++"
-					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
-				<fileset dir="${hla13.src.dir}">
+			<echo message="(IEEE-1516e) Building librti1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="librti1516e${_bitness}${_d}"
+			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${ieee1516e.complete.dir}/@{compiler}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="g++"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}">
+				<fileset dir="${ieee1516e.src.dir}">
 					<include name="**/*.cpp"/>
-					<exclude name="time/RTIfedTime.cpp"/>
-					<exclude name="time/FedTime.cpp"/>
-					<exclude name="time/FedTimeFactory.cpp"/>
+					<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
 				</fileset>
-				<includepath path="${hla13.include.dir}"/>
-				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
-				<define name="RTI_USES_STD_FSTREAM"/>
+				<includepath path="${ieee1516e.include.dir}"/>
+				<includepath path="${ieee1516e.src.dir}"/>
+				<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
 				<define name="BUILDING_RTI"/>
+				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
 				<define name="PORTICO_VERSION=${build.version}"/>
 				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
 				<library path="${_jdklib}" libs="jvm,jsig"/>
-				<library path="${hla13.complete.dir}/@{compiler}" libs="FedTime${_bitness}${_d}"/>
-			</cpptask>
+			</cpptask>			
 
-			<!-- === Create the SymLink === -->
-			<!-- we can't use the symlink task because it will create links based
-			     on the full path name (whereas we want relative links) -->
-			<echo>creating symlinks...</echo>
-			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libFedTime${_bitness}${_d}"/>
-			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libRTI-NG${_bitness}${_d}"/>
+			<!-- library: libfedtime -->
+			<echo message="(IEEE-1516e) Building libfedtime1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libfedtime1516e${_bitness}${_d}"
+			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${ieee1516e.complete.dir}/@{compiler}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="g++"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}">
+				<fileset dir="${ieee1516e.src.dir}">
+					<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
+				</fileset>
+				<includepath path="${ieee1516e.include.dir}"/>
+				<includepath path="${ieee1516e.src.dir}"/>
+				<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
+				<define name="BUILDING_FEDTIME"/>
+				<define name="RTI_DISABLE_WARNINGS"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+				<library path="${ieee1516e.complete.dir}/@{compiler}" libs="rti1516e${_bitness}${_d}"/>
+			</cpptask>
 		</sequential>
 	</macrodef>
 
