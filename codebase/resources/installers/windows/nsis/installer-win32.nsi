@@ -65,8 +65,8 @@ Section "Portico" SecPORTICO
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-;  File /r /x "*64*.exp" /x "*64*.lib" /x "*64*.pdb" /x "*64*.dll" "${SANDBOX}\*.*" ; sandbox contents
-;  File /r "${JREPATH}" ;copy the jre in
+  File /r /x "*64*.exp" /x "*64*.lib" /x "*64*.pdb" /x "*64*.dll" "${SANDBOX}\*.*" ; sandbox contents
+  File /r "${JREPATH}" ;copy the jre in
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
