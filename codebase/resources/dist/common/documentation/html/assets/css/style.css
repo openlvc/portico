@@ -1,0 +1,174 @@
+/*
+ * Custom stylesheet for Portico and OpenLVC
+ */
+
+/* ----------------------------------------
+ * Flat-UI Background Colorws
+ * In swatch pairs from flatuicolors.com
+ * ------------------------------------- */
+Flat background colours in swatch pairs from http://flatuicolors.com/ */
+.background-white        { background-color: #ffffff; }
+.background-black        { background-color: #000000; }
+
+.background-turquoise    { background-color: #1abc9c; }
+.background-greensea     { background-color: #16a085; }
+
+.background-emerland     { background-color: #2ecc71; }
+.background-nephritis    { background-color: #27ae60; }
+
+.background-peterriver   { background-color: #3498db; }
+.background-belizehole   { background-color: #2980b9; }
+
+.background-wetasphalt   { background-color: #34495e; }
+.background-midnightblue { background-color: #2c3e50; }
+
+.background-sunflower    { background-color: #f1c40f; }
+.background-orange       { background-color: #f39c12; }
+
+.background-carrot       { background-color: #e67e22; }
+.background-pumpkin      { background-color: #d35400; }
+
+.background-alizarin     { background-color: #e74c3c; }
+.background-pomegranate  { background-color: #c0392b; }
+
+.background-clouds       { background-color: #ecf0f1; }
+.background-silver       { background-color: #bdc3c7; }
+
+.background-concrete     { background-color: #95a5a6; }
+.background-asbestos     { background-color: #7f8c8d; }
+
+/* --------------------------------------------------       
+ * Navbar Customizations
+ * ----------------------------------------------- */
+.nav
+{
+	/* bootstrap.css: ~line 3942 */
+	/* overriding for version table on cover page */
+	margin-bottom: 0px; /* default 20px */
+}
+
+.navbar-portico .navbar-inner
+{
+	background-color: #c0392b; /* pomegranate */
+	/*background-color: #95a5a6; /* concrete */
+	/*background-color: #7f8c8d; /* asbestos */
+}
+
+/* Settings for the collapsed version */
+.nav-collapse .nav > li > a,
+.nav-collapse .dropdown-menu a
+{
+	font-weight: 200;
+	color: #ffffff;
+}
+
+/* Make sure the button looks normal when collapsed*/
+.nav-collapse .btn
+{
+	font-weight: 200;
+	padding: 5px 12px;
+	text-shadow: none;
+	background-image: none;
+	border: none;
+	-webkit-border-radius: 0;
+	   -moz-border-radius: 0;
+	        border-radius: 0;
+	-webkit-box-shadow: none;
+	   -moz-box-shadow: none;
+	        box-shadow: none;
+}
+
+/* --------------------------------------------------       
+ * Hero-Unit Customizations/Augmentations
+ * The following is used along with the hero-unit
+ * used for the site header
+ * ----------------------------------------------- */
+.site-header
+{
+	background-color: #ffffff;
+	margin-bottom: -10px; /* hero-unit default is 30px */
+}
+
+/* --------------------------------------------------       
+ * Version tabs/pills on the front page.
+ * ----------------------------------------------- */
+.version-pane
+{
+	margin-left: 0px;
+}
+
+.version-pane h1
+{
+	font-size: 48px;
+	line-height: 1.0;
+	margin: 10px 0 0 0;
+	color: #555555;
+}
+
+.version-pane img
+{
+	width: 48px; /* os-logo icons */
+}
+
+.version-pane a:visited,
+.version-pane a:link
+{
+	color: #555555;
+}
+
+/* --------------------------------------------------       
+ * Text style overrides
+ * ----------------------------------------------- */
+.lead
+{
+	font-size: 18px;
+	font-weight: 200;
+}
+
+/* Alert Text */
+.alert a:visited,
+.alert a:link
+{
+	color: #ffffff;
+	text-decoration:underline;
+}
+
+/* --------------------------------------------------       
+ * Thumbnail Sections -- from Bootstrap Examples
+ * ----------------------------------------------- */
+.tiles h4
+{
+  margin: 10px 0 5px;
+}
+
+.tiles p
+{
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.tiles .thumbnail
+{
+  margin-bottom: 9px;
+  background-color: #ddd;
+}
+
+/* --------------------------------------------------       
+ * Footer text styles
+ * ----------------------------------------------- */
+.footer
+{
+	padding-top:40px;
+	background-color: #c0392b; /* pomegranate */
+	/*background-color: #95a5a6; /* concrete */
+	/*background-color: #7f8c8d; /* asbestos */	
+	font-size: 12px;
+	color: #222222; /* off-black */
+}
+
+
+
+
+
+
+
