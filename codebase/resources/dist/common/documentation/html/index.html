@@ -30,6 +30,13 @@
 	<!-- ===================================================================== -->
 	<div class="navbar navbar-fixed-top navbar-portico">
 		<div class="navbar-inner">
+			<!-- Fork me! ribbon
+			<a href="https://github.com/calytrix/portico">
+				<img style="position: absolute; top: 0; right: 0; border: 0;"
+				     src="images/logos/github-forkme-orange.png"
+				     alt="Fork me on GitHub">
+			</a>
+			-->
 			<div class="container">
 				<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
 				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -61,7 +68,10 @@
 	<!--                           -->
 	<div class="hero-unit site-header">
 		<p align="center"><img src="images/portico-banner.png" align="center"/></p>
-		<p align="center">Welcome to The Portico Project! Portico is an <em>open source</em>, cross-platform, <em>fully supported</em> HLA RTI implementation. Designed with modularity and flexibility in mind, Portico is a production-grade RTI for the Simulation and Training Community, so come say hi!</p>
+		<p align="center">Welcome to The Portico Project! Portico is an <em>open source</em>,
+		   cross-platform, <em>fully supported</em> HLA RTI implementation. Designed with
+		   modularity and flexibility in mind, Portico is a production-grade RTI for the
+		   Simulation and Training Community, so come say hi!</p>
 	</div>
 
 	<!--                           -->
@@ -69,22 +79,8 @@
 	<!--                           -->
 	<div class="container">
 	<div class="row">
-
-	<!--
-	<div class="span6">
-		<h3 id="labels">Labels</h3>
-		<span class="label label-success">Stable Release</span>
-		<span class="label label-success"><p><b>Stable Release</b></p><p>Blah</p></span>
-		<span class="label">Default</span>
-		<span class="label label-success">Success</span>
-		<span class="label label-warning">Warning</span>
-		<span class="label label-important">Important</span>
-		<span class="label label-info">Info</span>
-		<span class="label label-inverse">Inverse</span>
-	</div>
-	-->
 		<div class="span4">
-			<h2>Project</h2>
+			<h2>Download</h2>
 			<!-- define the pill headers -->
 			<ul class="nav nav-pills" id="versions-tab">
 				<li class="active"><a href="#versions-stable" data-toggle="pill">Stable</a></li>
@@ -99,9 +95,9 @@
 					<div class="version-pane">
 						<h1>v2.0.0</h1>
 						<p><small>April 1, 2013</small></p>
-						<p><a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/> Windows</a> &nbsp;
-						   <a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/> Linux</a> &nbsp;
-						   <a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/> Mac OS X</a>
+						<p><a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
+						   <a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/></a> &nbsp;
+						   <a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/></a>
 						</p>
 					</div>
 				</div>
@@ -109,19 +105,34 @@
 					<div class="version-pane">
 						<h1>v2.1.0-dev</h1>
 						<p><small>April 1, 2013</small></p>
-						<p align="left"><a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
+						<p><a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
 						   <a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/></a> &nbsp;
 						   <a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/></a>
 						</p>
 					</div>
 				</div>
 				<div class="tab-pane" id="versions-nightly">
-					<div class="version-header">Sept 31, 2013</div>
-					<p><small><span class="badge badge-success">Success</span></small></p>
-					<p>Windows &nbsp; Mac OS X &nbsp; Linux</p>
+					<div class="version-pane">
+						<h1>v2.1.0-dev</h1>
+						<p><small>April 1, 2013</small></p>
+						<p style="margin-bottom:0px"><!-- bring the pass/fail line closer -->
+							<a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
+							<a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/></a> &nbsp;
+							<a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/></a>
+						</p>
+						<p><span class="badge badge-success">Pass</span> &nbsp;
+						   <span class="badge badge-important">Fail</span> &nbsp;
+						   <span class="badge badge-success">Pass</span>
+						</p>
+					</div>
 				</div>
-				<div class="tab-pane version-tab" id="versions-source">
-					<p><h3>Get from GitHub</h3></p>
+				<div class="tab-pane" id="versions-source">
+					<div class="version-pane">
+						<img src="images/logos/octocat256.jpg" style="width:128px" class="pull-left"/>
+						<p>&nbsp;</p>
+						<p><h1>GitHub</h1></p>
+						<p><a href="https://github.com/calytrix/portico">https://github.com/calytrix/portico</a></p>
+					</div>
 				</div>
 			</div>
 
@@ -151,34 +162,6 @@
 		</div>
 	</div>
 
-	<!-- Getting Started -->
-<!--
-	<div class="row">
-		<div class="span4">
-			<h2>Project</h2>
-			<p>If you're ready for the <em>cutting edge</em>, or are just generally <em>hardcore</em>, this is the place to start. Here you can get access to beta and nightly builds, or just jump right into the source!</p>
-			<p>
-				<ul>
-					<li>Stable Release: Portico v2.0.0 (1 April, 2013)</li>
-					<li>Development Version: Portico v2.1.0-rc1 (1 April, 2013)</li>
-					<li>Nightly Build: Portico v2.1.0-nightly (4 April, 2013)</li>
-				</ul>
-			</p>
-			<p><a class="btn" href="#">For Mighthy Warriors &raquo;</a></p>
-		</div>
-		<div class="span4">
-			<h2>Documentation</h2>
-			<p>Once you've got Portico, you'll need to know how to use it. Whether you're a <em>general user</em> or a <em>federate developer</em>, we've got you covered.</p>
-			<p><a class="btn" href="#">Get the Source</a> &nbsp; <a class="btn" href="#">Nightly Builds</a> </p>
-			<p><a class="btn" href="#">Get the Source</a> &nbsp; <a class="btn" href="#">Nightly Builds</a> </p>
-		</div>
-		<div class="span4">
-			<h2>Community</h2>
-			<p>It's not nice to be lonely. Luckily, you don't have to be! Portico has a large install base of attractive and intelligent users you can interact with. If you need some help, or want to level-up your street cred by contributing to Portico, here is where you find out how.</p>
-			<p><a class="btn" href="#">View details &raquo;</a></p>
-		</div>
-	</div>
--->
 	<div class="row">&nbsp;</div>
 	</div>
 

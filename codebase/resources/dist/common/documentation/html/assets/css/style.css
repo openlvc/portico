@@ -86,7 +86,7 @@ Flat background colours in swatch pairs from http://flatuicolors.com/ */
 .site-header
 {
 	background-color: #ffffff;
-	margin-bottom: -10px; /* hero-unit default is 30px */
+	margin-bottom: -20px; /* hero-unit default is 30px */
 }
 
 /* --------------------------------------------------       
@@ -101,7 +101,7 @@ Flat background colours in swatch pairs from http://flatuicolors.com/ */
 {
 	font-size: 48px;
 	line-height: 1.0;
-	margin: 10px 0 0 0;
+	margin: 5px 0 0 0;
 	color: #555555;
 }
 
@@ -110,11 +110,20 @@ Flat background colours in swatch pairs from http://flatuicolors.com/ */
 	width: 48px; /* os-logo icons */
 }
 
+/* for pass/fail nightly build badges */
+.version-pane .badge
+{
+	width: 30px; /* meant to be same as os-logo - this makes it look that way. no idea why */
+	text-align: center;
+	margin-top: 0px;
+}
+
 .version-pane a:visited,
 .version-pane a:link
 {
 	color: #555555;
 }
+
 
 /* --------------------------------------------------       
  * Text style overrides
