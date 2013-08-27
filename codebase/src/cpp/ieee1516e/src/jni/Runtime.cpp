@@ -130,6 +130,30 @@ void Runtime::removeRtiAmbassador( JavaRTI* javarti )
 	this->removeRtiAmbassador( javarti->getId() );
 }
 
+
+void Runtime::setEnvSetting(const char *iCompleteKey)
+{
+	//copy the string
+	//worst piece of crap ever...
+
+	char *newString = new char[strlen(iCompleteKey)+1];
+	strcpy(newString, iCompleteKey);
+
+	const char *lVal = strchr (newString, '=') + 1;
+	newString[lVal-newString-1] = '\0';
+	setEnvSetting(newString+2, lVal); //newString+2 to remove -D
+
+	delete [] newString;
+}
+
+void Runtime::setEnvSetting(const char* iKey, const char* iVal)
+{
+	jclass      sys = jnienv->FindClass ("java/lang/System");
+	jmethodID  met =  jnienv->GetStaticMethodID (sys, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+	jnienv->CallStaticObjectMethod(sys, met, jnienv->NewStringUTF(iKey), jnienv->NewStringUTF(iVal));
+}
+
+
 /////////////////////////////////////////////////////////////////
 //////////////////////// Private Methods ////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -190,6 +214,12 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 			logger->fatal( "    result=%d", result );
 			throw RTIinternalError( L"*** JVM already existed, but we failed to attach ***" );
 		}
+
+		//since we are attaching, we have to add the options to the current JVM
+		setEnvSetting(const_cast<char*>(mode.c_str())); // build mode
+		setEnvSetting(const_cast<char*>(compiler.c_str())); // compiler version
+		setEnvSetting(const_cast<char*>(hlaVersion.c_str())); // hla interface version
+		setEnvSetting(const_cast<char*>(architecture.c_str())); //architecture
 
 		// we're all attached just fine, so let's get out of here
 		this->attachedToExisting = true;
