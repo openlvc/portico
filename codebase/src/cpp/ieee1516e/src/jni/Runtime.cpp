@@ -131,26 +131,28 @@ void Runtime::removeRtiAmbassador( JavaRTI* javarti )
 }
 
 
-void Runtime::setEnvSetting(const char *iCompleteKey)
+void Runtime::setSystemProperty( const char *keyAndValue )
 {
-	//copy the string
-	//worst piece of crap ever...
+	// copy the string
+	// worst piece of crap ever...
+	char *key = new char[strlen(keyAndValue)+1];
+	strcpy( key, keyAndValue );
 
-	char *newString = new char[strlen(iCompleteKey)+1];
-	strcpy(newString, iCompleteKey);
-
-	const char *lVal = strchr (newString, '=') + 1;
-	newString[lVal-newString-1] = '\0';
-	setEnvSetting(newString+2, lVal); //newString+2 to remove -D
-
-	delete [] newString;
+	const char *value = strchr( key,'=' ) + 1;
+	key[value-key-1] = '\0';     // terminate the string before "="
+	setSystemProperty(key+2, value); // key+2 to remove "-D"
+	delete [] key;
 }
 
-void Runtime::setEnvSetting(const char* iKey, const char* iVal)
+void Runtime::setSystemProperty( const char* key, const char* value )
 {
-	jclass      sys = jnienv->FindClass ("java/lang/System");
-	jmethodID  met =  jnienv->GetStaticMethodID (sys, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-	jnienv->CallStaticObjectMethod(sys, met, jnienv->NewStringUTF(iKey), jnienv->NewStringUTF(iVal));
+	jclass clazz = jnienv->FindClass( "java/lang/System" );
+	jmethodID method = jnienv->GetStaticMethodID( clazz, "setProperty",
+	                       "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+	jnienv->CallStaticObjectMethod( clazz,
+	                                method,
+	                                jnienv->NewStringUTF(key),
+	                                jnienv->NewStringUTF(value) );
 }
 
 
@@ -215,11 +217,15 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 			throw RTIinternalError( L"*** JVM already existed, but we failed to attach ***" );
 		}
 
-		//since we are attaching, we have to add the options to the current JVM
-		setEnvSetting(const_cast<char*>(mode.c_str())); // build mode
-		setEnvSetting(const_cast<char*>(compiler.c_str())); // compiler version
-		setEnvSetting(const_cast<char*>(hlaVersion.c_str())); // hla interface version
-		setEnvSetting(const_cast<char*>(architecture.c_str())); //architecture
+		// Patch from JPL for MatLab
+		// Since we are attaching to an existing JVM, we have to set the system
+		// properties so that when we try to use them to load back the library for
+		// callbacks, we load by the right name. If we had created the JVM we would
+		// have passed these as command line arguments as above.
+		setSystemProperty( const_cast<char*>(mode.c_str()) );         // build mode
+		setSystemProperty( const_cast<char*>(compiler.c_str()) );     // compiler version
+		setSystemProperty( const_cast<char*>(hlaVersion.c_str()) );   // hla interface version
+		setSystemProperty( const_cast<char*>(architecture.c_str()) ); // architecture
 
 		// we're all attached just fine, so let's get out of here
 		this->attachedToExisting = true;

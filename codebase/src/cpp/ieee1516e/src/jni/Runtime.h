@@ -82,8 +82,8 @@ class Runtime
 		JavaRTI* getRtiAmbassador( int id );
 		void     removeRtiAmbassador( int id );
 		void     removeRtiAmbassador( JavaRTI* javarti );
-		void 	 setEnvSetting(const char* iKey, const char* iVal);
-		void 	 setEnvSetting(const char *iCompleteKey);
+		void 	 setSystemProperty( const char* key, const char* value );
+		void 	 setSystemProperty( const char *keyAndValue );
 
 	private:
 		void initializeJVM() throw( RTIinternalError );
