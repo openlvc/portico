@@ -132,7 +132,7 @@ void HLAASCIIstring::decode( const VariableLengthData& inData )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	// Read the string length from the buffer
-	char* asBytes = (char*)&inData;
+	char* asBytes = (char*)inData.data();
 	size_t len = BitHelpers::decodeIntBE( asBytes, 0 );
 
 	if( (availableLength - BitHelpers::LENGTH_INT) < len )
