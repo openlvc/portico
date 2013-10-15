@@ -247,7 +247,7 @@ void HLAopaqueData::encode( VariableLengthData& inData ) const
 	std::vector<Octet> buffer;
 	this->encodeInto( buffer );
 	
-	inData.setData( &buffer, buffer.size() );
+	inData.setData( &buffer[0], buffer.size() );
 }
 
 // Encode this element and append it to a buffer
@@ -268,7 +268,7 @@ void HLAopaqueData::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
 	// Wrap the VariableLengthData's internal byte array in a std::vector<Octet>
-	const char* bytes = (const char*)&inData;
+	const char* bytes = (const char*)inData.data();
 	std::vector<Octet> buffer( bytes, bytes + inData.size() );
 
 	// Decode!
