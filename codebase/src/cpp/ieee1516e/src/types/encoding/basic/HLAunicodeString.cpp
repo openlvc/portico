@@ -109,7 +109,7 @@ void HLAunicodeString::encodeInto( std::vector<Octet>& buffer ) const
 	this->encode( data );
 
 	// Append data to the end of the provided buffer
-	char* bytes = (char*)&data;
+	char* bytes = (char*)data.data();
 	buffer.insert( buffer.end(), bytes, bytes + data.size() );
 }
 

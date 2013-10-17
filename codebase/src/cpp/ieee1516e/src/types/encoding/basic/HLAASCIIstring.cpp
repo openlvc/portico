@@ -97,8 +97,8 @@ void HLAASCIIstring::encode( VariableLengthData& inData ) const
 	BitHelpers::encodeIntBE( len, buffer, 0 );
 
 	// Encode the data
-	const char* asBytes = this->get().c_str();
-	::memcpy( buffer + BitHelpers::LENGTH_INT, asBytes, size );
+	//const char* asBytes = this->get().c_str();
+	::memcpy( buffer + BitHelpers::LENGTH_INT, this->get().c_str(), size );
 	
 	// Call to setData will take a copy
 	inData.setData( buffer, totalLength );

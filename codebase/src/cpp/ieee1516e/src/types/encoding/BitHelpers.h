@@ -117,15 +117,15 @@ class BitHelpers
 		////////////////////////////////////////////////////////////
 		// Long Helpers
 		////////////////////////////////////////////////////////////
-		static void encodeLongBE( long value, char* buffer, size_t offset );
-		static long decodeLongBE( const char* buffer, size_t offset );
-		static void encodeLongBE( long value, std::vector<Octet>& buffer );
-		static long decodeLongBE( const std::vector<Octet>& buffer, size_t index )
+		static void encodeLongBE( long long value, char* buffer, size_t offset );
+		static long long decodeLongBE( const char* buffer, size_t offset );
+		static void encodeLongBE(long long value, std::vector<Octet>& buffer );
+		static long long decodeLongBE( const std::vector<Octet>& buffer, size_t index )
 			throw (EncoderException);
-		static void encodeLongLE( long value, char* buffer, size_t offset );
-		static long decodeLongLE( const char* buffer, size_t offset );
-		static void encodeLongLE( long value, std::vector<Octet>& buffer );
-		static long decodeLongLE( const std::vector<Octet>& buffer, size_t index )
+		static void encodeLongLE(long long value, char* buffer, size_t offset );
+		static long long decodeLongLE( const char* buffer, size_t offset );
+		static void encodeLongLE(long long value, std::vector<Octet>& buffer );
+		static long long decodeLongLE( const std::vector<Octet>& buffer, size_t index )
 			throw (EncoderException);
 
 		////////////////////////////////////////////////////////////
