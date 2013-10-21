@@ -20,8 +20,8 @@
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
-	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<!-- Verify that we have an appropriate JDK to build against -->
+	<verifyJdk location="${jdk.home.macosx}" arch="amd64"/>
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->
@@ -63,7 +63,7 @@
 	<!-- ==================================== -->
 	<!--         Main HLA 1.3 Interface       -->
 	<!-- ==================================== -->
-	<target name="compile">
+	<target name="compile" extensionOf="cpp.compile">
 		<compile-hla13 arch="amd64" build="debug"/>
 		<compile-hla13 arch="amd64" build="release"/>
 	</target>

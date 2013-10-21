@@ -21,8 +21,8 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.win32" arch="x86" fallback="${jdk.default.win32}"/>
-	<getJdk property="jdk.home.win64" arch="amd64" fallback="${jdk.default.win64}"/>
+	<verifyJdk location="${jdk.home.win32}" arch="x86"/>
+	<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->

@@ -23,14 +23,8 @@
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
 	<target name="installer" extensionOf="master.installer">
-		<!-- find the location of the local JRE -->
-		<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
-
-		<!-- check to make sure the jre dir exists -->
-		<echo>Checking to see if JRE is available for bundling</echo>
-		<echo>  searching in... ${jdk.home.linux64}/jre</echo>
-		<available file="${jdk.home.linux64}/jre" property="jrefound"/>
-		<fail unless="jrefound" message="Could not locate JRE for bundling."/>
+		<!-- Verify that we have access to a JRE we can package -->
+		<verifyJdk location="${jdk.home.linux64}" arch="amd64"/>
 
 		<!-- Generate the tarball with the sandbox and the JRE in it -->
 		<!-- We have to use exec as the result tar task gives us problems with

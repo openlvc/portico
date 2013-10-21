@@ -20,8 +20,8 @@
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
-	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.linux64" arch="amd64" fallback="${jdk.default.linux64}"/>
+	<!-- Verify that we have an appropriate JDK to build against -->
+	<verifyJdk location="${jdk.home.linux64}" arch="amd64"/>
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->
