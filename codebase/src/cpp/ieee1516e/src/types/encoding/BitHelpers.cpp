@@ -343,23 +343,23 @@ int BitHelpers::decodeIntLE( const std::vector<Octet>& buffer, size_t index )
 ////////////////////////////////////////////////////////////
 // Long Helpers
 ////////////////////////////////////////////////////////////
-void BitHelpers::encodeLongBE( long value, char* buffer, size_t offset )
+void BitHelpers::encodeLongBE( long long value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryBE( buffer + offset, asChars, LENGTH_LONG );
 }
 
-long BitHelpers::decodeLongBE( const char* buffer, size_t offset )
+long long BitHelpers::decodeLongBE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_LONG];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryBE( asBytes, offsetPtr, LENGTH_LONG );
 
-	return *((long*)asBytes);
+	return *((long long*)asBytes);
 }
 
-void BitHelpers::encodeLongBE( long value, std::vector<Octet>& buffer )
+void BitHelpers::encodeLongBE(long long value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_LONG];
     copyMemoryBE( asBytes, (char*)&value, LENGTH_LONG );
@@ -367,7 +367,7 @@ void BitHelpers::encodeLongBE( long value, std::vector<Octet>& buffer )
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_LONG );
 }
 
-long BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t index )
+long long BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t index )
 	throw (EncoderException)
 {
 	if( index + LENGTH_LONG > buffer.size() )
@@ -376,26 +376,26 @@ long BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t index )
 	char asBytes[LENGTH_LONG];
 	copyMemoryBE( asBytes, &buffer[index], LENGTH_LONG );
 
-	return *((long*)asBytes);
+	return *((long long*)asBytes);
 }
 
-void BitHelpers::encodeLongLE( long value, char* buffer, size_t offset )
+void BitHelpers::encodeLongLE(long long value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryLE( buffer + offset, asChars, LENGTH_LONG );
 }
 
-long BitHelpers::decodeLongLE( const char* buffer, size_t offset )
+long long BitHelpers::decodeLongLE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_LONG];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryLE( asBytes, offsetPtr, LENGTH_LONG );
 
-	return *((long*)asBytes);
+	return *((long long*)asBytes);
 }
 
-void BitHelpers::encodeLongLE( long value, std::vector<Octet>& buffer )
+void BitHelpers::encodeLongLE(long long value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_LONG];
     copyMemoryLE( asBytes, (char*)&value, LENGTH_LONG );
@@ -403,7 +403,7 @@ void BitHelpers::encodeLongLE( long value, std::vector<Octet>& buffer )
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_LONG );
 }
 
-long BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t index )
+long long BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t index )
 	throw (EncoderException)
 {
 	if( index + LENGTH_LONG > buffer.size() )
@@ -412,7 +412,7 @@ long BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t index )
 	char asBytes[LENGTH_LONG];
 	copyMemoryLE( asBytes, &buffer[index], LENGTH_LONG );
 
-	return *((long*)asBytes);
+	return *((long long*)asBytes);
 }
 
 size_t BitHelpers::getEncodedLength( const std::wstring& value )
