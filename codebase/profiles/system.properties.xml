@@ -63,16 +63,19 @@
 	-->
 	<platform/>
 
+	<!-- validate JAVA_HOME and set jdk.home property -->
+	<getJavaHome property="jdk.home"/>
+
 	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
 	<!-- Note that these properties are loaded from build.properties -->
-	<property name="jdk.home.macosx"  location="/Library/Java/Home"/>
-	<property name="jdk.home.win32"   location="c:\Program Files (x86)\Java\jdk1.7.0_17"/>
-	<property name="jdk.home.win64"   location="c:\Program Files\Java\jdk1.7.0_17"/>
-	<property name="jdk.home.linux32" location="${env.JAVA_HOME}"/>
-	<property name="jdk.home.linux64" location="${env.JAVA_HOME}"/>
+	<property name="jdk.default.macosx"  location="/Library/Java/Home"/>
+	<property name="jdk.default.win32"   location="c:\Program Files (x86)\Java\jdk1.7.0_45"/>
+	<property name="jdk.default.win64"   location="c:\Program Files\Java\jdk1.7.0_45"/>
+	<property name="jdk.default.linux32" location="${env.JAVA_HOME}"/>
+	<property name="jdk.default.linux64" location="${env.JAVA_HOME}"/>
 	
 	<!-- Location Properties -->
 	<property name="lib.dir"                   location="lib"/>
@@ -94,4 +97,3 @@
 	<property name="sandbox.include.dir"    location="${sandbox.dir}/include"/>
 	<property name="sandbox.examples.dir"   location="${sandbox.dir}/examples"/>
 </project>
-
