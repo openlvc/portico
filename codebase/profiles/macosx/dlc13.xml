@@ -20,8 +20,8 @@
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
-	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<!-- Validate that we have a JKD we can use to compile and link against -->
+	<verifyJdk location="${jdk.home.macosx}" architecture="amd64"/>
 
 	<!-- ==================================== -->
 	<!-- ==== DLC13 Interface Properties ==== -->

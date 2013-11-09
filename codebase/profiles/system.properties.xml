@@ -63,9 +63,6 @@
 	-->
 	<platform/>
 
-	<!-- validate JAVA_HOME and set jdk.home property -->
-	<getJavaHome property="jdk.home"/>
-
 	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
 	<!-- =========================================================== -->
@@ -97,3 +94,4 @@
 	<property name="sandbox.include.dir"    location="${sandbox.dir}/include"/>
 	<property name="sandbox.examples.dir"   location="${sandbox.dir}/examples"/>
 </project>
+

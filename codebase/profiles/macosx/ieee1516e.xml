@@ -20,8 +20,8 @@
 	</description>
 
 	<!-- ==== Basic Properties ==== -->
-	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<getJdk property="jdk.home.macosx" arch="amd64" fallback="${jdk.default.macosx}"/>
+	<!-- Verify that we have an appropriate JDK to build against -->
+	<verifyJdk location="${jdk.home.macosx}" arch="amd64"/>
 
 	<!-- ================================================ -->
 	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
