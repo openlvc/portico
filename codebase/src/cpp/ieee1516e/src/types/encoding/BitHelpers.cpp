@@ -193,23 +193,23 @@ double BitHelpers::decodeDoubleLE( const std::vector<Octet>& buffer, size_t inde
 ////////////////////////////////////////////////////////////
 // Short Helpers
 ////////////////////////////////////////////////////////////
-void BitHelpers::encodeShortBE( short value, char* buffer, size_t offset )
+void BitHelpers::encodeShortBE( int16_t value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryBE( buffer + offset, asChars, LENGTH_SHORT );
 }
 
-short BitHelpers::decodeShortBE( const char* buffer, size_t offset )
+int16_t BitHelpers::decodeShortBE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_SHORT];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryBE( asBytes, offsetPtr, LENGTH_SHORT );
 
-	return *((short*)asBytes);
+	return *((int16_t*)asBytes);
 }
 
-void BitHelpers::encodeShortBE( short value, std::vector<Octet>& buffer )
+void BitHelpers::encodeShortBE( int16_t value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_SHORT];
     copyMemoryBE( asBytes, (char*)&value, LENGTH_SHORT );
@@ -217,8 +217,8 @@ void BitHelpers::encodeShortBE( short value, std::vector<Octet>& buffer )
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_SHORT );
 }
 
-short BitHelpers::decodeShortBE( const std::vector<Octet>& buffer, size_t index )
-	throw (EncoderException)
+int16_t BitHelpers::decodeShortBE( const std::vector<Octet>& buffer, size_t index )
+	throw( EncoderException )
 {
 	if( index + LENGTH_SHORT > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
@@ -226,26 +226,26 @@ short BitHelpers::decodeShortBE( const std::vector<Octet>& buffer, size_t index 
 	char asBytes[LENGTH_SHORT];
 	copyMemoryBE( asBytes, &buffer[index], LENGTH_SHORT );
 
-	return *((short*)asBytes);
+	return *((int16_t*)asBytes);
 }
 
-void BitHelpers::encodeShortLE( short value, char* buffer, size_t offset )
+void BitHelpers::encodeShortLE( int16_t value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryLE( buffer + offset, asChars, LENGTH_SHORT );
 }
 
-short BitHelpers::decodeShortLE( const char* buffer, size_t offset )
+int16_t BitHelpers::decodeShortLE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_SHORT];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryLE( asBytes, offsetPtr, LENGTH_SHORT );
 
-	return *((short*)asBytes);
+	return *((int16_t*)asBytes);
 }
 
-void BitHelpers::encodeShortLE( short value, std::vector<Octet>& buffer )
+void BitHelpers::encodeShortLE( int16_t value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_SHORT];
     copyMemoryLE( asBytes, (char*)&value, LENGTH_SHORT );
@@ -253,8 +253,8 @@ void BitHelpers::encodeShortLE( short value, std::vector<Octet>& buffer )
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_SHORT );
 }
 
-short BitHelpers::decodeShortLE( const std::vector<Octet>& buffer, size_t index )
-	throw (EncoderException)
+int16_t BitHelpers::decodeShortLE( const std::vector<Octet>& buffer, size_t index )
+	throw( EncoderException )
 {
 	if( index + LENGTH_SHORT > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
@@ -262,38 +262,37 @@ short BitHelpers::decodeShortLE( const std::vector<Octet>& buffer, size_t index 
 	char asBytes[LENGTH_SHORT];
 	copyMemoryLE( asBytes, &buffer[index], LENGTH_SHORT );
 
-	return *((short*)asBytes);
+	return *((int16_t*)asBytes);
 }
 
 ////////////////////////////////////////////////////////////
 // Int Helpers
 ////////////////////////////////////////////////////////////
-void BitHelpers::encodeIntBE( int value, char* buffer, size_t offset )
+void BitHelpers::encodeIntBE( int32_t value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryBE( buffer + offset, asChars, LENGTH_INT );
 }
 
-int BitHelpers::decodeIntBE( const char* buffer, size_t offset )
+int32_t BitHelpers::decodeIntBE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_INT];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryBE( asBytes, offsetPtr, LENGTH_INT );
 
-	return *((int*)asBytes);
+	return *((int32_t*)asBytes);
 }
 
-void BitHelpers::encodeIntBE( int value, std::vector<Octet>& buffer )
+void BitHelpers::encodeIntBE( int32_t value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_INT];
     copyMemoryBE( asBytes, (char*)&value, LENGTH_INT );
-
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_INT );
 }
 
-int BitHelpers::decodeIntBE( const std::vector<Octet>& buffer, size_t index )
-	throw (EncoderException)
+int32_t BitHelpers::decodeIntBE( const std::vector<Octet>& buffer, size_t index )
+	throw( EncoderException )
 {
 	if( index + LENGTH_INT > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
@@ -301,35 +300,34 @@ int BitHelpers::decodeIntBE( const std::vector<Octet>& buffer, size_t index )
 	char asBytes[LENGTH_INT];
 	copyMemoryBE( asBytes, &buffer[index], LENGTH_INT );
 
-	return *((int*)asBytes);
+	return *((int32_t*)asBytes);
 }
 
-void BitHelpers::encodeIntLE( int value, char* buffer, size_t offset )
+void BitHelpers::encodeIntLE( int32_t value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryLE( buffer + offset, asChars, LENGTH_INT );
 }
 
-int BitHelpers::decodeIntLE( const char* buffer, size_t offset )
+int32_t BitHelpers::decodeIntLE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_INT];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryLE( asBytes, offsetPtr, LENGTH_INT );
 
-	return *((int*)asBytes);
+	return *((int32_t*)asBytes);
 }
 
-void BitHelpers::encodeIntLE( int value, std::vector<Octet>& buffer )
+void BitHelpers::encodeIntLE( int32_t value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_INT];
     copyMemoryLE( asBytes, (char*)&value, LENGTH_INT );
-
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_INT );
 }
 
-int BitHelpers::decodeIntLE( const std::vector<Octet>& buffer, size_t index )
-	throw (EncoderException)
+int32_t BitHelpers::decodeIntLE( const std::vector<Octet>& buffer, size_t index )
+	throw( EncoderException )
 {
 	if( index + LENGTH_INT > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
@@ -337,38 +335,37 @@ int BitHelpers::decodeIntLE( const std::vector<Octet>& buffer, size_t index )
 	char asBytes[LENGTH_INT];
 	copyMemoryLE( asBytes, &buffer[index], LENGTH_INT );
 
-	return *((int*)asBytes);
+	return *((int32_t*)asBytes);
 }
 
 ////////////////////////////////////////////////////////////
 // Long Helpers
 ////////////////////////////////////////////////////////////
-void BitHelpers::encodeLongBE( long long value, char* buffer, size_t offset )
+void BitHelpers::encodeLongBE( int64_t value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryBE( buffer + offset, asChars, LENGTH_LONG );
 }
 
-long long BitHelpers::decodeLongBE( const char* buffer, size_t offset )
+int64_t BitHelpers::decodeLongBE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_LONG];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryBE( asBytes, offsetPtr, LENGTH_LONG );
 
-	return *((long long*)asBytes);
+	return *((int64_t*)asBytes);
 }
 
-void BitHelpers::encodeLongBE(long long value, std::vector<Octet>& buffer )
+void BitHelpers::encodeLongBE( int64_t value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_LONG];
     copyMemoryBE( asBytes, (char*)&value, LENGTH_LONG );
-
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_LONG );
 }
 
-long long BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t index )
-	throw (EncoderException)
+int64_t BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t index )
+	throw( EncoderException )
 {
 	if( index + LENGTH_LONG > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
@@ -376,35 +373,34 @@ long long BitHelpers::decodeLongBE( const std::vector<Octet>& buffer, size_t ind
 	char asBytes[LENGTH_LONG];
 	copyMemoryBE( asBytes, &buffer[index], LENGTH_LONG );
 
-	return *((long long*)asBytes);
+	return *((int64_t*)asBytes);
 }
 
-void BitHelpers::encodeLongLE(long long value, char* buffer, size_t offset )
+void BitHelpers::encodeLongLE( int64_t value, char* buffer, size_t offset )
 {
 	char* asChars = (char*)&value;
 	copyMemoryLE( buffer + offset, asChars, LENGTH_LONG );
 }
 
-long long BitHelpers::decodeLongLE( const char* buffer, size_t offset )
+int64_t BitHelpers::decodeLongLE( const char* buffer, size_t offset )
 {
 	char asBytes[LENGTH_LONG];
 	const char* offsetPtr = buffer + offset;
 
 	copyMemoryLE( asBytes, offsetPtr, LENGTH_LONG );
 
-	return *((long long*)asBytes);
+	return *((int64_t*)asBytes);
 }
 
-void BitHelpers::encodeLongLE(long long value, std::vector<Octet>& buffer )
+void BitHelpers::encodeLongLE( int64_t value, std::vector<Octet>& buffer )
 {
     char asBytes[LENGTH_LONG];
     copyMemoryLE( asBytes, (char*)&value, LENGTH_LONG );
-
     buffer.insert( buffer.end(), asBytes, asBytes + LENGTH_LONG );
 }
 
-long long BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t index )
-	throw (EncoderException)
+int64_t BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t index )
+	throw( EncoderException )
 {
 	if( index + LENGTH_LONG > buffer.size() )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
@@ -412,9 +408,12 @@ long long BitHelpers::decodeLongLE( const std::vector<Octet>& buffer, size_t ind
 	char asBytes[LENGTH_LONG];
 	copyMemoryLE( asBytes, &buffer[index], LENGTH_LONG );
 
-	return *((long long*)asBytes);
+	return *((int64_t*)asBytes);
 }
 
+////////////////////////////////////////////////////////////
+// Unicode String Helpers
+////////////////////////////////////////////////////////////
 size_t BitHelpers::getEncodedLength( const std::wstring& value )
 {
 	return BitHelpers::LENGTH_INT +
@@ -437,7 +436,7 @@ void BitHelpers::encodeUnicodeString( const std::wstring& value, char* buffer, s
 
 	for( size_t i = 0 ; i < len ; ++i )
 	{
-		BitHelpers::encodeShortBE( (short)value.at(i),
+		BitHelpers::encodeShortBE( (int16_t)value.at(i),
 								   data,
 								   headerSize + (i * BitHelpers::LENGTH_SHORT) );
 	}
