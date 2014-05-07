@@ -64,7 +64,7 @@ long ObjectClassHandle::hash() const
 
 VariableLengthData ObjectClassHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void ObjectClassHandle::encode( VariableLengthData& buffer ) const

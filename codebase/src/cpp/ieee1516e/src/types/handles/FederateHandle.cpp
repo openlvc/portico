@@ -64,7 +64,7 @@ long FederateHandle::hash() const
 
 VariableLengthData FederateHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void FederateHandle::encode( VariableLengthData& buffer ) const
