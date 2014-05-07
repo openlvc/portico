@@ -49,6 +49,14 @@ HLAlogicalTimeFactoryFactory::makeLogicalTimeFactory( const std::wstring& implem
 	{
 		return auto_ptr<LogicalTimeFactory>( new HLAinteger64TimeFactory() );
 	}
+	else if( implementationName.compare(L"HLAfloat64Time") == 0 )
+	{
+		return auto_ptr<LogicalTimeFactory>( new HLAfloat64TimeFactory() );
+	}
+	else if( implementationName.compare(L"HLAinteger64Time") == 0 )
+	{
+		return auto_ptr<LogicalTimeFactory>( new HLAinteger64TimeFactory() );
+	}
 	else
 	{
 		wstringstream wss;
