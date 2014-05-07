@@ -64,7 +64,7 @@ long MessageRetractionHandle::hash() const
 
 VariableLengthData MessageRetractionHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void MessageRetractionHandle::encode( VariableLengthData& buffer ) const
