@@ -123,6 +123,7 @@ using namespace std;
 #include <set>
 #include <sstream>
 #include <string>
+#include <fstream>
 
 //////////////////////////////////////////
 ////////// HLA Standard Headers //////////
