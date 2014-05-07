@@ -16,6 +16,9 @@ package org.portico.impl.cpp1516e;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Properties;
@@ -209,9 +212,8 @@ public class ProxyRtiAmbassador
 		try
 		{
 			logger.trace( "createFederationExecution() called" );
-			File fom = new File( fomModule );
 			//URL[] modules = new URL[]{ fom.toURI().toURL() };
-			rtiamb.createFederationExecution( federationName, fom.toURI().toURL() );
+			rtiamb.createFederationExecution( federationName, getURL(fomModule) );
 		}
 		catch( Exception e )
 		{
@@ -232,8 +234,7 @@ public class ProxyRtiAmbassador
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
 			{
-				File file = new File( fomModules[i] );
-				modules[i] = file.toURI().toURL();
+				modules[i] = getURL(fomModules[i]);
 			}
 				
 			rtiamb.createFederationExecution( federationName, modules, timeName );
@@ -258,11 +259,10 @@ public class ProxyRtiAmbassador
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
 			{
-				File file = new File( fomModules[i] );
-				modules[i] = file.toURI().toURL();
+				modules[i] = getURL(fomModules[i]);
 			}
 			
-			rtiamb.createFederationExecution( federationName, modules, new URL(mimModule), timeName );
+			rtiamb.createFederationExecution( federationName, modules, getURL(mimModule), timeName );
 		}
 		catch( Exception e )
 		{
@@ -311,8 +311,7 @@ public class ProxyRtiAmbassador
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
 			{
-				File file = new File( fomModules[i] );
-				modules[i] = file.toURI().toURL();
+				modules[i] = getURL(fomModules[i]);
 			}
 			
 			FederateHandle handle =
@@ -341,8 +340,7 @@ public class ProxyRtiAmbassador
 			URL[] modules = new URL[fomModules.length];
 			for( int i = 0; i < fomModules.length; i++ )
 			{
-				File file = new File( fomModules[i] );
-				modules[i] = file.toURI().toURL();
+				modules[i] = getURL(fomModules[i]);
 			}
 			
 			FederateHandle handle = rtiamb.joinFederationExecution( federateName,
@@ -2175,6 +2173,24 @@ public class ProxyRtiAmbassador
 	private void notSupported( String name )
 	{
 		logger.warn( "Method "+name+" is not yet supported by the C++ interface" );
+	}
+
+	private URL getURL( String fomModule ) throws URISyntaxException, MalformedURLException
+	{
+		// URLs are only allowed / as file separator
+		URI uri = new URI(fomModule.replace(File.separator, "/"));
+		URL retUrl = null;
+		if(uri.isAbsolute())
+		{
+			retUrl = uri.toURL();
+		}
+		else
+		{
+			File fom = new File( fomModule );
+			retUrl = fom.toURI().toURL();
+		}
+		
+		return retUrl;
 	}
 
 	//----------------------------------------------------------
