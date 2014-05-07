@@ -32,6 +32,9 @@ void PorticoRtiAmbassador::reserveObjectInstanceName( const std::wstring& name )
 {
 	if( logger->isTraceEnabled() )
 		logger->trace( "[Starting] reserveObjectInstanceName(): name=%ls", name.c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jstring jname = JniUtils::fromWideString( jnienv, name );
@@ -60,7 +63,10 @@ void PorticoRtiAmbassador::releaseObjectInstanceName( const std::wstring& name )
 {
 	if( logger->isTraceEnabled() )
 		logger->trace( "[Starting] releaseObjectInstanceName(): name=%ls", name.c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jname = JniUtils::fromWideString( jnienv, name );
 
@@ -92,6 +98,9 @@ void PorticoRtiAmbassador::reserveMultipleObjectInstanceName( const std::set<std
 		logger->trace( "[Starting] reserveMultipleObjectInstanceName(): names=%ls",
 		               Logger::toWString(names).c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jobjectArray jnames = JniUtils::fromSet( jnienv, names );
@@ -126,7 +135,10 @@ void PorticoRtiAmbassador::releaseMultipleObjectInstanceName( const std::set<std
 		logger->trace( "[Starting] releaseMultipleObjectInstanceName(): names=%ls",
 		               Logger::toWString(names).c_str() );
 	}
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jobjectArray jnames = JniUtils::fromSet( jnienv, names );
 
@@ -161,7 +173,10 @@ ObjectInstanceHandle PorticoRtiAmbassador::registerObjectInstance( ObjectClassHa
 	
 	if( logger->isTraceEnabled() )
 		logger->trace( "[Starting] registerObjectInstance(): class=%d", jclassHandle );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jint jobjectHandle = jnienv->CallIntMethod( javarti->jproxy,
 	                                            javarti->REGISTER_OBJECT,
@@ -188,6 +203,10 @@ ObjectInstanceHandle PorticoRtiAmbassador::registerObjectInstance( ObjectClassHa
 	       NotConnected,
 	       RTIinternalError )
 {
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert it now so we can use it in the log message - stupid, eh? Might as well do them all
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 	jstring jname = JniUtils::fromWideString( jnienv, name );
@@ -237,6 +256,9 @@ void PorticoRtiAmbassador::updateAttributeValues( ObjectInstanceHandle theObject
 		               Logger::toString(attributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	HVPS jattributes = JniUtils::fromMap( jnienv, attributes );
@@ -285,6 +307,9 @@ MessageRetractionHandle PorticoRtiAmbassador::updateAttributeValues(
 		               Logger::toString(attributes).c_str(),
 		               JniUtils::fromTime(theTime) );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -337,6 +362,9 @@ void PorticoRtiAmbassador::sendInteraction( InteractionClassHandle theInteractio
 		               Logger::toString(parameters).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jinteraction = JniUtils::fromHandle( theInteraction );
 	HVPS jparameters = JniUtils::fromMap( jnienv, parameters );
@@ -386,6 +414,9 @@ MessageRetractionHandle PorticoRtiAmbassador::sendInteraction(
 		               JniUtils::fromTime(theTime) );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jinteraction = JniUtils::fromHandle( theInteraction );
 	HVPS jparameters = JniUtils::fromMap( jnienv, parameters );
@@ -434,6 +465,9 @@ void PorticoRtiAmbassador::deleteObjectInstance( ObjectInstanceHandle theObject,
 		               theObject.toString().c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jbyteArray jtag = JniUtils::fromTag( jnienv, tag );
@@ -472,6 +506,9 @@ MessageRetractionHandle PorticoRtiAmbassador::deleteObjectInstance( ObjectInstan
 		               theObject.toString().c_str(),
 		               JniUtils::fromTime(theTime) );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -514,6 +551,9 @@ void PorticoRtiAmbassador::localDeleteObjectInstance( ObjectInstanceHandle theOb
 		               theObject.toString().c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 
@@ -549,6 +589,9 @@ void PorticoRtiAmbassador::requestAttributeValueUpdate( ObjectInstanceHandle the
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -592,6 +635,9 @@ void PorticoRtiAmbassador::requestAttributeValueUpdate( ObjectClassHandle theCla
 		               theClass.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -641,6 +687,9 @@ void PorticoRtiAmbassador::requestAttributeTransportationTypeChange(
 		               Logger::toString(attributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
@@ -684,6 +733,9 @@ void PorticoRtiAmbassador::queryAttributeTransportationType( ObjectInstanceHandl
 		               theAttribute.toString().c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jint jattribute = JniUtils::fromHandle( theAttribute );
@@ -724,6 +776,9 @@ void PorticoRtiAmbassador::requestInteractionTransportationTypeChange( Interacti
 		               theClass.toString().c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jinteraction = JniUtils::fromHandle( theClass );
 	jstring jtransport = JniUtils::fromTransport( jnienv, theType );
@@ -761,6 +816,9 @@ void PorticoRtiAmbassador::queryInteractionTransportationType( FederateHandle th
 		               theFederate.toString().c_str(),
 		               theFederate.toString().c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jfederate = JniUtils::fromHandle( theFederate );

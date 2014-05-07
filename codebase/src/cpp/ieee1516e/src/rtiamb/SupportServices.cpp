@@ -27,6 +27,9 @@ ResignAction PorticoRtiAmbassador::getAutomaticResignDirective()
     	   NotConnected,
     	   RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jstring result = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
 	                                                    javarti->GET_AUTO_RESIGN_DIRECTIVE );
@@ -46,6 +49,9 @@ void PorticoRtiAmbassador::setAutomaticResignDirective( ResignAction resignActio
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jstring jaction = JniUtils::fromResignAction( jnienv, resignAction );
 	
@@ -66,6 +72,9 @@ FederateHandle PorticoRtiAmbassador::getFederateHandle( const std::wstring& theN
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jstring jname = JniUtils::fromWideString( jnienv, theName );
 	
@@ -88,6 +97,10 @@ std::wstring PorticoRtiAmbassador::getFederateName( FederateHandle theHandle )
            NotConnected,
            RTIinternalError )
 {
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jhandle = JniUtils::fromHandle( theHandle );
 	
@@ -110,6 +123,10 @@ ObjectClassHandle PorticoRtiAmbassador::getObjectClassHandle( const std::wstring
            NotConnected,
            RTIinternalError )
 {
+	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jstring jname = JniUtils::fromWideString( jnienv, theName );
 	
@@ -131,6 +148,10 @@ std::wstring PorticoRtiAmbassador::getObjectClassName( ObjectClassHandle theHand
            NotConnected,
            RTIinternalError )
 {
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jhandle = JniUtils::fromHandle( theHandle );
 	
@@ -153,6 +174,9 @@ ObjectClassHandle PorticoRtiAmbassador::getKnownObjectClassHandle( ObjectInstanc
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jint result = jnienv->CallIntMethod( javarti->jproxy,
 	                                     javarti->GET_KNOWN_OBJECT_CLASS_HANDLE,
@@ -170,6 +194,9 @@ ObjectInstanceHandle PorticoRtiAmbassador::getObjectInstanceHandle( const std::w
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jstring jname = JniUtils::fromWideString( jnienv, theName );
 	
@@ -191,6 +218,10 @@ std::wstring PorticoRtiAmbassador::getObjectInstanceName( ObjectInstanceHandle t
            NotConnected,
            RTIinternalError )
 {
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jhandle = JniUtils::fromHandle( theHandle );
 	
@@ -215,6 +246,10 @@ AttributeHandle PorticoRtiAmbassador::getAttributeHandle( ObjectClassHandle whic
 	       NotConnected,
 	       RTIinternalError )
 {
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jclassHandle = JniUtils::fromHandle( whichClass );
 	jstring jname = JniUtils::fromWideString( jnienv, name );
@@ -241,6 +276,9 @@ std::wstring PorticoRtiAmbassador::getAttributeName( ObjectClassHandle whichClas
 	       NotConnected,
 	       RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jclassHandle = JniUtils::fromHandle( whichClass );
 	jint jhandle = JniUtils::fromHandle( theHandle );
@@ -289,6 +327,9 @@ InteractionClassHandle PorticoRtiAmbassador::getInteractionClassHandle( const st
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jstring jname = JniUtils::fromWideString( jnienv, theName );
 	
@@ -310,6 +351,9 @@ std::wstring PorticoRtiAmbassador::getInteractionClassName( InteractionClassHand
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jhandle = JniUtils::fromHandle( theHandle );
 	
@@ -334,6 +378,9 @@ ParameterHandle PorticoRtiAmbassador::getParameterHandle( InteractionClassHandle
 	       NotConnected,
 	       RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jclassHandle = JniUtils::fromHandle( whichClass );
 	jstring jname = JniUtils::fromWideString( jnienv, theName );
@@ -360,6 +407,9 @@ std::wstring PorticoRtiAmbassador::getParameterName( InteractionClassHandle whic
 	       NotConnected,
 	       RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// convert the parameters to java types
 	jint jclassHandle = JniUtils::fromHandle( whichClass );
 	jint jhandle = JniUtils::fromHandle( theHandle );
@@ -587,6 +637,9 @@ void PorticoRtiAmbassador::enableObjectClassRelevanceAdvisorySwitch()
 	       NotConnected,
 	       RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->ENABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
 }
@@ -600,6 +653,9 @@ void PorticoRtiAmbassador::disableObjectClassRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->DISABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
 }
@@ -613,6 +669,9 @@ void PorticoRtiAmbassador::enableAttributeRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->ENABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
 
@@ -627,6 +686,9 @@ void PorticoRtiAmbassador::disableAttributeRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->DISABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
 
@@ -641,6 +703,9 @@ void PorticoRtiAmbassador::enableAttributeScopeAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->ENABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
 
@@ -655,6 +720,9 @@ void PorticoRtiAmbassador::disableAttributeScopeAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->DISABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
 }
@@ -668,6 +736,9 @@ void PorticoRtiAmbassador::enableInteractionRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->ENABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
 }
@@ -681,6 +752,9 @@ void PorticoRtiAmbassador::disableInteractionRelevanceAdvisorySwitch()
            NotConnected,
            RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->DISABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
 }
@@ -689,6 +763,9 @@ void PorticoRtiAmbassador::disableInteractionRelevanceAdvisorySwitch()
 bool PorticoRtiAmbassador::evokeCallback( double minSeconds )
     throw( CallNotAllowedFromWithinCallback, RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	return jnienv->CallBooleanMethod( javarti->jproxy,
 	                                  javarti->EVOKE_CALLBACK,
 	                                  minSeconds );
@@ -698,6 +775,9 @@ bool PorticoRtiAmbassador::evokeCallback( double minSeconds )
 bool PorticoRtiAmbassador::evokeMultipleCallbacks( double minSeconds, double maxSeconds )
 	throw( CallNotAllowedFromWithinCallback, RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	return jnienv->CallBooleanMethod( javarti->jproxy,
 	                                  javarti->EVOKE_MULTIPLE_CALLBACKS,
 	                                  minSeconds,
@@ -710,6 +790,9 @@ void PorticoRtiAmbassador::enableCallbacks()
 	       RestoreInProgress,
 	       RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->ENABLE_CALLBACKS );
 }
@@ -720,6 +803,9 @@ void PorticoRtiAmbassador::disableCallbacks()
 	       RestoreInProgress,
 	       RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	jnienv->CallVoidMethod( javarti->jproxy,
 	                        javarti->DISABLE_CALLBACKS );
 }

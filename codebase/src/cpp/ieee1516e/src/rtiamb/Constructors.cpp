@@ -22,14 +22,12 @@ PORTICO1516E_NS_START
 PorticoRtiAmbassador::PorticoRtiAmbassador() : IEEE1516E_NS::RTIambassador()
 {
 	this->javarti = Runtime::getRuntime()->newRtiAmbassador();
-	this->jnienv = this->javarti->getJniEnvironment();
 	this->logger = new Logger( "c++" );
 }
 
 PorticoRtiAmbassador::~PorticoRtiAmbassador()
 {
 	Runtime::getRuntime()->removeRtiAmbassador( this->javarti );
-	this->jnienv = NULL; // we only had a cache of it
 	delete this->logger;
 }
 

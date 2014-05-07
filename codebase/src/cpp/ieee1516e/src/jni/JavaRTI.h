@@ -17,6 +17,7 @@
 
 #include "common.h"
 #include "utils/Logger.h"
+#include "Runtime.h"
 
 PORTICO1516E_NS_START
 
@@ -44,10 +45,10 @@ class JavaRTI
 	public:
 		Logger* logger;
 		
-		int     id; // the unique ID for the RTI within the process
-		JNIEnv* jnienv;
-		jclass  jproxyClass;
-		jobject jproxy;
+		int      id; // the unique ID for the RTI within the process
+		Runtime* jniRuntime;
+		jclass   jproxyClass;
+		jobject  jproxy;
 		
 		// federate ambassador to contact back for callbacks
 		FederateAmbassador *fedamb;
@@ -62,7 +63,7 @@ class JavaRTI
 	//----------------------------------------------------------
 	private:
 		// constructor is private but Runtime is a friend
-		JavaRTI( JNIEnv* jnienv, int id );
+		JavaRTI( Runtime* jniRuntime, int id );
 		~JavaRTI();
 
 	public:
@@ -82,9 +83,9 @@ class JavaRTI
 
 		// JNI method caching
 		void cacheMethodIds() throw( RTIinternalError );
-		void cacheMethod( jmethodID *handle, string method, string signature )
+		void cacheMethod( JNIEnv* env, jmethodID *handle, string method, string signature )
 			throw( RTIinternalError );
-		void cacheMethod( jmethodID *handle, jclass clazz, string method, string signature )
+		void cacheMethod( JNIEnv* env, jmethodID *handle, jclass clazz, string method, string signature )
 			throw( RTIinternalError );
 
 		

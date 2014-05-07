@@ -41,7 +41,6 @@ Runtime::Runtime() throw( RTIinternalError )
 	
 	// initialize the JNI pieces
 	this->jvm = NULL;
-	this->jnienv = NULL;
 	this->attachedToExisting = false;
 	this->idCounter = 0;
 	this->activeRtis = new std::map<int,JavaRTI*>();
@@ -87,11 +86,8 @@ JavaRTI* Runtime::newRtiAmbassador() throw( RTIinternalError )
 {
 	logger->debug( "Attempting to create new JavaRTI" );
 
-	// attach to the JVM (this could be a new thread that we have to register)
-	attachToJVM();
-	
 	// create the instance
-	JavaRTI *newRTI = new JavaRTI( jnienv, ++idCounter );
+	JavaRTI *newRTI = new JavaRTI( this, ++idCounter );
 
 	// store it in the map of active instances
 	int id = newRTI->getId();
@@ -146,6 +142,10 @@ void Runtime::setSystemProperty( const char *keyAndValue )
 
 void Runtime::setSystemProperty( const char* key, const char* value )
 {
+
+	// Get active environment
+	JNIEnv* jnienv = attachToJVM();
+
 	jclass clazz = jnienv->FindClass( "java/lang/System" );
 	jmethodID method = jnienv->GetStaticMethodID( clazz, "setProperty",
 	                       "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
@@ -162,6 +162,7 @@ void Runtime::setSystemProperty( const char* key, const char* value )
 void Runtime::initializeJVM() throw( RTIinternalError )
 {
 	logger->debug( "Initialize or create a new JVM" );
+	JNIEnv* jnienv;
 
 	///////////////////////////////////////////
 	// 1. get the classpath and library path //
@@ -192,7 +193,7 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	options[5].optionString = const_cast<char*>(architecture.c_str()); // architecture
 	options[6].optionString = const_cast<char*>(stackSize.c_str());
 	vmargs.nOptions = 7;
-	vmargs.version = JNI_VERSION_1_6;
+	vmargs.version = getJNIVersion();
 	vmargs.options = options;
 	vmargs.ignoreUnrecognized = JNI_TRUE;
 
@@ -521,11 +522,22 @@ string Runtime::getArch() throw( RTIinternalError )
 }
 
 /*
+ * Return "-Dportico.cpp.arch=" x86 or amd64
+ */
+jint Runtime::getJNIVersion()
+{
+	return JNI_VERSION_1_6;
+}
+
+/*
  * We use various JNI class references throughout the life of the VM. The role of this
  * method is to cache them in statics so that they're easily accessible to all.
  */
 void Runtime::cacheGlobalHandles() throw( RTIinternalError )
 {
+	// Get active environment
+	JNIEnv* jnienv = attachToJVM();
+
 	jclass byteArray = jnienv->FindClass( "[B" );
 	Runtime::JCLASS_BYTE_ARRAY = (jclass)jnienv->NewGlobalRef( byteArray );
 	jnienv->DeleteLocalRef( byteArray ); // now that we have the global ref, we don't need this
@@ -578,6 +590,9 @@ void Runtime::cacheGlobalHandles() throw( RTIinternalError )
 void Runtime::processRid() throw( RTIinternalError )
 {
 	logger->info( "Attempting to load RID file" );
+
+	// Get active environment
+	JNIEnv* jnienv = attachToJVM();
 
 	///////////////////////////////////
 	// use Java to load the RID file //
@@ -638,21 +653,24 @@ void Runtime::processRid() throw( RTIinternalError )
  * to the JNIEnv in the instance variable. If there is an error during this
  * process, an RTIinternalError will be thrown.
  */
-void Runtime::attachToJVM() throw( RTIinternalError )
+JNIEnv* Runtime::attachToJVM() throw( RTIinternalError )
 {
-	logger->trace( "Attaching current thread to JVM" );
-	JavaVMInitArgs vmArgs;
-	JNI_GetDefaultJavaVMInitArgs( &vmArgs );
-	jint result = jvm->AttachCurrentThread( (void**)&jnienv, &vmArgs );
-	if( result == 0 )
+	JNIEnv* jnienv = NULL;
+
+	int status = jvm->GetEnv((void **)&jnienv, getJNIVersion());
+
+	if(jnienv == NULL)
 	{
-		logger->debug( "Attached current thread to JVM" );
+		logger->trace( "Attaching current thread to JVM" );
+		jint result = jvm->AttachCurrentThread( (void**)&jnienv, NULL );
+		if( result != 0 )
+		{
+			logger->fatal( "Couldn't attach current thread to JVM" );
+			throw RTIinternalError( L"Couldn't thread attach to JVM" );
+		}
 	}
-	else
-	{
-		logger->fatal( "Couldn't attach current thread to JVM" );
-		throw RTIinternalError( L"Couldn't thread attach to JVM" );
-	}
+
+	return jnienv;
 }
 
 /*
