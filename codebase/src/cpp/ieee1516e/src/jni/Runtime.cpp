@@ -35,6 +35,10 @@ Runtime::Runtime() throw( RTIinternalError )
 	if( value != NULL )
 		Logger::setGlobalLevel( value );
 
+	value = getenv( "PORTICO_REDIRECT" );
+	if( value != NULL )
+		Logger::setRedirect( value );
+
 	// get us a logger to work with
 	this->logger = new Logger( "c++" );
 	this->logger->setPrefix( "(Runtime) " );
