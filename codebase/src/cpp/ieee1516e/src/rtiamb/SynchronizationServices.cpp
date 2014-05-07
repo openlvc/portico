@@ -32,6 +32,9 @@ void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::ws
 {
 	logger->trace( "[Starting] registerFederationSynchronizationPoint(): label=%ls",label.c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
 	jbyteArray jtag = JniUtils::fromTag( jnienv, tag );
@@ -64,6 +67,9 @@ void PorticoRtiAmbassador::registerFederationSynchronizationPoint( const std::ws
 	               label.c_str(),
 	               Logger::toString(syncset).c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
 	jbyteArray jtag = JniUtils::fromTag( jnienv, tag );
@@ -101,6 +107,9 @@ void PorticoRtiAmbassador::synchronizationPointAchieved( const std::wstring& lab
 	               label.c_str(),
 	               successfully );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
 

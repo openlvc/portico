@@ -30,6 +30,9 @@ void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label )
 {
 	logger->trace( "[Starting] requestFederationSave(): label=%ls", label.c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
 
@@ -58,6 +61,9 @@ void PorticoRtiAmbassador::requestFederationSave( const std::wstring& label,
 {
 	logger->trace( "[Starting] requestFederationSave(time): label=%ls", label.c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
 	jdouble jtime = JniUtils::fromTime( theTime );
@@ -86,6 +92,9 @@ void PorticoRtiAmbassador::federateSaveBegun()
 {
 	logger->trace( "[Starting] federateSaveBegun()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_BEGUN );
 	javarti->exceptionCheck();
@@ -104,6 +113,9 @@ void PorticoRtiAmbassador::federateSaveComplete()
 {
 	logger->trace( "[Starting] federateSaveComplete()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_COMPLETE );
 	javarti->exceptionCheck();
@@ -121,6 +133,9 @@ void PorticoRtiAmbassador::federateSaveNotComplete()
 {
 	logger->trace( "[Starting] federateSaveNotComplete()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_NOT_COMPLETE );
 	javarti->exceptionCheck();
@@ -138,6 +153,9 @@ void PorticoRtiAmbassador::abortFederationSave()
 {
 	logger->trace( "[Starting] abortFederationSave()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_ABORT );
 	javarti->exceptionCheck();
@@ -155,6 +173,9 @@ void PorticoRtiAmbassador::queryFederationSaveStatus()
 {
 	logger->trace( "[Starting] queryFederationSaveStatus()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->SAVE_QUERY );
 	javarti->exceptionCheck();
@@ -173,6 +194,9 @@ void PorticoRtiAmbassador::requestFederationRestore( const std::wstring& label )
 {
 	logger->trace( "[Starting] requestFederationRestore(): label=%ls", label.c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jlabel = JniUtils::fromWideString( jnienv, label );
 
@@ -199,6 +223,9 @@ void PorticoRtiAmbassador::federateRestoreComplete()
 {
 	logger->trace( "[Starting] federateRestoreComplete()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_COMPLETE );
 	javarti->exceptionCheck();
@@ -216,6 +243,9 @@ void PorticoRtiAmbassador::federateRestoreNotComplete()
 {
 	logger->trace( "[Starting] federateRestoreNotComplete()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_NOT_COMPLETE );
 	javarti->exceptionCheck();
@@ -233,6 +263,9 @@ void PorticoRtiAmbassador::abortFederationRestore()
 {
 	logger->trace( "[Starting] abortFederationRestore()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_ABORT );
 	javarti->exceptionCheck();
@@ -250,6 +283,9 @@ void PorticoRtiAmbassador::queryFederationRestoreStatus()
 {
 	logger->trace( "[Starting] queryFederationRestoreStatus()" );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->RESTORE_QUERY );
 	javarti->exceptionCheck();
