@@ -109,7 +109,7 @@ void HLAunicodeString::encodeInto( std::vector<Octet>& buffer ) const
 	this->encode( data );
 
 	// Append data to the end of the provided buffer
-	char* bytes = (char*)&data;
+	char* bytes = (char*)data.data();
 	buffer.insert( buffer.end(), bytes, bytes + data.size() );
 }
 
@@ -118,7 +118,7 @@ void HLAunicodeString::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
 	// Wrap the VariableLengthData's internal byte array in a std::vector<Octet>
-	const char* bytes = (const char*)&inData;
+	const char* bytes = (const char*)inData.data();
 	std::vector<Octet> buffer( bytes, bytes + inData.size() );
 
 	// Decode!

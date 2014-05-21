@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation.
+
+          File: profiles/macosx/test13.xml
+       Purpose: Build and run the HLA v1.3 unit test suite.
+-->
+<project name="test13">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Mac OS X C++ build profile for HLA v1.3 Test Suite
+	</description>
+
+	<!-- source -->
+	<!--
+	<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>
+	<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include/hla13"/>
+	<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>
+	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
+	-->
+	
+	<!-- build -->
+	<property name="test13.build.dir"          location="${build.dir}/cpp/macosx/test13"/>
+	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="cpp.clean">
+		<delete dir="${test13.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Compile Targets                                  -->
+	<!-- ================================================================================= -->
+	<target name="compile" depends="cpp.hla13.compile">
+		<gcc-test13 compiler="gcc4" arch="amd64" build="debug"/>
+	</target>
+
+	<!-- ================================================ -->
+	<!--                Macro: gcc-test13                 -->
+	<!-- ================================================ -->
+	<macrodef name="test-hla13">
+		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!--                                                      -->
+			<!-- 1. Figure out if we should build this profile at all -->
+			<!--                                                      -->
+			<if><not><isset property="@{compiler}.@{arch}.@{build}"/></not>
+			<then>
+				<echo message="[Skip] (HLA v1.3 Test Suite) @{compiler}.@{arch}.@{build} -- not requested"/>
+			</then>
+			<else>
+				<echo message="[Compile] (HLA v1.3 Test Suite) @{compiler}.@{arch}.@{build}"/>
+
+				<!--                                                  -->
+				<!-- Generate the build-specific local ant properties -->
+				<!--                                                  -->
+				<cpplocals compiler="@{compiler}" arch="@{arch}" build="@{build}">
+					<debug cargs="-g -O0 -fPIC -Wall"/>
+					<release cargs="-O0 -fPIC -Wall"/>
+				</cpplocals>
+
+				<cpptask compiler="g++"
+				         outfile="test13-@{arch}"
+				         workdir="${test13.build.dir}/@{arch}"
+				         outdir="${test13.complete.dir}/@{arch}"
+				         type="executable"
+				         arch="@{arch}"
+				         compilerArgs="${_cargs}">
+					<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
+					<includepath path="${hla13.include.dir}"/>
+					<includepath path="${hla13.src.dir}/hla/time"/>
+					<includepath path="${cppunit.include}"/>
+					<define name="RTI_USES_STD_FSTREAM"/>
+					<define name="DEBUG"/>
+					<library path="${hla13.complete.dir}/gcc4"
+					         libs="RTI-NG${_bitness}${_d},FedTime${_bitness}${_d}"/>
+					<library path="${cppunit.lib}" libs="cppunit"/>
+				</cpptask>
+			</else></if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================================================= -->
+	<!--                                  Testing Targets                                  -->
+	<!-- ================================================================================= -->
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,compile">
+		<!-- 1. copy the testing resources into test
+		     dir (RID file etc...).T he filtering is
+		     primarily used for the gdb environment file -->
+		<copy todir="${test13.complete.dir}">
+			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${sandbox.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<chmod dir="${test13.complete.dir}" perm="777" includes="**/*.sh"/>
+		<echo>Copied testing resources to ${test13.complete.dir}</echo>
+
+		<!-- 2. run the actual test application -->
+		<exec dir="${test13.complete.dir}"
+		      executable="${test13.complete.dir}/test13"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="test13.result">
+			<arg line="${test13.complete.dir}/test-results.xml"/>
+			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
+			<env key="DYLD_LIBRARY_PATH" path="${jdk.home.macosx}/jre/lib/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
+			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+		
+		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
+		<!--
+		<echo>Generating the Unit Test Report</echo>
+		<cppunit-report result="${test13.result}"
+		                xmlfile="${test13.complete.dir}/test-results.xml"
+		                xslfile="${test13.complete.dir}/xsl/results.xsl"
+		                outfile="${test13.complete.dir}/test-results.html"/>
+		-->
+	</target>
+
+</project>

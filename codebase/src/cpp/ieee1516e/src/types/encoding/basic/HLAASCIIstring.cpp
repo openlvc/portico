@@ -97,8 +97,8 @@ void HLAASCIIstring::encode( VariableLengthData& inData ) const
 	BitHelpers::encodeIntBE( len, buffer, 0 );
 
 	// Encode the data
-	const char* asBytes = this->get().c_str();
-	::memcpy( buffer + BitHelpers::LENGTH_INT, asBytes, size );
+	//const char* asBytes = this->get().c_str();
+	::memcpy( buffer + BitHelpers::LENGTH_INT, this->get().c_str(), size );
 	
 	// Call to setData will take a copy
 	inData.setData( buffer, totalLength );
@@ -132,7 +132,7 @@ void HLAASCIIstring::decode( const VariableLengthData& inData )
 		throw EncoderException( L"Insufficient data in buffer to decode value" );
 
 	// Read the string length from the buffer
-	char* asBytes = (char*)&inData;
+	char* asBytes = (char*)inData.data();
 	size_t len = BitHelpers::decodeIntBE( asBytes, 0 );
 
 	if( (availableLength - BitHelpers::LENGTH_INT) < len )

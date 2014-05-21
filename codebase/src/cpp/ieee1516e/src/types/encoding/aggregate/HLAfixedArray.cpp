@@ -79,14 +79,13 @@ void HLAfixedArray::encode( VariableLengthData& inData ) const
 	std::vector<Octet> buffer;
 	this->encodeInto( buffer );
 	
-	inData.setData( &buffer, buffer.size() );
+	inData.setData( &buffer[0], buffer.size() );
 }
 
 // Encode this element and append it to a buffer
 void HLAfixedArray::encodeInto( std::vector<Octet>& buffer ) const
 	throw( EncoderException )
-{
-	// Encode the length
+{	
 	size_t elements = this->size();
 	HLAinteger32BE length( this->size() );
 	length.encodeInto( buffer );
@@ -104,7 +103,7 @@ void HLAfixedArray::decode( const VariableLengthData& inData )
 	throw( EncoderException )
 {
 	// Wrap the VariableLengthData's internal byte array in a std::vector<Octet>
-	const char* bytes = (const char*)&inData;
+	const char* bytes = (const char*)inData.data();
 	std::vector<Octet> buffer( bytes, bytes + inData.size() );
 
 	// Decode!

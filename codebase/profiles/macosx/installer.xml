@@ -23,10 +23,8 @@
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
 	<target name="installer" extensionOf="master.installer">
-		<!-- check to make sure the jre dir exists -->
-		<echo>Checking to see if JRE is available for bundling</echo>
-		<available file="${jdk.home.macosx}/jre" property="jrefound"/>
-		<fail unless="jrefound" message="Could not locate JRE for bundling."/>
+		<!-- Verify that we have an appropriate JRE we can bundle -->
+		<verifyJdk location="${jdk.home.macosx}" arch="amd64"/>
 
 		<!-- Generate the tarball with the sandbox and the JRE in it -->
 		<!-- We have to use exec as the result tar task gives us problems with

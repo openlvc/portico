@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>The Portico Project: An Open Source HLA RTI</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Bootstrap -->
+	<link href="assets/css/bootstrap.css" rel="stylesheet" media="screen">
+	<link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+	<link href="assets/css/style.css" rel="stylesheet"><!-- our customizations -->
+	<style type="text/css">
+	  body { padding-top: 40px; } /* to push the hero-unit down a bit */
+	</style>
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	  <script src="assets/js/html5shiv.js"></script>
+	<![endif]-->
+
+	<!-- Font Awesome -->
+	<link href="assets/css/font-awesome.min.css" rel="stylesheet">
+	<!--[if IE 7]>
+	<link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css">
+	<![endif]-->
+</head>
+
+<body>
+	<!-- ===================================================================== -->
+	<!--                            Navigation Bar                             -->
+	<!-- ===================================================================== -->
+	<div class="navbar navbar-fixed-top navbar-portico">
+		<div class="navbar-inner">
+			<!-- Fork me! ribbon
+			<a href="https://github.com/calytrix/portico">
+				<img style="position: absolute; top: 0; right: 0; border: 0;"
+				     src="images/logos/github-forkme-orange.png"
+				     alt="Fork me on GitHub">
+			</a>
+			-->
+			<div class="container">
+				<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="#">The Portico Project</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li class="active"><a href="#">Home</a></li>
+						<li><a href="#about">About</a></li>
+						<li><a href="#about">News</a></li>
+						<li><a href="#about">Getting Started</a></li>
+						<li><a href="#contact">Support</a></li>
+						<li><a href="#contact">Documentation</a></li>
+					</ul>
+					<a href="#" class="btn btn-primary pull-right">Download Portico</a>
+				</div><!--/.nav-collapse -->
+			</div>
+		</div>
+	</div>
+
+	<!-- ===================================================================== -->
+	<!--                             Main Content                              -->
+	<!-- ===================================================================== -->
+	<!--                           -->
+	<!-- Main hero unit for header -->
+	<!--                           -->
+	<div class="hero-unit site-header">
+		<p align="center"><img src="images/portico-banner.png" align="center"/></p>
+		<p align="center">Welcome to The Portico Project! Portico is an <em>open source</em>,
+		   cross-platform, <em>fully supported</em> HLA RTI implementation. Designed with
+		   modularity and flexibility in mind, Portico is a production-grade RTI for the
+		   Simulation and Training Community, so come say hi!</p>
+	</div>
+
+	<!--                           -->
+	<!--   Main Content and Links  -->
+	<!--                           -->
+	<div class="container">
+	<div class="row">
+		<div class="span4">
+			<h2>Download</h2>
+			<!-- define the pill headers -->
+			<ul class="nav nav-pills" id="versions-tab">
+				<li class="active"><a href="#versions-stable" data-toggle="pill">Stable</a></li>
+				<li><a href="#versions-dev" data-toggle="pill">Development</a></li>
+				<li><a href="#versions-nightly" data-toggle="pill">Nightly</a></li>
+				<li><a href="#versions-source" data-toggle="pill">Source</a></li>
+			</ul>
+
+			<!-- define the content for each pill -->
+			<div class="tab-content">
+				<div class="tab-pane active" id="versions-stable">
+					<div class="version-pane">
+						<h1>v2.0.0</h1>
+						<p><small>April 1, 2013</small></p>
+						<p><a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
+						   <a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/></a> &nbsp;
+						   <a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/></a>
+						</p>
+					</div>
+				</div>
+				<div class="tab-pane" id="versions-dev">
+					<div class="version-pane">
+						<h1>v2.1.0-dev</h1>
+						<p><small>April 1, 2013</small></p>
+						<p><a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
+						   <a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/></a> &nbsp;
+						   <a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/></a>
+						</p>
+					</div>
+				</div>
+				<div class="tab-pane" id="versions-nightly">
+					<div class="version-pane">
+						<h1>v2.1.0-dev</h1>
+						<p><small>April 1, 2013</small></p>
+						<p style="margin-bottom:0px"><!-- bring the pass/fail line closer -->
+							<a href="#"><img src="images/logos/windows-logo64.png" alt="Windows"/></a> &nbsp;
+							<a href="#"><img src="images/logos/ubuntu-logo64.png" alt="Linux"/></a> &nbsp;
+							<a href="#"><img src="images/logos/apple-logo64.jpg" alt="Mac OS X"/></a>
+						</p>
+						<p><span class="badge badge-success">Pass</span> &nbsp;
+						   <span class="badge badge-important">Fail</span> &nbsp;
+						   <span class="badge badge-success">Pass</span>
+						</p>
+					</div>
+				</div>
+				<div class="tab-pane" id="versions-source">
+					<div class="version-pane">
+						<img src="images/logos/octocat256.jpg" style="width:128px" class="pull-left"/>
+						<p>&nbsp;</p>
+						<p><h1>GitHub</h1></p>
+						<p><a href="https://github.com/calytrix/portico">https://github.com/calytrix/portico</a></p>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="span4">
+			<h2>Documentation</h2>
+			<p>Once you've got Portico, you'll need to know how to use it. Whether you're a
+			   <em>general user</em> or a <em>federate developer</em>, we've got you covered.
+			   Here you'll find guides to get you started with widely-used training tools, in
+			   addition to code examples and walk-through's for the coders out there. Java or
+			   C++; we won't judge.
+
+			</p>
+			<p><a class="btn btn-primary" href="#">Portico for Users &raquo;</a> &nbsp;
+			   <a class="btn btn-success" href="#">Portico for Developers &raquo;</a>
+			</p>
+		</div>
+		<div class="span4">
+			<h2>Community</h2>
+			<p>It's not nice to feel lonely. Luckily, you don't have to! Portico has a large
+			   install base of attractive and intelligent users you can interact with. If you
+			   need some help, or want to level-up your street cred by contributing to Portico,
+			   here is where you find out how. If you wear a suit, we're down with that as well
+			   and <a href="">Commercial Support</a> is available.</p>
+			<p><a class="btn btn-warning" href="#">To the People &raquo;</a></p>
+		</div>
+	</div>
+
+	<div class="row">&nbsp;</div>
+	</div>
+
+	<!--                           -->
+	<!--     Why Use Portico?      -->
+	<!--                           -->
+	<div class="well">
+	<div class="container">
+		<div class="row">
+			<div class="span12"/>
+				<p><h3>Why use Portico?</h3></p>
+				<p class="lead">Portico provides a lot of value over alternatives, here are a few reasons to choose it...</p>
+			</div>
+			<div class="span4" style="padding-left:0px">
+				<h4><i class="icon-check icon-2x"></i> Standards Compliant</h4>
+				<p>Portico supports all the major IEEE and SISO standards. HLA v1.3, SISO DLC, IEEE-1516e, it's practically raining standards!</p>
+			</div>
+			<div class="span4">
+				<h4><i class="icon-github icon-2x"></i> Open Source</h4>
+				<p>May the source be with you. No really, go get it. The full Portico source code is freely available and waiting for you. Fork us and contribute!</p>
+			</div>
+			<div class="span4">
+				<h4><i class="icon-user icon-2x"></i> Commercial Support</h4>
+				<p>Need someone who will answer your calls and fix your problems? We've got you covered. Commercial support is readily available.</p>
+			</div>
+			<div class="span4">
+				<h4><i class="icon-lightbulb icon-2x"></i> Easy to Use</h4>
+				<p>The HLA is hard enough as it is, so we've tried to make the RTI easy.
+				Portico doesn't require a central RTI, has sensible defaults and is designed to let you just get down to work.</p>
+			</div>
+			<div class="span4">
+				<h4><i class="icon-briefcase icon-2x"></i> Production Grade</h4>
+				<p>We do simulation. Daily. Portico is used in our commercial products and we hammer it hard, because we want the open standard to set the standard.</p>
+			</div>
+			<div class="span4">
+				<h4><i class="icon-globe icon-2x"></i> Worldwide Community</h4>
+				<p>Portico has been downloaded in more than 50 countries. It is used in government, industry and academia the world over, because open source knows no accent.</p>
+			</div>
+		</div>
+	</div>
+	</div>
+
+	<!--                           -->
+	<!-- Commercial Support Notice -->
+	<!--                           -->
+	<div class="container">
+	<div class="alert alert-block alert-warn">
+		<h4 class="alert-heading"><strong>Commercial Support</strong></h4>
+		<p>Commercial support helps sustain Portico development and provides a number of benefits,
+		   including a dedicated helpdesk, long-term release support, custom development time and
+		   service-level agreements. For all the details, see the 
+		   <a href="support/index.htm">Support page</a>.</p>
+	</div>
+	</div>
+
+
+	<!--                           -->
+	<!--    Portico-Enabled Apps   -->
+	<!--                           -->
+	<div class="container">
+		<div class="row">
+			<div class="span12"/>
+				<h3>Portico Enabled and Ready</h3></p>
+				<p style="font-size:18px;font-weight:200;">Portico is continuously tested and validated against leading simulation systems from the Live, Virtual and Constructive domains.</p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="span12">
+				<ul class="thumbnails tiles">
+					<!--                            -->
+					<!-- Virtual Simulation Systems -->
+					<!--                            -->
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/xplane.jpg" alt="X-Plane Flight Simulator by Laminar Research"/></a>
+						<h4><b>X-Plane</b></h4>
+						<p>X-Plane is the premier flight simulator for personal computers and high-fidelity
+						   simulation systems alike. Offering a highly realistic flight model, X-Plane is a
+						   fully-fledged engineering tool for either fixed-wing or rotary aircraft flight
+						   training and analysis. X-Plane 10 is DIS and HLA enabled via Calytrix LVC Game.</p>
+					</li>
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/vbs2.jpg" alt="Virtual Battlespace (VBS2) by Bohemia Interactive Simulations"/></a>
+						<h4><b>VBS2</b></h4>
+						<p>VBS2 is a first-person, virtual environment supporting individual
+						   and collective training. VBS2 merges mainstream game technology with simulation
+						   and training features and a comprehensive content suite to deliever the
+						   most widely deployed virtual military training environment globally.
+						   VBS is DIS and HLA enabled via Calytrix LVC Game.</p>
+					</li>
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/steelbeasts.jpg" alt="Steel Beasts by eSim Games"/></a>
+						<h4><b>Steel Beasts</b></h4>
+						<p>Steel Beasts is a small-unit armored and mechanized combat simulation.
+						   Distinguished from other simulations by a faithful reproduction of tactical
+						   manoeuvres and Fire Control Systems, Steel Beasts provides tactical training
+						   for single-vehicle, platoon and company scenarios. Steel Beasts supports
+						   DIS and HLA via Calytrix LVC Game.</p>
+					</li>
+
+					<!--                                 -->
+					<!-- Constructive Simulation Systems -->
+					<!--                                 -->
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/jsaf.png" alt="Joint Semi-Automated Forces Constructive Simulation"/></a>
+						<h4><b>JSAF</b></h4>
+						<p>Joint Semi Automated Forces (JSAF) is a constructive simulation developed
+						   by the United Stated Joint Forces Command (USJFCOM) with the aim of providing
+						   a high fidelity entity level simulation to support training and experimentation.
+						   JSAF is HLA-enabled natively and includes a DIS bridge.</p>
+					</li>
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/onesaf.jpg" alt="OneSAF Objective System"/></a>
+						<h4><b>OneSAF</b></h4>
+						<p>OneSAF is an entity-level, brigade-and-below constructive simulation system
+						   developed by the US Army. It is designed to support a variery of needs
+						   including training, experimentation, analysis, mission planning and rehersal.
+						   OneSAF is distributed and supports DIS and HLA operation.</p>
+					</li>
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/jcats.jpg" alt="JCATS Constructive Simulation"/></a>
+						<h4><b>JCATS</b></h4>
+						<p>JCATS is an entity-based constructive sim used in command-post level
+						   training and analysis. Like JSAF and OneSAF, users can create and command
+						   semi-automated computer generated forces backed by high-fidelity models.
+						   Developed at Lawrence Livermore National Lab, JCATS is both DIS and HLA enabled.
+						</p>
+					</li>
+
+					<!--                         -->
+					<!-- Commercial Game Engines -->
+					<!--                         -->
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/havok.jpg" alt="Havok Vision Engine by Havok"/></a>
+						<h4><b>Havok Vision</b></h4>
+						<p>Joint Semi Automated Forces (JSAF) is a constructive simulation developed
+						   by the United Stated Joint Forces Command (USJFCOM) with the aim of providing
+						   a high fidelity entity level simulation to support training and experimentation.
+						   JSAF is HLA-enabled natively and includes a DIS bridge.</p>
+					</li>
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/unity.jpg" alt="Unity Engine by Unity"/></a>
+						<h4><b>Unity</b></h4>
+						<p>OneSAF is an entity-level, brigade-and-below constructive simulation system
+						   developed by the US Army. It is designed to support a variery of needs
+						   including training, experimentation, analysis, mission planning and rehersal.
+						   OneSAF is distributed and supports DIS and HLA operation.</p>
+					</li>
+					<li class="span4">
+						<a class="thumbnail" href="#"><img src="images/simsystems/cry.jpg" alt="CryEngine by CryTek"/></a>
+						<h4><b>The CryEngine</b></h4>
+						<p>JCATS (Joint Conflict and Tactical Simulation) is an entity-level constructive
+						   simulation used in command-post level training and analysis. Like JSAF and OneSAF,
+						   users can create and command semi-automated computer generated forces backed by
+						   high-fidelity models. Developed at Lawrence Livermore National Lab, JCATS is
+						   both DIS and HLA enabled.</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<hr style="margin-top:0px"/>
+		
+		<div class="row" style="padding:10px 0 10px 0">
+			<div class="span3">
+				<blockquote>
+					<p>I seeeee you.</p>
+					<small>That big eye-thing in the Hobbit movies</small>
+				</blockquote>
+			</div>
+			<div class="span9">
+				<p><b>You never call anymore</b><br/>
+				   Sadly, unlike the big eye-thing in those movies, we don't. People download
+				   the tools and then they're gone! Do you love it? Hate it? We don't know.
+				   We don't even know who you are! If you won't talk to us, at least let us
+				   talk to you. Sign up to the <a href="#">Announcements mailing list</a>.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- ===================================================================== -->
+	<!--                                Footer                                 -->
+	<!-- ===================================================================== -->
+	<footer>
+		<div class="footer">
+		<div class="container">
+			<div class="row-fluid" style="padding-left:20px;padding-right:20px;">
+				<div class="span2">
+					<p><strong>PROJECT</strong></p>
+					<p>About Portico</p>
+					<p>Developer Team</p>
+					<p>Download Portico</p>
+					<p>Status and Roadmap</p>
+					<p>Get the Source</p>
+					<p>Contribute</p>
+				</div>
+				<div class="span2">
+					<p><strong>FOR USERS</strong></p>
+					<p>Getting Started with Portico</p>
+					<p>Portico and Training Tools</p>
+					<p>Switching to Portico</p>
+					<p>Configuring Portico</p>
+					<p>Troubleshooting</p>
+					<p>Portico FAQ</p>
+				</div>
+				<div class="span2">
+					<p><strong>FOR DEVELOPERS</strong></p>
+					<p>Writing Federates for Portico</p>
+					<p>Writing Java Federates</p>
+					<p>Writing C++ Federates</p>
+					<p>Portico API Status</p>
+					<p>Portico API Documentation</p>
+				</div>
+				<div class="span2">
+					<p><strong>COMMUNITY</strong></p>
+					<p>Announcements</p>
+					<p>Reporting Bugs</p>
+					<p>Community Forums</p>
+					<p>Mailing Lists</p>
+				</div>
+				<div class="span4">
+					<p><strong>COMMERCIAL SUPPORT</strong></p>
+					<p><img src="images/logos/calytrix-logo-icon.jpg" class="img-circle pull-left"/>
+						<address>
+							&nbsp;&nbsp;<strong>Calytrix Technologies, Inc.</strong><br>
+							&nbsp;&nbsp;Suite D, 3171 Beaver-Vu Drive <br/>
+							&nbsp;&nbsp;Beavercreek, OH 45434<br/>
+							&nbsp;&nbsp;<abbr title="Email"><b>E:</b></abbr> sales@calytrix.com<br/>
+							&nbsp;&nbsp;<abbr title="Phone"><b>P:</b></abbr> (321) 206 0628<br/>
+							&nbsp;&nbsp;<abbr title="Fax"><b>F:</b></abbr> (937) 431 3816<br/>
+						</address>
+					</p>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span2">
+					<p><small>&copy; Calytrix Technologies 2013</small></p>
+				</div>
+			</div>
+		</div>
+		</div>
+	</footer>
+
+	<!-- Le javascript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="assets/js/jquery.js"></script>
+	<script src="assets/js/bootstrap-transition.js"></script>
+	<script src="assets/js/bootstrap-alert.js"></script>
+	<script src="assets/js/bootstrap-modal.js"></script>
+	<script src="assets/js/bootstrap-dropdown.js"></script>
+	<script src="assets/js/bootstrap-scrollspy.js"></script>
+	<script src="assets/js/bootstrap-tab.js"></script>
+	<script src="assets/js/bootstrap-tooltip.js"></script>
+	<script src="assets/js/bootstrap-popover.js"></script>
+	<script src="assets/js/bootstrap-button.js"></script>
+	<script src="assets/js/bootstrap-collapse.js"></script>
+	<script src="assets/js/bootstrap-carousel.js"></script>
+	<script src="assets/js/bootstrap-typeahead.js"></script>
+</body>
+</html>
