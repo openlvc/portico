@@ -44,6 +44,7 @@ class Logger
 	//----------------------------------------------------------
 	private:
 		static int globalLevel;
+		static std::ofstream globalRedirect;
 
 	public:
 		/////////////////////////////////////////////////////////////////
@@ -130,6 +131,11 @@ class Logger
 		static void setGlobalLevel( int level );
 		static void setGlobalLevel( std::string level );
 		static int  getGlobalLevel();
+		/*
+		 * Redirection of cout to a file
+		 */
+		static void setRedirect( std::string file );
+
 
 		/* 
 		 * For the sets, this returns "{handle, handle, handle}"

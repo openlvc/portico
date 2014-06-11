@@ -52,7 +52,6 @@ class Runtime
 		Logger *logger;
 		
 		// JNI-related stuff
-		JNIEnv *jnienv;
 		JavaVM *jvm;
 		bool attachedToExisting;
 		
@@ -88,8 +87,9 @@ class Runtime
 	private:
 		void initializeJVM() throw( RTIinternalError );
 		void cacheGlobalHandles() throw( RTIinternalError );
-		void attachToJVM() throw( RTIinternalError );
+		JNIEnv * attachToJVM() throw( RTIinternalError );
 		void detachFromJVM(); /* should not be called currently */
+		jint getJNIVersion();
 
 		/**
 		 * So the Java library can know what library name to use for load back we 

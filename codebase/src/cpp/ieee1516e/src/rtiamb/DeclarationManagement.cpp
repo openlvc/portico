@@ -36,6 +36,9 @@ void PorticoRtiAmbassador::publishObjectClassAttributes( ObjectClassHandle theCl
 	               theClass.toString().c_str(),
 	               Logger::toString(attributes).c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
@@ -67,6 +70,9 @@ void PorticoRtiAmbassador::unpublishObjectClass( ObjectClassHandle theClass )
 {
 	logger->trace( "[Starting] unpublishObjectClass(): class=%ls", theClass.toString().c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 
@@ -96,7 +102,10 @@ void PorticoRtiAmbassador::unpublishObjectClassAttributes( ObjectClassHandle the
 	logger->trace( "[Starting] unpublishObjectClassAttributes(): class=%ls, attributes=%s",
 	               theClass.toString().c_str(),
 	               Logger::toString(attributes).c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
@@ -126,7 +135,10 @@ void PorticoRtiAmbassador::publishInteractionClass( InteractionClassHandle theCl
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] publishInteractionClass(): class=%ls", theClass.toString().c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 
@@ -151,7 +163,10 @@ void PorticoRtiAmbassador::unpublishInteractionClass( InteractionClassHandle the
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] unpublishInteractionClass(): class=%ls", theClass.toString().c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 
@@ -185,6 +200,8 @@ void PorticoRtiAmbassador::subscribeObjectClassAttributes( ObjectClassHandle the
 	                Logger::toString(attributes).c_str(),
 	                active,
 	                updateRate.c_str() );
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -231,6 +248,9 @@ void PorticoRtiAmbassador::unsubscribeObjectClass( ObjectClassHandle theClass )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] unsubscribeObjectClass(): class=%ls", theClass.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -259,6 +279,8 @@ void PorticoRtiAmbassador::unsubscribeObjectClassAttributes( ObjectClassHandle t
 	logger->trace( "[Starting] unsubscribeObjectClassAttributes(): class=%ls, attributes=%s",
 	               theClass.toString().c_str(),
 	               Logger::toString(attributes).c_str() );
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -293,6 +315,8 @@ void PorticoRtiAmbassador::subscribeInteractionClass( InteractionClassHandle the
 	logger->trace( "[Starting] subscribeInteractionClass(): class=%ls, active=%d",
 	               theClass.toString().c_str(),
 	               active );
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
@@ -322,6 +346,9 @@ void PorticoRtiAmbassador::unsubscribeInteractionClass( InteractionClassHandle t
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] unsubscribeInteractionClass(): class=%ls", theClass.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );

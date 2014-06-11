@@ -34,6 +34,9 @@ void PorticoRtiAmbassador::enableTimeRegulation( const LogicalTimeInterval& theL
 {
 	logger->trace( "[Starting] enableTimeRegulation(): lookahead=%ls",
 	               theLookahead.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jdouble jlookahead = JniUtils::fromInterval( theLookahead );
@@ -60,6 +63,9 @@ void PorticoRtiAmbassador::disableTimeRegulation()
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] disableTimeRegulation()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISABLE_TIME_REGULATION );
@@ -81,6 +87,9 @@ void PorticoRtiAmbassador::enableTimeConstrained()
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] enableTimeConstrained()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->ENABLE_TIME_CONSTRAINED );
@@ -99,6 +108,9 @@ void PorticoRtiAmbassador::disableTimeConstrained()
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] disableTimeConstrained()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISABLE_TIME_CONSTRAINED );
@@ -121,7 +133,10 @@ void PorticoRtiAmbassador::timeAdvanceRequest( const LogicalTime& theTime )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] timeAdvanceRequest(): time=%ls", theTime.toString().c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
 
@@ -151,6 +166,9 @@ void PorticoRtiAmbassador::timeAdvanceRequestAvailable( const LogicalTime& theTi
 {
 	logger->trace( "[Starting] timeAdvanceRequestAvailable(): time=%ls",
 	               theTime.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
@@ -182,6 +200,9 @@ void PorticoRtiAmbassador::nextMessageRequest( const LogicalTime& theTime )
 {
 	logger->trace( "[Starting] nextMessageRequest(): time=%ls", theTime.toString().c_str() );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
 
@@ -211,6 +232,9 @@ void PorticoRtiAmbassador::nextMessageRequestAvailable( const LogicalTime& theTi
 {
 	logger->trace( "[Starting] nextMessageRequestAvailable(): time=%ls",
 	               theTime.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
@@ -241,7 +265,10 @@ void PorticoRtiAmbassador::flushQueueRequest( const LogicalTime& theTime )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] flushQueueRequest(): time=%ls", theTime.toString().c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jdouble jtime = JniUtils::fromTime( theTime );
 
@@ -266,6 +293,9 @@ void PorticoRtiAmbassador::enableAsynchronousDelivery()
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] enableAsynchronousDelivery()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->ENABLE_ASYNCHRONOUS_DELIVERY );
@@ -284,6 +314,9 @@ void PorticoRtiAmbassador::disableAsynchronousDelivery()
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] disableAsynchronousDelivery()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISABLE_ASYNCHRONOUS_DELIVERY );
@@ -301,6 +334,9 @@ bool PorticoRtiAmbassador::queryGALT( LogicalTime& theTime )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] queryGALT()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_GALT );
@@ -329,6 +365,9 @@ void PorticoRtiAmbassador::queryLogicalTime( LogicalTime& theTime )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] queryLogicalTime()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_TIME );
@@ -348,6 +387,9 @@ bool PorticoRtiAmbassador::queryLITS( LogicalTime& theTime )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] queryLITS()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_LITS );
@@ -379,6 +421,9 @@ void PorticoRtiAmbassador::modifyLookahead( const LogicalTimeInterval& theLookah
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] modifyLookahead(): lookahead=%ls", theLookahead.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jdouble jlookahead = JniUtils::fromInterval( theLookahead );
@@ -404,6 +449,9 @@ void PorticoRtiAmbassador::queryLookahead( LogicalTimeInterval& interval )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] queryLookahead()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jdouble jtime = jnienv->CallDoubleMethod( javarti->jproxy, javarti->QUERY_LOOKAHEAD );
@@ -426,6 +474,9 @@ void PorticoRtiAmbassador::retract( MessageRetractionHandle theHandle )
 	       RTIinternalError )
 {
 	logger->trace( "[Starting] retract() handle=%ls", theHandle.toString().c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy,
@@ -454,6 +505,9 @@ void PorticoRtiAmbassador::changeAttributeOrderType( ObjectInstanceHandle theObj
 	               theObject.toString().c_str(),
 	               Logger::toString(theAttributes).c_str(),
 	               theType );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -492,6 +546,9 @@ void PorticoRtiAmbassador::changeInteractionOrderType( InteractionClassHandle th
 	logger->trace( "[Starting] changeInteractionOrderType(): theClass=%ls, order=%d",
 	               theClass.toString().c_str(), theType );
 	
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jclassHandle = JniUtils::fromHandle( theClass );
 	jstring jorder = JniUtils::fromOrder( jnienv, theType );

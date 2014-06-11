@@ -64,7 +64,7 @@ long ObjectInstanceHandle::hash() const
 
 VariableLengthData ObjectInstanceHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void ObjectInstanceHandle::encode( VariableLengthData& buffer ) const

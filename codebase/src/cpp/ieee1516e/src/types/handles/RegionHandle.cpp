@@ -64,7 +64,7 @@ long RegionHandle::hash() const
 
 VariableLengthData RegionHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void RegionHandle::encode( VariableLengthData& buffer ) const
