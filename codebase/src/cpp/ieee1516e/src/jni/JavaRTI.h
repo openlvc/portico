@@ -21,6 +21,9 @@
 
 PORTICO1516E_NS_START
 
+// forward declaration of Runtime to resolve circular-dependency
+class Runtime;
+
 /*
  * Where the Runtime class is responsible for managing the lifecycle of the JVM
  * and ensuring that it is instantiated and cleaned up properly for all of the

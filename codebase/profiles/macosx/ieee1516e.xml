@@ -240,14 +240,14 @@
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wall -stdlib=libstdc++"/>
-				<property name="_largs"       value="-stdlib=libstdc++"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wall -stdlib=libstdc++ -mmacosx-version-min=10.6"/>
+				<property name="_largs"       value="-stdlib=libstdc++ -mmacosx-version-min=10.6"/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wall -stdlib=libstdc++"/>
-				<property name="_largs"       value="-stdlib=libstdc++"/>
+				<property name="_cargs"       value="-O0 -fPIC -Wall -stdlib=libstdc++ -mmacosx-version-min=10.6"/>
+				<property name="_largs"       value="-stdlib=libstdc++ -mmacosx-version-min=10.6"/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
 

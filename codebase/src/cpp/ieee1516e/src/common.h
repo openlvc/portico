@@ -105,6 +105,7 @@
     #include <stdarg.h>
     #include <ctype.h>
 	#include <float.h>
+	#include <string.h>
 #else
     #include <stdarg.h>
     #include <ctype.h>
@@ -117,13 +118,13 @@
 #endif
 
 // standard library types
-using namespace std;
 #include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <fstream>
+using namespace std;
 
 //////////////////////////////////////////
 ////////// HLA Standard Headers //////////

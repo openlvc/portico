@@ -26,7 +26,7 @@ std::auto_ptr<LogicalTimeFactory> PorticoRtiAmbassador::getTimeFactory() const
            RTIinternalError )
 {
 	// TODO fix this so that it returns the stored factory, not just a hard coded one
-	return auto_ptr<LogicalTimeFactory>( new HLAfloat64TimeFactory() );
+	return std::auto_ptr<LogicalTimeFactory>( new HLAfloat64TimeFactory() );
 }
 
 // Decode handles

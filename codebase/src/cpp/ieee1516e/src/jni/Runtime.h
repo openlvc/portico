@@ -21,6 +21,9 @@
 
 PORTICO1516E_NS_START
 
+// forward declaration of JavaRTI to resolve circular-dependency
+class JavaRTI;
+
 /*
  * The process of setting up and wiring into the JVM is a complicated one
  * that requires obtaining a bunch of references to classes and methods on
