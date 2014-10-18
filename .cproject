@@ -3,9 +3,6 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.macosx.so.debug.1509176571">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.macosx.so.debug.1509176571" moduleId="org.eclipse.cdt.core.settings" name="cpp-hla13-macosx">
-				<macros>
-					<stringMacro name="MACOSX_JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/Home"/>
-				</macros>
 				<externalSettings>
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
@@ -25,7 +22,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="dylib" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.macosx.so.debug.1509176571" name="cpp-hla13-macosx" parent="cdt.managedbuild.config.macosx.so.debug">
+				<configuration artifactExtension="dylib" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.macosx.so.debug.1509176571" name="cpp-hla13-macosx" parent="cdt.managedbuild.config.macosx.so.debug">
 					<folderInfo id="cdt.managedbuild.config.macosx.so.debug.1509176571." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.so.debug.807052335" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.so.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.macosx.so.debug.225133535" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.so.debug"/>
@@ -46,6 +43,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jsig"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cppunit"/>
 								</option>
+								<option id="macosx.cpp.link.option.flags.46649063" superClass="macosx.cpp.link.option.flags" value="-stdlib=libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.732398003" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -73,6 +71,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/src/cpp/hla13/test}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.1920500347" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.1330742298" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -stdlib=libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1588409369" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug.2004940265" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug">
@@ -107,7 +107,7 @@
 		<cconfiguration id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815" moduleId="org.eclipse.cdt.core.settings" name="cpp-ieee1516e-macosx">
 				<macros>
-					<stringMacro name="MACOSX_JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/Home"/>
+					<stringMacro name="MACOSX_JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home"/>
 				</macros>
 				<externalSettings>
 					<externalSetting>
@@ -119,46 +119,47 @@
 				</externalSettings>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="dylib" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815" name="cpp-ieee1516e-macosx" parent="cdt.managedbuild.config.macosx.so.debug">
+				<configuration artifactExtension="dylib" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.sharedLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.sharedLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815" name="cpp-ieee1516e-macosx" parent="cdt.managedbuild.config.macosx.so.debug" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.so.debug.1109353303" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.so.debug">
-							<targetPlatform id="cdt.managedbuild.target.gnu.platform.macosx.so.debug.596369714" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.so.debug"/>
-							<builder buildPath="${workspace_loc:/portico}/Debug" id="cdt.managedbuild.target.gnu.builder.macosx.so.debug.344035393" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.so.debug"/>
+						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.macosx.so.debug.1109353303" name="MacOSX GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.macosx.so.debug" superClass="cdt.managedbuild.toolchain.gnu.macosx.so.debug">
+							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.so.debug.596369714" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.macosx.so.debug"/>
+							<builder buildPath="${workspace_loc:/portico}/cpp-ieee1516e-macosx" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.target.gnu.builder.base.2094029475" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.so.debug.1033609474" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.so.debug">
 								<option defaultValue="true" id="macosx.c.link.macosx.so.debug.option.nostart.955460793" name="Do not use standard start files (-nostartfiles)" superClass="macosx.c.link.macosx.so.debug.option.nostart" valueType="boolean"/>
 								<option defaultValue="true" id="macosx.c.link.macosx.so.debug.option.nodeflibs.695940623" name="Do not use default libraries (-nodefaultlibs)" superClass="macosx.c.link.macosx.so.debug.option.nodeflibs" valueType="boolean"/>
 								<option defaultValue="true" id="macosx.c.link.macosx.so.debug.option.shared.20051137" name="Shared (-dynamiclib)" superClass="macosx.c.link.macosx.so.debug.option.shared" valueType="boolean"/>
 							</tool>
-							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.so.debug.481772850" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.so.debug">
+							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.so.debug.481772850" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.so.debug">
 								<option defaultValue="true" id="macosx.cpp.link.macosx.so.debug.option.shared.357244613" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.macosx.so.debug.option.shared" valueType="boolean"/>
 								<option id="macosx.cpp.link.option.paths.261207353" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${MACOSX_JAVA_HOME}/jre/lib/server&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/macosx}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.libs.559265998" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jvm"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jsig"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cppunit"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jvm"/>
 								</option>
+								<option id="macosx.cpp.link.option.flags.1521313495" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-stdlib=libstdc++ -mmacosx-version-min=10.6" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1945165910" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug.1224579684" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug">
+							<tool command="as" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug.1224579684" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.so.debug">
 								<option id="gnu.both.asm.option.include.paths.1283719151" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1903894576" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.522104322" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.so.debug.648545977" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.so.debug">
+							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.so.debug.648545977" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.so.debug">
 								<option id="gnu.cpp.compiler.macosx.so.debug.option.optimization.level.71940610" name="Optimization Level" superClass="gnu.cpp.compiler.macosx.so.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.macosx.so.debug.option.debugging.level.1885978522" name="Debug Level" superClass="gnu.cpp.compiler.macosx.so.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.50395901" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
@@ -167,15 +168,18 @@
 									<listOptionValue builtIn="false" value="DEBUG"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.461256851" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${MACOSX_JAVA_HOME}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MACOSX_JAVA_HOME}/include/darwin&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/src/cpp/ieee1516e/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/src/cpp/ieee1516e/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MACOSX_JAVA_HOME}/include/darwin&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MACOSX_JAVA_HOME}/include&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.1181192558" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.c++98" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.645574303" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-stdlib=libstdc++ -mmacosx-version-min=10.6 -c" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.pic.1848244321" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.70161599" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug.1686292092" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug">
+							<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug.1686292092" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.macosx.so.debug.option.optimization.level.1370991671" name="Optimization Level" superClass="gnu.c.compiler.macosx.so.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.macosx.so.debug.option.debugging.level.1603499784" name="Debug Level" superClass="gnu.c.compiler.macosx.so.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1799287128" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
@@ -190,6 +194,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/src/cpp/ieee1516e/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
 								</option>
+								<option id="gnu.c.compiler.option.dialect.std.468566416" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1739751614" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 						</toolChain>
@@ -207,16 +212,18 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/portico"/>
-		</configuration>
+		<configuration configurationName="cpp-hla13-macosx"/>
 		<configuration configurationName="ieee1516e (Mac OS X)"/>
-		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/portico"/>
-		</configuration>
 		<configuration configurationName="hla13 (Mac OS X)">
 			<resource resourceType="PROJECT" workspacePath="/portico"/>
 		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/portico"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/portico"/>
+		</configuration>
+		<configuration configurationName="cpp-ieee1516e-macosx"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">

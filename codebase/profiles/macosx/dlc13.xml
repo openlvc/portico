@@ -70,8 +70,8 @@
 		<cpp-unix outfile="rti1364d"
 		          workdir="${dlc13.build.dir}"
 		          arch="amd64"
-		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		          linkerArgs="-dynamiclib">
+		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor -stdlib=libstdc++"
+		          linkerArgs="-dynamiclib -stdlib=libstdc++">
 			<fileset dir="${dlc13.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${dlc13.include.dir}"/>
 			<includepath path="${dlc13.src.dir}"/>
