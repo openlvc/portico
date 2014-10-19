@@ -78,7 +78,7 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall"
+		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings"
 		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
@@ -112,6 +112,7 @@
 		<echo>Copied testing resources to ${test13.complete.dir}</echo>
 
 		<!-- 2. run the actual test application -->
+		<echo message="CppUnit directory is: ${cppunit.lib}"/>
 		<exec dir="${test13.complete.dir}"
 		      executable="${test13.complete.dir}/test13"
 		      failonerror="false"
@@ -277,13 +278,13 @@
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall -Wno-write-strings"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wno-deprecated -Wall"/>
+				<property name="_cargs"       value="-O0 -fPIC -Wno-deprecated -Wall -Wno-write-string"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
