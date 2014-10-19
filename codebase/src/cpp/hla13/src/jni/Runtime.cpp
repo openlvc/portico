@@ -84,7 +84,7 @@ JavaRTI* Runtime::newRtiAmbassador() throw( HLA::RTIinternalError )
 	logger->info( "newRtiAmbassador: creating new JavaRTI" );
 
 	// create the instance
-	JavaRTI *newRTI = new JavaRTI();
+	JavaRTI *newRTI = new JavaRTI( jvm );
 
 	// store it in the map of active instances
 	int id = newRTI->getId();

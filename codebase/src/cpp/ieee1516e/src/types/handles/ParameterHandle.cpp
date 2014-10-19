@@ -64,7 +64,7 @@ long ParameterHandle::hash() const
 
 VariableLengthData ParameterHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void ParameterHandle::encode( VariableLengthData& buffer ) const

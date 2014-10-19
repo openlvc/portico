@@ -49,13 +49,13 @@ class JavaRTI
 		jclass  jproxyClass;
 		jclass  jregionClass;
 		jobject jproxy;
-		JNIEnv  *jnienv;
 
 		HLA::FederateAmbassador *fedamb; // the user FederateAmbassador implementation
 
 		// Method ID Cache Variables are listed below //
 
 	private:
+		JavaVM *jvm;
 		// exception information
 		char *eName;
 		char *eReason;
@@ -64,7 +64,7 @@ class JavaRTI
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		JavaRTI();
+		JavaRTI( JavaVM *jvm );
 		virtual ~JavaRTI();
 
 	//----------------------------------------------------------
@@ -93,10 +93,13 @@ class JavaRTI
 
 		long currentTimeMillis();
 		
+		// Attach current thread to JVM if it isn't, return a usable JNIEnv
+		JNIEnv* getJniEnvironment() throw( HLA::RTIinternalError );
+
 		// methods to convert to HLA types from Java types
 		HLA::AttributeHandleSet* convertToAHS( jintArray array );
 	private:
-		void attachToJVM() throw( HLA::RTIinternalError );
+		JNIEnv* attachToJVM() throw( HLA::RTIinternalError );
 		void initialize() throw( HLA::RTIinternalError );
 		void detachFromJVM(); /* should not be called currently */
 		void cacheMethodIds() throw( HLA::RTIinternalError );

@@ -33,6 +33,9 @@ void PorticoRtiAmbassador::connect( FederateAmbassador& federateAmbassador,
 		   RTIinternalError )
 {
 	logger->trace( "[Starting] connect(): callback=%d", theCallbackModel );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jstring jmodel = JniUtils::fromCallbackModel( jnienv, theCallbackModel );
@@ -59,7 +62,10 @@ void PorticoRtiAmbassador::disconnect() throw( FederateIsExecutionMember,
                                                RTIinternalError )
 {
 	logger->trace( "[Starting] disconnect()" );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->DISCONNECT );
 	// clean up and run the exception check
@@ -84,6 +90,9 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 	               federationName.c_str(),
 	               fomModule.c_str(),
 	               timeImplementation.c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jstring jfederation = JniUtils::fromWideString( jnienv, federationName );
@@ -121,6 +130,9 @@ void PorticoRtiAmbassador::createFederationExecution( const std::wstring& federa
 	               federationName.c_str(),
 	               Logger::toWString(fomModules).c_str(),
 	               timeImplementation.c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jstring jfederation = JniUtils::fromWideString( jnienv, federationName );
@@ -165,6 +177,9 @@ void PorticoRtiAmbassador::createFederationExecutionWithMIM(
 	               mimModule.c_str(),
 	               timeImplementation.c_str() );
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jfederation = JniUtils::fromWideString( jnienv, federationName );
 	jobjectArray jfoms = JniUtils::fromVector( jnienv, fomModules );
@@ -197,7 +212,10 @@ void PorticoRtiAmbassador::destroyFederationExecution( const std::wstring& feder
 		   RTIinternalError )
 {
 	logger->trace( "[Starting] destroyFederationExecution(): name=%ls", federationName.c_str() );
-	
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jstring jfederation = JniUtils::fromWideString( jnienv, federationName );
 	
@@ -217,6 +235,9 @@ void PorticoRtiAmbassador::destroyFederationExecution( const std::wstring& feder
 void PorticoRtiAmbassador::listFederationExecutions() throw( NotConnected, RTIinternalError )
 {
 	logger->trace( "[Starting] listFederationExecutions()" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->LIST_FEDERATIONS );
@@ -246,6 +267,9 @@ FederateHandle PorticoRtiAmbassador::joinFederationExecution(
 	logger->trace( "[Starting] joinFederationExecution(): federateType=%ls, federation=%ls",
 	               federateType.c_str(),
 	               federationName.c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jstring jtype = JniUtils::fromWideString( jnienv, federateType );
@@ -292,6 +316,9 @@ FederateHandle PorticoRtiAmbassador::joinFederationExecution(
 	logger->trace( "[Starting] joinFederationExecution(): federateType=%ls, federation=%ls",
 	               federateType.c_str(),
 	               federationName.c_str() );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jstring jname = JniUtils::fromWideString( jnienv, federateName );
@@ -331,6 +358,9 @@ void PorticoRtiAmbassador::resignFederationExecution( ResignAction resignAction 
 		   RTIinternalError )
 {
 	logger->trace( "[Starting] resignFederationExecution(): action=%d", resignAction );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 	
 	// get java versions of the parameters
 	jstring jaction = JniUtils::fromResignAction( jnienv, resignAction );

@@ -34,13 +34,14 @@ void RTI::RTIambassador::unconditionalAttributeOwnershipDivestiture(
 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNCONDITIONAL_DIVEST,
-	                                  theObject,
-	                                  jAttSet );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNCONDITIONAL_DIVEST,
+	                     theObject,
+	                     jAttSet );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 }
 
@@ -64,15 +65,16 @@ void RTI::RTIambassador::negotiatedAttributeOwnershipDivestiture(
 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->NEGOTIATED_DIVEST,
-	                                  theObject,
-	                                  jAttSet,
-	                                  jTag );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->NEGOTIATED_DIVEST,
+	                     theObject,
+	                     jAttSet,
+	                     jTag );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
-	privateRefs->env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 }
 
@@ -97,15 +99,16 @@ RTI::RTIambassador::attributeOwnershipAcquisition( RTI::ObjectHandle theObject,
 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ATTRIBUTE_ACQUISITION,
-	                                  theObject,
-	                                  jAttSet,
-	                                  jTag );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ATTRIBUTE_ACQUISITION,
+	                     theObject,
+	                     jAttSet,
+	                     jTag );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
-	privateRefs->env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 }
 
@@ -127,15 +130,16 @@ void RTI::RTIambassador::attributeOwnershipAcquisitionIfAvailable(
 {
 	// get java versions of the parameters
 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ATTRIBUTE_ACQUISITION_AVAILABLE,
-	                                  theObject,
-	                                  jAttSet );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ATTRIBUTE_ACQUISITION_AVAILABLE,
+	                     theObject,
+	                     jAttSet );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 }
 
@@ -157,14 +161,15 @@ RTI::AttributeHandleSet* RTI::RTIambassador::attributeOwnershipReleaseResponse(
 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
 
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jobject ret = 
-		privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                        privateRefs->rti->ATTRIBUTE_OWNERSHIP_RELEASE_RESPOSE,
-	                                        theObject,
-	                                        jAttSet );
+		env->CallObjectMethod( privateRefs->rti->jproxy,
+	                           privateRefs->rti->ATTRIBUTE_OWNERSHIP_RELEASE_RESPOSE,
+	                           theObject,
+	                           jAttSet );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 	
 	return privateRefs->rti->convertToAHS( (jintArray)ret );
@@ -188,13 +193,14 @@ void RTI::RTIambassador::cancelNegotiatedAttributeOwnershipDivestiture(
 	jintArray jAttSet = privateRefs->rti->convertAHS( theAttributes );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CANCEL_NEGOTIATED_DIVEST,
-	                                  theObject,
-	                                  jAttSet );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CANCEL_NEGOTIATED_DIVEST,
+	                     theObject,
+	                     jAttSet );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 }
 
@@ -216,13 +222,14 @@ RTI::RTIambassador::cancelAttributeOwnershipAcquisition( RTI::ObjectHandle theOb
 	jintArray jAttSet = privateRefs->rti->convertAHS( attributes );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CANCEL_OWNERSHIP_ACQUISITION,
-	                                  theObject,
-	                                  jAttSet );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CANCEL_OWNERSHIP_ACQUISITION,
+	                     theObject,
+	                     jAttSet );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 }
 
@@ -238,10 +245,11 @@ void RTI::RTIambassador::queryAttributeOwnership( RTI::ObjectHandle theObject,
 	       RTI::RTIinternalError )
 {
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->QUERY_ATTRIBUTE_OWNERSHIP,
-	                                  theObject,
-	                                  theAttribute );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->QUERY_ATTRIBUTE_OWNERSHIP,
+	                     theObject,
+	                     theAttribute );
 	
 	// run exception check
 	privateRefs->rti->exceptionCheck();
@@ -258,12 +266,14 @@ RTI::Boolean RTI::RTIambassador::isAttributeOwnedByFederate( RTI::ObjectHandle t
 	       RTI::RestoreInProgress,
 	       RTI::RTIinternalError )
 {
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// call the method
 	jboolean retval =
-		privateRefs->env->CallBooleanMethod( privateRefs->rti->jproxy,
-	                                         privateRefs->rti->IS_ATTRIBUTE_OWNED_BY_FEDERATE,
-	                                         theObject,
-	                                         theAttribute );
+		env->CallBooleanMethod( privateRefs->rti->jproxy,
+	                            privateRefs->rti->IS_ATTRIBUTE_OWNED_BY_FEDERATE,
+	                            theObject,
+	                            theAttribute );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();

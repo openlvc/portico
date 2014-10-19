@@ -78,7 +78,7 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall -stdlib=libstdc++"
+		         compilerArgs="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"
 		         linkerArgs="-stdlib=libstdc++">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
@@ -283,13 +283,13 @@
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wall -stdlib=libstdc++"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
 				<property name="_largs"       value=" -stdlib=libstdc++"/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wall -stdlib=libstdc++"/>
+				<property name="_cargs"       value="-O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
 				<property name="_largs"       value=" -stdlib=libstdc++"/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>

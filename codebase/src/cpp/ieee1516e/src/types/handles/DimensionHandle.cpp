@@ -64,7 +64,7 @@ long DimensionHandle::hash() const
 
 VariableLengthData DimensionHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void DimensionHandle::encode( VariableLengthData& buffer ) const

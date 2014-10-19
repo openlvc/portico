@@ -18,6 +18,7 @@
 PORTICO1516E_NS_START
 
 int Logger::globalLevel = Logger::LEVEL_UNSET;
+std::ofstream Logger::globalRedirect;
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS
@@ -310,6 +311,16 @@ void Logger::setGlobalLevel( std::string level )
 int Logger::getGlobalLevel()
 {
 	return Logger::globalLevel;
+}
+
+void Logger::setRedirect( std::string file )
+{
+	if(globalRedirect.is_open())
+	{
+		globalRedirect.close();
+	}
+	globalRedirect.open(file.c_str());
+	std::cout.rdbuf(globalRedirect.rdbuf());
 }
 
 ////////////////////////////////////////////////////////////////////////////

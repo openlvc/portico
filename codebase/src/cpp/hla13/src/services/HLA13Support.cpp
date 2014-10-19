@@ -29,17 +29,18 @@ RTI::ObjectClassHandle RTI::RTIambassador::getObjectClassHandle( const char *the
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getObjectClassHandle(): className=%s", theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint classHandle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                                    privateRefs->rti->GET_OBJECT_CLASS_HANDLE,
-	                                                    jname );
+	jint classHandle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                       privateRefs->rti->GET_OBJECT_CLASS_HANDLE,
+	                                       jname );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getObjectClassHandle(): className=%s (return: %d)",
@@ -57,12 +58,13 @@ char* RTI::RTIambassador::getObjectClassName( RTI::ObjectClassHandle theHandle )
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getObjectClassName(): classHandle=%d", theHandle );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// call the method
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_OBJECT_CLASS_NAME,
-	                                                 theHandle );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_OBJECT_CLASS_NAME,
+	                                    theHandle );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -86,16 +88,17 @@ RTI::AttributeHandle RTI::RTIambassador::getAttributeHandle( const char *theName
 	               theName, whichClass );
 	
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_ATTRIBUTE_HANDLE,
-	                                               jname,
-	                                               whichClass );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_ATTRIBUTE_HANDLE,
+	                                  jname,
+	                                  whichClass );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getAttributeHandle(): attribute=%s, whichClass=%d (return: %d)",
@@ -118,11 +121,12 @@ char* RTI::RTIambassador::getAttributeName( RTI::AttributeHandle theHandle,
 	               theHandle, whichClass );
 	
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_ATTRIBUTE_NAME,
-	                                                 theHandle,
-	                                                 whichClass );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_ATTRIBUTE_NAME,
+	                                    theHandle,
+	                                    whichClass );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -141,17 +145,18 @@ RTI::InteractionClassHandle RTI::RTIambassador::getInteractionClassHandle( const
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getInteractionClassHandle(): className=%s", theName );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_INTERACTION_CLASS_HANDLE,
-	                                               jname );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_INTERACTION_CLASS_HANDLE,
+	                                  jname );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getInteractionClassHandle(): className=%s (return: %d)",
@@ -169,12 +174,13 @@ char* RTI::RTIambassador::getInteractionClassName( RTI::InteractionClassHandle t
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getInteractionClassName(): handle=%d", theHandle );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// call the method
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_INTERACTION_CLASS_NAME,
-	                                                 theHandle );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_INTERACTION_CLASS_NAME,
+	                                    theHandle );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -199,16 +205,17 @@ RTI::RTIambassador::getParameterHandle( const char *theName,
 	               theName, whichClass );
 	
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_PARAMETER_HANDLE,
-	                                               jname,
-	                                               whichClass );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_PARAMETER_HANDLE,
+	                                  jname,
+	                                  whichClass );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getParameterHandle(): parameterName=%s, whichClass=%d (return: %d)", 
@@ -231,11 +238,12 @@ char* RTI::RTIambassador::getParameterName( RTI::ParameterHandle theHandle,
 	               theHandle, whichClass );
 	
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_PARAMETER_NAME,
-	                                                 theHandle,
-	                                                 whichClass );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_PARAMETER_NAME,
+	                                    theHandle,
+	                                    whichClass );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -254,17 +262,18 @@ RTI::ObjectHandle RTI::RTIambassador::getObjectInstanceHandle( const char *theNa
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getObjectInstanceHandle(): objectName=%s", theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_OBJECT_INSTANCE_HANDLE,
-	                                               jname );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_OBJECT_INSTANCE_HANDLE,
+	                                  jname );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getObjectInstanceHandle(): objectName=%s (return: %d)",
@@ -282,12 +291,13 @@ char* RTI::RTIambassador::getObjectInstanceName( RTI::ObjectHandle theHandle )
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getObjectInstanceName(): objectHandle=%d", theHandle );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 
 	// call the method
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_OBJECT_INSTANCE_NAME,
-	                                                 theHandle );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_OBJECT_INSTANCE_NAME,
+	                                    theHandle );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -306,17 +316,18 @@ RTI::SpaceHandle RTI::RTIambassador::getRoutingSpaceHandle( const char *theName 
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] getRoutingSpaceHandle(): spaceName=%s", theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_ROUTING_SPACE_HANDLE,
-	                                               jname );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_ROUTING_SPACE_HANDLE,
+	                                  jname );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getRoutingSpaceHandle(): spaceName=%s (return: %d)",\
@@ -336,10 +347,11 @@ char* RTI::RTIambassador::getRoutingSpaceName( RTI::SpaceHandle theHandle )
 	logger->trace( "[Starting] getRoutingSpaceName(): spaceHandle=%d", theHandle );
 	
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_ROUTING_SPACE_NAME,
-	                                                 theHandle );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_ROUTING_SPACE_NAME,
+	                                    theHandle );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -363,16 +375,17 @@ RTI::DimensionHandle RTI::RTIambassador::getDimensionHandle( const char *theName
 	               theName, whichSpace );
 
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_DIMENSION_HANDLE,
-	                                               jname,
-	                                               whichSpace );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_DIMENSION_HANDLE,
+	                                  jname,
+	                                  whichSpace );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getDimensionHandle(): dimensionName=%s, whichSpace=%d (return: %d)",
@@ -395,11 +408,12 @@ char* RTI::RTIambassador::getDimensionName( RTI::DimensionHandle theHandle,
 	               theHandle, whichSpace );
 
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_DIMENSION_NAME,
-	                                                 theHandle,
-	                                                 whichSpace );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_DIMENSION_NAME,
+	                                    theHandle,
+	                                    whichSpace );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -424,10 +438,11 @@ RTI::RTIambassador::getAttributeRoutingSpaceHandle( RTI::AttributeHandle theHand
 	               theHandle, whichClass );
 	
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_ATTRIBUTE_ROUTING_SPACE_HANDLE,
-	                                               theHandle,
-	                                               whichClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_ATTRIBUTE_ROUTING_SPACE_HANDLE,
+	                                  theHandle,
+	                                  whichClass );
 
 	// clean up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -449,9 +464,10 @@ RTI::ObjectClassHandle RTI::RTIambassador::getObjectClass( RTI::ObjectHandle the
 	logger->trace( "[Starting] getObjectClass(): objectHandle=%d", theObject );
 	
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_OBJECT_CLASS,
-	                                               theObject );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_OBJECT_CLASS,
+	                                  theObject );
 
 	// clean up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -473,9 +489,10 @@ RTI::RTIambassador::getInteractionRoutingSpaceHandle( RTI::InteractionClassHandl
 	logger->trace( "[Starting] getInteractionRoutingSpaceHandle(): classHandle=%d", theHandle );
 	
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_INTERACTION_ROUTING_SPACE_HANDLE,
-	                                               theHandle );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_INTERACTION_ROUTING_SPACE_HANDLE,
+	                                  theHandle );
 
 	// clean up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -497,15 +514,16 @@ RTI::TransportationHandle RTI::RTIambassador::getTransportationHandle( const cha
 	logger->trace( "[Starting] getTransportationHandle(): transportName=%s", theName );
 	
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_TRANSPORTATION_HANDLE,
-	                                               jname );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_TRANSPORTATION_HANDLE,
+	                                  jname );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getTransportationHandle(): transportName=%s (return: %d)",
@@ -525,10 +543,11 @@ char* RTI::RTIambassador::getTransportationName( RTI::TransportationHandle theHa
 	logger->trace( "[Starting] getTransportationName(): transportHandle=%d", theHandle );
 	
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_TRANSPORTATION_NAME,
-	                                                 theHandle );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_TRANSPORTATION_NAME,
+	                                    theHandle );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -549,15 +568,16 @@ RTI::OrderingHandle RTI::RTIambassador::getOrderingHandle( const char *theName )
 	logger->trace( "[Starting] getOrderingHandle(): name=%s", theName );
 	
 	// get java versions of the parameters
-	jstring jname = privateRefs->env->NewStringUTF( theName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jname = env->NewStringUTF( theName );
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->GET_ORDERING_HANDLE,
-	                                               jname );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->GET_ORDERING_HANDLE,
+	                                  jname );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jname );
+	env->DeleteLocalRef( jname );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] getOrderingHandle(): name=%s (return: %d)", theName, handle );
@@ -576,10 +596,11 @@ char* RTI::RTIambassador::getOrderingName( RTI::OrderingHandle theHandle )
 	logger->trace( "[Starting] getOrderingName(): orderHandle=%d", theHandle );
 	
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jstring name =
-		(jstring)privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                 privateRefs->rti->GET_ORDERING_NAME,
-	                                                 theHandle );
+		(jstring)env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                    privateRefs->rti->GET_ORDERING_NAME,
+	                                    theHandle );
 	
 	// check up and run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -600,8 +621,9 @@ void RTI::RTIambassador::enableClassRelevanceAdvisorySwitch()
 	logger->trace( "[Starting] enableClassRelevanceAdvisorySwitch()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -620,8 +642,9 @@ void RTI::RTIambassador::disableClassRelevanceAdvisorySwitch()
 	logger->trace( "[Starting] disableClassRelevanceAdvisorySwitch()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_CLASS_RELEVANCE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -640,8 +663,9 @@ void RTI::RTIambassador::enableAttributeRelevanceAdvisorySwitch()
 	logger->trace( "[Starting] enableAttributeRelevanceAdvisorySwitch()" );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -660,8 +684,9 @@ void RTI::RTIambassador::disableAttributeRelevanceAdvisorySwitch()
 	logger->trace( "[Starting] disableAttributeRelevanceAdvisorySwitch()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_ATTRIBUTE_RELEVANCE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -680,8 +705,9 @@ void RTI::RTIambassador::enableAttributeScopeAdvisorySwitch()
 	logger->trace( "[Starting] enableAttributeScopeAdvisorySwitch()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -700,8 +726,9 @@ void RTI::RTIambassador::disableAttributeScopeAdvisorySwitch()
 	logger->trace( "[Starting] disableAttributeScopeAdvisorySwitch()" );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_ATTRIBUTE_SCOPE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -720,8 +747,9 @@ void RTI::RTIambassador::enableInteractionRelevanceAdvisorySwitch()
 	logger->trace( "[Starting] enableInteractionRelevanceAdvisorySwitch()" );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -740,8 +768,9 @@ void RTI::RTIambassador::disableInteractionRelevanceAdvisorySwitch()
 	logger->trace( "[Starting] disableInteractionRelevanceAdvisorySwitch()" );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_INTERACTION_RELEVANCE_ADVISORY_SWITCH );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -757,14 +786,9 @@ RTI::Boolean RTI::RTIambassador::tick()
 {
 	logger->noisy( "[Starting] tick()" );
 	
-	// fix: PORT-621: attach the current thread
-	JNIEnv *env = 0;
-	Runtime::getRuntime()->jvm->AttachCurrentThread( (void**)&env, NULL );
-	if( env == 0 )
-		throw new RTI::RTIinternalError( "couldn't attach to jvm in tick()" );
-	
 	// call the method
-	//privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	//env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK );
 	env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->TICK );
 	
 	// run the exception check
@@ -782,13 +806,8 @@ RTI::Boolean RTI::RTIambassador::tick( RTI::TickTime min, RTI::TickTime max )
 {
 	logger->noisy( "[Starting] tick(min,max)" );
 
-	// fix: PORT-621: attach the current thread
-	JNIEnv *env = 0;
-	Runtime::getRuntime()->jvm->AttachCurrentThread( (void**)&env, NULL );
-	if( env == 0 )
-		throw new RTI::RTIinternalError( "couldn't attach to jvm in tick()" );
-
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jboolean result = env->CallBooleanMethod( privateRefs->rti->jproxy,
 	                                          privateRefs->rti->TICK_WITH_TIME,
 	                                          min,
