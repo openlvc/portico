@@ -35,13 +35,13 @@ Region::Region( portico13::JavaRTI *rti, jobject regionProxy )
 {
 	this->rti = rti;
 	// create a global reference for the region proxy so that we can keep a hold of it
-	this->regionProxy = rti->jnienv->NewGlobalRef( regionProxy );
+	this->regionProxy = rti->getJniEnvironment()->NewGlobalRef( regionProxy );
 }
 
 Region::~Region()
 {
 	// release the global reference to the proxy
-	rti->jnienv->DeleteGlobalRef( this->regionProxy );
+	rti->getJniEnvironment()->DeleteGlobalRef( this->regionProxy );
 }
 
 //----------------------------------------------------------
@@ -63,10 +63,10 @@ HLA::ULong Region::getRangeLowerBound( HLA::ExtentIndex theExtent,
 	throw( HLA::ArrayIndexOutOfBounds )
 {
 	// call the method
-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
-	                                            rti->REGION_GET_RANGE_LOWER_BOUND,
-	                                            theExtent,
-	                                            theDimension );
+	jlong retval = rti->getJniEnvironment()->CallLongMethod( regionProxy,
+	                                                         rti->REGION_GET_RANGE_LOWER_BOUND,
+	                                                         theExtent,
+	                                                         theDimension );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -78,10 +78,10 @@ HLA::ULong Region::getRangeUpperBound( HLA::ExtentIndex theExtent,
 	const throw( HLA::ArrayIndexOutOfBounds )
 {
 	// call the method
-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
-	                                            rti->REGION_GET_RANGE_UPPER_BOUND,
-	                                            theExtent,
-	                                            theDimension );
+	jlong retval = rti->getJniEnvironment()->CallLongMethod( regionProxy,
+	                                                         rti->REGION_GET_RANGE_UPPER_BOUND,
+	                                                         theExtent,
+	                                                         theDimension );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -94,11 +94,11 @@ void Region::setRangeLowerBound( HLA::ExtentIndex extent,
 	throw( HLA::ArrayIndexOutOfBounds )
 {
 	// call the method
-	rti->jnienv->CallVoidMethod( regionProxy,
-	                             rti->REGION_SET_RANGE_LOWER_BOUND,
-	                             extent,
-	                             dimension,
-	                             (jlong)bound );
+	rti->getJniEnvironment()->CallVoidMethod( regionProxy,
+	                                          rti->REGION_SET_RANGE_LOWER_BOUND,
+	                                          extent,
+	                                          dimension,
+	                                          (jlong)bound );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -110,11 +110,11 @@ void Region::setRangeUpperBound( HLA::ExtentIndex extent,
 	throw( HLA::ArrayIndexOutOfBounds )
 {
 	// call the method
-	rti->jnienv->CallVoidMethod( regionProxy,
-	                             rti->REGION_SET_RANGE_UPPER_BOUND,
-	                             extent,
-	                             dimension,
-	                             (jlong)bound );
+	rti->getJniEnvironment()->CallVoidMethod( regionProxy,
+	                                          rti->REGION_SET_RANGE_UPPER_BOUND,
+	                                          extent,
+	                                          dimension,
+	                                          (jlong)bound );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -123,7 +123,7 @@ void Region::setRangeUpperBound( HLA::ExtentIndex extent,
 HLA::SpaceHandle Region::getSpaceHandle() const throw ()
 {
 	// call the method
-	jint retval = rti->jnienv->CallIntMethod( regionProxy, rti->REGION_GET_SPACE_HANDLE );
+	jint retval = rti->getJniEnvironment()->CallIntMethod( regionProxy, rti->REGION_GET_SPACE_HANDLE );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -133,7 +133,7 @@ HLA::SpaceHandle Region::getSpaceHandle() const throw ()
 HLA::ULong Region::getNumberOfExtents() const throw ()
 {
 	// call the method
-	jlong retval = rti->jnienv->CallLongMethod( regionProxy, rti->REGION_GET_NUMBER_OF_EXTENTS );
+	jlong retval = rti->getJniEnvironment()->CallLongMethod( regionProxy, rti->REGION_GET_NUMBER_OF_EXTENTS );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -145,10 +145,10 @@ HLA::ULong Region::getRangeLowerBoundNotificationLimit( HLA::ExtentIndex theExte
 	const throw( HLA::ArrayIndexOutOfBounds )
 {
 	// call the method
-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
-	                                            rti->REGION_GET_RANGE_LOWER_BOUND_NOTIFICATION_LIMIT,
-	                                            theExtent,
-	                                            theDimension );
+	jlong retval = rti->getJniEnvironment()->CallLongMethod( regionProxy,
+	                                                         rti->REGION_GET_RANGE_LOWER_BOUND_NOTIFICATION_LIMIT,
+	                                                         theExtent,
+	                                                         theDimension );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();
@@ -160,10 +160,10 @@ HLA::ULong Region::getRangeUpperBoundNotificationLimit( HLA::ExtentIndex theExte
 	const throw( HLA::ArrayIndexOutOfBounds )
 {
 	// call the method
-	jlong retval = rti->jnienv->CallLongMethod( regionProxy,
-	                                            rti->REGION_GET_RANGE_UPPER_BOUND_NOTIFICATION_LIMIT,
-	                                            theExtent,
-	                                            theDimension );
+	jlong retval = rti->getJniEnvironment()->CallLongMethod( regionProxy,
+	                                                         rti->REGION_GET_RANGE_UPPER_BOUND_NOTIFICATION_LIMIT,
+	                                                         theExtent,
+	                                                         theDimension );
 
 	// clean up and run the exception check
 	rti->exceptionCheck();

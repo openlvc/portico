@@ -24,10 +24,10 @@ int JavaRTI::rtiCounter = 0;
 //----------------------------------------------------------
 //                      CONSTRUCTORS
 //----------------------------------------------------------
-JavaRTI::JavaRTI()
+JavaRTI::JavaRTI( JavaVM *jvm )
 {
 	// do some basic setup
-	this->jnienv      = NULL;
+	this->jvm         = jvm;
 	this->jproxyClass = NULL;
 	this->jproxy      = NULL;
 	this->id          = ++rtiCounter;
@@ -58,7 +58,7 @@ JavaRTI::~JavaRTI()
 	// delete the global reference to the proxy
 	if( this->jproxy != NULL )
 	{
-		jnienv->DeleteGlobalRef( jproxy );
+		getJniEnvironment()->DeleteGlobalRef( jproxy );
 		exceptionCheck();
 	}
 
@@ -78,6 +78,17 @@ JavaRTI::~JavaRTI()
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// Public Methods //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * Any thread that talks to the JVM must first be attached to it. Unfortunately we can't
+ * guarantee that the client side will limit access to one thread, so we have to check
+ * every time and attach the thread if not. We try to make this as efficient as possible
+ * by first checking to see if we can get an environment (will only work if we are attached).
+ */
+JNIEnv* JavaRTI::getJniEnvironment() throw( HLA::RTIinternalError )
+{
+	return this->attachToJVM();
+}
+
 /*
  * Return the current system time in milliseconds, up to the resolution provided by the OS
  */
@@ -161,6 +172,7 @@ jbyteArray JavaRTI::convertTag( const char *tag )
 	// create the byte[] and populate it with the tag data
 	//   strip the null terminator because it won't be there for Java-federates
 	//   we have to manually add and remove it to keep consistent with Java
+	JNIEnv *jnienv = this->attachToJVM();
 	jbyteArray jtag = jnienv->NewByteArray( strlen(tag) );
 	jnienv->SetByteArrayRegion( jtag, 0, strlen(tag), (jbyte*)tag );
 	return jtag;
@@ -172,6 +184,8 @@ jbyteArray JavaRTI::convertTag( const char *tag )
  */
 jintArray JavaRTI::convertAHS( const HLA::AttributeHandleSet& ahs )
 {
+	JNIEnv *jnienv = this->attachToJVM();
+
 	// create the array
 	jintArray array = jnienv->NewIntArray( ahs.size() );
 	jint* content = jnienv->GetIntArrayElements( array, NULL );
@@ -188,6 +202,8 @@ jintArray JavaRTI::convertAHS( const HLA::AttributeHandleSet& ahs )
  */
 jintArray JavaRTI::convertAHA( HLA::AttributeHandle incoming[], HLA::ULong size )
 {
+	JNIEnv *jnienv = this->attachToJVM();
+
 	// create the array
 	jintArray array = jnienv->NewIntArray( size );
 	jint* content = jnienv->GetIntArrayElements( array, NULL );
@@ -204,6 +220,8 @@ jintArray JavaRTI::convertAHA( HLA::AttributeHandle incoming[], HLA::ULong size 
  */
 jintArray JavaRTI::convertFHS( const HLA::FederateHandleSet& fhs )
 {
+	JNIEnv *jnienv = this->attachToJVM();
+
 	// create the array
 	jintArray array = jnienv->NewIntArray( fhs.size() );
 	jint* content = jnienv->GetIntArrayElements( array, NULL );
@@ -231,6 +249,7 @@ HVPS JavaRTI::convertAHVPS( const HLA::AttributeHandleValuePairSet& attributes )
 	}
 
 	// create the struct to hold the values
+	JNIEnv *jnienv = this->attachToJVM();
 	HVPS hvps = HVPS();
 	hvps.handles = jnienv->NewIntArray( attributes.size() );
 	hvps.values  = jnienv->NewObjectArray( attributes.size(), BYTE_ARRAY, 0 );
@@ -281,6 +300,7 @@ HVPS JavaRTI::convertPHVPS( const HLA::ParameterHandleValuePairSet& parameters )
 	}
 
 	// create the struct to hold the values
+	JNIEnv *jnienv = this->attachToJVM();
 	HVPS hvps = HVPS();
 	hvps.handles = jnienv->NewIntArray( parameters.size() );
 	hvps.values  = jnienv->NewObjectArray( parameters.size(), BYTE_ARRAY, 0 );
@@ -343,6 +363,7 @@ void JavaRTI::pushTime( jdouble time, HLA::FedTime& fedtime )
  */
 char* JavaRTI::convertAndReleaseJString( jstring string )
 {
+	JNIEnv *jnienv = this->getJniEnvironment();
 	const char *javaString = jnienv->GetStringUTFChars( string, NULL );
 	char *userString = new char[strlen(javaString)+1];
 	strcpy( userString, javaString );
@@ -370,6 +391,7 @@ char* JavaRTI::convertJTag( jbyteArray tag )
 
 	// convert the tag
 	//   we assume that there is no null terminator
+	JNIEnv *jnienv = this->getJniEnvironment();
 	jsize length = jnienv->GetArrayLength( tag );
 	jbyte *buffer = new jbyte[length+1];
 	jnienv->GetByteArrayRegion( tag, 0, length, buffer );
@@ -396,6 +418,7 @@ jobject JavaRTI::convertRegion( const HLA::Region &region )
 jobjectArray JavaRTI::convertRegions( HLA::Region *theRegions[], HLA::ULong size )
 {
 	// create the array
+	JNIEnv *jnienv = this->getJniEnvironment();
 	jobjectArray array = jnienv->NewObjectArray( size, jregionClass, NULL );
 	for( HLA::ULong i = 0; i < size; i++ )
 	{
@@ -443,6 +466,8 @@ void JavaRTI::pushException( char *exceptionName, char *reason )
  */
 HLA::AttributeHandleSet* JavaRTI::convertToAHS( jintArray array )
 {
+	JNIEnv *jnienv = this->getJniEnvironment();
+
 	// create the AHS
 	int size = jnienv->GetArrayLength( array );
 	HLA::AttributeHandleSet *handleSet = HLA::AttributeHandleSetFactory::create(size);
@@ -464,21 +489,26 @@ HLA::AttributeHandleSet* JavaRTI::convertToAHS( jintArray array )
  * to the JNIEnv in the instance variable. If there is an error during this
  * process, an RTIinternalError will be thrown.
  */
-void JavaRTI::attachToJVM() throw( HLA::RTIinternalError )
+JNIEnv* JavaRTI::attachToJVM() throw( HLA::RTIinternalError )
 {
-	logger->debug( "Attaching to JVM" );
-	JavaVMInitArgs vmArgs;
-	JNI_GetDefaultJavaVMInitArgs( &vmArgs );
-	jint result = Runtime::getRuntime()->jvm->AttachCurrentThread( (void**)&jnienv, &vmArgs );
-	if( result == 0 )
+	JNIEnv* jnienv = NULL;
+	jvm->GetEnv((void **)&jnienv, JNI_VERSION_1_6);
+
+	// if this is null it means that the thread hasn't been attached yet - so let's get to it
+	if( jnienv == NULL )
 	{
-		logger->info( "Attached to JVM" );
+		logger->trace( "Attaching current thread to JVM" );
+		JavaVMInitArgs vmArgs;
+		JNI_GetDefaultJavaVMInitArgs( &vmArgs );
+		jint result = jvm->AttachCurrentThread( (void**)&jnienv, &vmArgs );
+		if( result != 0 )
+		{
+			logger->fatal( "Couldn't attach current thread to JVM" );
+			throw HLA::RTIinternalError( "Couldn't thread attach to JVM" );
+		}
 	}
-	else
-	{
-		logger->fatal( "Couldn't attach to JVM" );
-		throw HLA::RTIinternalError( "couldn't attach to JVM" );
-	}
+
+	return jnienv;
 }
 
 /*
@@ -505,6 +535,9 @@ void JavaRTI::detachFromJVM()
  */
 void JavaRTI::initialize() throw( HLA::RTIinternalError )
 {
+	// get a reference to the JNI environment
+	JNIEnv *jnienv = this->getJniEnvironment();
+
 	//////////////////////////////////////////////////////////////
 	// get the proxy class id data and create an instance of it //
 	//////////////////////////////////////////////////////////////
@@ -580,7 +613,7 @@ void JavaRTI::cacheMethod( jmethodID *handle,
 	logger->noisy( "Caching %s [%s]", method, signature );
 
 	// get the method and store it
-	*handle = jnienv->GetMethodID( jproxyClass, method, signature );
+	*handle = getJniEnvironment()->GetMethodID( jproxyClass, method, signature );
 	if( *handle == NULL )
 	{
 		char *message = new char[1024];
@@ -606,7 +639,7 @@ void JavaRTI::cacheMethod( jmethodID *handle,
 	logger->noisy( "Caching %s [%s]", method, signature );
 
 	// get the method and store it
-	*handle = jnienv->GetMethodID( clazz, method, signature );
+	*handle = getJniEnvironment()->GetMethodID( clazz, method, signature );
 	if( *handle == NULL )
 	{
 		char *message = new char[1024];

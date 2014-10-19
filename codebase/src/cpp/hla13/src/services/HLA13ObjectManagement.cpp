@@ -33,18 +33,19 @@ RTI::ObjectHandle RTI::RTIambassador::registerObjectInstance( RTI::ObjectClassHa
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] registerObjectInstance(): classHandle=%d, name=%s", theClass, theObject );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// get java versions of the parameters
-	jstring jObjectName = privateRefs->env->NewStringUTF( theObject );
+	jstring jObjectName = env->NewStringUTF( theObject );
 	
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->REGISTER_OBJECT_INSTANCE_WITH_NAME,
-	                                               theClass,
-	                                               jObjectName );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->REGISTER_OBJECT_INSTANCE_WITH_NAME,
+	                                  theClass,
+	                                  jObjectName );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jObjectName );
+	env->DeleteLocalRef( jObjectName );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] registerObjectInstance(): classHandle=%d, name=%s (return: %d)",
@@ -64,11 +65,12 @@ RTI::ObjectHandle RTI::RTIambassador::registerObjectInstance( RTI::ObjectClassHa
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] registerObjectInstance(): classHandle=%d", theClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 
 	// call the method
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->REGISTER_OBJECT_INSTANCE,
-	                                               theClass );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->REGISTER_OBJECT_INSTANCE,
+	                                  theClass );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -111,18 +113,19 @@ RTI::RTIambassador::updateAttributeValues( RTI::ObjectHandle theObject,
 	}
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UPDATE_ATTRIBUTE_VALUES_WITH_TIME,
-	                                  theObject,
-	                                  values.handles,
-	                                  values.values,
-	                                  jTag,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UPDATE_ATTRIBUTE_VALUES_WITH_TIME,
+	                     theObject,
+	                     values.handles,
+	                     values.values,
+	                     jTag,
+	                     jTime );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( values.handles );
-	privateRefs->env->DeleteLocalRef( values.values );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( values.handles );
+	env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] updateAttributeValues(TSO): objectHandle=%d", theObject );
@@ -156,17 +159,18 @@ void RTI::RTIambassador::updateAttributeValues( RTI::ObjectHandle theObject,
 	HVPS values = privateRefs->rti->convertAHVPS( attributes );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UPDATE_ATTRIBUTE_VALUES,
-	                                  theObject,
-	                                  values.handles,
-	                                  values.values,
-	                                  jTag );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UPDATE_ATTRIBUTE_VALUES,
+	                     theObject,
+	                     values.handles,
+	                     values.values,
+	                     jTag );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( values.handles );
-	privateRefs->env->DeleteLocalRef( values.values );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( values.handles );
+	env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] updateAttributeValues(RO): objectHandle=%d", theObject );
@@ -203,18 +207,19 @@ RTI::RTIambassador::sendInteraction( RTI::InteractionClassHandle theInteraction,
 	}
 		
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->SEND_INTERACTION_WITH_TIME,
-	                                  theInteraction,
-	                                  values.handles,
-	                                  values.values,
-	                                  jTag,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->SEND_INTERACTION_WITH_TIME,
+	                     theInteraction,
+	                     values.handles,
+	                     values.values,
+	                     jTag,
+	                     jTime );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( values.handles );
-	privateRefs->env->DeleteLocalRef( values.values );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( values.handles );
+	env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] sendInteraction(TSO): classHandle=%d", theInteraction );
@@ -248,17 +253,18 @@ void RTI::RTIambassador::sendInteraction( RTI::InteractionClassHandle theInterac
 	HVPS values = privateRefs->rti->convertPHVPS( theParameters );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->SEND_INTERACTION,
-	                                  theInteraction,
-	                                  values.handles,
-	                                  values.values,
-	                                  jTag );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->SEND_INTERACTION,
+	                     theInteraction,
+	                     values.handles,
+	                     values.values,
+	                     jTag );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( values.handles );
-	privateRefs->env->DeleteLocalRef( values.values );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( values.handles );
+	env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] sendInteraction(RO): classHandle=%d", theInteraction );
@@ -288,14 +294,15 @@ RTI::RTIambassador::deleteObjectInstance( RTI::ObjectHandle theObject,
 	
 	// call the method
 	//int handle = 
-		privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-		                                 privateRefs->rti->DELETE_OBJECT_INSTANCE_WITH_TIME,
-		                                 theObject,
-		                                 jTag,
-		                                 jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+		env->CallIntMethod( privateRefs->rti->jproxy,
+		                    privateRefs->rti->DELETE_OBJECT_INSTANCE_WITH_TIME,
+		                    theObject,
+		                    jTag,
+		                    jTime );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] deleteObjectInstance(TSO): objectHandle=%d", theObject );
@@ -320,13 +327,14 @@ void RTI::RTIambassador::deleteObjectInstance( RTI::ObjectHandle theObject, cons
 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DELETE_OBJECT_INSTANCE,
-	                                  theObject,
-	                                  jTag );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DELETE_OBJECT_INSTANCE,
+	                     theObject,
+	                     jTag );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] deleteObjectInstance(RO): objectHandle=%d" );
@@ -343,11 +351,12 @@ void RTI::RTIambassador::localDeleteObjectInstance( RTI::ObjectHandle theObject 
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] localDeleteObjectInstance(): objectHandle=%d", theObject );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// call the method
-	privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                 privateRefs->rti->LOCAL_DELETE_OBJECT_INSTANCE,
-	                                 theObject );
+	env->CallIntMethod( privateRefs->rti->jproxy,
+	                    privateRefs->rti->LOCAL_DELETE_OBJECT_INSTANCE,
+	                    theObject );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -382,14 +391,15 @@ RTI::RTIambassador::changeAttributeTransportationType( RTI::ObjectHandle theObje
 	jintArray jAttributes = privateRefs->rti->convertAHS( attributes );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CHANGE_ATTRIBUTE_TRANSPORTATION_TYPE,
-	                                  theObject,
-	                                  jAttributes,
-	                                  theType );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CHANGE_ATTRIBUTE_TRANSPORTATION_TYPE,
+	                     theObject,
+	                     jAttributes,
+	                     theType );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttributes );
+	env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] changeAttributeTransportationType(): objectHandle=%d, transportHandle=%d",
@@ -412,10 +422,11 @@ void RTI::RTIambassador::changeInteractionTransportationType( RTI::InteractionCl
 	               theClass, theType );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CHANGE_INTERACTION_TRANSPORTATION_TYPE,
-	                                  theClass,
-	                                  theType );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CHANGE_INTERACTION_TRANSPORTATION_TYPE,
+	                     theClass,
+	                     theType );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -448,13 +459,14 @@ RTI::RTIambassador::requestObjectAttributeValueUpdate( RTI::ObjectHandle theObje
 	jintArray jAttributes = privateRefs->rti->convertAHS( attributes );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REQUEST_OBJECT_ATTRIBUTE_VALUE_UPDATE,
-	                                  theObject,
-	                                  jAttributes );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REQUEST_OBJECT_ATTRIBUTE_VALUE_UPDATE,
+	                     theObject,
+	                     jAttributes );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttributes );
+	env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] requestObjectAttributeValueUpdate(): objectHandle=%d", theObject );
@@ -483,13 +495,14 @@ RTI::RTIambassador::requestClassAttributeValueUpdate( RTI::ObjectClassHandle the
 	jintArray jAttributes = privateRefs->rti->convertAHS( attributes );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE,
-	                                  theClass,
-	                                  jAttributes );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE,
+	                     theClass,
+	                     jAttributes );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttributes );
+	env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] requestClassAttributeValueUpdate(): classHandle=%d", theClass );

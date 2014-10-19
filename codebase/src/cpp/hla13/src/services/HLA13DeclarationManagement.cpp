@@ -43,13 +43,14 @@ void RTI::RTIambassador::publishObjectClass( RTI::ObjectClassHandle theClass,
 	jintArray jAttSet = privateRefs->rti->convertAHS( attributeList );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->PUBLISH_OBJECT_CLASS,
-	                                  theClass,
-	                                  jAttSet );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->PUBLISH_OBJECT_CLASS,
+	                     theClass,
+	                     jAttSet );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] publishObjectClass(): objectClass=%d", theClass ); 
@@ -69,9 +70,10 @@ void RTI::RTIambassador::unpublishObjectClass( RTI::ObjectClassHandle theClass )
 	logger->trace( "[Starting] unpublishObjectClass(): classHandle=%d", theClass );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNPUBLISH_OBJECT_CLASS,
-	                                  theClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNPUBLISH_OBJECT_CLASS,
+	                     theClass );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -91,9 +93,10 @@ void RTI::RTIambassador::publishInteractionClass( RTI::InteractionClassHandle th
 	logger->trace( "[Starting] publishInteractionClass(): classHandle=%d", theClass );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->PUBLISH_INTERACTION_CLASS,
-	                                  theClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->PUBLISH_INTERACTION_CLASS,
+	                     theClass );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -114,9 +117,10 @@ void RTI::RTIambassador::unpublishInteractionClass( RTI::InteractionClassHandle 
 	logger->trace( "[Starting] unpublishInteractionClass(): classHandle=%d", theClass );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNPUBLISH_INTERACTION_CLASS,
-	                                  theClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNPUBLISH_INTERACTION_CLASS,
+	                     theClass );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -159,27 +163,28 @@ void RTI::RTIambassador::subscribeObjectClassAttributes( RTI::ObjectClassHandle 
 	// do the subscription //
 	/////////////////////////
 	// get java versions of the parameters
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jintArray jAttSet = privateRefs->rti->convertAHS( attributes );
 
 	if( active == RTI::RTI_TRUE )
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_OBJECT_CLASS_ATTRIBUTES_ACTIVELY,
-		                                  theClass,
-		                                  jAttSet );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_OBJECT_CLASS_ATTRIBUTES_ACTIVELY,
+		                     theClass,
+		                     jAttSet );
 	}
 	else
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_OBJECT_CLASS_ATTRIBUTES_PASSIVELY,
-		                                  theClass,
-		                                  jAttSet );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_OBJECT_CLASS_ATTRIBUTES_PASSIVELY,
+		                     theClass,
+		                     jAttSet );
 	}
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttSet );
+	env->DeleteLocalRef( jAttSet );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] subscribeObjectClassAttributes(): classHandle=%d", theClass );
@@ -198,9 +203,10 @@ void RTI::RTIambassador::unsubscribeObjectClass( RTI::ObjectClassHandle theClass
 	logger->trace( "[Starting] unsubscribeObjectClass(): classHandle=%d", theClass );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNSUBSCRIBE_OBJECT_CLASS,
-	                                  theClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNSUBSCRIBE_OBJECT_CLASS,
+	                     theClass );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -233,19 +239,20 @@ void RTI::RTIambassador::subscribeInteractionClass( RTI::InteractionClassHandle 
 	/////////////////////////
 	// do the subscription //
 	/////////////////////////
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	if( active == RTI::RTI_TRUE )
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS,
-		                                  theClass );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS,
+		                     theClass );
 	}
 	else
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_PASSIVELY,
-		                                  theClass );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_PASSIVELY,
+		                     theClass );
 	}
 
 	// run the exception check
@@ -265,11 +272,12 @@ void RTI::RTIambassador::unsubscribeInteractionClass( RTI::InteractionClassHandl
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] unsubscribeInteractionClass(): classHandle=%d", theClass );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNSUBSCRIBE_INTERACTION_CLASS,
-	                                  theClass );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNSUBSCRIBE_INTERACTION_CLASS,
+	                     theClass );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();

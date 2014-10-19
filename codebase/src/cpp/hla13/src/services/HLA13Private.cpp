@@ -25,12 +25,10 @@ namespace rti13 {
 RTIambPrivateRefs::RTIambPrivateRefs()
 {
 	this->rti = portico13::Runtime::getRuntime()->newRtiAmbassador();
-	this->env = this->rti->jnienv;
 }
 
 RTIambPrivateRefs::~RTIambPrivateRefs()
 {
-	this->env = NULL;
 	delete this->rti;
 }
 

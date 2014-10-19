@@ -27,9 +27,10 @@ RTI::RegionToken RTI::RTIambassador::getRegionToken( RTI::Region *theRegion )
 	logger->trace( "[Starting] getRegionToken(): regionAddress=%p", theRegion );
 	
 	// call the method
-	int token = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                             privateRefs->rti->GET_REGION_TOKEN,
-	                                             privateRefs->rti->convertRegion(*theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	int token = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                privateRefs->rti->GET_REGION_TOKEN,
+	                                privateRefs->rti->convertRegion(*theRegion) );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -48,9 +49,10 @@ RTI::Region* RTI::RTIambassador::getRegion( RTI::RegionToken token )
 	logger->trace( "[Starting] getRegion(): token=%u", token );
 	
 	// call the method
-	jobject proxy = privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                    privateRefs->rti->GET_REGION,
-	                                                    (jint)token );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jobject proxy = env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                       privateRefs->rti->GET_REGION,
+	                                       (jint)token );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -79,10 +81,11 @@ RTI::Region* RTI::RTIambassador::createRegion( RTI::SpaceHandle space, RTI::ULon
 	logger->trace( "[Starting] createRegion(): spaceHandle=%u, extents=%u", space, extents );
 	
 	// call the method
-	jobject proxy = privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                                    privateRefs->rti->CREATE_REGION,
-	                                                    (jint)space,
-	                                                    (jint)extents );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jobject proxy = env->CallObjectMethod( privateRefs->rti->jproxy,
+	                                       privateRefs->rti->CREATE_REGION,
+	                                       (jint)space,
+	                                       (jint)extents );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -108,9 +111,10 @@ void RTI::RTIambassador::notifyAboutRegionModification( RTI::Region &theRegion )
 	logger->trace( "[Starting] modifyRegion(): regionAddress=%p", &theRegion );
 	
 	// call the method
-	privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                    privateRefs->rti->NOTIFY_OF_REGION_MODIFICATION,
-	                                    privateRefs->rti->convertRegion(theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallObjectMethod( privateRefs->rti->jproxy,
+	                       privateRefs->rti->NOTIFY_OF_REGION_MODIFICATION,
+	                       privateRefs->rti->convertRegion(theRegion) );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -131,9 +135,10 @@ void RTI::RTIambassador::deleteRegion( RTI::Region *theRegion )
 	logger->trace( "[Starting] deleteRegion(): regionAddress=%p", theRegion );
 	
 	// call the method
-	privateRefs->env->CallObjectMethod( privateRefs->rti->jproxy,
-	                                    privateRefs->rti->DELETE_REGION,
-	                                    privateRefs->rti->convertRegion(*theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallObjectMethod( privateRefs->rti->jproxy,
+	                       privateRefs->rti->DELETE_REGION,
+	                       privateRefs->rti->convertRegion(*theRegion) );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -172,22 +177,23 @@ RTI::RTIambassador::registerObjectInstanceWithRegion( RTI::ObjectClassHandle the
 	}
 
 	// get java versions of the parameters
-	jstring jObjectName = privateRefs->env->NewStringUTF( theObject );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jObjectName = env->NewStringUTF( theObject );
 	jintArray handles = privateRefs->rti->convertAHA( theAttributes, size );
 	jobjectArray regions = privateRefs->rti->convertRegions( theRegions, size );
 
 	// call the method
 	// int reg(int, int[], region[])
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->REGISTER_OBJECT_WITH_NAME_AND_REGION,
-	                                               theClass,
-	                                               jObjectName,
-	                                               handles,
-	                                               regions );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->REGISTER_OBJECT_WITH_NAME_AND_REGION,
+	                                  theClass,
+	                                  jObjectName,
+	                                  handles,
+	                                  regions );
 
-	privateRefs->env->DeleteLocalRef( jObjectName );
-	privateRefs->env->DeleteLocalRef( handles );
-	privateRefs->env->DeleteLocalRef( regions );
+	env->DeleteLocalRef( jObjectName );
+	env->DeleteLocalRef( handles );
+	env->DeleteLocalRef( regions );
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
@@ -226,15 +232,16 @@ RTI::RTIambassador::registerObjectInstanceWithRegion( RTI::ObjectClassHandle the
 	jobjectArray regions = privateRefs->rti->convertRegions( theRegions, size );
 
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	// int reg(int, int[], region[])
-	jint handle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                               privateRefs->rti->REGISTER_OBJECT_WITH_REGION,
-	                                               theClass,
-	                                               handles,
-	                                               regions );
+	jint handle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                  privateRefs->rti->REGISTER_OBJECT_WITH_REGION,
+	                                  theClass,
+	                                  handles,
+	                                  regions );
 
-	privateRefs->env->DeleteLocalRef( handles );
-	privateRefs->env->DeleteLocalRef( regions );
+	env->DeleteLocalRef( handles );
+	env->DeleteLocalRef( regions );
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
@@ -267,13 +274,14 @@ void RTI::RTIambassador::associateRegionForUpdates( RTI::Region &theRegion,
 	// convert the parameters to their java equiv
 	jintArray jAttributes = privateRefs->rti->convertAHS( theAttributes );
 	
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ASSOCIATE_REGION_FOR_UPDATES,
-	                                  privateRefs->rti->convertRegion(theRegion),
-	                                  theObject,
-	                                  jAttributes );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ASSOCIATE_REGION_FOR_UPDATES,
+	                     privateRefs->rti->convertRegion(theRegion),
+	                     theObject,
+	                     jAttributes );
 	
-	privateRefs->env->DeleteLocalRef( jAttributes );
+	env->DeleteLocalRef( jAttributes );
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	
@@ -296,10 +304,11 @@ void RTI::RTIambassador::unassociateRegionForUpdates( RTI::Region &theRegion,
 	logger->trace( "[Starting] unassociateRegionForUpdates(): regionAddress=%p, object=%d",
 	               &theRegion, theObject );
 	
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNASSOCIATE_REGION_FOR_UPDATES,
-	                                  privateRefs->rti->convertRegion(theRegion),
-	                                  theObject );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNASSOCIATE_REGION_FOR_UPDATES,
+	                     privateRefs->rti->convertRegion(theRegion),
+	                     theObject );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -346,30 +355,32 @@ void RTI::RTIambassador::subscribeObjectClassAttributesWithRegion(
 	/////////////////////////
 	// do the subscription //
 	/////////////////////////
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jintArray jAttributes = privateRefs->rti->convertAHS( attributeList );
 
 	if( active == RTI::RTI_TRUE )
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_ATTRIBUTES_WITH_REGION,
-		                                  theClass,
-		                                  privateRefs->rti->convertRegion(theRegion),
-		                                  jAttributes );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_ATTRIBUTES_WITH_REGION,
+		                     theClass,
+		                     privateRefs->rti->convertRegion(theRegion),
+		                     jAttributes );
 	}
 	else
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_ATTRIBUTES_PASSIVELY_WITH_REGION,
-		                                  theClass,
-		                                  privateRefs->rti->convertRegion(theRegion),
-		                                  jAttributes );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_ATTRIBUTES_PASSIVELY_WITH_REGION,
+		                     theClass,
+		                     privateRefs->rti->convertRegion(theRegion),
+		                     jAttributes );
 	}
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jAttributes );
+	env->DeleteLocalRef( jAttributes );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] subscribeObjectClassAttributesWithRegion(): classHandle=%d", theClass );
@@ -391,10 +402,11 @@ void RTI::RTIambassador::unsubscribeObjectClassWithRegion( RTI::ObjectClassHandl
 	               theClass, &theRegion );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNSUBSCRIBE_ATTRIBUTES_WITH_REGION,
-	                                  theClass,
-	                                  privateRefs->rti->convertRegion(theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNSUBSCRIBE_ATTRIBUTES_WITH_REGION,
+	                     theClass,
+	                     privateRefs->rti->convertRegion(theRegion) );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -431,21 +443,22 @@ void RTI::RTIambassador::subscribeInteractionClassWithRegion( RTI::InteractionCl
 	/////////////////////////
 	// do the subscription //
 	/////////////////////////
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	if( active == RTI::RTI_TRUE )
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_WITH_REGION,
-		                                  theClass,
-		                                  privateRefs->rti->convertRegion(theRegion) );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_WITH_REGION,
+		                     theClass,
+		                     privateRefs->rti->convertRegion(theRegion) );
 	}
 	else
 	{
 		// call the method
-		privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-		                                  privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_PASSIVELY_WITH_REGION,
-		                                  theClass,
-		                                  privateRefs->rti->convertRegion(theRegion) );
+		env->CallVoidMethod( privateRefs->rti->jproxy,
+		                     privateRefs->rti->SUBSCRIBE_INTERACTION_CLASS_PASSIVELY_WITH_REGION,
+		                     theClass,
+		                     privateRefs->rti->convertRegion(theRegion) );
 	}
 
 	// run the exception check
@@ -470,10 +483,11 @@ RTI::RTIambassador::unsubscribeInteractionClassWithRegion( RTI::InteractionClass
 	logger->trace( "[Starting] unsubscribeInteractionClassWithRegion(): classHandle=%d", theClass );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->UNSUBSCRIBE_INTERACTION_CLASS_WITH_REGION,
-	                                  theClass,
-	                                  privateRefs->rti->convertRegion(theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->UNSUBSCRIBE_INTERACTION_CLASS_WITH_REGION,
+	                     theClass,
+	                     privateRefs->rti->convertRegion(theRegion) );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -515,19 +529,20 @@ RTI::RTIambassador::sendInteractionWithRegion( RTI::InteractionClassHandle theIn
 	}
 		
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->SEND_INTERACTION_WITH_TIME_AND_REGION,
-	                                  theInteraction,
-	                                  values.handles,
-	                                  values.values,
-	                                  jTag,
-	                                  privateRefs->rti->convertRegion(theRegion),
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->SEND_INTERACTION_WITH_TIME_AND_REGION,
+	                     theInteraction,
+	                     values.handles,
+	                     values.values,
+	                     jTag,
+	                     privateRefs->rti->convertRegion(theRegion),
+	                     jTime );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( values.handles );
-	privateRefs->env->DeleteLocalRef( values.values );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( values.handles );
+	env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] sendInteractionWithRegion(TSO): classHandle=%d", theInteraction );
@@ -565,18 +580,19 @@ RTI::RTIambassador::sendInteractionWithRegion( RTI::InteractionClassHandle theIn
 	HVPS values = privateRefs->rti->convertPHVPS( parameters );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->SEND_INTERACTION_WITH_REGION,
-	                                  theInteraction,
-	                                  values.handles,
-	                                  values.values,
-	                                  jTag,
-	                                  privateRefs->rti->convertRegion(theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->SEND_INTERACTION_WITH_REGION,
+	                     theInteraction,
+	                     values.handles,
+	                     values.values,
+	                     jTag,
+	                     privateRefs->rti->convertRegion(theRegion) );
 	
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( values.handles );
-	privateRefs->env->DeleteLocalRef( values.values );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( values.handles );
+	env->DeleteLocalRef( values.values );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] sendInteractionWithRegion(RO): classHandle=%d", theInteraction );
@@ -607,13 +623,14 @@ void RTI::RTIambassador::requestClassAttributeValueUpdateWithRegion(
 	// convert the parameters to their java equiv
 	jintArray jAttributes = privateRefs->rti->convertAHS( theAttributes );
 
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE_WITH_REGION,
-	                                  theClass,
-	                                  jAttributes,
-	                                  privateRefs->rti->convertRegion(theRegion) );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REQUEST_CLASS_ATTRIBUTE_VALUE_UPDATE_WITH_REGION,
+	                     theClass,
+	                     jAttributes,
+	                     privateRefs->rti->convertRegion(theRegion) );
 
-	privateRefs->env->DeleteLocalRef( jAttributes );
+	env->DeleteLocalRef( jAttributes );
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
 	

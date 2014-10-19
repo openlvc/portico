@@ -42,10 +42,11 @@ void RTI::RTIambassador::enableTimeRegulation( const RTI::FedTime& theFederateTi
 	               jTime, jLookahead );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_TIME_REGULATION,
-	                                  jTime,
-	                                  jLookahead );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_TIME_REGULATION,
+	                     jTime,
+	                     jLookahead );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -66,8 +67,9 @@ void RTI::RTIambassador::disableTimeRegulation()
 	logger->trace( "[Starting] disableTimeRegulation()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_TIME_REGULATION );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_TIME_REGULATION );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -89,8 +91,9 @@ void RTI::RTIambassador::enableTimeConstrained()
 	logger->trace( "[Starting] enableTimeConstrained()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_TIME_CONSTRAINED );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_TIME_CONSTRAINED );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -110,8 +113,9 @@ void RTI::RTIambassador::disableTimeConstrained()
 	logger->trace( "[Starting] disableTimeConstrained()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_TIME_CONSTRAINED );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_TIME_CONSTRAINED );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -138,9 +142,10 @@ void RTI::RTIambassador::timeAdvanceRequest( const RTI::FedTime& theTime )
 	logger->trace( "[Starting] timeAdvanceRequest(): time=%f", jTime );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->TIME_ADVANCE_REQUEST,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->TIME_ADVANCE_REQUEST,
+	                     jTime );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -167,9 +172,10 @@ void RTI::RTIambassador::timeAdvanceRequestAvailable( const RTI::FedTime& theTim
 	logger->trace( "[Starting] timeAdvanceRequestAvailable(): time=%f", jTime );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->TIME_ADVANCE_REQUEST_AVAILABLE,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->TIME_ADVANCE_REQUEST_AVAILABLE,
+	                     jTime );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -196,9 +202,10 @@ void RTI::RTIambassador::nextEventRequest( const RTI::FedTime& theTime )
 	logger->trace( "[Starting] nextEventRequest(): time=%f", jTime );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->NEXT_EVENT_REQUEST,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->NEXT_EVENT_REQUEST,
+	                     jTime );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -225,9 +232,10 @@ void RTI::RTIambassador::nextEventRequestAvailable( const RTI::FedTime& theTime 
 	logger->trace( "[Starting] nextEventRequestAvailable(): time=%f", jTime );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->NEXT_EVENT_REQUEST_AVAILABLE,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->NEXT_EVENT_REQUEST_AVAILABLE,
+	                     jTime );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -254,9 +262,10 @@ void RTI::RTIambassador::flushQueueRequest( const RTI::FedTime& theTime )
 	logger->trace( "[Starting] flushQueueRequest(): time=%f", jTime );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->FLUSH_QUEUE_REQUEST,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->FLUSH_QUEUE_REQUEST,
+	                     jTime );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -276,8 +285,9 @@ void RTI::RTIambassador::enableAsynchronousDelivery()
 	logger->trace( "[Starting] enableAsynchronousDelivery()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->ENABLE_ASYNCHRONOUS_DELIVERY );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->ENABLE_ASYNCHRONOUS_DELIVERY );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -297,8 +307,9 @@ void RTI::RTIambassador::disableAsynchronousDelivery()
 	logger->trace( "[Starting] disableAsynchronousDelivery()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DISABLE_ASYNCHRONOUS_DELIVERY );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DISABLE_ASYNCHRONOUS_DELIVERY );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -317,8 +328,9 @@ void RTI::RTIambassador::queryLBTS( RTI::FedTime& theTime )
 	logger->trace( "[Starting] queryLBTS()" );
 	
 	// call the method
-	jdouble retval = privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
-	                                                     privateRefs->rti->QUERY_LBTS );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jdouble retval = env->CallDoubleMethod( privateRefs->rti->jproxy,
+	                                        privateRefs->rti->QUERY_LBTS );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -340,8 +352,9 @@ void RTI::RTIambassador::queryFederateTime( RTI::FedTime& theTime )
 	logger->trace( "[Starting] queryFederateTime()" );
 	
 	// call the method
-	jdouble retval = privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
-	                                                     privateRefs->rti->QUERY_FEDERATE_TIME );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jdouble retval = env->CallDoubleMethod( privateRefs->rti->jproxy,
+	                                        privateRefs->rti->QUERY_FEDERATE_TIME );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -363,9 +376,10 @@ void RTI::RTIambassador::queryMinNextEventTime( RTI::FedTime& theTime )
 	logger->trace( "[Starting] queryNextMinEventTime()" );
 
 	// call the method
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	jdouble retval =
-		privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
-	                                        privateRefs->rti->QUERY_MIN_NEXT_EVENT_TIME );
+		env->CallDoubleMethod( privateRefs->rti->jproxy,
+	                           privateRefs->rti->QUERY_MIN_NEXT_EVENT_TIME );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -391,9 +405,10 @@ void RTI::RTIambassador::modifyLookahead( const RTI::FedTime& theLookahead )
 	logger->trace( "[Starting] modifyLookahead(): lookahead=%f", jTime );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->MODIFY_LOOKAHEAD,
-	                                  jTime );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->MODIFY_LOOKAHEAD,
+	                     jTime );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -412,8 +427,9 @@ void RTI::RTIambassador::queryLookahead( RTI::FedTime& theTime )
 	logger->trace( "[Starting] queryLookahead()" );
 
 	// call the method
-	jdouble retval = privateRefs->env->CallDoubleMethod( privateRefs->rti->jproxy,
-	                                                     privateRefs->rti->QUERY_LOOKAHEAD );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jdouble retval = env->CallDoubleMethod( privateRefs->rti->jproxy,
+	                                        privateRefs->rti->QUERY_LOOKAHEAD );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -436,9 +452,10 @@ void RTI::RTIambassador::retract( RTI::EventRetractionHandle theHandle )
 	logger->trace( "[Starting] retract()" );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->RETRACT,
-	                                  theHandle );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->RETRACT,
+	                     theHandle );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -466,14 +483,15 @@ void RTI::RTIambassador::changeAttributeOrderType( RTI::ObjectHandle theObject,
 	jintArray jSyncSet = privateRefs->rti->convertAHS( theAttributes );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CHANGE_ATTRIBUTE_ORDER_TYPE,
-	                                  theObject,
-	                                  jSyncSet,
-	                                  theType );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CHANGE_ATTRIBUTE_ORDER_TYPE,
+	                     theObject,
+	                     jSyncSet,
+	                     theType );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jSyncSet );
+	env->DeleteLocalRef( jSyncSet );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] changeAttributeOrderType()" );
@@ -495,10 +513,11 @@ void RTI::RTIambassador::changeInteractionOrderType( RTI::InteractionClassHandle
 	               theClass, theType );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CHANGE_INTERACTION_ORDER_TYPE,
-	                                  theClass,
-	                                  theType );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CHANGE_INTERACTION_ORDER_TYPE,
+	                     theClass,
+	                     theType );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
