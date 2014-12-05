@@ -258,9 +258,39 @@
 # portico.jgroups.auditor.filter.message   = 
 # portico.jgroups.auditor.filter.fomtype   = 
 
+# =========================================
+# 5. WAN Connection Options
+# =========================================
+
+# (5.1) WAN Mode Enable/Disable
+#       If true, WAN mode will be enabled and this federate will act as both a
+#       local participant, and also as a bridge for all the local federates.
+#       Messages exchanged on the local JGroups channel will be forwarded to a
+#       central router (see 5.2) to be reflected out to other sites. Messagest
+#       received from the router will be pushed out to the local JGroups channel
+#       so everyone here can process them.
+#
+#       Note that this mode does not support bundling. If enabled in the RID, it
+#       will be active on the local JGroups network, but ignored for the WAN.
+#
+#       Note: Router must be running before federate startup. If not - federates
+#             will fail to start.
+#
+#       Default: false
+#       
+# portico.wan.enabled = false
+
+# (5.2) Router Address/Port
+#       Specifies the address and port of the WAN router to use. Note that the
+#       syntax is "address:port".
+#
+#       Default: 127.0.0.1:23114
+#
+# portico.wan.router = 127.0.0.1:23114
+
 
 # =========================================
-# 4. Undocumented Settings
+# A51. Undocumented Settings
 # =========================================
 # This section is a catch-all of settings we use for internal work, and infrequently.
 # Their specific usecase and function is undocumented as they are not intended for general use.

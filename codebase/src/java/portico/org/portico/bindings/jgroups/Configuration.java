@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2015 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -14,6 +14,8 @@
  */
 package org.portico.bindings.jgroups;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -24,7 +26,7 @@ import org.portico.lrc.compat.JConfigurationException;
  * All configuration information is stored in system properties as keys. This class
  * provides statics that can be used to identify the specific keys.
  */
-public class JGroupsProperties
+public class Configuration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -46,23 +48,28 @@ public class JGroupsProperties
 
 	/** The period of time to wait for a response when joining a channel before assuming
 	    that there is no existing co-ordinator and appointing ourselves to that lofty title */
-	public static String PROP_JGROUPS_GMS_TIMEOUT = "portico.jgroups.gms.jointimeout";
+	public static final String PROP_JGROUPS_GMS_TIMEOUT = "portico.jgroups.gms.jointimeout";
 
 	///// auditor settings
 	/** Whether or not the auditor is enabled */
-	public static String PROP_JGROUPS_AUDITOR_ENABLED = "portico.jgroups.auditor.enabled";
-	public static String PROP_JGROUPS_AUDITOR_DETAILS = "portico.jgroups.auditor.details";
+	public static final String PROP_JGROUPS_AUDITOR_ENABLED = "portico.jgroups.auditor.enabled";
+	public static final String PROP_JGROUPS_AUDITOR_DETAILS = "portico.jgroups.auditor.details";
 
 	/** Auditor filtering settings */
-	public static String PROP_JGROUPS_AUDITOR_FILTER_DIR = "portico.jgroups.auditor.filter.direction";
-	public static String PROP_JGROUPS_AUDITOR_FILTER_MSG = "portico.jgroups.auditor.filter.message";
-	public static String PROP_JGROUPS_AUDITOR_FILTER_FOM = "portico.jgroups.auditor.filter.fomtype";
+	public static final String PROP_JGROUPS_AUDITOR_FILTER_DIR = "portico.jgroups.auditor.filter.direction";
+	public static final String PROP_JGROUPS_AUDITOR_FILTER_MSG = "portico.jgroups.auditor.filter.message";
+	public static final String PROP_JGROUPS_AUDITOR_FILTER_FOM = "portico.jgroups.auditor.filter.fomtype";
 
 	///// jgroups properties /////////////////////////////////////////////////////////////////
 	/** The amount of time (in milliseconds) to wait for a response to a request, defaults to 1000,
 	    controllable through system property {@link #PROP_JGROUPS_TIMEOUT}  */
 	public static long RESPONSE_TIMEOUT =
 		Long.parseLong(System.getProperty(PROP_JGROUPS_TIMEOUT,"1000") );
+
+	
+	///// wan properties /////////////////////////////////////////////////////////////////////
+	public static final String PROP_JGROUPS_WAN_ENABLED = "portico.wan.enabled";
+	public static final String PROP_JGROUPS_WAN_ROUTER  = "portico.wan.router";
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -79,6 +86,14 @@ public class JGroupsProperties
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	/**
+	 * @return An unvalidated log level from the RID return as a String. Returns "OFF" if not set.
+	 */
+	public static final String getLogLevel()
+	{
+		return System.getProperty( PROP_JGROUPS_LOGLEVEL, "OFF" );
+	}
+	
 	/**
 	 * @return The jgroups join timeout to use in milliseconds. Defaults to 5000.
 	 */
@@ -172,7 +187,15 @@ public class JGroupsProperties
 		String value = System.getProperty( PROP_JGROUPS_AUDITOR_FILTER_FOM,"all");
 		return explode( value, "," );
 	}
-	
+
+	/**
+	 * @return True if the wan mode has been enabled in the RID, false otherwise
+	 */
+	public static boolean isWanEnabled()
+	{
+		return Boolean.valueOf( System.getProperty(PROP_JGROUPS_WAN_ENABLED,"false") ); 
+	}
+
 	private static List<String> explode( String string, String delimiter )
 	{
 		List<String> list = new ArrayList<String>();
@@ -188,5 +211,40 @@ public class JGroupsProperties
 		
 		return list;
 	}
-	
+
+	/**
+	 * Return the parsed, validated IP & Port of the WAN Router configuration property
+	 * contained in the RID. Throws an exception if the string is not in an appropriate
+	 * format from one of the following:
+	 * 
+	 *   - 111.111.111.111
+	 *   - 111.111.111.111:22222
+	 *   - hostname
+	 *   - hostname:port
+	 */
+	public static InetSocketAddress getWanRouter()
+	{
+		String value = System.getProperty( PROP_JGROUPS_WAN_ROUTER, "127.0.0.1:23114" );
+		String host = "127.0.0.1";
+		int port = 23114;
+		if( value.contains(":") )
+		{
+			int indexOfSeparator = value.indexOf( ":" );
+			host = value.substring( 0, indexOfSeparator );
+			port = Integer.parseInt( value.substring(indexOfSeparator+1) );
+		}
+		else
+		{
+			host = value;
+		}
+
+		try
+		{
+			return new InetSocketAddress( InetAddress.getByName(host), port );
+		}
+		catch( Exception e )
+		{
+			throw new JConfigurationException( "Error parsing WAN Router address", e );
+		}
+	}
 }

@@ -16,7 +16,7 @@ package hlaunit;
 
 import java.io.File;
 
-import org.portico.bindings.jgroups.JGroupsProperties;
+import org.portico.bindings.jgroups.Configuration;
 import org.portico.bindings.jvm.JVMConnection;
 import org.portico.lrc.PorticoConstants;
 import org.portico.utils.logging.Log4jConfigurator;
@@ -103,7 +103,7 @@ public class CommonSetup
 				// this can take a while and really slows the tests down, but seeing as
 				// we're running everything off the same machine, there is little worry
 				// about needing a bigger timeout to discover an active group
-				System.setProperty( JGroupsProperties.PROP_JGROUPS_GMS_TIMEOUT, "100" );
+				System.setProperty( Configuration.PROP_JGROUPS_GMS_TIMEOUT, "100" );
 			}
 			else if( binding.equals("ptalk") )
 			{
