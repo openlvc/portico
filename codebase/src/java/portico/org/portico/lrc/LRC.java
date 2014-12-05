@@ -520,6 +520,13 @@ public class LRC
 	public boolean tick( double minSeconds, double maxSeconds )
 		throws JRTIinternalError, JConcurrentAccessAttempted
 	{
+		// check to make sure people aren't playing funny buggers
+		if( minSeconds == 0.0 && maxSeconds == 0.0 )
+		{
+			throw new JRTIinternalError( "OK, so you called tick(min,max) with 0.0 for both "+
+			                             "values. Do we need to talk about how this works?" );
+		}
+
 		// don't process anything if callbacks aren't enabled
 		if( state.areCallbacksEnabled() == false )
 			return true;
