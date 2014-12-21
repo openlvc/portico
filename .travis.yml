@@ -1,0 +1,18 @@
+sudo: false
+language: java
+jdk:
+  - oraclejdk8
+
+install:
+  - cd codebase
+
+script:
+  - ./ant release
+
+notifications:
+  hipchat:
+    rooms:
+      secure: R5+2ckN7QzrAm7YZdyyDiF0aJMNwekIzjeKqiMKhl5Xwzh2q5GM7TnwxWAudGVw0lC8+sPhOnYLTaSnPNbSFFKxMjKQZlurwLGXRQRV9Edg/IYUChisKA+Qnl1bFty8KqZ/yLPhsl+h9tOEPbf6PuaxlckeVlbk6BwG8jFmyYno=
+    template: 
+      - '%{repository_slug} <a href="%{build_url}">#%{build_number}</a> [<a href="https://github.com/%{repository_slug}/tree/%{branch}">%{branch}</a>] (Tim Pokorny > <a href="%{compare_url}">%{commit}</a>): %{result} %{duration}'
+    format: html
