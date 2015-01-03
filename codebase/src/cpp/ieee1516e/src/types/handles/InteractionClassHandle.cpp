@@ -64,7 +64,7 @@ long InteractionClassHandle::hash() const
 
 VariableLengthData InteractionClassHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&(this->_impl->value), 4 );
 }
 
 void InteractionClassHandle::encode( VariableLengthData& buffer ) const

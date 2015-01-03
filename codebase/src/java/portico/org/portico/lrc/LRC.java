@@ -520,6 +520,13 @@ public class LRC
 	public boolean tick( double minSeconds, double maxSeconds )
 		throws JRTIinternalError, JConcurrentAccessAttempted
 	{
+		// check to make sure people aren't playing funny buggers
+		if( minSeconds == 0.0 && maxSeconds == 0.0 )
+		{
+			throw new JRTIinternalError( "OK, so you called tick(min,max) with 0.0 for both "+
+			                             "values. Do we need to talk about how this works?" );
+		}
+
 		// don't process anything if callbacks aren't enabled
 		if( state.areCallbacksEnabled() == false )
 			return true;
@@ -539,23 +546,26 @@ public class LRC
 
 			// poll until AT LEAST the minimum time
 			Timestamp minimumTimestamp = new Timestamp( minTime );
-			PorticoMessage message = state.messageQueue.pollUntil( minimumTimestamp );
-			if( message == null )
-				return false;
-
-			// process the message we got
-			tickProcess( message );
-
-			// keep processing messages while they are there and we have not exceeded the max time
-			while( System.currentTimeMillis() <= maxTime )
+			while( System.currentTimeMillis() < minTime )
 			{
-				message = state.messageQueue.poll();
+				PorticoMessage message = state.messageQueue.pollUntil( minimumTimestamp );
+				if( message == null )
+					break;
+				else
+					tickProcess( message );
+			}
+
+			// the min time has now passed, keep processing messages until either
+			// the max time expires, or we run out of tasks
+			while( System.currentTimeMillis() < maxTime )
+			{
+				PorticoMessage message = state.messageQueue.poll();
 				if( message == null )
 					return false;
 				else
 					tickProcess( message );
 			}
-
+			
 			// return that there are more messaegs, this could technically be a lie if the message
 			// we processed before time ran out was the last message available, but it is likely
 			// that there is more work and that if there had been none we'd have gotten back null

@@ -34,7 +34,6 @@ struct RTIambPrivateRefs
 	//----------------------------------------------------------
 	public:
 		JavaRTI *rti;
-		JNIEnv *env; // shortcut to rti->jnienv
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS

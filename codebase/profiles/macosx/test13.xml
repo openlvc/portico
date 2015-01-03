@@ -69,8 +69,8 @@
 				<!-- Generate the build-specific local ant properties -->
 				<!--                                                  -->
 				<cpplocals compiler="@{compiler}" arch="@{arch}" build="@{build}">
-					<debug cargs="-g -O0 -fPIC -Wall"/>
-					<release cargs="-O0 -fPIC -Wall"/>
+					<debug cargs="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
+					<release cargs="-O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
 				</cpplocals>
 
 				<cpptask compiler="g++"

@@ -41,6 +41,9 @@ void PorticoRtiAmbassador::unconditionalAttributeOwnershipDivestiture(
 		               Logger::toString(attributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
@@ -84,6 +87,9 @@ void PorticoRtiAmbassador::negotiatedAttributeOwnershipDivestiture(
 		               theObject.toString().c_str(),
 		               Logger::toString(attributes).c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -132,6 +138,9 @@ void PorticoRtiAmbassador::confirmDivestiture( ObjectInstanceHandle theObject,
 		               Logger::toString(attributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jintArray jattributes = JniUtils::fromSet( jnienv, attributes );
@@ -178,6 +187,9 @@ void PorticoRtiAmbassador::attributeOwnershipAcquisition( ObjectInstanceHandle t
 		               theObject.toString().c_str(),
 		               Logger::toString(desiredAttributes).c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -227,6 +239,9 @@ void PorticoRtiAmbassador::attributeOwnershipAcquisitionIfAvailable(
 		               Logger::toString(desiredAttributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jintArray jattributes = JniUtils::fromSet( jnienv, desiredAttributes );
@@ -267,6 +282,9 @@ void PorticoRtiAmbassador::attributeOwnershipReleaseDenied( ObjectInstanceHandle
 		               theObject.toString().c_str(),
 		               Logger::toString(theAttributes).c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
@@ -328,6 +346,9 @@ void PorticoRtiAmbassador::cancelNegotiatedAttributeOwnershipDivestiture(
 		               Logger::toString(theAttributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jintArray jattributes = JniUtils::fromSet( jnienv, theAttributes );
@@ -371,6 +392,9 @@ void PorticoRtiAmbassador::cancelAttributeOwnershipAcquisition(
 		               Logger::toString(theAttributes).c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jintArray jattributes = JniUtils::fromSet( jnienv, theAttributes );
@@ -411,6 +435,9 @@ void PorticoRtiAmbassador::queryAttributeOwnership( ObjectInstanceHandle theObje
 		               theAttribute.toString().c_str() );
 	}
 
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );
 	jint jattribute = JniUtils::fromHandle( theAttribute );
@@ -449,6 +476,9 @@ bool PorticoRtiAmbassador::isAttributeOwnedByFederate( ObjectInstanceHandle theO
 		               theObject.toString().c_str(),
 		               theAttribute.toString().c_str() );
 	}
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
 
 	// get java versions of the parameters
 	jint jobjectHandle = JniUtils::fromHandle( theObject );

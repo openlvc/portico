@@ -64,7 +64,7 @@ long AttributeHandle::hash() const
 
 VariableLengthData AttributeHandle::encode() const
 {
-	return VariableLengthData( (void*)this->_impl->value, 4 );
+	return VariableLengthData( (void*)&this->_impl->value, 4 );
 }
 
 void AttributeHandle::encode( VariableLengthData& buffer ) const

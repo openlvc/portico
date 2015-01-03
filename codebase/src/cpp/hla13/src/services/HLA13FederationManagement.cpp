@@ -30,20 +30,21 @@ void RTI::RTIambassador::createFederationExecution( const char* executionName, c
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
-	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
-	jstring jFED = privateRefs->env->NewStringUTF( FED );
+	jstring jExecutionName = env->NewStringUTF( executionName );
+	jstring jFED = env->NewStringUTF( FED );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->CREATE_FEDERATION,
-	                                  jExecutionName,
-	                                  jFED );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->CREATE_FEDERATION,
+	                     jExecutionName,
+	                     jFED );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jExecutionName );
-	privateRefs->env->DeleteLocalRef( jFED );
+	env->DeleteLocalRef( jExecutionName );
+	env->DeleteLocalRef( jFED );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] createFederationExecution(): name=%s, fedfile=%s", executionName, FED );
@@ -56,17 +57,18 @@ void RTI::RTIambassador::destroyFederationExecution( const char *executionName )
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] destroyFederationExecution(): name=%s", executionName );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// get java versions of the parameters
-	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
+	jstring jExecutionName = env->NewStringUTF( executionName );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->DESTROY_FEDERATION,
-	                                  jExecutionName );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->DESTROY_FEDERATION,
+	                     jExecutionName );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jExecutionName );
+	env->DeleteLocalRef( jExecutionName );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] destroyFederationExecution(): name=%s", executionName );
@@ -88,27 +90,28 @@ RTI::RTIambassador::joinFederationExecution( const char *federateName,
 {
 	logger->trace( "[Starting] joinFederationExecution(): federationName=%s, federateName=%s",
 	               executionName, federateName );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// check the federate ambassador
 	if( federateAmbassador == NULL )
 		throw RTI::RTIinternalError( "Null FederateAmbassador given to joinFederationExecution()" );
 
 	// get java versions of the parameters
-	jstring jFederateName = privateRefs->env->NewStringUTF( federateName );
-	jstring jExecutionName = privateRefs->env->NewStringUTF( executionName );
+	jstring jFederateName = env->NewStringUTF( federateName );
+	jstring jExecutionName = env->NewStringUTF( executionName );
 
 	// store the user federate ambassador
 	privateRefs->rti->fedamb = federateAmbassador;
 
 	// call the method
-	jint federateHandle = privateRefs->env->CallIntMethod( privateRefs->rti->jproxy,
-	                                                       privateRefs->rti->JOIN_FEDERATION,
-	                                                       jFederateName,
-	                                                       jExecutionName );
+	jint federateHandle = env->CallIntMethod( privateRefs->rti->jproxy,
+	                                          privateRefs->rti->JOIN_FEDERATION,
+	                                          jFederateName,
+	                                          jExecutionName );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jFederateName );
-	privateRefs->env->DeleteLocalRef( jExecutionName );
+	env->DeleteLocalRef( jFederateName );
+	env->DeleteLocalRef( jExecutionName );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] joinFederationExecution(): federationName=%s, federateName=%s",
@@ -126,11 +129,10 @@ void RTI::RTIambassador::resignFederationExecution( RTI::ResignAction theAction 
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] resignFederationExecution(): action=%d", theAction );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->RESIGN_FEDERATION,
-	                                  theAction );
+	env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->RESIGN_FEDERATION, theAction );
 
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -151,20 +153,21 @@ void RTI::RTIambassador::registerFederationSynchronizationPoint( const char *lab
 	       RTI::RTIinternalError )
 { 
 	logger->trace( "[Starting] registerFederationSynchronizationPoint(): label=%s", label );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
+	jstring jLabel  = env->NewStringUTF( label );
 	jbyteArray jTag = privateRefs->rti->convertTag( theTag );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REGISTER_FEDERATION_SYNCH,
-	                                  jLabel,
-	                                  jTag );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REGISTER_FEDERATION_SYNCH,
+	                     jLabel,
+	                     jTag );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jLabel );
-	privateRefs->env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( jLabel );
+	env->DeleteLocalRef( jTag );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finsihed] registerFederationSynchronizationPoint(): label=%s", label );
@@ -188,21 +191,22 @@ void RTI::RTIambassador::registerFederationSynchronizationPoint( const char *lab
 	}
 
 	// get java versions of the parameters
-	jstring jLabel     = privateRefs->env->NewStringUTF( label );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jLabel     = env->NewStringUTF( label );
 	jbyteArray jTag    = privateRefs->rti->convertTag( theTag );
 	jintArray jSyncSet = privateRefs->rti->convertFHS( theSet );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REGISTER_FEDERATION_SYNCH_FEDHANDLESET,
-	                                  jLabel,
-	                                  jTag,
-	                                  jSyncSet );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REGISTER_FEDERATION_SYNCH_FEDHANDLESET,
+	                     jLabel,
+	                     jTag,
+	                     jSyncSet );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jLabel );
-	privateRefs->env->DeleteLocalRef( jTag );
-	privateRefs->env->DeleteLocalRef( jSyncSet );
+	env->DeleteLocalRef( jLabel );
+	env->DeleteLocalRef( jTag );
+	env->DeleteLocalRef( jSyncSet );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] registerFederationSynchronizationPoint(FederateHandleSet): label=%s",
@@ -219,17 +223,18 @@ void RTI::RTIambassador::synchronizationPointAchieved( const char *label )
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] synchronizationPointAchieved(): label=%s", label );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
+	jstring jLabel  = env->NewStringUTF( label );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->SYNCH_POINT_ACHIEVED,
-	                                  jLabel );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->SYNCH_POINT_ACHIEVED,
+	                     jLabel );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jLabel );
+	env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] synchronizationPointAchieved(): label=%s", label );
@@ -246,19 +251,20 @@ void RTI::RTIambassador::requestFederationSave( const char *label, const RTI::Fe
 	       RTI::RTIinternalError )
 {
 	// get java versions of the parameters
-	jstring jLabel = privateRefs->env->NewStringUTF( label );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+	jstring jLabel = env->NewStringUTF( label );
 	jdouble jTime  = privateRefs->rti->convertTime( theTime );
 
 	logger->trace( "[Starting] requestFederationSave(): label=%s, time=%f", label, jTime );
 
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REQUEST_FEDERATION_SAVE_TIME,
-	                                  jLabel,
-	                                  jTime );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REQUEST_FEDERATION_SAVE_TIME,
+	                     jLabel,
+	                     jTime );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jLabel );
+	env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] requestFederationSave(withTime): label=%s", label );
@@ -272,17 +278,18 @@ void RTI::RTIambassador::requestFederationSave( const char *label )
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] requestFederationSave(): label=%s", label );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
+	jstring jLabel  = env->NewStringUTF( label );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REQUEST_FEDERATION_SAVE,
-	                                  jLabel );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REQUEST_FEDERATION_SAVE,
+	                     jLabel );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jLabel );
+	env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 
 	logger->trace( "[Finished] requestFederationSave(): label=%s", label );
@@ -297,10 +304,10 @@ void RTI::RTIambassador::federateSaveBegun()
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] federateSaveBegun()" );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->FEDERATE_SAVE_BEGUN );
+	env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->FEDERATE_SAVE_BEGUN );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -317,10 +324,10 @@ void RTI::RTIambassador::federateSaveComplete()
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] federateSaveComplete()" );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->FEDERATE_SAVE_COMPLETE );
+	env->CallVoidMethod( privateRefs->rti->jproxy, privateRefs->rti->FEDERATE_SAVE_COMPLETE );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -336,10 +343,11 @@ void RTI::RTIambassador::federateSaveNotComplete()
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] federateSaveNotComplete()" );
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->FEDERATE_SAVE_NOT_COMPLETE );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->FEDERATE_SAVE_NOT_COMPLETE );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -356,17 +364,18 @@ void RTI::RTIambassador::requestFederationRestore( const char *label )
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] requestFederationRestore(): label=%s", label );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// get java versions of the parameters
-	jstring jLabel  = privateRefs->env->NewStringUTF( label );
+	jstring jLabel  = env->NewStringUTF( label );
 	
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->REQUEST_FEDERATION_RESTORE,
-	                                  jLabel );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->REQUEST_FEDERATION_RESTORE,
+	                     jLabel );
 
 	// clean up and run the exception check
-	privateRefs->env->DeleteLocalRef( jLabel );
+	env->DeleteLocalRef( jLabel );
 	privateRefs->rti->exceptionCheck();
 	
 	logger->trace( "[Finished] requestFederationRestore(): label=%s", label );
@@ -381,10 +390,11 @@ void RTI::RTIambassador::federateRestoreComplete()
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] federateRestoreComplete()" );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->FEDERATE_RESTORE_COMPLETE );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->FEDERATE_RESTORE_COMPLETE );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();
@@ -400,10 +410,11 @@ void RTI::RTIambassador::federateRestoreNotComplete()
 	       RTI::RTIinternalError )
 {
 	logger->trace( "[Starting] federateRestoreNotComplete()" );
-	
+	JNIEnv *env = privateRefs->rti->getJniEnvironment();
+
 	// call the method
-	privateRefs->env->CallVoidMethod( privateRefs->rti->jproxy,
-	                                  privateRefs->rti->FEDERATE_RESTORE_NOT_COMPLETE );
+	env->CallVoidMethod( privateRefs->rti->jproxy,
+	                     privateRefs->rti->FEDERATE_RESTORE_NOT_COMPLETE );
 	
 	// run the exception check
 	privateRefs->rti->exceptionCheck();

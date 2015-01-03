@@ -44,8 +44,31 @@
 	<!--                                  Compile Targets                                  -->
 	<!-- ================================================================================= -->
 	<target name="compile" extensionOf="cpp.compile">
-		<gcc-hla13 compiler="gcc4" arch="amd64" build="debug"/>
-		<gcc-hla13 compiler="gcc4" arch="amd64" build="release"/>
+		<compile-hla13 arch="amd64" build="debug"/>
+		<compile-hla13 arch="amd64" build="release"/>
+	</target>
+
+	<!-- ==================================== -->
+	<!--          HLA 1.3 Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test.compile" depends="compile">
+		<cpptask compiler="g++"
+		         outfile="test13"
+		         workdir="${test13.build.dir}"
+		         outdir="${test13.complete.dir}"
+		         type="executable"
+		         arch="amd64"
+		         compilerArgs="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"
+		         linkerArgs="-stdlib=libstdc++">
+			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${hla13.include.dir}"/>
+			<includepath path="${hla13.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG64d,FedTime64d"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+		</cpptask>
 	</target>
 
 	<!-- ================================================ -->
@@ -205,4 +228,185 @@
 		<chmod dir="${sandbox.examples.dir}/cpp/hla13" perm="777" includes="**/*.sh"/>
 	</target>
 
+	<!-- ================================================================================= -->
+	<!--                                 Installer Targets                                 -->
+	<!-- ================================================================================= -->
+	<!-- Not required for an interface build -->
+
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- Target to kick off the release process -->
+	<target name="release" extensionOf="master.release" depends="clean,test,sandbox"/>
+
+	<!-- ================================================================================= -->
+	<!--                            HLA v1.3 Helper Macros                                 -->
+	<!-- ================================================================================= -->
+	<!-- ================================================ -->
+	<!--               Macro: compile-hla13               -->
+	<!-- ================================================ -->
+	<!--
+		 This macro is a simple wrapper for msvc-hla13. It performs two main tasks:
+		   1. Checks to see whether the requested compiler/arch/build setting was requested
+		      in the cpp.profile and skips the build if it wasn't
+		   2. If it was requested, makes sure that the appropriate version of Visual Studio
+		      is installed. If it isn't, the compile  is skipped, unless this is a strict
+			  build, in which case the build will be failed
+	-->
+	<macrodef name="compile-hla13">
+		<!-- Attributes -->
+		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- ========================== -->
+			<!-- 1. Check the build profile -->
+			<!-- ========================== -->
+			<!-- Only run this if it's in the requested build profile -->
+			<if><isset property="@{compiler}.@{arch}.@{build}"/>
+			<then>
+				<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
+				<gcc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+			</then>
+			<else>
+				<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- not requested"/>
+			</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================ -->
+	<!--                Macro: gcc-hla13                  -->
+	<!-- ================================================ -->
+	<!-- 
+	     The various C++ compiling commands have a lot in common. They share the same
+		 source and include base, the same preprocessor definitions, very similar library
+		 names and similar library dependencies. Despite being *very* similar, each of the
+		 builds requires something just a little bit different.
+		 
+		 This macro hides all the little details and give a target compiler, architecture
+		 and build type, generates the appropriate libraries (adusting library names,
+		 working directories, preprocessor definitions, compiler args, etc...)
+		 
+		 The output from running this macro will be the libRTI-NG and libFedTime
+		 libraries (names updated approrpiate for debug/release and 32/64-bit)
+		 dropped into ${hla13.complete.dir}.
+		 
+		 NOTE: This macro should always be wrapped in a <compile-hl13> task to ensure it
+		       only runs when it needs to.
+		 
+		 Usage:
+			* <gcc-hla13 compiler="gcc4" arch="x86" build="debug"/>
+			
+		 Arguments:
+			* compiler: The compiler to use (vc10, vc9 or vc8)
+			* arch:     The platform architecture (x86 or amd64)
+			* build:    The build type (debug or release)
+	-->	 
+	<macrodef name="gcc-hla13" description="(HLA 1.3) Compile the RTI libraries">
+		<!-- Attributes -->
+		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- Local properties used in the macro -->
+			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
+			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
+			<local name="_cargs"/>       <!-- compiler arguments -->
+			<local name="_largs"/>       <!-- linker arguments -->
+			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
+			<local name="_jdklib"/>      <!-- path to either 32 or 64-bit JDK libs -->
+
+			<!-- Are we building for 32-bit or 64-bit? -->
+			<if><equals arg1="@{arch}" arg2="amd64"/><then>
+				<property name="_bitness" value="64"/>
+				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
+			</then><else>
+				<property name="_bitness" value=""/>
+				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/client"/>
+			</else></if>
+
+			<!-- Is this a Debug or Release build? -->
+			<if><equals arg1="@{build}" arg2="debug"/><then>
+				<!-- Debug Build -->
+				<property name="_d"           value="d"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
+				<property name="_largs"       value=" -stdlib=libstdc++"/>
+				<property name="_buildsymbol" value="DEBUG"/>
+			</then><else>
+				<!-- Release Build -->
+				<property name="_d"           value=""/>
+				<property name="_cargs"       value="-O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
+				<property name="_largs"       value=" -stdlib=libstdc++"/>
+				<property name="_buildsymbol" value="RELEASE"/>
+			</else></if>
+
+			<!-- ========================== -->
+			<!-- Do the library compilation -->
+			<!-- ========================== -->
+			<echo message="Building libFedTime${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libFedTime${_bitness}${_d}"
+					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${hla13.complete.dir}/@{compiler}"
+					 type="shared"
+					 arch="@{arch}"
+					 compiler="g++"
+					 compilerArgs="${_cargs}"
+					 linkerArgs="${_largs}">
+				<fileset dir="${hla13.src.dir}">
+					<include name="time/RTIfedTime.cpp"/>
+					<include name="time/FedTime.cpp"/>
+					<include name="time/FedTimeFactory.cpp"/>
+					<include name="types/Exception.cpp"/>
+				</fileset>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="BUILDING_RTI"/>
+				<define name="BUILDING_FEDTIME"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+			</cpptask>
+
+			<echo message="Building libRTI-NG${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libRTI-NG${_bitness}${_d}"
+					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${hla13.complete.dir}/@{compiler}"
+					 type="shared"
+					 arch="@{arch}"
+					 compiler="g++"
+					 compilerArgs="${_cargs}"
+					 linkerArgs="${_largs}">
+				<fileset dir="${hla13.src.dir}">
+					<include name="**/*.cpp"/>
+					<exclude name="time/RTIfedTime.cpp"/>
+					<exclude name="time/FedTime.cpp"/>
+					<exclude name="time/FedTimeFactory.cpp"/>
+				</fileset>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.macosx}/include;${jdk.home.macosx}/include/darwin"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="BUILDING_RTI"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<library path="${_jdklib}" libs="jvm,jsig"/>
+				<library path="${hla13.complete.dir}/@{compiler}" libs="FedTime${_bitness}${_d}"/>
+			</cpptask>
+
+			<!-- === Create the SymLink === -->
+			<!-- we can't use the symlink task because it will create links based
+			     on the full path name (whereas we want relative links) -->
+			<echo>creating symlinks...</echo>
+			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libFedTime${_bitness}${_d}"/>
+			<symlink-dylib directory="${hla13.complete.dir}/@{compiler}" name="libRTI-NG${_bitness}${_d}"/>
+		</sequential>
+	</macrodef>
 </project>
+
