@@ -26,7 +26,7 @@ import org.jgroups.Message.Flag;
 import org.jgroups.blocks.MessageDispatcher;
 import org.jgroups.util.DefaultThreadFactory;
 import org.jgroups.util.Util;
-
+import org.portico.bindings.jgroups.Auditor;
 import org.portico.bindings.jgroups.JGroupsProperties;
 import org.portico.bindings.jgroups.MessageReceiver;
 import org.portico.lrc.LRC;
@@ -63,6 +63,9 @@ public class FederationChannel
 	protected Logger logger;
 	protected String federationName;
 	
+	// write metadata about incoming/outgoing message flow
+	private Auditor auditor;
+
 	// JGroups connection information
 	protected boolean connected;
 	protected JChannel jchannel;
@@ -88,13 +91,16 @@ public class FederationChannel
 		String jglevel = System.getProperty( JGroupsProperties.PROP_JGROUPS_LOGLEVEL, "OFF" );
 		Log4jConfigurator.setLevel( jglevel, "org.jgroups" );
 		
+		// create this, but leave as disabled for now - gets turned on in joinFederation
+		this.auditor = new Auditor();
+		
 		// channel details set when we connect
 		this.connected = false;
 		this.jchannel = null;
 		this.jdispatcher = null;
 		this.jlistener = new FederationListener( this );
 		
-		this.receiver = new MessageReceiver();
+		this.receiver = new MessageReceiver( this.auditor );
 
 		// the manifest is created in the viewAccepted method which is called
 		// as soon as we connect to a channel
@@ -225,6 +231,10 @@ public class FederationChannel
 		Message message = new Message( null /*destination*/, null /*source*/, data );
 		message.setBuffer( data );
 
+		// Log an audit message for the send
+		if( auditor.isEnabled() )
+			auditor.sent( payload, data.length );
+		
 		// write the message
 		if( logger.isTraceEnabled() )
 		{
@@ -325,6 +335,10 @@ public class FederationChannel
 			}
 		}
 
+		// Enable the auditor if we are configured to use it
+		if( JGroupsProperties.isAuditorEnabled() )
+			this.auditor.startAuditing( federationName, federateName, lrc );
+		
 		// link up the message receiver to the LRC we're joined to so that
 		// messages can start flowing right away
 		this.receiver.linkToLRC( lrc );

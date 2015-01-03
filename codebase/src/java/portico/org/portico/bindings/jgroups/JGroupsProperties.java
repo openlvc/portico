@@ -42,6 +42,9 @@ public class JGroupsProperties
 	    that there is no existing co-ordinator and appointing ourselves to that lofty title */
 	public static String PROP_JGROUPS_GMS_TIMEOUT = "portico.jgroups.gms.jointimeout";
 
+	/** Whether or not the auditor is enabled */
+	public static String PROP_JGROUPS_AUDITOR_ENABLED = "portico.jgroups.auditor.enabled";
+
 	///// jgroups properties /////////////////////////////////////////////////////////////////
 	/** The amount of time (in milliseconds) to wait for a response to a request, defaults to 1000,
 	    controllable through system property {@link #PROP_JGROUPS_TIMEOUT}  */
@@ -80,4 +83,14 @@ public class JGroupsProperties
 	{
 		return Boolean.valueOf( System.getProperty(PROP_JGROUPS_DAEMON,"true") );
 	}
+
+	/**
+	 * @return True if the Auditor has been turned on in configuration, false otherwise.
+	 *         Default is false.
+	 */
+	public static final boolean isAuditorEnabled()
+	{
+		return Boolean.valueOf( System.getProperty(PROP_JGROUPS_AUDITOR_ENABLED,"false") );
+	}
+	
 }
