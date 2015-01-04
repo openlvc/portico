@@ -39,14 +39,16 @@ public class MessageReceiver
 	//----------------------------------------------------------
 	private LRC lrc;
 	private Logger logger;
+	private Auditor auditor;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public MessageReceiver()
+	public MessageReceiver( Auditor auditor )
 	{
 		this.lrc = null;
 		this.logger = Logger.getLogger( "portico.lrc.jgroups" );
+		this.auditor = auditor;
 	}
 
 	//----------------------------------------------------------
@@ -78,6 +80,11 @@ public class MessageReceiver
     		if( payload == null )
    				return;
     		
+    		// log an audit entry for the reception
+    		if( auditor.isRecording() )
+    			auditor.received( payload, message.getLength() );
+    		
+    		// shove into our queue for later processing
     		lrc.getState().getQueue().offer( payload );
 		}
 		catch( Exception e )
@@ -102,6 +109,10 @@ public class MessageReceiver
 			PorticoMessage payload = MessageHelpers.inflate( message.getBuffer(),
 			                                                 PorticoMessage.class );
 			
+    		// log an audit entry for the reception
+    		if( auditor.isRecording() )
+    			auditor.received( payload, message.getLength() );
+
 			MessageContext context = new org.portico.utils.messaging.MessageContext( payload );
 			lrc.getIncomingSink().process( context );
 			return context.getResponse();

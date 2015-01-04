@@ -256,4 +256,14 @@
 #
 # portico.jgroups.flow.credits = 1000000
 
+# (4.12) JGroups Traffic Auditing
+#         If this option is enabled a special log file will be produced for each federate listing
+#         the messages it has sent and received. This information can be used to make judgements
+#         about network configuration (such as bundling) or to just see what is happening in the
+#         federation at a coarse level.
+#
+#         The audit files are placed in the logs directory (see sec 1.1) with the name:
+#         "audit-FEDERATENAME.log"
+#
+# portico.jgroups.auditor.enabled = false
 
