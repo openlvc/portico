@@ -81,7 +81,7 @@ public class MessageReceiver
    				return;
     		
     		// log an audit entry for the reception
-    		if( auditor.isEnabled() )
+    		if( auditor.isRecording() )
     			auditor.received( payload, message.getLength() );
     		
     		// shove into our queue for later processing
@@ -110,7 +110,7 @@ public class MessageReceiver
 			                                                 PorticoMessage.class );
 			
     		// log an audit entry for the reception
-    		if( auditor.isEnabled() )
+    		if( auditor.isRecording() )
     			auditor.received( payload, message.getLength() );
 
 			MessageContext context = new org.portico.utils.messaging.MessageContext( payload );

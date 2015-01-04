@@ -232,7 +232,7 @@ public class FederationChannel
 		message.setBuffer( data );
 
 		// Log an audit message for the send
-		if( auditor.isEnabled() )
+		if( auditor.isRecording() )
 			auditor.sent( payload, data.length );
 		
 		// write the message
@@ -386,6 +386,7 @@ public class FederationChannel
 		// manifest as it updates it for any federate resignation
 		logger.info( "SUCCESS Federate ["+federateName+"] resigned from ["+federationName+"]" );
 		this.receiver.unlink();
+		this.auditor.stopAuditing();
 	}
 
 	/**
