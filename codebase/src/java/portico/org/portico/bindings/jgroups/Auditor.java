@@ -27,9 +27,16 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.jgroups.Version;
 import org.portico.lrc.LRC;
+import org.portico.lrc.LRCState;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.management.Federate;
+import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.model.ObjectModel;
+import org.portico.lrc.services.object.msg.DeleteObject;
+import org.portico.lrc.services.object.msg.DiscoverObject;
+import org.portico.lrc.services.object.msg.SendInteraction;
+import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.utils.messaging.PorticoMessage;
 
 /**
@@ -62,9 +69,11 @@ public class Auditor
 	private String federationName;
 	private String federateName;
 	private LRC lrc;
+	private LRCState lrcState;
 	
 	// counters and metrics
 	private Map<String,MessageMetrics> metrics;
+	
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -75,10 +84,12 @@ public class Auditor
 		this.logger = null;
 		this.federationName = "";
 		this.federateName = "";
+		this.lrc = null;      // set in startAuditing()
+		this.lrcState = null; // set in startAuditing()
 		
 		String timeFormat = "%1tH:%<tM:%<tS.%<tL";
-		this.receivedFormat = "received "+timeFormat+" %30s  %5d   from %s";
-		this.sentFormat     = "    sent "+timeFormat+" %30s  %5d   %s";
+		this.receivedFormat = "received "+timeFormat+" %30s  %5d   from %-15s %s";
+		this.sentFormat     = "    sent "+timeFormat+" %30s  %5d   %-20s %s";
 		
 		// counters and metrics
 		this.metrics = new HashMap<String,MessageMetrics>();
@@ -109,20 +120,20 @@ public class Auditor
 			return;
 		
 		// who are we sending this to?
-		int targetHandle = message.getTargetFederate();
-		String targetName = "";
-		if( targetHandle != -1 )
-		{
-			targetName = "  to "+lrc.getState().getKnownFederate(targetHandle).getFederateName()+
-			             "("+targetHandle+")";
-		}
-		
+		String federateName = getFederateName( message.getTargetFederate() );
+		if( federateName.startsWith("unknown") )
+			federateName = " ";
+		else
+			federateName = "  to "+federateName+" ";
+
+		// log our message
 		String type = message.getClass().getSimpleName();
 		String entry = String.format( sentFormat,
 		                              new Date(System.currentTimeMillis()),
 		                              type,
 		                              size,
-		                              targetName );
+		                              federateName,
+		                              getMessageSpecificString(message) );
 		logger.info( entry );
 
 		// log some metrics
@@ -135,6 +146,9 @@ public class Auditor
 		
 		counter.totalSent += 1;
 		counter.totalSentSize += size;
+		
+		// log message specific information
+
 	}
 
 	/**
@@ -153,19 +167,15 @@ public class Auditor
 		if( message.getSourceFederate() == lrc.getState().getFederateHandle() )
 			return;
 
-		// who sent this?
-		int sourceHandle = message.getSourceFederate();
-		Federate source = this.lrc.getState().getKnownFederate( sourceHandle );
-		String sourceName = "unknown("+sourceHandle+")";
-		if( source != null )
-			sourceName = source.getFederateName()+"("+sourceHandle+")";
-		
+		// log our entry
+		String federateName = getFederateName( message.getSourceFederate() );
 		String type = message.getClass().getSimpleName();
 		String entry = String.format( receivedFormat,
 		                              new Date(System.currentTimeMillis()),
 		                              type,
 		                              size,
-		                              sourceName );
+		                              federateName,
+		                              getMessageSpecificString(message) );
 		logger.info( entry );
 		
 		// log some metrics
@@ -178,6 +188,112 @@ public class Auditor
 		
 		counter.totalReceived += 1;
 		counter.totalReceivedSize += size;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+	///////////////////////////  Portico Data Methods  ////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
+	/**
+	 * For the federate with the given handle, get a printable name. Value returned
+	 * is in the format "federateName(handle)". If the federate is not known, "unknown"
+	 * is returned for the name.
+	 */
+	private String getFederateName( int federateHandle )
+	{
+		Federate source = lrcState.getKnownFederate( federateHandle );
+		if( source != null )
+			return source.getFederateName()+"("+federateHandle+")";
+		else
+			return "unknown("+federateHandle+")";
+	}
+
+	/**
+	 * Inspect the given PorticoMessage and if it is one of the specified types (create, update
+	 * delete, interaction) then generate some additional information to print and return it. If
+	 * the message isn't one of these then an empty string is returned signalling that no extra
+	 * information should be printed. 
+	 */
+	private String getMessageSpecificString( PorticoMessage message )
+	{
+		if( message instanceof DiscoverObject )
+		{
+			DiscoverObject discover = (DiscoverObject)message;
+			String className = getFom().getObjectClass(discover.getClassHandle()).getLocalName();
+			String objectName = discover.getObjectName()+"("+discover.getObjectHandle()+")";
+			
+			return className+", "+objectName;
+		}
+		else if( message instanceof UpdateAttributes )
+		{
+			UpdateAttributes update = (UpdateAttributes)message;
+			
+			// To get the class name we have to get the object, and from it get the class
+			// In some rare cases, we might not have processed the discover yet and as such
+			// don't known the object, so be careful of that
+			int objectHandle = update.getObjectId();
+			OCInstance object = getObject( objectHandle );
+			if( object != null )
+			{
+				String className = ocName( object.getRegisteredClassHandle() );
+				String objectName = object.getName()+"("+objectHandle+")";
+				// return in form "className, objectName(handle), 7 attributes"
+				return className+", "+objectName+", "+update.getAttributes().size()+" attributes";
+			}
+			else
+			{
+				return "UnknownClass, UnknownObject, "+update.getAttributes().size()+" attributes";
+			}
+		}
+		else if( message instanceof SendInteraction )
+		{
+			SendInteraction interaction = (SendInteraction)message;
+			
+			// get the class name
+			int interactionHandle = interaction.getInteractionId();
+			String className = getFom().getInteractionClass(interactionHandle).getLocalName();
+			
+			// return in form "className, 7 parameters"
+			return className+", "+interaction.getParameters().size()+" parameters";
+		}
+		else if( message instanceof DeleteObject )
+		{
+			DeleteObject delete = (DeleteObject)message;
+			
+			// to get the class name we have to get the object, and from it get the class
+			int objectHandle = delete.getObjectHandle();
+			OCInstance object = getObject( objectHandle );
+			String className = ocName(  object.getRegisteredClassHandle() );
+			
+			// now get the object name
+			String objectName = object.getName()+"("+objectHandle+")";
+			
+			// return in form "className, objectName(handle)"
+			return className+", "+objectName;
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+	/**
+	 * We can't cache this at startup because we start auditing during the join call before
+	 * things are fully set up.As such, we have to ask for it each time. It's cool - we won't g
+	 * et a request until after join finishes and by then the code below won't return null.
+	 */
+	private ObjectModel getFom()
+	{
+		return lrcState.getFOM();
+	}
+	
+	private final OCInstance getObject( int objectHandle )
+	{
+		return lrcState.getRepository().getDiscoveredOrUndiscovered( objectHandle );
+	}
+	
+	private final String ocName( int classHandle )
+	{
+		return lrcState.getFOM().getObjectClass(classHandle).getLocalName();
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -200,6 +316,7 @@ public class Auditor
 		this.federationName = federationName;
 		this.federateName = federateName;
 		this.lrc = lrc;
+		this.lrcState = this.lrc.getState();
 		turnLoggerOn();
 		this.recording = true;
 		
