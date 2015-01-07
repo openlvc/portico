@@ -74,13 +74,6 @@ public class Auditor
 	// counters and metrics
 	private Map<String,MessageMetrics> metrics;
 	
-	// fom specific counters
-	private Map<String,MessageMetrics> discoveries;
-	private Map<String,MessageMetrics> reflections;
-	private Map<String,MessageMetrics> interactions;
-	private Map<String,MessageMetrics> deletions;
-	
-
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -478,7 +471,6 @@ public class Auditor
 		long sentSize = 0;
 		long receivedCount = 0;
 		long receivedSize = 0;
-		int longestName = 0;
 		for( String message : metrics.keySet() )
 		{
 			MessageMetrics temp = metrics.get( message );
@@ -486,9 +478,6 @@ public class Auditor
 			sentSize      += temp.totalSentSize;
 			receivedCount += temp.totalReceived;
 			receivedSize  += temp.totalReceivedSize;
-			
-			if( message.length() > longestName )
-				longestName = message.length();
 		}
 		
 		// print a report
@@ -516,43 +505,31 @@ public class Auditor
 		Collections.sort( ordered );
 		for( MessageMetrics temp : ordered )
 		{
-			// figure out the averages - may have received by not sent (or vv) meaning
-			// we are exposed to divide-by-zero problems if we don't check first
-			String sentAvg = "";
-			String sentTotal = "";
-			if( temp.totalSent > 0 )
-			{
-				sentAvg = getSizeString(temp.totalSentSize/temp.totalSent);
-				sentTotal = ""+temp.totalSent;
-			}
-
-			String receivedAvg = "";
-			String receivedTotal = "";
-			if( temp.totalReceived > 0 )
-			{
-				receivedAvg = getSizeString(temp.totalReceivedSize/temp.totalReceived);
-				receivedTotal = ""+temp.totalReceived;
-			}
+			String sentTotal = temp.totalSent == 0 ? "" : ""+temp.totalSent;
+			String recvTotal = temp.totalReceived == 0 ? "" : ""+temp.totalReceived;
 
 			String line = String.format( "  | %27s | %7s | %9s |%8s | %7s | %9s |%8s |",
 			                             temp.messageClass,
 			                             sentTotal,
 			                             getSizeString(temp.totalSentSize),
-			                             sentAvg,
-			                             receivedTotal,
+			                             getSizeString(temp.getSentSizeAvg()),
+			                             recvTotal,
 			                             getSizeString(temp.totalReceivedSize),
-			                             receivedAvg );
+			                             getSizeString(temp.getReceivedSizeAvg()) );
 			logger.info( line );
 		}
 
+		// print the totals
+		long sentAverage = sentCount == 0 ? 0 : sentSize/sentCount;
+		long receivedAverage = receivedCount == 0 ? 0 : receivedSize/receivedCount;
 		logger.info("  |-----------------------------|-------------------------------|-------------------------------|" );
 		logger.info( String.format("  |                       Total | %7d | %9s |%8s | %7d | %9s |%8s |",
 		                           sentCount,
 		                           getSizeString(sentSize),
-		                           getSizeString(sentSize/sentCount),
+		                           getSizeString(sentAverage),
 		                           receivedCount,
 		                           getSizeString(receivedSize),
-		                           getSizeString(receivedSize/receivedCount)) );
+		                           getSizeString(receivedAverage)) );
 		logger.info("  |-----------------------------|-------------------------------|-------------------------------|" );
 		logger.info( "" );
 		logger.info( "" );
@@ -585,39 +562,17 @@ public class Auditor
 			if( type.hasFomSpecificData() == false )
 				continue;
 
-            //           | SendInteraction             |     400 |    1.6 MB |  4.0 KB |     400 |    1.6 MB |  4.0 KB |
-            //           |                    Lifeform |      21 |    4.0 KB |  213 B  |      21 |    4.0 KB |  213 B  |
-            //           |                    Platform |       4 |   1340 B  |  335 B  |         |           |         |
-            //           |           SubmersibleVessel |       4 |   1212 B  |  303 B  |       4 |   1212 B  |  303 B  |
-            //           |-----------------------------|---------|-----------|---------|---------|-----------|---------|
-
-			// Print the overall resutls for this type of message
-			// figure out the averages - may have received by not sent (or vv) meaning
-			// we are exposed to divide-by-zero problems if we don't check first
-			String sentAvg = "";
-			String sentTotal = "";
-			if( type.totalSent > 0 )
-			{
-				sentAvg = getSizeString(type.totalSentSize/type.totalSent);
-				sentTotal = ""+type.totalSent;
-			}
-
-			String receivedAvg = "";
-			String receivedTotal = "";
-			if( type.totalReceived > 0 )
-			{
-				receivedAvg = getSizeString(type.totalReceivedSize/type.totalReceived);
-				receivedTotal = ""+type.totalReceived;
-			}
+			String sentTotal = type.totalSent == 0 ? "" : ""+type.totalSent;
+			String recvTotal = type.totalReceived == 0 ? "" : ""+type.totalReceived;
 
 			String line = String.format( "  | %-27s | %7s | %9s |%8s | %7s | %9s |%8s |",
 			                             type.messageClass,
 			                             sentTotal,
 			                             getSizeString(type.totalSentSize),
-			                             sentAvg,
-			                             receivedTotal,
+			                             getSizeString(type.getSentSizeAvg()),
+			                             recvTotal,
 			                             getSizeString(type.totalReceivedSize),
-			                             receivedAvg );
+			                             getSizeString(type.getReceivedSizeAvg()) );
 			logger.info( line );
 			
 			// print the FOM specific breakdown
@@ -625,30 +580,16 @@ public class Auditor
 			Collections.sort( fomtypes );
 			for( MessageMetrics fomtype : fomtypes )
 			{
-				sentAvg = "";
-				sentTotal = "";
-				if( fomtype.totalSent > 0 )
-				{
-					sentAvg = getSizeString(fomtype.totalSentSize/fomtype.totalSent);
-					sentTotal = ""+fomtype.totalSent;
-				}
-
-				receivedAvg = "";
-				receivedTotal = "";
-				if( fomtype.totalReceived > 0 )
-				{
-					receivedAvg = getSizeString(fomtype.totalReceivedSize/fomtype.totalReceived);
-					receivedTotal = ""+fomtype.totalReceived;
-				}
-
+				sentTotal = fomtype.totalSent == 0 ? "" : ""+fomtype.totalSent;
+				recvTotal = fomtype.totalReceived == 0 ? "" : ""+fomtype.totalReceived;
 				line = String.format( "  | %27s | %7s | %9s |%8s | %7s | %9s |%8s |",
 				                      fomtype.messageClass,
 				                      sentTotal,
 				                      getSizeString(fomtype.totalSentSize),
-				                      sentAvg,
-				                      receivedTotal,
+				                      getSizeString(fomtype.getSentSizeAvg()),
+				                      recvTotal,
 				                      getSizeString(fomtype.totalReceivedSize),
-				                      receivedAvg );
+				                      getSizeString(fomtype.getReceivedSizeAvg()) );
 				logger.info( line );
 			}
 			
@@ -665,7 +606,7 @@ public class Auditor
 	 * Convert the given size (in bytes) to a more human readable string. Returned values
 	 * will be in the form: "16B", "16KB", "16MB", "16GB".
 	 */
-	private String getSizeString( long size )
+	private String getSizeString( double size )
 	{
 		if( size == 0 )
 			return "";
@@ -680,7 +621,7 @@ public class Auditor
 		else if( totalkb > 1.0 )
 			return String.format("%5.1f KB", totalkb );
 		else
-			return String.format("%5d B ", size );
+			return String.format("%5d B ", (int)size );
 	}
 
 	//----------------------------------------------------------
@@ -734,11 +675,21 @@ public class Auditor
 			return specific;
 		}
 		
+		public double getSentSizeAvg()
+		{
+			return totalSent == 0 ? 0 : totalSentSize/totalSent;
+		}
+		
+		public double getReceivedSizeAvg()
+		{
+			return totalReceived == 0 ? 0 : totalReceivedSize/totalReceived;
+		}
+		
 		public int compareTo( MessageMetrics other )
 		{
 			// this comparision is reverse - as we want the large values at the front of the list
-			long ours = totalSentSize + totalReceivedSize;
-			long theirs = other.totalSentSize + totalReceivedSize;
+			long ours = totalSent + totalReceived;
+			long theirs = other.totalSent + totalReceived;
 			if( ours > theirs )
 				return -1;
 			else if( ours < theirs )
