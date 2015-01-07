@@ -74,6 +74,12 @@ public class Auditor
 	// counters and metrics
 	private Map<String,MessageMetrics> metrics;
 	
+	// fom specific counters
+	private Map<String,MessageMetrics> discoveries;
+	private Map<String,MessageMetrics> reflections;
+	private Map<String,MessageMetrics> interactions;
+	private Map<String,MessageMetrics> deletions;
+	
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -98,14 +104,6 @@ public class Auditor
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
-	/**
-	 * @return True if the auditor is currently recording content. False if it is not.
-	 */
-	public final boolean isRecording()
-	{
-		return this.recording;
-	}
 
 	/**
 	 * The local federate just sent the given message. When serialized, the message was the
@@ -147,8 +145,13 @@ public class Auditor
 		counter.totalSent += 1;
 		counter.totalSentSize += size;
 		
-		// log message specific information
-
+		// store FOM class specific information
+		MessageMetrics fomSpecific = getFomSpecificMetrics( message );
+		if( fomSpecific != null )
+		{
+			fomSpecific.totalSent += 1;
+			fomSpecific.totalSentSize += size;
+		}
 	}
 
 	/**
@@ -188,6 +191,14 @@ public class Auditor
 		
 		counter.totalReceived += 1;
 		counter.totalReceivedSize += size;
+
+		// store FOM class specific information
+		MessageMetrics fomSpecific = getFomSpecificMetrics( message );
+		if( fomSpecific != null )
+		{
+			fomSpecific.totalReceived += 1;
+			fomSpecific.totalReceivedSize += size;
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -215,26 +226,21 @@ public class Auditor
 	 */
 	private String getMessageSpecificString( PorticoMessage message )
 	{
-		if( message instanceof DiscoverObject )
+		if( message instanceof UpdateAttributes )
 		{
-			DiscoverObject discover = (DiscoverObject)message;
-			String className = getFom().getObjectClass(discover.getClassHandle()).getLocalName();
-			String objectName = discover.getObjectName()+"("+discover.getObjectHandle()+")";
-			
-			return className+", "+objectName;
-		}
-		else if( message instanceof UpdateAttributes )
-		{
+			//                    //
+			// Reflection Message //
+			//                    //
 			UpdateAttributes update = (UpdateAttributes)message;
 			
-			// To get the class name we have to get the object, and from it get the class
-			// In some rare cases, we might not have processed the discover yet and as such
-			// don't known the object, so be careful of that
+			// To get the class name we have to get the object and ask it.
+			// In rare cases we might now have received & processed the discover call
+			// before an update comes in, so the object may not exist in the store yet
 			int objectHandle = update.getObjectId();
 			OCInstance object = getObject( objectHandle );
 			if( object != null )
 			{
-				String className = ocName( object.getRegisteredClassHandle() );
+				String className = getClassName( object.getRegisteredClassHandle() );
 				String objectName = object.getName()+"("+objectHandle+")";
 				// return in form "className, objectName(handle), 7 attributes"
 				return className+", "+objectName+", "+update.getAttributes().size()+" attributes";
@@ -246,6 +252,9 @@ public class Auditor
 		}
 		else if( message instanceof SendInteraction )
 		{
+			//                  //
+			// Send Interaction //
+			//                  //
 			SendInteraction interaction = (SendInteraction)message;
 			
 			// get the class name
@@ -255,6 +264,16 @@ public class Auditor
 			// return in form "className, 7 parameters"
 			return className+", "+interaction.getParameters().size()+" parameters";
 		}
+		else if( message instanceof DiscoverObject )
+		{
+			//                  //
+			// Discover Message //
+			//                  //
+			DiscoverObject discover = (DiscoverObject)message;
+			String className = getFom().getObjectClass(discover.getClassHandle()).getLocalName();
+			String objectName = discover.getObjectName()+"("+discover.getObjectHandle()+")";
+			return className+", "+objectName;
+		}
 		else if( message instanceof DeleteObject )
 		{
 			DeleteObject delete = (DeleteObject)message;
@@ -262,7 +281,7 @@ public class Auditor
 			// to get the class name we have to get the object, and from it get the class
 			int objectHandle = delete.getObjectHandle();
 			OCInstance object = getObject( objectHandle );
-			String className = ocName(  object.getRegisteredClassHandle() );
+			String className = getClassName( object.getRegisteredClassHandle() );
 			
 			// now get the object name
 			String objectName = object.getName()+"("+objectHandle+")";
@@ -277,6 +296,56 @@ public class Auditor
 	}
 
 	/**
+	 * Find and fetch the MessageMetrics for the specific FOM class within the metrics for the
+	 * type of the given message. For example, find the MessageMetrics representing the Lifeform
+	 * class from within the metrics object representing update messages.
+	 * 
+	 * If this class isn't one we're interested in FOM-specific metrics for (create, refelct,
+	 * delete, interaction), then return null.
+	 */
+	private MessageMetrics getFomSpecificMetrics( PorticoMessage message )
+	{
+		// get the metrics object for the message type (reflect, interaction, etc...)
+		// if this isn't here, we have no specific metrics so return null
+		MessageMetrics parent = metrics.get( message.getClass().getSimpleName() );
+		if( parent == null )
+			return null;
+
+		// get the HLA object/interaction class that message is representing
+		if( message instanceof UpdateAttributes )
+		{
+			int objectHandle = ((UpdateAttributes)message).getObjectId();
+			OCInstance object = getObject( objectHandle );
+			if( object != null )
+			{
+				String className = getClassName( object.getRegisteredClassHandle() );
+				return parent.getOrAdd( className );
+			}
+		}
+		else if( message instanceof SendInteraction )
+		{
+			int classHandle = ((SendInteraction)message).getInteractionId();
+			String className = getFom().getInteractionClass(classHandle).getLocalName();
+			return parent.getOrAdd( className );
+		}
+		else if( message instanceof DiscoverObject )
+		{
+			int classHandle = ((DiscoverObject)message).getClassHandle();
+			String className = getFom().getObjectClass(classHandle).getLocalName();
+			return parent.getOrAdd( className );
+		}
+		else if( message instanceof DeleteObject )
+		{
+			OCInstance object = getObject( ((DeleteObject)message).getObjectHandle() );
+			String className = getClassName( object.getRegisteredClassHandle() );
+			return parent.getOrAdd( className );
+		}
+
+		// if we get here, the message type is not one we're interested in, so just return null
+		return null;
+	}
+
+	/**
 	 * We can't cache this at startup because we start auditing during the join call before
 	 * things are fully set up.As such, we have to ask for it each time. It's cool - we won't g
 	 * et a request until after join finishes and by then the code below won't return null.
@@ -285,20 +354,37 @@ public class Auditor
 	{
 		return lrcState.getFOM();
 	}
-	
+
+	/**
+	 * For the given handle, get the associated {@link OCInstance} data from the repository.
+	 * This may return <code>null</code> if it comes in before the federate has had a chance
+	 * to process the discovery call.
+	 */
 	private final OCInstance getObject( int objectHandle )
 	{
 		return lrcState.getRepository().getDiscoveredOrUndiscovered( objectHandle );
 	}
-	
-	private final String ocName( int classHandle )
+
+	/**
+	 * Get the name of the Object Class represented by the given handle. This will return only
+	 * the local portion of the class, not its fully qualified name
+	 */
+	private final String getClassName( int classHandle )
 	{
 		return lrcState.getFOM().getObjectClass(classHandle).getLocalName();
 	}
+	
+	///////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////  Lifecycle Methods  /////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
+	/**
+	 * @return True if the auditor is currently recording content. False if it is not.
+	 */
+	public final boolean isRecording()
+	{
+		return this.recording;
+	}
 
-	///////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////  Setup Methods  ///////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Enable the auditor and start collecting metadata. At this point in time the log file
 	 * will be created under "logs/audit-[federateName].log". 
@@ -377,6 +463,14 @@ public class Auditor
 		this.appender.close();
 	}
 	
+	///////////////////////////////////////////////////////////////////////////////
+	//////////////////////////  Summary Logging Methods  //////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Log the captured event information showing how many times each message type was captured
+	 * in both the sending and receiving directions, along with the total and average size of
+	 * these messages.
+	 */
 	private void logSummary()
 	{
 		// get some totals
@@ -441,7 +535,7 @@ public class Auditor
 			}
 
 			String line = String.format( "  | %27s | %7s | %9s |%8s | %7s | %9s |%8s |",
-			                             temp.className,
+			                             temp.messageClass,
 			                             sentTotal,
 			                             getSizeString(temp.totalSentSize),
 			                             sentAvg,
@@ -461,8 +555,112 @@ public class Auditor
 		                           getSizeString(receivedSize/receivedCount)) );
 		logger.info("  |-----------------------------|-------------------------------|-------------------------------|" );
 		logger.info( "" );
+		logger.info( "" );
+		
+		logFomSpecificSummary();
 	}
 
+	/**
+	 * The standard summary logs information broken down by Portico message types. These relate
+	 * to API-level actions like Discover, Reflect, etc... The Auditor also records FOM specific
+	 * information for major events so that it can tell you, for example, how many objects of a
+	 * particular class were registered. This method prints that as a separate summary table. 
+	 */
+	private void logFomSpecificSummary()
+	{
+		// events table
+		logger.info( " FOM Specific Summary" );
+		logger.info( "" );
+		logger.info("  |-----------------------------|-------------------------------|-------------------------------|" );
+		logger.info("  |                             |  Sent                         |  Received                     |" );
+		logger.info("  |                             |---------------------------------------------------------------|" );
+		logger.info("  | Message Name                |  Count  |   Size    |   Avg   |  Count  |   Size    |   Avg   |" );
+		logger.info("  |-----------------------------|-------------------------------|-------------------------------|" );
+
+		// loop through all the message types and print out any FOM specific data they have
+		List<MessageMetrics> ordered = new ArrayList<MessageMetrics>( metrics.values() );
+		Collections.sort( ordered );
+		for( MessageMetrics type : ordered )
+		{
+			if( type.hasFomSpecificData() == false )
+				continue;
+
+            //           | SendInteraction             |     400 |    1.6 MB |  4.0 KB |     400 |    1.6 MB |  4.0 KB |
+            //           |                    Lifeform |      21 |    4.0 KB |  213 B  |      21 |    4.0 KB |  213 B  |
+            //           |                    Platform |       4 |   1340 B  |  335 B  |         |           |         |
+            //           |           SubmersibleVessel |       4 |   1212 B  |  303 B  |       4 |   1212 B  |  303 B  |
+            //           |-----------------------------|---------|-----------|---------|---------|-----------|---------|
+
+			// Print the overall resutls for this type of message
+			// figure out the averages - may have received by not sent (or vv) meaning
+			// we are exposed to divide-by-zero problems if we don't check first
+			String sentAvg = "";
+			String sentTotal = "";
+			if( type.totalSent > 0 )
+			{
+				sentAvg = getSizeString(type.totalSentSize/type.totalSent);
+				sentTotal = ""+type.totalSent;
+			}
+
+			String receivedAvg = "";
+			String receivedTotal = "";
+			if( type.totalReceived > 0 )
+			{
+				receivedAvg = getSizeString(type.totalReceivedSize/type.totalReceived);
+				receivedTotal = ""+type.totalReceived;
+			}
+
+			String line = String.format( "  | %-27s | %7s | %9s |%8s | %7s | %9s |%8s |",
+			                             type.messageClass,
+			                             sentTotal,
+			                             getSizeString(type.totalSentSize),
+			                             sentAvg,
+			                             receivedTotal,
+			                             getSizeString(type.totalReceivedSize),
+			                             receivedAvg );
+			logger.info( line );
+			
+			// print the FOM specific breakdown
+			List<MessageMetrics> fomtypes = new ArrayList<MessageMetrics>( type.fomspecific.values() );
+			Collections.sort( fomtypes );
+			for( MessageMetrics fomtype : fomtypes )
+			{
+				sentAvg = "";
+				sentTotal = "";
+				if( fomtype.totalSent > 0 )
+				{
+					sentAvg = getSizeString(fomtype.totalSentSize/fomtype.totalSent);
+					sentTotal = ""+fomtype.totalSent;
+				}
+
+				receivedAvg = "";
+				receivedTotal = "";
+				if( fomtype.totalReceived > 0 )
+				{
+					receivedAvg = getSizeString(fomtype.totalReceivedSize/fomtype.totalReceived);
+					receivedTotal = ""+fomtype.totalReceived;
+				}
+
+				line = String.format( "  | %27s | %7s | %9s |%8s | %7s | %9s |%8s |",
+				                      fomtype.messageClass,
+				                      sentTotal,
+				                      getSizeString(fomtype.totalSentSize),
+				                      sentAvg,
+				                      receivedTotal,
+				                      getSizeString(fomtype.totalReceivedSize),
+				                      receivedAvg );
+				logger.info( line );
+			}
+			
+			logger.info("  |-----------------------------|-------------------------------|-------------------------------|" );
+
+		}
+
+		// a bit of breathing room at the end
+		logger.info( "" );
+		logger.info( "" );
+	}
+	
 	/**
 	 * Convert the given size (in bytes) to a more human readable string. Returned values
 	 * will be in the form: "16B", "16KB", "16MB", "16GB".
@@ -484,6 +682,7 @@ public class Auditor
 		else
 			return String.format("%5d B ", size );
 	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
@@ -497,15 +696,42 @@ public class Auditor
 	 */
 	private class MessageMetrics implements Comparable<MessageMetrics>
 	{
-		public String className;
+		public String messageClass;
 		public long totalSent;
 		public long totalSentSize; // fine up to 8 exabytes
 		public long totalReceived;
 		public long totalReceivedSize;
 		
+		// We use this to record FOM-specific metrics broken down by object/interaction
+		// class name (rather than java type). A type that stores a set of itself? Oh god.
+		// This is only used for create/reflect/delete/interaction events
+		public Map<String,MessageMetrics> fomspecific;
+		
 		public MessageMetrics( String className )
 		{
-			this.className = className;
+			this.messageClass = className;
+			
+			// create this all the time just to avoid NPE problems
+			this.fomspecific = new HashMap<String,MessageMetrics>();
+		}
+		
+		public boolean hasFomSpecificData()
+		{
+			return this.fomspecific.isEmpty() == false;
+		}
+		
+		/** Get the FOM-specific MessageMetrics information for the given FOM class. If there
+		    is no record of it for this type of message, add one and return it */
+		public MessageMetrics getOrAdd( String fomClass )
+		{
+			MessageMetrics specific = fomspecific.get( fomClass );
+			if( specific == null )
+			{
+				specific = new MessageMetrics( fomClass );
+				fomspecific.put( fomClass, specific );
+			}
+			
+			return specific;
 		}
 		
 		public int compareTo( MessageMetrics other )
@@ -520,4 +746,5 @@ public class Auditor
 			else return 0;
 		}
 	}
+	
 }
