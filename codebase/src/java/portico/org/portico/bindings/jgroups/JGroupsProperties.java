@@ -14,6 +14,10 @@
  */
 package org.portico.bindings.jgroups;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 /**
  * All configuration information is stored in system properties as keys. This class
  * provides statics that can be used to identify the specific keys.
@@ -42,8 +46,14 @@ public class JGroupsProperties
 	    that there is no existing co-ordinator and appointing ourselves to that lofty title */
 	public static String PROP_JGROUPS_GMS_TIMEOUT = "portico.jgroups.gms.jointimeout";
 
+	///// auditor settings
 	/** Whether or not the auditor is enabled */
 	public static String PROP_JGROUPS_AUDITOR_ENABLED = "portico.jgroups.auditor.enabled";
+
+	/** Auditor filtering settings */
+	public static String PROP_JGROUPS_AUDITOR_FILTER_DIR = "portico.jgroups.auditor.filter.direction";
+	public static String PROP_JGROUPS_AUDITOR_FILTER_MSG = "portico.jgroups.auditor.filter.message";
+	public static String PROP_JGROUPS_AUDITOR_FILTER_FOM = "portico.jgroups.auditor.filter.fomtype";
 
 	///// jgroups properties /////////////////////////////////////////////////////////////////
 	/** The amount of time (in milliseconds) to wait for a response to a request, defaults to 1000,
@@ -91,6 +101,55 @@ public class JGroupsProperties
 	public static final boolean isAuditorEnabled()
 	{
 		return Boolean.valueOf( System.getProperty(PROP_JGROUPS_AUDITOR_ENABLED,"false") );
+	}
+
+	/**
+	 * @return A list of all the configured direction filters. If no configuration is provided,
+	 *         list will contain one entry - "all". These will be converted to lower case before
+	 *         being returned.
+	 */
+	public static List<String> getAuditorDirectionFilters()
+	{
+		String value = System.getProperty( PROP_JGROUPS_AUDITOR_FILTER_DIR,"all");
+		return explode( value, "," );
+	}
+	
+	/**
+	 * @return A list of all the configured message filters. If no configuration is provided,
+	 *         list will contain one entry - "all". These will be converted to lower case before
+	 *         being returned.
+	 */
+	public static List<String> getAuditorMessageFilters()
+	{
+		String value = System.getProperty( PROP_JGROUPS_AUDITOR_FILTER_MSG,"all");
+		return explode( value, "," );
+	}
+	
+	/**
+	 * @return A list of all the configured fomtype filters. If no configuration is provided,
+	 *         list will contain one entry - "all". These will be converted to lower case before
+	 *         being returned.
+	 */
+	public static List<String> getAuditorFomtypeFilters()
+	{
+		String value = System.getProperty( PROP_JGROUPS_AUDITOR_FILTER_FOM,"all");
+		return explode( value, "," );
+	}
+	
+	private static List<String> explode( String string, String delimiter )
+	{
+		List<String> list = new ArrayList<String>();
+		StringTokenizer tokenizer = new StringTokenizer( string, delimiter );
+		while( tokenizer.hasMoreTokens() )
+		{
+			String temp = tokenizer.nextToken().trim();
+			if( temp.equals("") )
+				continue;
+			else
+				list.add( temp );
+		}
+		
+		return list;
 	}
 	
 }

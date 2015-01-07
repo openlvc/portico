@@ -73,7 +73,12 @@ public class Auditor
 	
 	// counters and metrics
 	private Map<String,MessageMetrics> metrics;
-	
+
+	// filters to restrict what we log
+	private List<String> directionFilters;
+	private List<String> messageFilters;
+	private List<String> fomtypeFilters;
+
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -92,6 +97,11 @@ public class Auditor
 		
 		// counters and metrics
 		this.metrics = new HashMap<String,MessageMetrics>();
+		
+		// filters
+		this.directionFilters = new ArrayList<String>();
+		this.messageFilters   = new ArrayList<String>();
+		this.fomtypeFilters   = new ArrayList<String>();
 	}
 
 	//----------------------------------------------------------
@@ -108,6 +118,10 @@ public class Auditor
 	public void sent( PorticoMessage message, int size )
 	{
 		if( !recording )
+			return;
+		
+		// does this need to be filtered out?
+		if( shouldFilter(message,"sent") )
 			return;
 		
 		// who are we sending this to?
@@ -157,6 +171,10 @@ public class Auditor
 	public void received( PorticoMessage message, int size )
 	{
 		if( !recording )
+			return;
+
+		// does this need to be filtered out?
+		if( shouldFilter(message,"received") )
 			return;
 
 		// discard our own messages as they're not coming from the network
@@ -304,38 +322,11 @@ public class Auditor
 		if( parent == null )
 			return null;
 
-		// get the HLA object/interaction class that message is representing
-		if( message instanceof UpdateAttributes )
-		{
-			int objectHandle = ((UpdateAttributes)message).getObjectId();
-			OCInstance object = getObject( objectHandle );
-			if( object != null )
-			{
-				String className = getClassName( object.getRegisteredClassHandle() );
-				return parent.getOrAdd( className );
-			}
-		}
-		else if( message instanceof SendInteraction )
-		{
-			int classHandle = ((SendInteraction)message).getInteractionId();
-			String className = getFom().getInteractionClass(classHandle).getLocalName();
+		String className = getClassName( message );
+		if( className.equals("Unknown") == false )
 			return parent.getOrAdd( className );
-		}
-		else if( message instanceof DiscoverObject )
-		{
-			int classHandle = ((DiscoverObject)message).getClassHandle();
-			String className = getFom().getObjectClass(classHandle).getLocalName();
-			return parent.getOrAdd( className );
-		}
-		else if( message instanceof DeleteObject )
-		{
-			OCInstance object = getObject( ((DeleteObject)message).getObjectHandle() );
-			String className = getClassName( object.getRegisteredClassHandle() );
-			return parent.getOrAdd( className );
-		}
-
-		// if we get here, the message type is not one we're interested in, so just return null
-		return null;
+		else
+			return null;
 	}
 
 	/**
@@ -365,6 +356,101 @@ public class Auditor
 	private final String getClassName( int classHandle )
 	{
 		return lrcState.getFOM().getObjectClass(classHandle).getLocalName();
+	}
+
+	/** Get appropriate object/interaction class name for this message type, or return "Unknown" */
+	private final String getClassName( PorticoMessage message )
+	{
+		if( message instanceof UpdateAttributes )
+		{
+    		int objectHandle = ((UpdateAttributes)message).getObjectId();
+    		OCInstance object = getObject( objectHandle );
+    		if( object != null )
+    			return getClassName( object.getRegisteredClassHandle() );
+		}
+		else if( message instanceof SendInteraction )
+		{
+			int classHandle = ((SendInteraction)message).getInteractionId();
+			return getFom().getInteractionClass(classHandle).getLocalName();
+		}
+		else if( message instanceof DiscoverObject )
+		{
+			int classHandle = ((DiscoverObject)message).getClassHandle();
+			return getFom().getObjectClass(classHandle).getLocalName();
+		}
+		else if( message instanceof DeleteObject )
+		{
+			OCInstance object = getObject( ((DeleteObject)message).getObjectHandle() );
+			return getClassName( object.getRegisteredClassHandle() );
+		}
+			
+		return "Unknown";
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////  Filter Methods  ///////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * @return True if we should filter out this message - false otherwise
+	 */
+	private boolean shouldFilter( PorticoMessage message, String direction )
+	{
+		// The filter lists contain information about which types should be let through,
+		// so if something isn't in the list, it shouldn't get through. If the list is
+		// empty it means we have no filters, so let everything through
+		
+		// check the direction
+		if( directionFilters.isEmpty() == false )
+		{
+			if( this.directionFilters.contains(direction) == false )
+				return true; // FILTER IT!
+		}
+		
+		// check the message type
+		if( messageFilters.isEmpty() == false )
+		{
+    		String type = message.getClass().getSimpleName();
+    		if( this.messageFilters.contains(type) == false )
+    			return true; // FILTER IT!
+		}
+		
+		if( fomtypeFilters.isEmpty() == false )
+		{
+    		String fomtype = getClassName(message);
+    		if( this.fomtypeFilters.contains(fomtype) == false )
+    			return true; // FILTER IT!
+		}
+
+		// let it through
+		return false;
+	}
+	
+	/** Populate our filter list from configuration */
+	private void populateFilters()
+	{
+		this.directionFilters = JGroupsProperties.getAuditorDirectionFilters();
+		this.messageFilters   = JGroupsProperties.getAuditorMessageFilters();
+		this.fomtypeFilters   = JGroupsProperties.getAuditorFomtypeFilters();
+		
+		// if "all" is set, clear the filter
+		if( shouldDisableFilter(directionFilters) )
+			directionFilters.clear();
+		if( shouldDisableFilter(messageFilters) )
+			messageFilters.clear();
+		if( shouldDisableFilter(fomtypeFilters) )
+			fomtypeFilters.clear();
+	}
+
+	/** If the list contains "all", true is returned indicating we shouldn't filter anything */
+	private boolean shouldDisableFilter( List<String> list )
+	{
+		for( String temp : list )
+		{
+			if( temp.equals("all") )
+				return true;
+		}
+
+		return false;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -399,10 +485,17 @@ public class Auditor
 		turnLoggerOn();
 		this.recording = true;
 		
+		// get our filters
+		populateFilters();
+		
 		// log a startup message with some useful information
 		logger.info( "Starting Audit log for federate ["+federateName+"] in federation ["+
 		             federationName );
 		logger.info( "Portico "+PorticoConstants.RTI_VERSION + " - JGroups "+Version.description );
+		logger.info( "Active Filters:" );
+		logger.info( "     direction: "+directionFilters );
+		logger.info( "       message: "+messageFilters );
+		logger.info( "       fomtype: "+fomtypeFilters );
 		logger.info( "" );
 	}
 
@@ -454,6 +547,11 @@ public class Auditor
 		// turn the logger off
 		this.logger.removeAppender( appender );
 		this.appender.close();
+		
+		// clear the filter lists
+		this.directionFilters.clear();
+		this.messageFilters.clear();
+		this.fomtypeFilters.clear();
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////

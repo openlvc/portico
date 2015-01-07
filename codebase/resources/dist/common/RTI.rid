@@ -267,3 +267,19 @@
 #
 # portico.jgroups.auditor.enabled = false
 
+# (4.13) JGroups Traffic Audit Filtering
+#         Federates can generate a lot of messages. Sometimes you really just want to zero in
+#         on a particular type of message, or messages for a particular FOM type. These filters
+#         let you do that. These filters work in combination. For example, consider the following:
+#             - action  = sent
+#             - type    = UpdateAttributes
+#             - fomtype = Lifeform, GroundVehicle
+#
+#         Given this, only attribute updates for the FOM classes "Lifeform" and "GroundVehicle"
+#         that the local federate sends will be logged. Leaving a value empty, or using the
+#         keyword "all" will cause no filtering for that type to be applied.
+#         
+# portico.jgroups.auditor.filter.direction = 
+# portico.jgroups.auditor.filter.message   = 
+# portico.jgroups.auditor.filter.fomtype   = 
+
