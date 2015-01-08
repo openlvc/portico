@@ -43,7 +43,7 @@
 	<!--                                  Compile Targets                                  -->
 	<!-- ================================================================================= -->
 	<target name="compile" depends="cpp.hla13.compile">
-		<gcc-test13 compiler="gcc4" arch="amd64" build="debug"/>
+		<test-hla13 compiler="gcc4" arch="amd64" build="debug"/>
 	</target>
 
 	<!-- ================================================ -->
@@ -64,22 +64,14 @@
 			</then>
 			<else>
 				<echo message="[Compile] (HLA v1.3 Test Suite) @{compiler}.@{arch}.@{build}"/>
-
-				<!--                                                  -->
-				<!-- Generate the build-specific local ant properties -->
-				<!--                                                  -->
-				<cpplocals compiler="@{compiler}" arch="@{arch}" build="@{build}">
-					<debug cargs="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
-					<release cargs="-O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"/>
-				</cpplocals>
-
 				<cpptask compiler="g++"
-				         outfile="test13-@{arch}"
+				         outfile="test13"
 				         workdir="${test13.build.dir}/@{arch}"
-				         outdir="${test13.complete.dir}/@{arch}"
+				         outdir="${test13.complete.dir}"
 				         type="executable"
-				         arch="@{arch}"
-				         compilerArgs="${_cargs}">
+				         arch="amd64"
+				         compilerArgs="-g -O0 -fPIC -Wall -stdlib=libstdc++ -Wno-c++11-compat-deprecated-writable-strings"
+				         linkerArgs=" -stdlib=libstdc++">
 					<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 					<includepath path="${hla13.include.dir}"/>
 					<includepath path="${hla13.src.dir}/hla/time"/>
@@ -87,7 +79,7 @@
 					<define name="RTI_USES_STD_FSTREAM"/>
 					<define name="DEBUG"/>
 					<library path="${hla13.complete.dir}/gcc4"
-					         libs="RTI-NG${_bitness}${_d},FedTime${_bitness}${_d}"/>
+					         libs="RTI-NG_64d,FedTime_64d"/>
 					<library path="${cppunit.lib}" libs="cppunit"/>
 				</cpptask>
 			</else></if>
