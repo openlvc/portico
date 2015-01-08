@@ -292,6 +292,9 @@ public class Auditor
 			// to get the class name we have to get the object, and from it get the class
 			int objectHandle = delete.getObjectHandle();
 			OCInstance object = getObject( objectHandle );
+			if( object == null )
+				return "Unknown";
+
 			String className = getClassName( object.getRegisteredClassHandle() );
 			
 			// now get the object name
