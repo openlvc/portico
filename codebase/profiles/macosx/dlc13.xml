@@ -67,7 +67,7 @@
 	<!--            HLA 1.3 Interface            -->
 	<!-- ======================================= -->
 	<target name="compile.amd64.debug">
-		<cpp-unix outfile="rti1364d"
+		<cpp-unix outfile="rti13_64d"
 		          workdir="${dlc13.build.dir}"
 		          arch="amd64"
 		          compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor -stdlib=libstdc++"
@@ -94,7 +94,7 @@
 	</target>
 
 	<target name="compile.amd64.release" if="build.release">
-		<cpp-unix outfile="rti1364"
+		<cpp-unix outfile="rti13_64"
 		          workdir="${dlc13.build.dir}"
 		          arch="amd64"
 		          compilerArgs="-O1 -fPIC -Wall -Wno-non-virtual-dtor"

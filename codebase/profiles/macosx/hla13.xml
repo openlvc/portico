@@ -321,7 +321,7 @@
 
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
-				<property name="_bitness" value="64"/>
+				<property name="_bitness" value="_64"/>
 				<property name="_jdklib" value="${jdk.home.macosx}/jre/lib/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
