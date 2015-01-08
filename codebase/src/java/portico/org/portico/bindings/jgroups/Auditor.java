@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.FileAppender;
 import org.jgroups.Version;
 import org.portico.lrc.LRC;
 import org.portico.lrc.LRCState;
@@ -62,7 +62,7 @@ public class Auditor
 	//----------------------------------------------------------
 	private boolean recording;
 	private Logger logger;
-	private RollingFileAppender appender; // keep a ref so we can close out safely
+	private FileAppender appender; // keep a ref so we can close out safely
 	private String receivedFormat;
 	private String sentFormat;
 	
@@ -490,7 +490,7 @@ public class Auditor
 		
 		// log a startup message with some useful information
 		logger.info( "Starting Audit log for federate ["+federateName+"] in federation ["+
-		             federationName );
+		             federationName+"]" );
 		logger.info( "Portico "+PorticoConstants.RTI_VERSION + " - JGroups "+Version.description );
 		logger.info( "Active Filters:" );
 		logger.info( "     direction: "+directionFilters );
@@ -513,9 +513,7 @@ public class Auditor
     		// create the appender for the logger
 			String pattern = new String( "%m%n" );
     		PatternLayout layout = new PatternLayout( pattern );
-    		this.appender = new RollingFileAppender( layout, logfile, true );
-    		appender.setMaxBackupIndex( 2 );
-    		appender.setMaxFileSize( "100MB" );
+    		this.appender = new FileAppender( layout, logfile, true );
     		
     		// attach the appender
     		this.logger = Logger.getLogger( "auditor" );
