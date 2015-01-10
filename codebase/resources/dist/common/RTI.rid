@@ -1,10 +1,10 @@
 # ================================
 # Portico RTI Initialization Data
 # ================================
-# This file contains all the configuration options for Portico. They are initially all
-# commented out, so you can selectively enable the relevant pieces of configuration you require.
+# This file contains all available configuration options for Portico. 
+# Values are initially commented out and are provided shown with their default settings.
 #
-# All options are formatted as name=value pairs, the '#' and '!' characters mark a line as a comment
+# All options are formatted as name=value pairs, the '#' and '!' characters mark comment lines
 #
 # To make use of this file, put it in the directory that your federate is executed from, or set the
 # RTI_RID_FILE environment variable to point at wherever it is located.
@@ -123,14 +123,7 @@
 # ================================
 # These really shouldn't be changed unless you really know what you want
 
-# (3.1) Portico Plugin Path
-#        This is a path that should be searched for Portico plugins. The format is a ";" separated
-#        list of locations for windows, or a ":" separated list for *nix. The default value is empty.
-#        (NOTE) Two locations are *ALWAYS* searched: ./plugins and $RTI_HOME/plugins
-#
-# portico.pluginpath = /opt/portico/plugins
-
-# (3.2) Portico Communications Binding
+# (3.1) Portico Communications Binding
 #        This defines the communications binding Portico uses to talk to the federation. Two
 #        implementations are provided with Portico: "jgroups" (default) and "jvm". If you have
 #        a different binding, you can specify the fully-qualified name of the class that implements
@@ -140,7 +133,7 @@
 #
 # portico.connection = jgroups
 
-# (3.3) LRC Tick Timeout
+# (3.2) LRC Tick Timeout
 #        When a federate calls tick() and there is no work to do, the LRC will wait for a period of
 #        time to allow work to arrive before it returns. This is designed to avoid a busy-looping
 #        situation where people are calling tick in a loop while waiting for some event.
@@ -155,28 +148,21 @@
 
 
 # =========================================
-# 4. JGroups Network Binding Options
+# 4. JGroups Network Settings
 # =========================================
-# The JGroups XML configuration is contained within the jar file at the location
-# "etc/jgroups-udp.xml". If you want to replace that configuration wholesale, you can put an
-# alternate configuration file at this location on the filesystem and it will be found ahead
-# of the one in the jar-file. Alternatively, you can just set these properties to control some
-# of the more prominent properties as it relates to Portico.
+# Portico uses the JGroups library for its inter-federate network communication.
+# These settings control various parameters of the network layer and JGroups itself.
 
-# (4.1) JGroups Binding Log Level
-#        The log level used by the internal JGroups logger. By default this is turned off, but if
-#        you want to see more information about what is happening at a network level, you can lower
-#        the threshold for this level (down to something like DEBUG or even TRACE). Note that this
-#        will only alter the JGroups logger, not the general Portico logger.
+# (4.1) JGroups Log Level
+#        The log level used by the internal JGroups logger. Set higher for an overshare (DEBUG or TRACE).
 #        DEFAULT: OFF
+#
 # portico.jgroups.loglevel = OFF
 
 # (4.2) JGroups Response Timeout
-#        Certain operations Portico uses wait for a specific amount of time for a response. The
-#        length of time a JGroups binding will wait for is specified by this property (in
-#        milliseconds). If you are having reliability problems, try making this value larger, but
-#        note that actions like sync point registration, or registering an object with a name will
-#        take longer if you do.
+#        Portico is decentralized. As such, synchronous operations involve a send-and-wait.
+#        This setting defines how long Portico will wait before deciding a response isn't coming
+#        in milliseconds). 
 #        DEFAULT = 1000
 #
 # portico.jgroups.timeout = 1000
@@ -185,7 +171,7 @@
 #        The UDP address the JGroups binding will communicate on.
 #        DEFAULT: 228.10.10.10
 #
-# portico.jgroups.udp.address = 228.10.10.10 
+# portico.jgroups.udp.address = 239.20.9.13
 
 # (4.4) JGroups UDP Port
 #        The UDP port the JGroups binding will communicate on.
@@ -194,23 +180,34 @@
 # portico.jgroups.udp.port = 20913
 
 # (4.5) JGroups Bind Address
-#        The address/NIC JGroups should use. Try setting this to your desired NIC if setting
-#        the send/receive interfaces don't work.
+#        The address/NIC Portico should use. Can use an IP address associated with a NIC, or
+#        one of the following special values:
 #
-# portico.jgroups.udp.bindAddress = 
+#            GLOBAL: Pick a global IP address if available. If not, falls back to a SITE_LOCAL IP address.
+#        SITE_LOCAL: Picks a site local (non routable) IP address, e.g. from the 192.168.0.0 or 10.0.0.0 address range.
+#        LINK_LOCAL: Picks a link-local IP address, from 169.254.1.0 through 169.254.254.255.
+#      NON_LOOPBACK: Picks any non loopback address.
+#          LOOPBACK: Pick a loopback address, e.g. 127.0.0.1.
+#   match-interface: Pick an address which matches a pattern against the interface name, e.g. match-interface:eth.*
+#     match-address: Pick an address which matches a pattern against the host address, e.g. match-address:192.168.*
+#        match-host: Pick an address which matches a pattern against the host name, e.g. match-host:linux.*
+#
+#        DEFAULT: SITE_LOCAL
+#
+# portico.jgroups.udp.bindAddress = SITE_LOCAL
 
 # (4.6) JGroups UDP Receive Buffer Size
 #        The size of the buffer that incoming messages are stored in before they're passed in to
 #        the LRC. If you find that you are sending messages that are quite large or quite small,
 #        you may want to adjust this value appropriately. Default is quite large (about 24mb).
 #
-# portico.jgroups.udp.receiveBuffer = 25000000
+# portico.jgroups.udp.receiveBuffer = 25M
 
 # (4.7) JGroups UDP Send Buffer Size
 #        The size of the buffer that messages are put in before they are sent out. Don't modify
 #        this unless you know what you're doing. 640k is enough for everything (ZING!)
 #
-# portico.jgroups.udp.sendBuffer = 640000
+# portico.jgroups.udp.sendBuffer = 640K
 
 # (4.8) JGroups Bundling Support
 #         If you are sending lots of smaller messages, higher overall throughput can be obtained by
@@ -223,27 +220,24 @@
 
 # (4.9) JGroups Bundling Max Size
 #         If bundling is enabled, messages will be queued until their total size exceeds this
-#         threshold value (or a timeout occurs, see below). Once the total size reaches this point,
-#         all queued messages will be bundled together and sent out in one packet.
-#         *Bundling must be enabled* if you want to configure this value.
-#         NOTE: Values over 63000 are not allowed by JGroups on some platforms.
+#         threshold value, or a timeout occurs (see below).
 #
-# portico.jgroups.bundling.maxSize = 63000
+# portico.jgroups.bundling.maxSize = 64K
 
 # (4.10) JGroups Bundling Max Timeout
-#         If bundling is enabled, messages will be queue either until their total size exceeds a
-#         threshold (see above) or the time that a message has been queued exceeds this value
+#         If bundling is enabled, messages are queued until either their total size exceeds a
+#         threshold (see above) or the time queued exceeds this value (in milliseconds).
 #         (provided in milliseconds). When this time is passed, a message is sent out, regardless
-#         of whether or not the bunding size threshold has been reached. Default: 25 milliseconds.
+#         of whether or not the bunding size threshold has been reached.
 #
-# portico.jgroups.bundling.maxTime = 25
+# portico.jgroups.bundling.maxTime = 30
 
 # (4.11) JGroups Flow Control
-#         Flow control is used to limit the rate at which messages are sent so that slow receivers
-#         don't get overwhelmed, causing them to drop messages and requiring potentially expensive
-#         retransmission. This value sets the maximum number of bytes that can be sent by a federate
-#         before it needs to request more tokens from the other federates (which won't happen until
-#         they consume pending messages and thus have free capacity). Setting this higher will allow
+#         Flow control is used to rate limit transmission so that slow receivers don't get overrun,
+#         causing them to drop messages and requiring expensive retransmission.
+#
+#         This value sets the maximum number of bytes that can be sent by a federate before it
+#         needs to receive more from other cluster members. Setting this higher will allow
 #         a federate to send more before it gets choked off, but runs the risk of overflowing
 #         receiving federates. Consider a value for this in conjunction with UDP receive buffer
 #         size (bigger the buffer there, the more messages that can be held before dropped messages
@@ -254,7 +248,7 @@
 #               bundling is enabled, you can have a higher value for this, because although you are
 #               requesting more messages to be sent, the actual number hitting the network is smaller.
 #
-# portico.jgroups.flow.credits = 1000000
+# portico.jgroups.flow.credits = 2M
 
 # (4.12) JGroups Traffic Auditing
 #         If this option is enabled a special log file will be produced for each federate listing
@@ -267,7 +261,13 @@
 #
 # portico.jgroups.auditor.enabled = false
 
-# (4.13) JGroups Traffic Audit Filtering
+# (4.13) Packet Fragmentation Size
+#         Messages larger than those of this specified size will be broken down into smaller ones
+#         for transmission. Note: The max bundling size must be greater than this value.
+#
+# portico.jgroups.frag.size:60K
+
+# (4.14) JGroups Traffic Audit Filtering
 #         Federates can generate a lot of messages. Sometimes you really just want to zero in
 #         on a particular type of message, or messages for a particular FOM type. These filters
 #         let you do that. These filters work in combination. For example, consider the following:
