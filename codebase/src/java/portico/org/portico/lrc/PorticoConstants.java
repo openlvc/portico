@@ -196,26 +196,6 @@ public class PorticoConstants
 		"org.portico.bindings.jgroups.JGroupsConnection";
 	
 	//////////////////////////////////////////////
-	///////// Portico TCP Property Names /////////
-	//////////////////////////////////////////////
-	/** The property that specifies to load a tcp server */
-	public static final String PROPERTY_BRIDGE_TCP_SERVER = "portico.bridge.tcp_server";
-	
-	/** The name of the system property that specifies the port to be uses by both the tcp server
-	     and the client for correct connection of the client to the server */
-	public static final String PROPERTY_BRIDGE_TCP_PORT = "portico.bridge.tcp_port";
-	
-	//////////////////////////////////////////////
-	//// Portico TCP Default Property Values /////
-	//////////////////////////////////////////////
-	/** The default argument for the PROPERTY_BRIDGE_TCP_SERVER */
-	public static final String BRIDGE_TCP_SERVER = "FALSE";
-	
-	/** The default port supplied to the PROPERTY_BRIDGE_TCP_PORT */
-	public static final String BRIDGE_TCP_PORT = "0";
-
-	
-	//////////////////////////////////////////////
 	////////// Private Local Properties //////////
 	//////////////////////////////////////////////
 	/** Last value for {@link #PROPERTY_LOG_WITH_HANDLES} */
