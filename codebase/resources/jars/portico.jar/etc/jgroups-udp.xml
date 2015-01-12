@@ -97,7 +97,8 @@
     <!-- Flow control prevents any single sender overwhelming slower receivers
          with messages which could cause them to be dropped -->
     <UFC max_credits="2M" min_threshold="0.4"/>
-    <MFC max_credits="${portico.jgroups.flow.credits:2M}" min_threshold="0.4"/>
+    <MFC max_credits="${portico.jgroups.flow.credits:2M}" 
+         min_threshold="${portico.jgroups.flow.threshold:0.4}"/>
 
     <!-- FRAG2 breaks up large messages into smaller sizes so they can be send in chunks -->
     <FRAG2 frag_size="${portico.jgroups.frag.size:60K}"/>
