@@ -495,6 +495,7 @@ public class Auditor
 		logger.info( "Starting Audit log for federate ["+federateName+"] in federation ["+
 		             federationName+"]" );
 		logger.info( "Portico "+PorticoConstants.RTI_VERSION + " - JGroups "+Version.description );
+		logger.info( String.format("%tc", new Date()) );
 		logger.info( "Active Filters:" );
 		logger.info( "     direction: "+directionFilters );
 		logger.info( "       message: "+messageFilters );
