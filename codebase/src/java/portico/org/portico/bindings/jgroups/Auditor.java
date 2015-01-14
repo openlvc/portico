@@ -61,6 +61,7 @@ public class Auditor
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private boolean recording;
+	private boolean summaryOnlyMode;
 	private Logger logger;
 	private FileAppender appender; // keep a ref so we can close out safely
 	private String receivedFormat;
@@ -85,6 +86,7 @@ public class Auditor
 	public Auditor()
 	{
 		this.recording = false;
+		this.summaryOnlyMode = false;
 		this.logger = null;
 		this.federationName = "";
 		this.federateName = "";
@@ -123,25 +125,31 @@ public class Auditor
 		// does this need to be filtered out?
 		if( shouldFilter(message,"sent") )
 			return;
-		
-		// who are we sending this to?
-		String federateName = getFederateName( message.getTargetFederate() );
-		if( federateName.startsWith("unknown") )
-			federateName = " ";
-		else
-			federateName = "  to "+federateName+" ";
 
-		// log our message
+		// we use the type both for logging and for storing the information for summary metrics
 		String type = message.getClass().getSimpleName();
-		String entry = String.format( sentFormat,
-		                              new Date(System.currentTimeMillis()),
-		                              type,
-		                              size,
-		                              federateName,
-		                              getMessageSpecificString(message) );
-		logger.info( entry );
 
-		// log some metrics
+		// log message details unless we are in summary-only mode
+		if( this.summaryOnlyMode == false )
+		{
+			// who are we sending this to?
+			String federateName = getFederateName( message.getTargetFederate() );
+			if( federateName.startsWith("unknown") )
+				federateName = " ";
+			else
+				federateName = "  to "+federateName+" ";
+
+			// log our message
+			String entry = String.format( sentFormat,
+			                              new Date(System.currentTimeMillis()),
+			                              type,
+			                              size,
+			                              federateName,
+			                              getMessageSpecificString(message) );
+			logger.info( entry );
+		}
+
+		// store some metrics
 		MessageMetrics counter = metrics.get( type );
 		if( counter == null )
 		{
@@ -181,16 +189,22 @@ public class Auditor
 		if( message.getSourceFederate() == lrc.getState().getFederateHandle() )
 			return;
 
-		// log our entry
-		String federateName = getFederateName( message.getSourceFederate() );
+		// we use the type both for logging and for storing the information for summary metrics
 		String type = message.getClass().getSimpleName();
-		String entry = String.format( receivedFormat,
-		                              new Date(System.currentTimeMillis()),
-		                              type,
-		                              size,
-		                              federateName,
-		                              getMessageSpecificString(message) );
-		logger.info( entry );
+
+		// log message details unless we are in summary-only mode
+		if( this.summaryOnlyMode == false )
+		{
+			// log our entry
+			String federateName = getFederateName( message.getSourceFederate() );
+			String entry = String.format( receivedFormat,
+			                              new Date(System.currentTimeMillis()),
+			                              type,
+			                              size,
+			                              federateName,
+			                              getMessageSpecificString(message) );
+			logger.info( entry );
+		}
 		
 		// log some metrics
 		MessageMetrics counter = metrics.get( type );
@@ -480,7 +494,8 @@ public class Auditor
 	{
 		if( this.recording )
 			return;
-		
+
+		this.summaryOnlyMode = JGroupsProperties.isAuditorSummaryOnly();
 		this.federationName = federationName;
 		this.federateName = federateName;
 		this.lrc = lrc;
@@ -492,10 +507,13 @@ public class Auditor
 		populateFilters();
 		
 		// log a startup message with some useful information
+		String modeMessage = this.summaryOnlyMode ? "Summary Only" : "Full Message Log";
+		
 		logger.info( "Starting Audit log for federate ["+federateName+"] in federation ["+
 		             federationName+"]" );
 		logger.info( "Portico "+PorticoConstants.RTI_VERSION + " - JGroups "+Version.description );
 		logger.info( String.format("%tc", new Date()) );
+		logger.info( "  Detail Level: "+modeMessage );
 		logger.info( "Active Filters:" );
 		logger.info( "     direction: "+directionFilters );
 		logger.info( "       message: "+messageFilters );

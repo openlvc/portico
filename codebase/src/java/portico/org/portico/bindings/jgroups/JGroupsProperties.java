@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.portico.lrc.compat.JConfigurationException;
+
 /**
  * All configuration information is stored in system properties as keys. This class
  * provides statics that can be used to identify the specific keys.
@@ -49,6 +51,7 @@ public class JGroupsProperties
 	///// auditor settings
 	/** Whether or not the auditor is enabled */
 	public static String PROP_JGROUPS_AUDITOR_ENABLED = "portico.jgroups.auditor.enabled";
+	public static String PROP_JGROUPS_AUDITOR_DETAILS = "portico.jgroups.auditor.details";
 
 	/** Auditor filtering settings */
 	public static String PROP_JGROUPS_AUDITOR_FILTER_DIR = "portico.jgroups.auditor.filter.direction";
@@ -103,6 +106,40 @@ public class JGroupsProperties
 		return Boolean.valueOf( System.getProperty(PROP_JGROUPS_AUDITOR_ENABLED,"false") );
 	}
 
+	/**
+	 * @return True if the Auditor has been set to "summary-only" mode. This happens when
+	 *         a value of "summary" is set in the RID file. A value of "full" in the RID
+	 *         file will cause this to return false. Any other value will cause a configuration
+	 *         exception to be thrown.
+	 *         
+	 *         NOTE: This is only expected to called if the Auditor is enabled. Without the
+	 *               auditor enabled, this setting should have no effect.
+	 *         
+	 * @throws JConfigurationException If the provided value is unknown
+	 */
+	public static final boolean isAuditorSummaryOnly() throws JConfigurationException
+	{
+		String originalValue = System.getProperty( PROP_JGROUPS_AUDITOR_DETAILS, "full" );
+		String value = originalValue.toLowerCase().trim();
+		
+		// Check to see if we have any malformed data. This doesn't happen when the RID loads,
+		// so we should do it now.
+		if( value.equals("summary") )
+		{
+			return true;
+		}
+		else if( value.equals("full") )
+		{
+			return false;
+		}
+		else
+		{
+			throw new JConfigurationException( "RID property ["+PROP_JGROUPS_AUDITOR_DETAILS+
+			                                   "] was set to ["+originalValue+
+				                               "]: Valid values are \"full\" or \"summary\"" );
+		}
+	}
+	
 	/**
 	 * @return A list of all the configured direction filters. If no configuration is provided,
 	 *         list will contain one entry - "all". These will be converted to lower case before

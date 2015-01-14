@@ -232,7 +232,12 @@
 #         The audit files are placed in the logs directory (see sec 1.1) with the name:
 #         "audit-FEDERATENAME.log"
 #
+#         If the auditor is enabled you can specify a detail level to control what is logged.
+#         When set to "full", each message will be logged with its specific details. (default)
+#         When set to "summary", only the summary tables will be printed
+#
 # portico.jgroups.auditor.enabled = false
+# portico.jgroups.auditor.details = full
 
 # (4.8) JGroups Traffic Audit Filtering
 #         Federates can generate a lot of messages. Sometimes you really just want to zero in
@@ -245,6 +250,9 @@
 #         Given this, only attribute updates for the FOM classes "Lifeform" and "GroundVehicle"
 #         that the local federate sends will be logged. Leaving a value empty, or using the
 #         keyword "all" will cause no filtering for that type to be applied.
+#
+#         NOTE: If the detail level is set to "summary", -no- individual messages will be logged,
+#               regardless of the filter settings.
 #         
 # portico.jgroups.auditor.filter.direction = 
 # portico.jgroups.auditor.filter.message   = 
