@@ -535,7 +535,7 @@ public class Auditor
     		// create the appender for the logger
 			String pattern = new String( "%m%n" );
     		PatternLayout layout = new PatternLayout( pattern );
-    		this.appender = new FileAppender( layout, logfile, true );
+    		this.appender = new FileAppender( layout, logfile, false );
     		
     		// attach the appender
     		this.logger = Logger.getLogger( "auditor" );
