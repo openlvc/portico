@@ -104,7 +104,6 @@ public class RegisterSyncPointHandler extends LRCMessageHandler
 		catch( RuntimeException re )
 		{
 			// fail! :(
-			logger.error( "FAILURE Regiser sync point ["+label+"] by ["+moniker()+"]: already registered" );
 			queueFailure( label, "label already registered" );
 			veto();
 		}
@@ -180,7 +179,7 @@ public class RegisterSyncPointHandler extends LRCMessageHandler
 		RegisterSyncPointResult result = new RegisterSyncPointResult( label, message );
 		fill( result, lrcState.getFederateHandle() );
 		lrcState.getQueue().offer( result );
-		logger.error( "FAILURE Register sync point ["+label+"] by ["+moniker()+"]: " + message );
+		logger.debug( "FAILURE Register sync point ["+label+"] by ["+moniker()+"]: " + message );
 	}
 
 	//----------------------------------------------------------
