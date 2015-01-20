@@ -174,7 +174,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		this.timeStatus = new TimeStatus(); // give us a dummy status with default values for now
 		this.ticking = false;
 		this.callbacksEnabled = true;
-		this.immediateCallbacks = false;
+		//this.immediateCallbacks = false; -- don't reinitialize this one, we want it to persist
 		
 		// Pub&Sub settings //
 		this.interestManager = new InterestManager( this );

@@ -208,6 +208,7 @@ public class Rti1516eAmbassador implements RTIambassador
 	           RTIinternalError
 	{
 		// set the callback model on the LRC approrpriately
+		this.helper.setCallbackModel( callbackModel );
 		if( callbackModel == CallbackModel.HLA_EVOKED )
 			helper.getLrc().disableImmediateCallbackProcessing();
 		else if( callbackModel == CallbackModel.HLA_IMMEDIATE )
@@ -236,6 +237,10 @@ public class Rti1516eAmbassador implements RTIambassador
 		
 		// remove our federate ambassador reference to signal we're "disconnected" :P
 		this.helper.setFederateAmbassador( null );
+		
+		// turn off the immediate callback handler if we have to
+		if( helper.getCallbackModel() == CallbackModel.HLA_IMMEDIATE )
+			helper.getLrc().disableImmediateCallbackProcessing();
 	}
 
 	// 4.5

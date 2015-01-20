@@ -14,6 +14,7 @@
  */
 package org.portico.impl.hla1516e;
 
+import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
 import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
@@ -67,6 +68,7 @@ public class Impl1516eHelper implements ISpecHelper
 	//----------------------------------------------------------
 	private LRC lrc;
 	private LRCState state;
+	private CallbackModel callbackModel;
 	
 	private FederateAmbassador fedamb;
 	//----------------------------------------------------------
@@ -79,6 +81,7 @@ public class Impl1516eHelper implements ISpecHelper
 		{
 			this.lrc = new LRC( this );
 			this.state = this.lrc.getState();
+			this.callbackModel = CallbackModel.HLA_EVOKED;
 		}
 		catch( JConfigurationException jce )
 		{
@@ -94,6 +97,16 @@ public class Impl1516eHelper implements ISpecHelper
 		return HLAVersion.IEEE1516e;
 	}
 	
+	public CallbackModel getCallbackModel()
+	{
+		return this.callbackModel;
+	}
+
+	public void setCallbackModel( CallbackModel callbackModel )
+	{
+		this.callbackModel = callbackModel;
+	}
+
 	public void processMessage( MessageContext context ) throws Exception
 	{
 		this.lrc.getOutgoingSink().process( context );

@@ -797,6 +797,12 @@ public class LRC
 	 */
 	private class ImmediateCallbackDispatcher extends Thread
 	{
+		public ImmediateCallbackDispatcher()
+		{
+			super( "ImmediateCallbackDispatcher" );
+			super.setDaemon( true );
+		}
+		
 		public void run()
 		{
 			logger.debug( "Starting immediate callback delivery processor" );
