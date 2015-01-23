@@ -14,10 +14,7 @@
  */
 package org.portico.bindings.jgroups.channel;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.jgroups.JChannel;
@@ -203,11 +200,15 @@ public class FederationChannel
 		channel.getProtocolStack().getTransport().setTimerThreadFactory( factory );
 
 		// set the thread pools on the transport
-		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>( 1000 );
-		Executor pool = new ThreadPoolExecutor(2, 10, 5000, TimeUnit.MILLISECONDS, queue, factory);
-		channel.getProtocolStack().getTransport().setDefaultThreadPool( pool );
-		channel.getProtocolStack().getTransport().setOOBThreadPool( pool );
-		
+		ThreadPoolExecutor regular = 
+			(ThreadPoolExecutor)channel.getProtocolStack().getTransport().getDefaultThreadPool();
+		regular.setThreadFactory( new DefaultThreadFactory(threadGroup,"Regular",true) );
+
+		// do the same for the oob pool
+		ThreadPoolExecutor oob = 
+			(ThreadPoolExecutor)channel.getProtocolStack().getTransport().getOOBThreadPool();
+		oob.setThreadFactory( new DefaultThreadFactory(threadGroup,"OOB",true) );
+
 		return channel;
 	}
 
