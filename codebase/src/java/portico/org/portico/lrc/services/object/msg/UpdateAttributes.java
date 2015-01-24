@@ -28,7 +28,7 @@ import org.portico.utils.messaging.PorticoMessage;
  * This message represents a request to update the values of a group of attributes contained in a
  * specific object instance.
  */
-public class UpdateAttributes extends PorticoMessage implements Externalizable
+public class UpdateAttributes extends PorticoMessage implements Externalizable, Cloneable
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -221,6 +221,20 @@ public class UpdateAttributes extends PorticoMessage implements Externalizable
 			buffer.read( attributeValue, 0, valueSize );
 			this.attributes.put( attributeHandle, attributeValue );
 		}
+	}
+
+	/**
+	 * Perform a proper clone. We need to reset the filtered attributes as they are updated
+	 * on the receiver end and so multiple threads will change this field. These are currently
+	 * only implemented to serve the JVM comms binding.
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		UpdateAttributes clone = (UpdateAttributes)super.clone();
+		//clone.attributes = new HashMap<Integer,byte[]>( this.attributes ); --read-only on incoming
+		clone.filtered = new HashMap<Integer,FilteredAttribute>();
+		return clone;
 	}
 
 	//----------------------------------------------------------

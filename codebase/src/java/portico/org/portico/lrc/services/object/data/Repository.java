@@ -18,10 +18,10 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.portico.lrc.LRCState;
 import org.portico.lrc.PorticoConstants;
@@ -61,9 +61,9 @@ public class Repository implements SaveRestoreTarget
 	public Repository( LRCState state )
 	{
 		this.state = state;
-		this.undiscovered = new HashMap<Integer,OCInstance>();
-		this.discovered = new HashMap<Integer,OCInstance>();
-		this.reservedNames = new HashMap<String,Integer>();
+		this.undiscovered = new ConcurrentHashMap<Integer,OCInstance>();
+		this.discovered = new ConcurrentHashMap<Integer,OCInstance>();
+		this.reservedNames = new ConcurrentHashMap<String,Integer>();
 	}
 
 	//----------------------------------------------------------
