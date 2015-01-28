@@ -1065,7 +1065,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "requestFederationRestore()" );
 	}
 
 	// 4.28
@@ -1076,7 +1076,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "federateRestoreComplete()" );
 	}
 
 	// 4.28
@@ -1087,7 +1087,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "federateRestoreNotComplete()" );
 	}
 
 	// 4.30
@@ -1097,7 +1097,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "abortFederationRestore()" );
 	}
 
 	// 4.31
@@ -1107,7 +1107,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		featureNotSupported( "queryFederationSaveStatus()" );
+		featureNotSupported( "queryFederationRestoreStatus()" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
