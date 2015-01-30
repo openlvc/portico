@@ -657,7 +657,7 @@ public class LRC
 		{
 			// fetch a single incoming message, waiting only as long as we are given
 			long timeout = (long)wait;
-			PorticoMessage message = state.messageQueue.poll( timeout );
+			PorticoMessage message = state.messageQueue.poll( timeout*1000*1000000 );
 			
 			// process the message if there is one
 			if( message != null )
