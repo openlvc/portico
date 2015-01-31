@@ -24,7 +24,6 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 
@@ -103,9 +102,7 @@ public class Log4jConfigurator
 		{
     		// create the appender
     		PatternLayout layout = new PatternLayout( DEFAULT_PATTERN );
-    		RollingFileAppender appender = new RollingFileAppender( layout, logfile, true );
-    		appender.setMaxBackupIndex( 2 );
-    		appender.setMaxFileSize( "10MB" );
+    		FileAppender appender = new FileAppender( layout, logfile, false );
     		
     		// attach the appender
     		Logger porticoLogger = Logger.getLogger( "portico" );
