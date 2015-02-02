@@ -74,7 +74,7 @@ public class MomManager implements SaveRestoreTarget
 		
 		if( hlaVersion == HLAVersion.IEEE1516e && this.enabled )
 		{
-			logger.warn( "MOM support is currently unsupported in IEEE-1516e federations." );
+			logger.info( "MOM support is currently unsupported in IEEE-1516e federations." );
 			this.enabled = false;
 		}
 	}
