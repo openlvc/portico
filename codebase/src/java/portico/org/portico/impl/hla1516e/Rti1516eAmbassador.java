@@ -5576,8 +5576,11 @@ public class Rti1516eAmbassador implements RTIambassador
 		}
 		catch( Exception e )
 		{
-			// log the exception
-			this.helper.getLrcLogger().error( e );
+			// log the exception, but only at the debug level. Users can catch
+			// and log themselves if they want to, and not every exception is
+			// indication of an error (sometimes we expect them). Rather than
+			// clutter system out with this detail by default, log it at debug
+			this.helper.getLrcLogger().debug( e );
 			
 			// there was an exception, pacakge a response
 			return new ErrorResponse( e );
