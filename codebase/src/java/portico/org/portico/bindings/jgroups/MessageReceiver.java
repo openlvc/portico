@@ -54,17 +54,17 @@ public class MessageReceiver
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	public void linkToLRC( LRC lrc )
+	public synchronized void linkToLRC( LRC lrc )
 	{
 		this.lrc = lrc;
 	}
 	
-	public void unlink()
+	public synchronized void unlink()
 	{
 		this.lrc = null;
 	}
 
-	public void receiveAsynchronous( Message message )
+	public synchronized void receiveAsynchronous( Message message )
 	{
 		if( this.lrc == null )
 			return; // ignore
@@ -98,7 +98,7 @@ public class MessageReceiver
 	 * the message queue. It packages the contained {@link PorticoMessage} up in
 	 * a {@link MessageContext} and will return the response message from that context.
 	 */
-	public Object receiveSynchronous( Message message )
+	public synchronized Object receiveSynchronous( Message message )
 	{
 		if( this.lrc == null )
 			return null; // ignore
