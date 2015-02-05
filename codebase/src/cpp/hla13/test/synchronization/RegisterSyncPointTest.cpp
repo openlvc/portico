@@ -121,7 +121,7 @@ void RegisterSyncPointTest::testRegisterSyncPointWithNullTag()
 	
 	// make sure the registration is a success
 	federateOne->fedamb->waitForSyncRegResult( label, RTI::RTI_TRUE );
-	char *incomingTag = federateTwo->fedamb->waitForSyncAnnounce( label );
+	const char *incomingTag = federateTwo->fedamb->waitForSyncAnnounce( label );
 	if( incomingTag != NULL )
 		failTest( "Expected sync point announcement tag to be NULL, but was [%s]", incomingTag );
 }
@@ -143,7 +143,7 @@ void RegisterSyncPointTest::testRegisterSyncPointWithEmptyTag()
 	
 	// make sure the registration is a success
 	federateOne->fedamb->waitForSyncRegResult( label, RTI::RTI_TRUE );
-	char *incomingTag = federateTwo->fedamb->waitForSyncAnnounce( label );
+	const char *incomingTag = federateTwo->fedamb->waitForSyncAnnounce( label );
 	if( incomingTag == NULL || strcmp("", incomingTag) != 0 )
 		failTest( "Expected sync point announcement tag to be \"\", but was [%s]", incomingTag );
 }
@@ -165,7 +165,7 @@ void RegisterSyncPointTest::testRegisterSyncPointWithWhitespaceTag()
 	
 	// make sure the registration is a success
 	federateOne->fedamb->waitForSyncRegResult( label, RTI::RTI_TRUE );
-	char *incomingTag = federateTwo->fedamb->waitForSyncAnnounce( label );
+	const char *incomingTag = federateTwo->fedamb->waitForSyncAnnounce( label );
 	if( incomingTag == NULL || strcmp("   ", incomingTag) != 0 )
 		failTest( "Expected sync point announcement tag to be \"   \", but was [%s]", incomingTag );
 }

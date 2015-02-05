@@ -39,7 +39,7 @@ void failTest( const char *format, ... )
  * Test should fail because an exception was expected, but none occurred. The failure message
  * will also include the action that was underway (and should have caused an exception).
  */
-void failTestMissingException( char *expectedException, char* action )
+void failTestMissingException( const char *expectedException, const char* action )
 {
 	char buffer[4096];
 	sprintf( buffer,
@@ -54,7 +54,7 @@ void failTestMissingException( char *expectedException, char* action )
  * include the expected and actual exception types and a message regarding the action that
  * was in progress.
  */
-void failTestWrongException( char *expected, RTI::Exception &actual, char *action )
+void failTestWrongException( const char *expected, RTI::Exception &actual, const char *action )
 {
 	char buffer[4096];
 	sprintf( buffer,

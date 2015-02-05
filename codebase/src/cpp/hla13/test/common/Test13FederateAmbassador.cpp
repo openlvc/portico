@@ -30,8 +30,8 @@ Test13FederateAmbassador::Test13FederateAmbassador( Test13Federate *testFederate
 	// initialize the instance vars
 	this->constrained        = RTI::RTI_FALSE;
 	this->regulating         = RTI::RTI_FALSE;
-	this->announced          = new map<char*, char*, ltstr>();
-	this->synchronized       = new set<char*, ltstr>();
+	this->announced          = new map<const char*, const char*, ltstr>();
+	this->synchronized       = new set<const char*, ltstr>();
 	this->logicalTime        = 0.0;
 	this->syncRegResult      = WAITING;
 	
@@ -124,7 +124,7 @@ time_t Test13FederateAmbassador::getCurrentTime()
  * has, the CppUnit macros will be used to kill the current test, and the currentMethod will
  * be identified in the failure message.
  */
-void Test13FederateAmbassador::checkTimeout( time_t startTime, char *currentMethod )
+void Test13FederateAmbassador::checkTimeout( time_t startTime, const char* currentMethod )
 {
 	double difference = difftime( getCurrentTime(), startTime );
 	if( difference > TIMEOUT )
@@ -165,7 +165,7 @@ RTI::Boolean Test13FederateAmbassador::checkTimeoutNonFatal( time_t startTime )
 /*
  * Check to see if the sync point with the given label has been announced or not
  */
-RTI::Boolean Test13FederateAmbassador::isAnnounced( char* label )
+RTI::Boolean Test13FederateAmbassador::isAnnounced( const char* label )
 {
 	if( this->announced->count(label) == 0 )
 		return RTI::RTI_FALSE;
@@ -176,7 +176,7 @@ RTI::Boolean Test13FederateAmbassador::isAnnounced( char* label )
 /*
  * Check to see if the federation has synchronized on the given sync point or not
  */
-RTI::Boolean Test13FederateAmbassador::isSynchronized( char* label )
+RTI::Boolean Test13FederateAmbassador::isSynchronized( const char* label )
 {
 	if( this->synchronized->count(label) == 0 )
 		return RTI::RTI_FALSE;
@@ -188,7 +188,7 @@ RTI::Boolean Test13FederateAmbassador::isSynchronized( char* label )
  * Wait for the given sync point to be announced. If it doesn't happen before a timeout
  * occurs, CppUnit will be used to fail the current test.
  */
-char* Test13FederateAmbassador::waitForSyncAnnounce( char* label )
+const char* Test13FederateAmbassador::waitForSyncAnnounce( const char* label )
 {
 	// wait for the point to be announced
 	time_t startTime = this->getCurrentTime();
@@ -210,7 +210,7 @@ char* Test13FederateAmbassador::waitForSyncAnnounce( char* label )
  * in that it EXPECTS there to be a timeout. If the request doesn't timeout, it will fail the
  * current test.
  */
-void Test13FederateAmbassador::waitForSyncAnnounceTimeout( char* label )
+void Test13FederateAmbassador::waitForSyncAnnounceTimeout( const char* label )
 {
 	// wait for the point to be announced
 	time_t startTime = this->getCurrentTime();
@@ -236,7 +236,7 @@ void Test13FederateAmbassador::waitForSyncAnnounceTimeout( char* label )
  * If the registration request is a success, RTI_TRUE is returned, if not, RTI_FALSE. If there
  * is no response before a timeout occurs, the current test will be failed.
  */
-RTI::Boolean Test13FederateAmbassador::waitForSyncRegResult( char* label )
+RTI::Boolean Test13FederateAmbassador::waitForSyncRegResult( const char* label )
 {
 	// clear the current values
 	this->syncRegResult = WAITING;
@@ -266,7 +266,7 @@ RTI::Boolean Test13FederateAmbassador::waitForSyncRegResult( char* label )
  * the actual result, this method will return normally. If the result differs, the current
  * test will be failed.
  */
-void Test13FederateAmbassador::waitForSyncRegResult( char* label, RTI::Boolean expectedResult )
+void Test13FederateAmbassador::waitForSyncRegResult( const char* label, RTI::Boolean expectedResult )
 {
 	// wait for the result
 	RTI::Boolean result = waitForSyncRegResult( label );
@@ -282,7 +282,7 @@ void Test13FederateAmbassador::waitForSyncRegResult( char* label, RTI::Boolean e
  * This method will wait until the federation has synchronized on the given sync point. If the
  * notification doesn't come through before a timeout, the current unit test will be failed.
  */
-void Test13FederateAmbassador::waitForSynchronized( char* label )
+void Test13FederateAmbassador::waitForSynchronized( const char* label )
 {
 	// wait for us to feel that funky synchronized love
 	time_t startTime = this->getCurrentTime();
@@ -301,7 +301,7 @@ void Test13FederateAmbassador::waitForSynchronized( char* label )
  * synchronized on the point with the given label. If this happens BEFORE a timeout occurs,
  * the current test will be failed. If a timeout occurs, this method will return normally.
  */
-void Test13FederateAmbassador::waitForSynchornizedTimeout( char* label )
+void Test13FederateAmbassador::waitForSynchornizedTimeout( const char* label )
 {
 	// wait for the federation to synchronize
 	time_t startTime = this->getCurrentTime();
@@ -423,8 +423,8 @@ Test13Object* Test13FederateAmbassador::waitForDiscoveryAs( RTI::ObjectHandle ob
  * was expected.
  */
 Test13Object* Test13FederateAmbassador::waitForDiscoveryAsWithName( RTI::ObjectHandle objectHandle,
-                                                                      RTI::ObjectClassHandle asClass,
-                                                                      char *expectedName )
+                                                                    RTI::ObjectClassHandle asClass,
+                                                                    const char *expectedName )
 {
 	time_t startTime = this->getCurrentTime();
 	while( (*discovered)[objectHandle] == NULL )
@@ -1101,7 +1101,7 @@ void Test13FederateAmbassador::waitForOwnershipCancelConfirmation( RTI::ObjectHa
  * This method waits until a callback is delivered informing the federate that a save with the
  * given label is initiated. If no callback is received in time, the current test will be failed.
  */
-void Test13FederateAmbassador::waitForSaveInitiated( char *saveLabel )
+void Test13FederateAmbassador::waitForSaveInitiated( const char* saveLabel )
 {
 	time_t startTime = this->getCurrentTime();
 	while( this->currentSave->isInitiated(saveLabel) == RTI::RTI_FALSE )
@@ -1116,7 +1116,7 @@ void Test13FederateAmbassador::waitForSaveInitiated( char *saveLabel )
  * has been initiated occurs. It expects that one will not occur and should one be received before
  * a timeout has expired, the current test will be killed.
  */
-void Test13FederateAmbassador::waitForSaveInitiatedTimeout( char *saveLabel )
+void Test13FederateAmbassador::waitForSaveInitiatedTimeout( const char* saveLabel )
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentSave->isInitiated(saveLabel) == RTI::RTI_FALSE )
@@ -1194,7 +1194,7 @@ void Test13FederateAmbassador::waitForFederationRestoreBegun()
  * Wait for a notification that a federation restore has been initiated with the given label.
  * If this happens, return the federation handle we were given. If not, throw an exception.
  */
-int Test13FederateAmbassador::waitForFederateRestoreInitiated( char* label )
+int Test13FederateAmbassador::waitForFederateRestoreInitiated( const char* label )
 {
 	// wait for something to come in for that object
 	time_t startTime = this->getCurrentTime();
@@ -1220,7 +1220,7 @@ int Test13FederateAmbassador::waitForFederateRestoreInitiated( char* label )
  * The opposite of waitForFederateRestoreInitiated(char*)}, this method expects a
  * timeout to occur and will fail the current test if one doesn't happen.
  */
-void Test13FederateAmbassador::waitForFederateRestoreInitiatedTimeout( char* saveLabel )
+void Test13FederateAmbassador::waitForFederateRestoreInitiatedTimeout( const char* saveLabel )
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isInitiated(saveLabel) == RTI::RTI_FALSE )
@@ -1264,7 +1264,7 @@ void Test13FederateAmbassador::waitForFederationRestored()
  * Like waitForFederationRestored() except that it expects a timeout and will fail the test if the
  * notification is received.
  */
-void Test13FederateAmbassador::waitForFederationRestoredTimeout( char* label )
+void Test13FederateAmbassador::waitForFederationRestoredTimeout( const char* label )
 {
 	time_t startTime = this->getCurrentTime();
 	while( currentRestore->isComplete() == RTI::RTI_FALSE )
@@ -1309,7 +1309,7 @@ void Test13FederateAmbassador::waitForFederationNotRestored()
  * label that they attempted to initiate was successful. If it doesn't happen in a timely
  * fashion, the current test is failed.
  */
-void Test13FederateAmbassador::waitForRestoreRequestSuccess( char *label )
+void Test13FederateAmbassador::waitForRestoreRequestSuccess( const char* label )
 {
 	time_t startTime = this->getCurrentTime();
 	while( successfulRestoreRequest != NULL && strcmp(successfulRestoreRequest,label) != 0 )
@@ -1324,7 +1324,7 @@ void Test13FederateAmbassador::waitForRestoreRequestSuccess( char *label )
  * label that they attempted to initiate has FAILED. If it doesn't happen in a timely fashion,
  * the current test is failed.
  */
-void Test13FederateAmbassador::waitForRestoreRequestFailure( char *label )
+void Test13FederateAmbassador::waitForRestoreRequestFailure( const char* label )
 {
 	time_t startTime = this->getCurrentTime();
 	while( failedRestoreRequest != NULL && strcmp(failedRestoreRequest,label) != 0 )

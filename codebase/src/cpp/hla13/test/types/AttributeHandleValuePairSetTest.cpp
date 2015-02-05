@@ -246,9 +246,9 @@ void AttributeHandleValuePairSetTest::testGetValueWithInvalidIndex()
 /////////////////////////////////////////
 void AttributeHandleValuePairSetTest::testGetValuePointer()
 {
-	char *aaValue = "one";
-	char *abValue = "two";
-	char *acValue = "three";
+	const char *aaValue = "one";
+	const char *abValue = "two";
+	const char *acValue = "three";
 	this->theSet->add( 501, aaValue, 4 );
 	this->theSet->add( 502, abValue, 4 );
 	this->theSet->add( 503, acValue, 6 );
