@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.portico.lrc.LRCMessageHandler;
+import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.services.object.msg.RequestObjectUpdate;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
@@ -126,6 +127,9 @@ public class RequestObjectUpdateIncomingHandler extends LRCMessageHandler
 	 */
 	private void respondToMomFederateUpdateRequest( Set<Integer> attributeHandles ) throws Exception
 	{
+		if( PorticoConstants.isMomEnabled() == false )
+			return;
+
 		UpdateAttributes update = momManager.updateFederateMomObject( federateHandle(),
 		                                                              attributeHandles );
 		connection.broadcast( update );
