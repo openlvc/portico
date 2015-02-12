@@ -358,8 +358,8 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// 1. Set up the Java Classpath //
 	//////////////////////////////////
 	// pick up the system classpath and put $RTI_HOME/lib/portico.jar on the end
-	const char *systemClasspath = getenv( "CLASSPATH" );
-	if( !systemClasspath )
+	string systemClasspath( getenv("CLASSPATH") );
+	if( systemClasspath.empty() )
 	{
 		logger->debug( "CLASSPATH not set, using ." );
 		systemClasspath = "./";
@@ -368,7 +368,7 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// create out classpath
 	stringstream classpath;
 	classpath << "-Djava.class.path=.:"
-	          << string(systemClasspath) << ":"
+	          << systemClasspath << ":"
 	          << rtihome << "/lib/portico.jar";
 	paths.first = classpath.str();
 
@@ -377,13 +377,13 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	////////////////////////////////
 	// Get the system path
 	#ifdef __APPLE__
-	const char *systemPath = getenv( "DYLD_LIBRARY_PATH" );
+	string systemPath( getenv("DYLD_LIBRARY_PATH") );
 	#else
-	char *systemPath = getenv( "LD_LIBRARY_PATH" );
+	string systemPath( getenv("LD_LIBRARY_PATH") );
 	#endif
 
 	// make sure we have a system path
-	if( !systemPath )
+	if( systemPath.empty() )
 		systemPath = "";
 
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
@@ -407,7 +407,7 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// Create our system path
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
-	          << string(systemPath) << ":"
+	          << systemPath << ":"
 	          << rtihome << "/lib/gcc4:"
 	          << jrelocation << "/jre/lib/server:"
 	          << jrelocation << "/jre/lib/i386/client:"
