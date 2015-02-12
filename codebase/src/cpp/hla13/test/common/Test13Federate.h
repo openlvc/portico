@@ -26,7 +26,7 @@ class Test13Federate
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 	public:
-		static char *SIMPLE_NAME;
+		static const char *SIMPLE_NAME;
 		static int OWNER_UNOWNED;
 		static int OWNER_RTI;
 
@@ -44,7 +44,7 @@ class Test13Federate
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		Test13Federate( char *name );
+		Test13Federate( const char* name );
 		~Test13Federate();
 
 	//----------------------------------------------------------
@@ -58,64 +58,71 @@ class Test13Federate
 		///// federation management helpers /////
 		/////////////////////////////////////////
 		void quickCreate();
-		void quickCreate( char *federationName );
+		void quickCreate( const char* federationName );
 		RTI::FederateHandle quickJoin();
-		RTI::FederateHandle quickJoin( char *federationName );
+		RTI::FederateHandle quickJoin( const char* federationName );
 		void quickResign();
 		void quickResign( RTI::ResignAction action );
 		void quickDestroy();
-		void quickDestroy( char *federationName );
+		void quickDestroy( const char* federationName );
 		void quickDestroyNoFail();
 
 		/////////////////////////////////////////
 		///// synchronization point helpers /////
 		/////////////////////////////////////////
-		void quickAnnounce( char *label, char *tag );
-		void quickAnnounce( char *label, int federateCount, ... /* federate handles */ );
-		void quickAchieved( char *label );
+		void quickAnnounce( const char* label, const char* tag );
+		void quickAnnounce( const char* label, int federateCount, ... /* federate handles */ );
+		void quickAchieved( const char* label );
 
 		/////////////////////////////////////////
 		///// publish and subscribe helpers /////
 		/////////////////////////////////////////
 		void quickPublish( int objectClass, int attributeCount, ... /* attribute handles */ );
-		void quickPublish( char *objectClass, int attributeCount, ... /* attribute names */ );
+		void quickPublish( const char* objectClass, int attributeCount, ... /* attribute names */ );
 		void quickSubscribe( int objectClass, int attributeCount, ... /* attribute handles */ );
-		void quickSubscribe( char *objectClass, int attributeCount, ... /* attribute names */ );
+		void quickSubscribe( const char* objectClass, int attributeCount, ... /* attribute names */ );
 
 		void quickPublish( int interactionClass );
-		void quickPublish( char *interactionClass );
+		void quickPublish( const char* interactionClass );
 		void quickSubscribe( int interactionClass );
-		void quickSubscribe( char *interactionClass );
+		void quickSubscribe( const char* interactionClass );
 		
-		void quickUnpublishOC( char *objectClass );
+		void quickUnpublishOC( const char* objectClass );
 
 		///////////////////////////////////////////////
 		///// object registration/removal helpers /////
 		///////////////////////////////////////////////
 		RTI::ObjectHandle quickRegister( int classHandle );
-		RTI::ObjectHandle quickRegister( int classHandle, char *objectName );
-		RTI::ObjectHandle quickRegister( char* className );
-		RTI::ObjectHandle quickRegister( char* className, char *objectName );
+		RTI::ObjectHandle quickRegister( int classHandle, const char* objectName );
+		RTI::ObjectHandle quickRegister( const char* className );
+		RTI::ObjectHandle quickRegister( const char* className, const char* objectName );
 		void              quickRegisterFail( int classHandle );
-		void              quickDelete( int objectHandle, char *tag );
+		void              quickDelete( int objectHandle, const char* tag );
 
 		//////////////////////////////////////////////
 		///// reflection and interaction helpers /////
 		//////////////////////////////////////////////
-		void quickReflect( int objectHandle, RTI::AttributeHandleValuePairSet *ahvps, char *tag );
+		void quickReflect( int objectHandle, 
+		                   RTI::AttributeHandleValuePairSet *ahvps, 
+		                   const char* tag );
 		void quickReflect( int objectHandle, int attributeCount, ... /* attribute names */ );
-		void quickReflectFail( int handle, RTI::AttributeHandleValuePairSet *ahvps, char *tag );
+		void quickReflectFail( int handle, 
+		                       RTI::AttributeHandleValuePairSet *ahvps, 
+		                       const char* tag );
 		
-		void quickSend( int classHandle, RTI::ParameterHandleValuePairSet *phvps, char *tag );
+		void quickSend( int classHandle, RTI::ParameterHandleValuePairSet *phvps, const char* tag );
 		void quickSend( int classHandle, int parameterCount, ... /* parameter names */ );
 		void quickSend( int classHandle, double time, int parameterCount, ... /* parameter names */ );
-		void quickSendFail( int classHandle, RTI::ParameterHandleValuePairSet *phvps, char *tag );
+		void quickSendFail( int classHandle, 
+		                    RTI::ParameterHandleValuePairSet *phvps, 
+		                    const char* tag );
 
 		////////////////////////////////////////////////
 		///// data distribution management methods /////
 		////////////////////////////////////////////////
-		RTI::SpaceHandle     quickSpaceHandle( char* spaceName );
-		RTI::DimensionHandle quickDimensionHandle( char* spaceName, char* dimensionName );
+		RTI::SpaceHandle     quickSpaceHandle( const char* spaceName );
+		RTI::DimensionHandle quickDimensionHandle( const char* spaceName, 
+		                                           const char* dimensionName );
 		RTI::Region*         quickCreateRegion( RTI::SpaceHandle space, RTI::ULong extents );
 		RTI::Region*         quickCreateTestRegion( RTI::ULong lowerBound, RTI::ULong upperBound );
 		RTI::Region*         quickCreateOtherRegion( RTI::ULong lowerBound, RTI::ULong upperBound );
@@ -123,7 +130,7 @@ class Test13Federate
 		RTI::RegionToken     quickGetRegionToken( RTI::Region* theRegion );
 		RTI::Region*         quickGetRegion( RTI::RegionToken regionToken );
 		
-		RTI::ObjectHandle    quickRegisterWithRegion( char* objectClass,
+		RTI::ObjectHandle    quickRegisterWithRegion( const char* objectClass,
 		                                              RTI::Region* theRegion,
 		                                              int attributeCount,
 		                                              ... /* attribute names */ );
@@ -138,22 +145,24 @@ class Test13Federate
 		                                               RTI::Region* region,
 		                                               int attributeCount,
 		                                               ... /* attribute handles */ );
-		void                 quickSubscribeWithRegion( char* className,
+		void                 quickSubscribeWithRegion( const char* className,
 		                                               RTI::Region* region,
 		                                               int attributeCount, 
 		                                               ... /* attribute names */ );
 		void                 quickUnsubscribeOCWithRegion( RTI::ObjectClassHandle classHandle,
 		                                                   RTI::Region *region );
-		void                 quickUnsubscribeOCWithRegion( char* className, RTI::Region* region );
+		void                 quickUnsubscribeOCWithRegion( const char* className, 
+		                                                   RTI::Region* region );
 
 		void                 quickSubscribeWithRegion( RTI::InteractionClassHandle classhandle,
 		                                               RTI::Region* region );
-		void                 quickSubscribeWithRegion( char* className, RTI::Region* region );
+		void                 quickSubscribeWithRegion( const char* className, RTI::Region* region );
 		void                 quickUnsubscribeICWithRegion( RTI::InteractionClassHandle classHandle,
 		                                                   RTI::Region *region );
-		void                 quickUnsubscribeICWithRegion( char* className, RTI::Region *region );
+		void                 quickUnsubscribeICWithRegion( const char* className, 
+		                                                   RTI::Region *region );
 
-		void quickSendWithRegion( char *classHandle,
+		void quickSendWithRegion( const char* classHandle,
 		                          RTI::Region *region,
 		                          int parameterCount,
 		                          ... /* parameter names */ );
@@ -199,26 +208,28 @@ class Test13Federate
 		//////////////////////////////////////////////
 		////////// save and restore helpers //////////
 		//////////////////////////////////////////////
-		void quickSaveRequest( char *saveLabel );
+		void quickSaveRequest( const char* saveLabel );
 		void quickSaveBegun();
 		void quickSaveComplete();
 		void quickSaveNotComplete();
-		void quickSaveInProgress( char *saveLabel );
-		void quickSaveToCompletion( char *saveLabel, int federateCount, ... );
+		void quickSaveInProgress( const char* saveLabel );
+		void quickSaveToCompletion( const char* saveLabel, int federateCount, ... );
 		
-		void quickRestoreRequest( char *saveLabel );
-		void quickRestoreRequestSuccess( char *saveLabel );
+		void quickRestoreRequest( const char* saveLabel );
+		void quickRestoreRequestSuccess( const char* saveLabel );
 		void quickRestoreComplete();
 		void quickRestoreNotComplete();
-		void quickRestoreInProgress( char *saveLabel, int federateCount, ... );
+		void quickRestoreInProgress( const char* saveLabel, int federateCount, ... );
 		
 		////////////////////////////////////////////
 		///// handle resolution helper methods /////
 		////////////////////////////////////////////
-		RTI::ObjectClassHandle      quickOCHandle( char *objectClass );
-		RTI::AttributeHandle        quickACHandle( char *objectClass, char *attributeName );
-		RTI::InteractionClassHandle quickICHandle( char *interactionClass );
-		RTI::ParameterHandle        quickPCHandle( char *interactionClass, char *parameterName );
+		RTI::ObjectClassHandle      quickOCHandle( const char* objectClass );
+		RTI::AttributeHandle        quickACHandle( const char* objectClass, 
+		                                           const char* attributeName );
+		RTI::InteractionClassHandle quickICHandle( const char* interactionClass );
+		RTI::ParameterHandle        quickPCHandle( const char* interactionClass, 
+		                                           const char* parameterName );
 		RTI::ObjectClassHandle      quickOCHandle( int objectHandle );
 		char*                       quickOCName( RTI::ObjectClassHandle classHandle );
 		char*                       quickOCNameForInstance( int objectHandle );
@@ -240,7 +251,7 @@ class Test13Federate
 		RTI::RTIambassador* getRtiAmb();
 		void quickTick();
 		void quickTick( double min, double max );
-		void killTest( RTI::Exception &e, char *activeMethod );
+		void killTest( RTI::Exception &e, const char* activeMethod );
 		void killTest( const char *format, ... );
 
 	//----------------------------------------------------------

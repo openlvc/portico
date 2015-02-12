@@ -35,7 +35,7 @@ class ActiveSR;
 //////////////////////////////////////////
 struct ltstr
 {
-	bool operator() ( char* s1, char* s2 ) const
+	bool operator() ( const char* s1, const char* s2 ) const
 	{
 		return strcmp(s1, s2) < 0;
 	}
@@ -71,12 +71,12 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 
 	public: // were "protected" in Java version as that really means "package", make them
 		    // public here just to make for easier access
-		RTI::Boolean               constrained;
-		RTI::Boolean               regulating;
-		double                     logicalTime;
-		map<char*, char*, ltstr>   *announced;
-		set<char*, ltstr>          *synchronized;
-		SyncRegResult              syncRegResult;
+		RTI::Boolean                            constrained;
+		RTI::Boolean                            regulating;
+		double                                  logicalTime;
+		map<const char*, const char*, ltstr>    *announced;
+		set<const char*, ltstr>                 *synchronized;
+		SyncRegResult                           syncRegResult;
 		
 		// object/interaction containers
 		map<RTI::ObjectHandle,Test13Object*> *discovered;
@@ -101,8 +101,8 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		// save/restore stuff
 		ActiveSR *currentSave;
 		ActiveSR *currentRestore;
-		char *successfulRestoreRequest;
-		char *failedRestoreRequest;
+		char* successfulRestoreRequest;
+		char* failedRestoreRequest;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -120,7 +120,7 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 	private:
 		void         tick();
 		time_t       getCurrentTime();
-		void         checkTimeout( time_t startTime, char *currentMethod );
+		void         checkTimeout( time_t startTime, const char* currentMethod );
 		RTI::Boolean checkTimeoutNonFatal( time_t startTime );
 	
 		// helper methods
@@ -133,18 +133,18 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		
 		/** does a string copy from source to target, but will delete the memory at target
 		    is it isn't null and will allocate new memory. Really just a "cleanAndCopy" */
-		void copyString( char *target, const char *source );
+		void copyString( char* target, const char* source );
 		
 	public:
 		// synchronization point methods
-		RTI::Boolean isAnnounced( char* label );
-		RTI::Boolean isSynchronized( char* label );
-		char*        waitForSyncAnnounce( char* label );
-		void         waitForSyncAnnounceTimeout( char* label );
-		RTI::Boolean waitForSyncRegResult( char* label );
-		void         waitForSyncRegResult( char* label, RTI::Boolean expectedResult );
-		void         waitForSynchronized( char* label );
-		void         waitForSynchornizedTimeout( char* label );
+		RTI::Boolean isAnnounced( const char* label );
+		RTI::Boolean isSynchronized( const char* label );
+		const char*  waitForSyncAnnounce( const char* label );
+		void         waitForSyncAnnounceTimeout( const char* label );
+		RTI::Boolean waitForSyncRegResult( const char* label );
+		void         waitForSyncRegResult( const char* label, RTI::Boolean expectedResult );
+		void         waitForSynchronized( const char* label );
+		void         waitForSynchornizedTimeout( const char* label );
 		
 		// logical time management methods
 		void         waitForConstrainedEnabled();
@@ -156,8 +156,8 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		Test13Object* waitForDiscovery( RTI::ObjectHandle objectHandle );
 		Test13Object* waitForDiscoveryAs( RTI::ObjectHandle object, RTI::ObjectClassHandle asClass );
 		Test13Object* waitForDiscoveryAsWithName( RTI::ObjectHandle object,
-		                                           RTI::ObjectClassHandle asClass,
-		                                           char *expectedName );
+		                                          RTI::ObjectClassHandle asClass,
+		                                          const char* expectedName );
 		void         waitForDiscoveryTimeout( RTI::ObjectHandle objectHandle );
 		
 		// remove
@@ -193,19 +193,19 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		void waitForOwnershipCancelConfirmation( RTI::ObjectHandle object, int attributes, ... );
 		
 		// save restore
-		void waitForSaveInitiated( char *saveLabel );
-		void waitForSaveInitiatedTimeout( char *saveLabel );
+		void waitForSaveInitiated( const char* saveLabel );
+		void waitForSaveInitiatedTimeout( const char* saveLabel );
 		void waitForFederationSaved();
 		void waitForFederationNotSaved();
 		
 		void waitForFederationRestoreBegun();
-		int waitForFederateRestoreInitiated( char* label );
-		void waitForFederateRestoreInitiatedTimeout( char* label );
+		int waitForFederateRestoreInitiated( const char* label );
+		void waitForFederateRestoreInitiatedTimeout( const char* label );
 		void waitForFederationRestored();
-		void waitForFederationRestoredTimeout( char* label );
+		void waitForFederationRestoredTimeout( const char* label );
 		void waitForFederationNotRestored();
-		void waitForRestoreRequestSuccess( char *label );
-		void waitForRestoreRequestFailure( char *label );
+		void waitForRestoreRequestSuccess( const char* label );
+		void waitForRestoreRequestFailure( const char* label );
 		
 	//////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////// FederateAmbassador Methods ///////////////////////////////
@@ -220,37 +220,37 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		////////////////////////////////////////////
 		///// Synchornization Point Management /////
 		////////////////////////////////////////////
-		virtual void synchronizationPointRegistrationSucceeded( const char *label )
+		virtual void synchronizationPointRegistrationSucceeded( const char* label )
 			throw( RTI::FederateInternalError );
 	
-		virtual void synchronizationPointRegistrationFailed( const char *label )
+		virtual void synchronizationPointRegistrationFailed( const char* label )
 			throw( RTI::FederateInternalError );
 	
-		virtual void announceSynchronizationPoint( const char *label, const char *tag )
+		virtual void announceSynchronizationPoint( const char* label, const char* tag )
 			throw( RTI::FederateInternalError );
 	
-		virtual void federationSynchronized( const char *label )
+		virtual void federationSynchronized( const char* label )
 			throw( RTI::FederateInternalError );
 	
 		///////////////////////////////////////
 		///// Save and Restore Management /////
 		///////////////////////////////////////
-		virtual void initiateFederateSave( const char *label )
+		virtual void initiateFederateSave( const char* label )
 			throw( RTI::UnableToPerformSave, RTI::FederateInternalError );
 	
 		virtual void federationSaved() throw( RTI::FederateInternalError );
 	
 		virtual void federationNotSaved() throw( RTI::FederateInternalError );
 	
-		virtual void requestFederationRestoreSucceeded( const char *label )
+		virtual void requestFederationRestoreSucceeded( const char* label )
 			throw( RTI::FederateInternalError );
 	
-		virtual void requestFederationRestoreFailed( const char *label, const char *reason )
+		virtual void requestFederationRestoreFailed( const char* label, const char* reason )
 			throw( RTI::FederateInternalError );
 	
 		virtual void federationRestoreBegun() throw( RTI::FederateInternalError );
 	
-		virtual void initiateFederateRestore( const char *label, RTI::FederateHandle handle )
+		virtual void initiateFederateRestore( const char* label, RTI::FederateHandle handle )
 			throw( RTI::SpecifiedSaveLabelDoesNotExist,
 			       RTI::CouldNotRestore,
 			       RTI::FederateInternalError );
@@ -286,7 +286,7 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		virtual void reflectAttributeValues( RTI::ObjectHandle theObject,
 		                                     const RTI::AttributeHandleValuePairSet& theAttributes,
 		                                     const RTI::FedTime& theTime,
-		                                     const char *theTag,
+		                                     const char* theTag,
 		                                     RTI::EventRetractionHandle theHandle )
 			throw( RTI::ObjectNotKnown,
 			       RTI::AttributeNotKnown,
@@ -296,7 +296,7 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 	
 		virtual void reflectAttributeValues( RTI::ObjectHandle theObject,
 		                                     const RTI::AttributeHandleValuePairSet& theAttributes,
-		                                     const char *theTag )
+		                                     const char* theTag )
 			throw( RTI::ObjectNotKnown,
 			       RTI::AttributeNotKnown,
 			       RTI::FederateOwnsAttributes,
@@ -305,7 +305,7 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 		virtual void receiveInteraction( RTI::InteractionClassHandle theInteraction,
 		                                 const RTI::ParameterHandleValuePairSet& theParameters,
 		                                 const RTI::FedTime& theTime,
-		                                 const char *theTag,
+		                                 const char* theTag,
 		                                 RTI::EventRetractionHandle theHandle )
 			throw( RTI::InteractionClassNotKnown,
 			       RTI::InteractionParameterNotKnown,
@@ -314,20 +314,20 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 	
 		virtual void receiveInteraction( RTI::InteractionClassHandle theInteraction,
 		                                const RTI::ParameterHandleValuePairSet& theParameters,
-		                                const char *theTag )
+		                                const char* theTag )
 			throw( RTI::InteractionClassNotKnown,
 			       RTI::InteractionParameterNotKnown,
 			       RTI::FederateInternalError );
 	
 		virtual void removeObjectInstance( RTI::ObjectHandle theObject,
 		                                   const RTI::FedTime& theTime,
-		                                   const char *theTag,
+		                                   const char* theTag,
 		                                   RTI::EventRetractionHandle theHandle )
 			throw( RTI::ObjectNotKnown,
 			       RTI::InvalidFederationTime,
 			       RTI::FederateInternalError );
 	
-		virtual void removeObjectInstance( RTI::ObjectHandle theObject, const char *theTag )
+		virtual void removeObjectInstance( RTI::ObjectHandle theObject, const char* theTag )
 			throw( RTI::ObjectNotKnown, RTI::FederateInternalError );
 	
 		virtual void attributesInScope( RTI::ObjectHandle theObject,
@@ -367,7 +367,7 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 	
 		virtual void requestAttributeOwnershipAssumption( RTI::ObjectHandle theObject,
 		                                                  const RTI::AttributeHandleSet& offered,
-		                                                  const char *theTag )
+		                                                  const char* theTag )
 			throw( RTI::ObjectNotKnown,
 			       RTI::AttributeNotKnown,
 			       RTI::AttributeAlreadyOwned,
@@ -403,7 +403,7 @@ class Test13FederateAmbassador : public NullFederateAmbassador
 	
 		virtual void requestAttributeOwnershipRelease( RTI::ObjectHandle theObject,
 		                                               const RTI::AttributeHandleSet& candidates,
-		                                               const char *theTag )
+		                                               const char* theTag )
 			throw( RTI::ObjectNotKnown,
 			       RTI::AttributeNotKnown,
 			       RTI::AttributeNotOwned,

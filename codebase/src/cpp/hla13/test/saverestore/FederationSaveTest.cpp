@@ -20,13 +20,17 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( FederationSaveTest, "FederationSaveTest" 
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( FederationSaveTest, "SaveRestore" );
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////// Static Variables /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+const char* FederationSaveTest::SAVE_LABEL = "FederationSaveTest";
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// Constructors/Destructors /////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 FederationSaveTest::FederationSaveTest()
 {
 	this->defaultFederate = new Test13Federate( "defaultFederate" );
 	this->secondFederate = new Test13Federate( "secondFederate" );
-	this->saveLabel = "FederationSaveTest";
 }
 
 FederationSaveTest::~FederationSaveTest()
@@ -78,7 +82,7 @@ void FederationSaveTest::testRequestFederationSave()
 {
 	try
 	{
-		defaultFederate->rtiamb->requestFederationSave( saveLabel );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL );
 	}
 	catch( RTI::Exception& e )
 	{
@@ -86,8 +90,8 @@ void FederationSaveTest::testRequestFederationSave()
 	}
 
 	// make sure the proper callbacks are sent out
-	defaultFederate->fedamb->waitForSaveInitiated( saveLabel );
-	secondFederate->fedamb->waitForSaveInitiated( saveLabel );
+	defaultFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
 }
 
 ////////////////////////////////////////////////////
@@ -98,7 +102,7 @@ void FederationSaveTest::testRequestFederationSaveWhenNotJoined()
 	defaultFederate->quickResign();
 	try
 	{
-		defaultFederate->rtiamb->requestFederationSave( this->saveLabel );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL );
 		failTestMissingException( "FederateNotExecutionMember",
 		                          "requesting federation save when not joined" );
 	}
@@ -118,7 +122,7 @@ void FederationSaveTest::testRequestFederationSaveWhenNotJoined()
 /////////////////////////////////////////////////////////
 void FederationSaveTest::testRequestFederationSaveWhenSaveInProgress()
 {
-	defaultFederate->quickSaveInProgress( saveLabel );
+	defaultFederate->quickSaveInProgress( SAVE_LABEL );
 	try
 	{
 		defaultFederate->rtiamb->requestFederationSave( "otherLabel" );
@@ -139,10 +143,10 @@ void FederationSaveTest::testRequestFederationSaveWhenSaveInProgress()
 ////////////////////////////////////////////////////////////
 void FederationSaveTest::testRequestFederationSaveWhenRestoreInProgress()
 {
-	defaultFederate->quickRestoreInProgress( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickRestoreInProgress( SAVE_LABEL, 2, defaultFederate, secondFederate );
 	try
 	{
-		defaultFederate->rtiamb->requestFederationSave( saveLabel );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL );
 		failTestMissingException( "RestoreInProgress", "requesting save while restore in progress" );
 	}
 	catch( RTI::RestoreInProgress& rip )
@@ -167,7 +171,7 @@ void FederationSaveTest::testTimestampedRequestFederationSave()
 	try
 	{
 		RTIfedTime time = 10.0;
-		defaultFederate->rtiamb->requestFederationSave( saveLabel, time );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL, time );
 	}
 	catch( RTI::Exception& e )
 	{
@@ -175,8 +179,8 @@ void FederationSaveTest::testTimestampedRequestFederationSave()
 	}
 	
 	// we shouldn't get any callbacks yet, as neither federate is at 10.0
-	defaultFederate->fedamb->waitForSaveInitiatedTimeout( saveLabel );
-	secondFederate->fedamb->waitForSaveInitiatedTimeout( saveLabel );
+	defaultFederate->fedamb->waitForSaveInitiatedTimeout( SAVE_LABEL );
+	secondFederate->fedamb->waitForSaveInitiatedTimeout( SAVE_LABEL );
 
 	// advance the federates to 10.0
 	defaultFederate->quickAdvanceRequest( 10.0 );
@@ -184,8 +188,8 @@ void FederationSaveTest::testTimestampedRequestFederationSave()
 	defaultFederate->fedamb->waitForTimeAdvance( 10.0 );
 
 	// now we should get the save notification
-	defaultFederate->fedamb->waitForSaveInitiated( saveLabel );
-	secondFederate->fedamb->waitForSaveInitiated( saveLabel );
+	defaultFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
 }
 
 ////////////////////////////////////////////////////////////////
@@ -196,7 +200,7 @@ void FederationSaveTest::testTimestampedRequestFederationSaveWithTimeInPast()
 	try
 	{
 		RTIfedTime theTime = 1.0;
-		defaultFederate->rtiamb->requestFederationSave( this->saveLabel, theTime );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL, theTime );
 		failTestMissingException( "FederateNotExecutionMember",
 		                          "requesting federation save with time in past" );
 	}
@@ -220,7 +224,7 @@ void FederationSaveTest::testTimestampedRequestFederationSaveWhenNotJoined()
 	try
 	{
 		RTIfedTime theTime = 10.0;
-		defaultFederate->rtiamb->requestFederationSave( this->saveLabel, theTime );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL, theTime );
 		failTestMissingException( "FederateNotExecutionMember",
 		                          "requesting federation save when not joined" );
 	}
@@ -240,11 +244,11 @@ void FederationSaveTest::testTimestampedRequestFederationSaveWhenNotJoined()
 ////////////////////////////////////////////////////////////////////
 void FederationSaveTest::testTimestampedRequestFederationSaveWhenSaveInProgress()
 {
-	defaultFederate->quickSaveInProgress( saveLabel );
+	defaultFederate->quickSaveInProgress( SAVE_LABEL );
 	try
 	{
 		RTIfedTime time = 10.0;
-		defaultFederate->rtiamb->requestFederationSave( saveLabel, time );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL, time );
 		failTestMissingException( "SaveInProgress",
 		                          "requesting timestampped save while save in progress" );
 	}
@@ -264,11 +268,11 @@ void FederationSaveTest::testTimestampedRequestFederationSaveWhenSaveInProgress(
 ///////////////////////////////////////////////////////////////////////
 void FederationSaveTest::testTimestampedRequestFederationSaveWhenRestoreInProgress()
 {
-	defaultFederate->quickRestoreInProgress( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickRestoreInProgress( SAVE_LABEL, 2, defaultFederate, secondFederate );
 	try
 	{
 		RTIfedTime time = 100.0;
-		defaultFederate->rtiamb->requestFederationSave( saveLabel, time );
+		defaultFederate->rtiamb->requestFederationSave( SAVE_LABEL, time );
 		failTestMissingException( "RestoreInProgress",
 		                          "requesting timestamped save while restore in progress" );
 	}
@@ -292,9 +296,9 @@ void FederationSaveTest::testTimestampedRequestFederationSaveWhenRestoreInProgre
 ///////////////////////////////////////////
 void FederationSaveTest::testFederateSaveBegun()
 {
-	defaultFederate->quickSaveRequest( saveLabel );
-	defaultFederate->fedamb->waitForSaveInitiated( saveLabel );
-	secondFederate->fedamb->waitForSaveInitiated( saveLabel );
+	defaultFederate->quickSaveRequest( SAVE_LABEL );
+	defaultFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
 	
 	try
 	{
@@ -358,7 +362,7 @@ void FederationSaveTest::testFederateSaveBegunWhenNotJoined()
 ////////////////////////////////////////////////////////
 void FederationSaveTest::testFederateSaveBegunWhenRestoreInProgress()
 {
-	defaultFederate->quickRestoreInProgress( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickRestoreInProgress( SAVE_LABEL, 2, defaultFederate, secondFederate );
 	try
 	{
 		defaultFederate->rtiamb->federateSaveBegun();
@@ -385,9 +389,9 @@ void FederationSaveTest::testFederateSaveBegunWhenRestoreInProgress()
 //////////////////////////////////////////////
 void FederationSaveTest::testFederateSaveComplete()
 {
-	defaultFederate->quickSaveRequest( saveLabel );
-	defaultFederate->fedamb->waitForSaveInitiated( saveLabel );
-	secondFederate->fedamb->waitForSaveInitiated( saveLabel );
+	defaultFederate->quickSaveRequest( SAVE_LABEL );
+	defaultFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
 	defaultFederate->quickSaveBegun();
 	secondFederate->quickSaveBegun();
 	
@@ -455,7 +459,7 @@ void FederationSaveTest::testFederateSaveCompleteWhenNotJoined()
 ///////////////////////////////////////////////////////////
 void FederationSaveTest::testFederateSaveCompleteWhenRestoreInProgress()
 {
-	defaultFederate->quickRestoreInProgress( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickRestoreInProgress( SAVE_LABEL, 2, defaultFederate, secondFederate );
 	try
 	{
 		defaultFederate->rtiamb->federateSaveComplete();
@@ -482,9 +486,9 @@ void FederationSaveTest::testFederateSaveCompleteWhenRestoreInProgress()
 //////////////////////////////////////////////////
 void FederationSaveTest::testFederateSaveNotCompleted()
 {
-	defaultFederate->quickSaveRequest( saveLabel );
-	defaultFederate->fedamb->waitForSaveInitiated( saveLabel );
-	secondFederate->fedamb->waitForSaveInitiated( saveLabel );
+	defaultFederate->quickSaveRequest( SAVE_LABEL );
+	defaultFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForSaveInitiated( SAVE_LABEL );
 	defaultFederate->quickSaveBegun();
 	secondFederate->quickSaveBegun();
 	defaultFederate->quickSaveComplete();
@@ -553,7 +557,7 @@ void FederationSaveTest::testFederateSaveNotCompletedWhenNotJoined()
 ///////////////////////////////////////////////////////////////
 void FederationSaveTest::testFederateSaveNotCompletedWhenRestoreInProgress()
 {
-	defaultFederate->quickRestoreInProgress( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickRestoreInProgress( SAVE_LABEL, 2, defaultFederate, secondFederate );
 	try
 	{
 		defaultFederate->rtiamb->federateSaveNotComplete();

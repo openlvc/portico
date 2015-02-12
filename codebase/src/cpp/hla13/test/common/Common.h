@@ -67,16 +67,16 @@
  * maps we define using ltstr comparision. Stupid MSVC doesn't
  * like using the other version. Humbug.
  */
-#define MAP_LTSTR_CLEANUP(mapname)                      \
-{                                                       \
-	map<char*,char*,ltstr>::iterator iterator;          \
-	for( iterator = mapname->begin();                   \
-	     iterator != mapname->end();                    \
-	     iterator++ )                                   \
-	{                                                   \
-		char *current = (*iterator).second;             \
-		delete current;                                 \
-	}                                                   \
+#define MAP_LTSTR_CLEANUP(mapname)                          \
+{                                                           \
+	map<const char*,const char*,ltstr>::iterator iterator;  \
+	for( iterator = mapname->begin();                       \
+	     iterator != mapname->end();                        \
+	     iterator++ )                                       \
+	{                                                       \
+		const char *current = (*iterator).second;           \
+		delete current;                                     \
+	}                                                       \
 }
 
 /*
@@ -116,12 +116,12 @@
  */
 #define SET_LTSTR_CLEANUP(setname)                      \
 {                                                       \
-	set<char*,ltstr>::iterator iterator;                \
+	set<const char*,ltstr>::iterator iterator;          \
 	for( iterator = setname->begin();                   \
 	     iterator != setname->end();                    \
 	     iterator++ )                                   \
 	{                                                   \
-		char *current = *iterator;                      \
+		const char *current = *iterator;                \
 		delete current;                                 \
 	}                                                   \
 }
@@ -139,13 +139,13 @@ void failTest( const char *format, ... );
  * Test should fail because an exception was expected, but none occurred. The failure message
  * will also include the action that was underway (and should have caused an exception).
  */
-void failTestMissingException( char *expectedException, char* action );
+void failTestMissingException( const char *expectedException, const char* action );
 
 /*
  * An exception was received, but it wasn't the one we expected. The failure message will
  * include the expected and actual exception types and a message regarding the action that
  * was in progress.
  */
-void failTestWrongException( char *expected, RTI::Exception &actual, char *action );
+void failTestWrongException( const char *expected, RTI::Exception &actual, const char *action );
 
 #endif /*COMMON_H_*/

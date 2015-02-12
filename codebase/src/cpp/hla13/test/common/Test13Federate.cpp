@@ -15,14 +15,14 @@
 #include "Test13Federate.h"
 
 // set up the static vars
-char *Test13Federate::SIMPLE_NAME = "TestNG6Federation";
+const char *Test13Federate::SIMPLE_NAME = "TestNG6Federation";
 int Test13Federate::OWNER_UNOWNED = -1;
 int Test13Federate::OWNER_RTI = 0;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-Test13Federate::Test13Federate( char *name )
+Test13Federate::Test13Federate( const char* name )
 {
 	// store the federate name (make sure it is a copy so that we can delete it when we want)
 	//this->federateName = name;
@@ -71,7 +71,7 @@ void Test13Federate::quickCreate()
  * This method will create a new federation using the given federation name and the default
  * testing FOM.
  */
-void Test13Federate::quickCreate( char *federationName )
+void Test13Federate::quickCreate( const char* federationName )
 {
 	try
 	{
@@ -89,14 +89,14 @@ void Test13Federate::quickCreate( char *federationName )
  */
 RTI::FederateHandle Test13Federate::quickJoin()
 {
-	// just call into quickJoin( char* )
+	// just call into quickJoin( const char* )
 	return this->quickJoin( Test13Federate::SIMPLE_NAME );
 }
 
 /*
  * The same as quickJoin() except that you can specify the federation name. 
  */
-RTI::FederateHandle Test13Federate::quickJoin( char *federationName )
+RTI::FederateHandle Test13Federate::quickJoin( const char* federationName )
 {
 	// create the FederateAmbassador implementation, removing the current one if it exists
 	if( this->fedamb != NULL )
@@ -161,7 +161,7 @@ void Test13Federate::quickDestroy()
 /*
  * This method will attempt to destroy the federation of the given name.
  */
-void Test13Federate::quickDestroy( char *federationName )
+void Test13Federate::quickDestroy( const char* federationName )
 {
 	try
 	{
@@ -197,7 +197,7 @@ void Test13Federate::quickDestroyNoFail()
  * Attempt to register a federation wide synchronization point with the given label and tag. If
  * the tag is NULL, "NA" will be passed
  */
-void Test13Federate::quickAnnounce( char *label, char *tag )
+void Test13Federate::quickAnnounce( const char* label, const char* tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -218,7 +218,9 @@ void Test13Federate::quickAnnounce( char *label, char *tag )
  * handles will be used to identify which federates should be privy to the point. If the given
  * tag is NULL, "NA" will be passed.
  */
-void Test13Federate::quickAnnounce( char *label, int federateCount, ... /* federate handles */ )
+void Test13Federate::quickAnnounce( const char* label, 
+                                    int federateCount, 
+                                    ... /* federate handles */ )
 {
 	// convert the handle set
 	RTI::FederateHandleSet *handleSet = this->createFHS( federateCount );
@@ -246,7 +248,7 @@ void Test13Federate::quickAnnounce( char *label, int federateCount, ... /* feder
  * Attempt to sign to the RTI that this federate has achieved the synchronization point with
  * the given label
  */
-void Test13Federate::quickAchieved( char *label )
+void Test13Federate::quickAchieved( const char* label )
 {
 	try
 	{
@@ -297,7 +299,7 @@ void Test13Federate::quickPublish( int objectClass, int attributeCount, ... )
  * parameter is the number of attributes that should be published. This method will resolve the
  * handles on behalf of the user from the given names.
  */
-void Test13Federate::quickPublish( char *objectClass, int attributeCount, ... )
+void Test13Federate::quickPublish( const char* objectClass, int attributeCount, ... )
 {
 	// resolve the handle for the class
 	RTI::ObjectClassHandle classHandle = quickOCHandle( objectClass );
@@ -328,7 +330,7 @@ void Test13Federate::quickPublish( char *objectClass, int attributeCount, ... )
  * Attempts to unpublish all attributes of the class with the given name. If there is an error,
  * the current test is failed.
  */
-void Test13Federate::quickUnpublishOC( char *objectClass )
+void Test13Federate::quickUnpublishOC( const char* objectClass )
 {
 	// resolve the handle for the class
 	RTI::ObjectClassHandle classHandle = quickOCHandle( objectClass );
@@ -378,7 +380,7 @@ void Test13Federate::quickSubscribe( int objectClass, int attributeCount, ... )
  * parameter is the number of attributes that should be published. This method will resolve the
  * handles on behalf of the user from the given names.
  */
-void Test13Federate::quickSubscribe( char *objectClass, int attributeCount, ... )
+void Test13Federate::quickSubscribe( const char* objectClass, int attributeCount, ... )
 {
 	// resolve the handle for the class
 	RTI::ObjectClassHandle classHandle = quickOCHandle( objectClass );
@@ -426,7 +428,7 @@ void Test13Federate::quickPublish( int interactionClass )
  * Attempts to publish the interaction class identified by the given class name. This method
  * will resolve the handle on behalf of the caller.
  */
-void Test13Federate::quickPublish( char *interactionClass )
+void Test13Federate::quickPublish( const char* interactionClass )
 {
 	// resolve the handle for the class
 	RTI::InteractionClassHandle classHandle = this->quickICHandle( interactionClass );
@@ -462,7 +464,7 @@ void Test13Federate::quickSubscribe( int interactionClass )
  * Attempts to subscribe to the interaction class identified by the given class name. This method
  * will resolve the handle on behalf of the caller.
  */
-void Test13Federate::quickSubscribe( char *interactionClass )
+void Test13Federate::quickSubscribe( const char* interactionClass )
 {
 	// resolve the handle
 	RTI::InteractionClassHandle classHandle = this->quickICHandle( interactionClass );
@@ -501,7 +503,7 @@ RTI::ObjectHandle Test13Federate::quickRegister( int classHandle )
 /*
  * The same as quickRegister(int), except that you can provide the name to use for the object
  */
-RTI::ObjectHandle Test13Federate::quickRegister( int classHandle, char *objectName )
+RTI::ObjectHandle Test13Federate::quickRegister( int classHandle, const char* objectName )
 {
 	try
 	{
@@ -519,7 +521,7 @@ RTI::ObjectHandle Test13Federate::quickRegister( int classHandle, char *objectNa
  * it will return the handle of the object that has been registered. The method will resolve
  * the handle for the object class on behalf of the user.
  */
-RTI::ObjectHandle Test13Federate::quickRegister( char* className )
+RTI::ObjectHandle Test13Federate::quickRegister( const char* className )
 {
 	// resolve the handle before the request
 	RTI::ObjectClassHandle classHandle = this->quickOCHandle( className );
@@ -538,7 +540,7 @@ RTI::ObjectHandle Test13Federate::quickRegister( char* className )
 /*
  * The same as quickRegister(char*) except that you can provide the object name
  */
-RTI::ObjectHandle Test13Federate::quickRegister( char* className, char *objectName )
+RTI::ObjectHandle Test13Federate::quickRegister( const char* className, const char* objectName )
 {
 	// resolve the handle before the request
 	RTI::ObjectClassHandle classHandle = this->quickOCHandle( className );
@@ -576,7 +578,7 @@ void Test13Federate::quickRegisterFail( int classHandle )
  * This method will attempt to delete the object instance identified by the given handle and
  * will pass the given tag. If the tag is NULL, it will be replaced with "NA".
  */
-void Test13Federate::quickDelete( int objectHandle, char *tag )
+void Test13Federate::quickDelete( int objectHandle, const char* tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -602,7 +604,7 @@ void Test13Federate::quickDelete( int objectHandle, char *tag )
  */
 void Test13Federate::quickReflect( int objectHandle,
                                     RTI::AttributeHandleValuePairSet *ahvps,
-                                    char *tag )
+                                    const char* tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -670,16 +672,15 @@ void Test13Federate::quickReflect( int objectHandle, int attributeCount, ... )
  */
 void Test13Federate::quickReflectFail( int objectHandle,
                                        RTI::AttributeHandleValuePairSet *ahvps,
-                                       char *tag )
+                                       const char *tag )
 {
 	// check the tag
-	if( tag == NULL )
-		tag = "NA";
+	const char* safeTag = tag == NULL ? "NA" : tag;
 	
 	// attempt the update
 	try
 	{
-		rtiamb->updateAttributeValues( objectHandle, *ahvps, tag );
+		rtiamb->updateAttributeValues( objectHandle, *ahvps, safeTag );
 		killTest( "Was expecting an exception during the updateAttributeValues call" );
 	}
 	catch( RTI::Exception &e )
@@ -692,7 +693,9 @@ void Test13Federate::quickReflectFail( int objectHandle,
  * Attempt to send an interaction of the class that has its handle provided with the given
  * set of parameter values. If the tag is NULL, it will be replaced with "NA".
  */
-void Test13Federate::quickSend( int clazz, RTI::ParameterHandleValuePairSet *phvps, char *tag )
+void Test13Federate::quickSend( int clazz, 
+                                RTI::ParameterHandleValuePairSet *phvps, 
+                                const char* tag )
 {
 	// check the tag
 	if( tag == NULL )
@@ -805,17 +808,16 @@ void Test13Federate::quickSend( int classHandle, double time, int parameterCount
  * and if it doesn't, the current test will be killed.
  */
 void Test13Federate::quickSendFail( int classHandle,
-                                     RTI::ParameterHandleValuePairSet *phvps,
-                                     char *tag )
+                                    RTI::ParameterHandleValuePairSet *phvps,
+                                    const char *tag )
 {
 	// check the tag
-	if( tag == NULL )
-		tag = "NA";
+	const char* safeTag = tag == NULL ? "NA" : tag;
 	
 	// attempt the interaction
 	try
 	{
-		rtiamb->sendInteraction( classHandle, *phvps, tag );
+		rtiamb->sendInteraction( classHandle, *phvps, safeTag );
 		killTest( "Was expecting an exception during the sendInteraction call" );
 	}
 	catch( RTI::Exception &e )
@@ -831,7 +833,7 @@ void Test13Federate::quickSendFail( int classHandle,
  * Find and return the space handle for the space of the given name. Kill the test if there is
  * an exception.
  */
-RTI::SpaceHandle Test13Federate::quickSpaceHandle( char* spaceName )
+RTI::SpaceHandle Test13Federate::quickSpaceHandle( const char* spaceName )
 {
 	try
 	{
@@ -848,7 +850,8 @@ RTI::SpaceHandle Test13Federate::quickSpaceHandle( char* spaceName )
  * Find and return the dimension handle for the dimension of the given name in the space of the
  * given name. Kill the test if there is an exception.
  */
-RTI::DimensionHandle Test13Federate::quickDimensionHandle( char* spaceName, char* dimensionName )
+RTI::DimensionHandle Test13Federate::quickDimensionHandle( const char* spaceName, 
+                                                           const char* dimensionName )
 {
 	RTI::SpaceHandle spaceHandle = quickSpaceHandle( spaceName );
 	try
@@ -988,7 +991,7 @@ RTI::Region* Test13Federate::quickGetRegion( RTI::RegionToken regionToken )
  * region. If there is an exception during this process, kill the test, otherwise, return the
  * handle of the newly created instance.
  */
-RTI::ObjectHandle Test13Federate::quickRegisterWithRegion( char* objectClass,
+RTI::ObjectHandle Test13Federate::quickRegisterWithRegion( const char* objectClass,
                                                             RTI::Region* theRegion,
                                                             int attributeCount,
                                                             ... /* attribute names */ )
@@ -1071,7 +1074,8 @@ void Test13Federate::quickAssociateWithRegion( RTI::ObjectHandle theObject,
  * Unassociate any attributes of the identified object instance that are associated with the
  * given region. If there is an exception trying to do this, the current test will be killed.
  */
-void Test13Federate::quickUnassociateWithRegion( RTI::ObjectHandle theObject, RTI::Region* theRegion )
+void Test13Federate::quickUnassociateWithRegion( RTI::ObjectHandle theObject, 
+                                                 RTI::Region* theRegion )
 
 {
 	try
@@ -1120,7 +1124,7 @@ void Test13Federate::quickSubscribeWithRegion( RTI::ObjectClassHandle classHandl
  * Subscribe to the identified object class for each of the given attribute (names) using the
  * given region. If there is an exception while trying to do this, the current test will be killed.
  */
-void Test13Federate::quickSubscribeWithRegion( char* className,
+void Test13Federate::quickSubscribeWithRegion( const char* className,
                                                 RTI::Region* region,
                                                 int attributeCount, 
                                                 ... /* attribute names */ )
@@ -1169,7 +1173,7 @@ void Test13Federate::quickUnsubscribeOCWithRegion( RTI::ObjectClassHandle classH
  * Unsubscribe from the given object class with the given region. If there is an exception during
  * this process, kill the current test.
  */
-void Test13Federate::quickUnsubscribeOCWithRegion( char* className, RTI::Region* region )
+void Test13Federate::quickUnsubscribeOCWithRegion( const char* className, RTI::Region* region )
 {
 	try
 	{
@@ -1197,7 +1201,7 @@ void Test13Federate::quickSubscribeWithRegion( RTI::InteractionClassHandle class
 	}
 }
 
-void Test13Federate::quickSubscribeWithRegion( char* className, RTI::Region* region )
+void Test13Federate::quickSubscribeWithRegion( const char* className, RTI::Region* region )
 {
 	try
 	{
@@ -1230,7 +1234,7 @@ void Test13Federate::quickUnsubscribeICWithRegion( RTI::InteractionClassHandle c
  * Unsubscribe from the given interaction class with the given region. If there is an exception
  * during this process, kill the current test.
  */
-void Test13Federate::quickUnsubscribeICWithRegion( char* className, RTI::Region *region )
+void Test13Federate::quickUnsubscribeICWithRegion( const char* className, RTI::Region *region )
 {
 	try
 	{
@@ -1246,7 +1250,7 @@ void Test13Federate::quickUnsubscribeICWithRegion( char* className, RTI::Region 
  * Much the same as quickSend(int,int,...) except that you can include region data. As usual,
  * if there are any problems, the current test will be killed.
  */
-void Test13Federate::quickSendWithRegion( char *interactionClass,
+void Test13Federate::quickSendWithRegion( const char* interactionClass,
                                            RTI::Region *region,
                                            int parameterCount,
                                            ... /* parameter names */ )
@@ -1789,7 +1793,7 @@ void Test13Federate::quickAssertOwnedBy( int federateHandle,
  * the request or the initiation isn't received in a timely fashion, the current test
  * will be failed.
  */
-void Test13Federate::quickSaveInProgress( char *saveLabel )
+void Test13Federate::quickSaveInProgress( const char* saveLabel )
 {
 	// initiate a save from this federate using the given label
 	this->quickSaveRequest( saveLabel );
@@ -1801,7 +1805,7 @@ void Test13Federate::quickSaveInProgress( char *saveLabel )
 /*
  * Request a federation save with the given label, fail the test if there is an exception
  */
-void Test13Federate::quickSaveRequest( char *saveLabel )
+void Test13Federate::quickSaveRequest( const char* saveLabel )
 {
 	try
 	{
@@ -1871,7 +1875,7 @@ void Test13Federate::quickSaveNotComplete()
  * given label. If there is a problem in any of the steps (initiating the save, starting it
  * or successfully completing in any of the federates), the current test will be failed.
  */
-void Test13Federate::quickSaveToCompletion( char *saveLabel, int federateCount, ... )
+void Test13Federate::quickSaveToCompletion( const char* saveLabel, int federateCount, ... )
 {
 	// initiate a save from this federate using the given label
 	quickSaveRequest( saveLabel );
@@ -1910,7 +1914,7 @@ void Test13Federate::quickSaveToCompletion( char *saveLabel, int federateCount, 
  * Requests a federation restore from the RTIambassador and then returns. If there is an
  * exception performing this call, the current test is failed.
  */
-void Test13Federate::quickRestoreRequest( char *label )
+void Test13Federate::quickRestoreRequest( const char* label )
 {
 	try
 	{
@@ -1927,7 +1931,7 @@ void Test13Federate::quickRestoreRequest( char *label )
  * then ticks until either a success of failure notification from the RTI is received. If the
  * initiation is not a success, or there is an exception initiating it, the current test is failed.
  */
-void Test13Federate::quickRestoreRequestSuccess( char *label )
+void Test13Federate::quickRestoreRequestSuccess( const char* label )
 {
 	quickRestoreRequest( label );
 	fedamb->waitForRestoreRequestSuccess( label );
@@ -1971,7 +1975,7 @@ void Test13Federate::quickRestoreNotComplete()
  * for the save and the restore. The set of all the federates is received from the test
  * class that this federate is associated with. 
  */
-void Test13Federate::quickRestoreInProgress( char *saveLabel, int federateCount, ... )
+void Test13Federate::quickRestoreInProgress( const char* saveLabel, int federateCount, ... )
 {
 	///////////////////////////////////////////////////
 	////////////////// complete save //////////////////
@@ -2031,7 +2035,7 @@ void Test13Federate::quickRestoreInProgress( char *saveLabel, int federateCount,
 /*
  * Fetch the handle for the given object class
  */
-RTI::ObjectClassHandle Test13Federate::quickOCHandle( char *objectClass )
+RTI::ObjectClassHandle Test13Federate::quickOCHandle( const char* objectClass )
 {
 	try
 	{
@@ -2047,7 +2051,8 @@ RTI::ObjectClassHandle Test13Federate::quickOCHandle( char *objectClass )
 /*
  * Fetch the handle for the given attribute contained in the given object class
  */
-RTI::AttributeHandle Test13Federate::quickACHandle( char *objectClass, char *attributeName )
+RTI::AttributeHandle Test13Federate::quickACHandle( const char* objectClass, 
+                                                    const char* attributeName )
 {
 	try
 	{
@@ -2063,7 +2068,7 @@ RTI::AttributeHandle Test13Federate::quickACHandle( char *objectClass, char *att
 /*
  * Fetch the handle for the identified interaction class
  */
-RTI::InteractionClassHandle Test13Federate::quickICHandle( char *interactionClass )
+RTI::InteractionClassHandle Test13Federate::quickICHandle( const char* interactionClass )
 {
 	try
 	{
@@ -2079,7 +2084,8 @@ RTI::InteractionClassHandle Test13Federate::quickICHandle( char *interactionClas
 /*
  * Fetch the handle for the identified parameter in the given interaction class
  */
-RTI::ParameterHandle Test13Federate::quickPCHandle( char *interactionClass, char *parameterName )
+RTI::ParameterHandle Test13Federate::quickPCHandle( const char* interactionClass, 
+                                                    const char* parameterName )
 {
 	try
 	{
@@ -2306,7 +2312,7 @@ void Test13Federate::quickTick( double min, double max )
  * CPPUNIT_FAIL to kill the active test. The activeMethod parameter should be the name of the
  * method that was active at the time of the exception.
  */
-void Test13Federate::killTest( RTI::Exception &e, char *activeMethod )
+void Test13Federate::killTest( RTI::Exception &e, const char* activeMethod )
 {
 	// create a message notifying of the death
 	char message[4096];

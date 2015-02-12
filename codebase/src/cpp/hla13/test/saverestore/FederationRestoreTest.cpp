@@ -20,13 +20,17 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( FederationRestoreTest, "FederationRestore
 CPPUNIT_TEST_SUITE_NAMED_REGISTRATION( FederationRestoreTest, "SaveRestore" );
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////// Static Variables /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+const char* FederationRestoreTest::SAVE_LABEL = "FederationSaveTest";
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// Constructors/Destructors /////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 FederationRestoreTest::FederationRestoreTest()
 {
 	this->defaultFederate = new Test13Federate( "defaultFederate" );
 	this->secondFederate = new Test13Federate( "secondFederate" );
-	this->saveLabel = "FederationSaveTest";
 }
 
 FederationRestoreTest::~FederationRestoreTest()
@@ -45,7 +49,7 @@ void FederationRestoreTest::setUp()
 	this->defaultFederate->quickJoin();
 	this->secondFederate->quickJoin();
 	
-	defaultFederate->quickSaveToCompletion( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickSaveToCompletion( SAVE_LABEL, 2, defaultFederate, secondFederate );
 }
 
 void FederationRestoreTest::tearDown()
@@ -66,14 +70,14 @@ void FederationRestoreTest::testRequestFederationRestore()
 {
 	try
 	{
-		defaultFederate->rtiamb->requestFederationRestore( saveLabel );
+		defaultFederate->rtiamb->requestFederationRestore( SAVE_LABEL );
 	}
 	catch( RTI::Exception& e )
 	{
 		failTest( "Unexpected exception while requesting federation restore: %s", e._reason );
 	}
 	
-	defaultFederate->fedamb->waitForRestoreRequestSuccess( saveLabel );
+	defaultFederate->fedamb->waitForRestoreRequestSuccess( SAVE_LABEL );
 }
 
 ///////////////////////////////////////////////////////
@@ -84,7 +88,7 @@ void FederationRestoreTest::testRequestFederationRestoreWhenNotJoined()
 	defaultFederate->quickResign();
 	try
 	{
-		defaultFederate->rtiamb->requestFederationRestore( saveLabel );
+		defaultFederate->rtiamb->requestFederationRestore( SAVE_LABEL );
 		failTestMissingException( "FederateNotExecutionMember",
 		                          "requesting federation restore when not joined" );
 	}
@@ -104,10 +108,10 @@ void FederationRestoreTest::testRequestFederationRestoreWhenNotJoined()
 ////////////////////////////////////////////////////////////
 void FederationRestoreTest::testRequestFederationRestoreWhenSaveInProgress()
 {
-	defaultFederate->quickSaveInProgress( saveLabel );
+	defaultFederate->quickSaveInProgress( SAVE_LABEL );
 	try
 	{
-		defaultFederate->rtiamb->requestFederationRestore( saveLabel );
+		defaultFederate->rtiamb->requestFederationRestore( SAVE_LABEL );
 		failTestMissingException( "SaveInProgress",
 		                          "requesting federation restore when save in progress" );
 	}
@@ -127,10 +131,10 @@ void FederationRestoreTest::testRequestFederationRestoreWhenSaveInProgress()
 ///////////////////////////////////////////////////////////////
 void FederationRestoreTest::testRequestFederationRestoreWhenRestoreInProgress()
 {
-	defaultFederate->quickRestoreInProgress( saveLabel, 2, defaultFederate, secondFederate );
+	defaultFederate->quickRestoreInProgress( SAVE_LABEL, 2, defaultFederate, secondFederate );
 	try
 	{
-		defaultFederate->rtiamb->requestFederationRestore( saveLabel );
+		defaultFederate->rtiamb->requestFederationRestore( SAVE_LABEL );
 		failTestMissingException( "RestoreInProgress",
 		                          "requesting federation restore when restore in progress" );
 	}
@@ -155,12 +159,12 @@ void FederationRestoreTest::testRequestFederationRestoreWhenRestoreInProgress()
 ///////////////////////////////////////////////////
 void FederationRestoreTest::testFederationRestoreComplete()
 {
-	defaultFederate->quickRestoreRequest( saveLabel );
-	defaultFederate->fedamb->waitForRestoreRequestSuccess( saveLabel );
+	defaultFederate->quickRestoreRequest( SAVE_LABEL );
+	defaultFederate->fedamb->waitForRestoreRequestSuccess( SAVE_LABEL );
 	defaultFederate->fedamb->waitForFederationRestoreBegun();
 	secondFederate->fedamb->waitForFederationRestoreBegun();
-	defaultFederate->fedamb->waitForFederateRestoreInitiated( saveLabel );
-	secondFederate->fedamb->waitForFederateRestoreInitiated( saveLabel );
+	defaultFederate->fedamb->waitForFederateRestoreInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForFederateRestoreInitiated( SAVE_LABEL );
 	
 	try
 	{
@@ -226,7 +230,7 @@ void FederationRestoreTest::testFederationRestoreCompleteWhenNotJoined()
 /////////////////////////////////////////////////////////////
 void FederationRestoreTest::testFederationRestoreCompleteWhenSaveInProgress()
 {
-	defaultFederate->quickSaveInProgress( saveLabel );
+	defaultFederate->quickSaveInProgress( SAVE_LABEL );
 	try
 	{
 		defaultFederate->rtiamb->federateRestoreComplete();
@@ -253,12 +257,12 @@ void FederationRestoreTest::testFederationRestoreCompleteWhenSaveInProgress()
 //////////////////////////////////////////////////////
 void FederationRestoreTest::testFederationRestoreNotComplete()
 {
-	defaultFederate->quickRestoreRequest( saveLabel );
-	defaultFederate->fedamb->waitForRestoreRequestSuccess( saveLabel );
+	defaultFederate->quickRestoreRequest( SAVE_LABEL );
+	defaultFederate->fedamb->waitForRestoreRequestSuccess( SAVE_LABEL );
 	defaultFederate->fedamb->waitForFederationRestoreBegun();
 	secondFederate->fedamb->waitForFederationRestoreBegun();
-	defaultFederate->fedamb->waitForFederateRestoreInitiated( saveLabel );
-	secondFederate->fedamb->waitForFederateRestoreInitiated( saveLabel );
+	defaultFederate->fedamb->waitForFederateRestoreInitiated( SAVE_LABEL );
+	secondFederate->fedamb->waitForFederateRestoreInitiated( SAVE_LABEL );
 	defaultFederate->quickRestoreComplete();
 	
 	try
@@ -324,7 +328,7 @@ void FederationRestoreTest::testFederationRestoreNotCompleteWhenNotJoined()
 ////////////////////////////////////////////////////////////////
 void FederationRestoreTest::testFederationRestoreNotCompleteWhenSaveInProgress()
 {
-	defaultFederate->quickSaveInProgress( saveLabel );
+	defaultFederate->quickSaveInProgress( SAVE_LABEL );
 	try
 	{
 		defaultFederate->rtiamb->federateRestoreNotComplete();

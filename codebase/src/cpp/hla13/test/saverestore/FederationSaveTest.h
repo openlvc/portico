@@ -19,6 +19,8 @@ class FederationSaveTest : public CppUnit::TestFixture
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	private:
+		static const char* SAVE_LABEL;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -26,7 +28,6 @@ class FederationSaveTest : public CppUnit::TestFixture
 	private:
 		Test13Federate *defaultFederate;
 		Test13Federate *secondFederate;
-		char *saveLabel;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
