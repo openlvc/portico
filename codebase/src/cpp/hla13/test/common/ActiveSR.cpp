@@ -18,16 +18,15 @@
 //////////////////////////////////////// Constructors ////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 ActiveSR::ActiveSR()
+	: label()
 {
-	this->label = NULL;
 	this->status = UNINITIATED;
 	this->federateHandle = -1;
 }
 
 ActiveSR::~ActiveSR()
 {
-	if( this->label != NULL )
-		delete [] this->label;
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,10 +34,7 @@ ActiveSR::~ActiveSR()
 //////////////////////////////////////////////////////////////////////////////////////////////
 void ActiveSR::reset()
 {
-	if( this->label != NULL )
-		delete [] this->label;
-
-	this->label = NULL;
+	this->label = "";
 	this->status = UNINITIATED;
 }
 
@@ -72,13 +68,13 @@ void ActiveSR::failure()
 
 RTI::Boolean ActiveSR::isInitiated( const char* expectedLabel )
 {
-	if( this->label == NULL )
+	if( this->label.empty() )
 		return RTI::RTI_FALSE;
 	
 	if( this->status != INITIATED )
 		return RTI::RTI_FALSE;
 	
-	if( strcmp(this->label,expectedLabel) != 0 )
+	if( this->label != expectedLabel )
 		return RTI::RTI_FALSE;
 	else
 		return RTI::RTI_TRUE;
@@ -118,13 +114,7 @@ RTI::Boolean ActiveSR::isComplete()
 
 void ActiveSR::setLabel( const char* newLabel )
 {
-	char *buffer = new char[strlen(newLabel)];
-	strcpy( buffer, newLabel );
-	
-	if( this->label != NULL )
-		delete [] this->label;
-	
-	this->label = buffer;
+	this->label = string( newLabel );
 }
 
 int ActiveSR::getFederateHandle()

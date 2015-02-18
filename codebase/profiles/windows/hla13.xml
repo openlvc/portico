@@ -124,8 +124,8 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 			     arch="x86"
-		         compilerArgs="${msvc.release.defaults}"
-		         linkerArgs="">
+		         compilerArgs="${compiler.args.debug}"
+		         linkerArgs="/DEBUG">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
@@ -133,7 +133,7 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
 			<library path="${hla13.complete.dir}/vc10" libs="RTI-NGd,FedTimed"/>
-			<library path="${cppunit.dir}/win32/vc10" libs="cppunit"/>
+			<library path="${cppunit.dir}/win32/vc10" libs="cppunitd"/>
 		</cpptask>
 	</target>
 

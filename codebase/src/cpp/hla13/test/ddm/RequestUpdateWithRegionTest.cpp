@@ -125,9 +125,9 @@ void RequestUpdateWithRegionTest::testRequestUpdateWithRegion()
 
 	set<RTI::AttributeHandle>* secondAttributes =
 		defaultFederate->fedamb->waitForProvideRequest( secondObject );
-	CPPUNIT_ASSERT( secondAttributes->find(aaHandle) != firstAttributes->end() );
-	CPPUNIT_ASSERT( secondAttributes->find(abHandle) != firstAttributes->end() );
-	CPPUNIT_ASSERT( secondAttributes->find(acHandle) != firstAttributes->end() );
+	CPPUNIT_ASSERT( secondAttributes->find(aaHandle) != secondAttributes->end() );
+	CPPUNIT_ASSERT( secondAttributes->find(abHandle) != secondAttributes->end() );
+	CPPUNIT_ASSERT( secondAttributes->find(acHandle) != secondAttributes->end() );
 	delete secondAttributes;
 }
 
