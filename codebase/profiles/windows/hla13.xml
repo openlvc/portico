@@ -124,8 +124,8 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 			     arch="x86"
-		         compilerArgs="${msvc.release.defaults}"
-		         linkerArgs="">
+		         compilerArgs="${compiler.args.debug}"
+		         linkerArgs="/DEBUG">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
@@ -133,7 +133,7 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
 			<library path="${hla13.complete.dir}/vc10" libs="RTI-NGd,FedTimed"/>
-			<library path="${cppunit.dir}/win32/vc10" libs="cppunit"/>
+			<library path="${cppunit.dir}/win32/vc10" libs="cppunitd"/>
 		</cpptask>
 	</target>
 
@@ -144,7 +144,7 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" if="disabled">
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile">
 		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
 		<copy todir="${test13.complete.dir}">
 			<fileset dir="${resources.testdata.dir}/cpptest/hla13" includes="**/*"/>
@@ -162,7 +162,7 @@
 		      resultproperty="test13.result">
 			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="PATH" path="${hla13.complete.dir};${jdk.home.win32}\jre\bin\client"/>
+			<env key="PATH" path="${hla13.complete.dir}\vc10;${jdk.home.win32}\jre\bin\client"/>
 			<env key="PORTICO_DEBUG" value="OFF"/>
 			<env key="CLASSPATH" path="${sandbox.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>

@@ -1350,9 +1350,13 @@ Test13FederateAmbassador::fetchInteraction( RTI::InteractionClassHandle theClass
 	{
 		if( theClass == (*it)->getClassHandle() )
 		{
-			// remove the interaction and return it
+			// Need to get a reference to the found instance here before it is erased, otherwise
+			// it will point to something totally different
+			Test13Interaction* foundInteraction = (*it);
+
+			// remove the interaction
 			theStore->erase( it );
-			return (*it);
+			return foundInteraction;
 		}
 	}
 	

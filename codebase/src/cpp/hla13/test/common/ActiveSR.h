@@ -32,7 +32,7 @@ class ActiveSR
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		char *label;
+		std::string label;
 		SRStatus status;
 		int federateHandle; // used on restore requests
 
