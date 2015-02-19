@@ -133,6 +133,9 @@ public class FederationListener implements RequestHandler, MessageListener, Memb
 			                                     channel.jchannel.getAddress(),
 			                                     MessageHelpers.deflate(resign) );
 			
+			// dispatch resign message for the crashed federate to the LRC 
+			this.receive( resignMessage );
+			
 			logger.info( "Federate ["+federateName+","+federateHandle+
 			             "] disconnected, synthesizing resign message" );
 		}
