@@ -115,6 +115,9 @@ Section "Uninstall"
 
   RMDir /r "$INSTDIR"
 
+  ; Delete the registry keys related to uninstall
+  DeleteRegKey ${UNINST_ROOT_KEY} "${UNINST_KEY}"
+  
   ;delete the start menu items - current user
   SetShellVarContext current
   RMDir /r "$SMPROGRAMS\Portico-${VERSION}"
