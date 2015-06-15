@@ -1,2 +1,2 @@
 org.portico.impl.hla1516e.types.time.DoubleTimeFactory
-org.portico.impl.hla1516e.types.time.IntegerTimeFactory
+org.portico.impl.hla1516e.types.time.LongTimeFactory
