@@ -13,6 +13,9 @@ notifications:
   hipchat:
     rooms:
       secure: R5+2ckN7QzrAm7YZdyyDiF0aJMNwekIzjeKqiMKhl5Xwzh2q5GM7TnwxWAudGVw0lC8+sPhOnYLTaSnPNbSFFKxMjKQZlurwLGXRQRV9Edg/IYUChisKA+Qnl1bFty8KqZ/yLPhsl+h9tOEPbf6PuaxlckeVlbk6BwG8jFmyYno=
-    template: 
-      - '%{repository_slug} <a href="%{build_url}">#%{build_number}</a> [<a href="https://github.com/%{repository_slug}/tree/%{branch}">%{branch}</a>] (Tim Pokorny > <a href="%{compare_url}">%{commit}</a>): %{result} %{duration}'
+    template:
+    - '%{repository_slug} <a href="%{build_url}">#%{build_number}</a> [<a href="https://github.com/%{repository_slug}/tree/%{branch}">%{branch}</a>]
+      (Tim Pokorny > <a href="%{compare_url}">%{commit}</a>): %{result} %{duration}'
     format: html
+  slack:
+    secure: WaI6XTfSoyeflCD/PrnZge6evjfGF8ogOYdgu5UBl686T80ZorownstrjVApWcIBR73CCS697ij4XTfEC/DS3RkMETrrxFcd6HQy1OLtK9LzJtGHhXRkRyUgJ39QB7FbAYiGfgsveAMV+ZoeeStv6zQSJOr9IzBncB+B8Vzlshc=
