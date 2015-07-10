@@ -8,6 +8,12 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 ;!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
 
+; Details for the uninstaller
+!define PUBLISHER "Calytrix Technologies"
+!define WEBSITE "http://porticoproject.org"
+!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PUBLISHER} portico-${VERSION}-win64"
+!define UNINST_ROOT_KEY "HKLM"
+
 ;--------------------------------
 ;Include Modern UI
 
@@ -74,6 +80,14 @@ Section "Portico" SecPORTICO
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
+  
+  ;Register the uninstaller with Windows so that it appears in Add/Remove Programs
+  WriteRegStr ${UNINST_ROOT_KEY} "${UNINST_KEY}" "DisplayName" "Portico Open-Source RTI (64-bit)"
+  WriteRegStr ${UNINST_ROOT_KEY} "${UNINST_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
+  WriteRegStr ${UNINST_ROOT_KEY} "${UNINST_KEY}" "DisplayVersion" "${VERSION}.${BUILD_NUMBER}"
+  WriteRegStr ${UNINST_ROOT_KEY} "${UNINST_KEY}" "URLInfoAbout" "${WEBSITE}"
+  WriteRegStr ${UNINST_ROOT_KEY} "${UNINST_KEY}" "Publisher" "${PUBLISHER}"
+  ;WriteRegStr ${UNINST_ROOT_KEY} "${UNINST_KEY}" "DisplayIcon" "$INSTDIR\Portico.exe"
 
   ;create the start menu items
   CreateDirectory "$SMPROGRAMS\Portico-${VERSION}"
@@ -105,7 +119,15 @@ Section "Uninstall"
 
   RMDir /r "$INSTDIR"
 
-  ;delete the start menu items
+  ; Delete the registry keys related to uninstall
+  DeleteRegKey ${UNINST_ROOT_KEY} "${UNINST_KEY}"
+  
+  ;delete the start menu items - current user
+  SetShellVarContext current
   RMDir /r "$SMPROGRAMS\Portico-${VERSION}"
-
+  
+  ;delete the start menu items - all users
+  SetShellVarContext all
+  RMDir /r "$SMPROGRAMS\Portico-${VERSION}"
+  
 SectionEnd
