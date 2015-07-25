@@ -302,7 +302,9 @@ public class Container
 		this.porticoJarFile = null;
 		for( URL url : originalSystemPath )
 		{
-			if( url.getPath().endsWith("portico.jar") )
+			String path = url.getPath();
+			path = path.substring( path.lastIndexOf("/")+1 );
+			if( path.contains("portico") && path.endsWith(".jar") )
 			{
 				this.porticoJarFile = url;
 				break;
