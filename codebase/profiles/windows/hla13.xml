@@ -369,7 +369,8 @@
 					 arch="@{arch}"
 					 compiler="@{compiler}"
 					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
 				<fileset dir="${hla13.src.dir}">
 					<include name="**/*.rc"/>
 					<include name="time/RTIfedTime.cpp"/>
@@ -399,7 +400,8 @@
 					 arch="@{arch}"
 					 compiler="@{compiler}"
 					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
 				<fileset dir="${hla13.src.dir}">
 					<include name="**/*.cpp"/>
 					<include name="**/*.rc"/>
