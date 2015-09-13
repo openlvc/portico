@@ -71,7 +71,8 @@
 				         type="executable"
 				         arch="amd64"
 				         compilerArgs="-g -O0 -fPIC -Wall -stdlib=libstdc++"
-				         linkerArgs=" -stdlib=libstdc++">
+				         linkerArgs=" -stdlib=libstdc++"
+				         threadCount="auto">
 					<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 					<includepath path="${hla13.include.dir}"/>
 					<includepath path="${hla13.src.dir}/hla/time"/>

@@ -354,7 +354,8 @@
 					 arch="@{arch}"
 					 compiler="g++"
 					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
 				<fileset dir="${hla13.src.dir}">
 					<include name="time/RTIfedTime.cpp"/>
 					<include name="time/FedTime.cpp"/>
@@ -381,7 +382,8 @@
 					 arch="@{arch}"
 					 compiler="g++"
 					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
 				<fileset dir="${hla13.src.dir}">
 					<include name="**/*.cpp"/>
 					<exclude name="time/RTIfedTime.cpp"/>
