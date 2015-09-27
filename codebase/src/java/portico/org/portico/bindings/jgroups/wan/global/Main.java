@@ -42,8 +42,15 @@ public class Main
 	{
 		try
 		{
+			Configuration configuration = Configuration.parse( args );
     		System.out.println( "Starting Portico WAN Router. Press \"x\" to exit" );
-    		Server server = new Server();
+    		System.out.println( "Configuration" );
+    		System.out.println( "  - Address: "+configuration.getAddress() );
+    		System.out.println( "  -    Port: "+configuration.getPort() );
+    		System.out.println( "" );
+    		
+    		
+    		Server server = new Server( configuration );
     		server.startup();
     		
     		BufferedReader reader = new BufferedReader( new InputStreamReader(System.in) );

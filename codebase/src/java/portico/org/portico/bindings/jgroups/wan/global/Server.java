@@ -14,6 +14,7 @@
  */
 package org.portico.bindings.jgroups.wan.global;
 
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -36,6 +37,7 @@ public class Server
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	// Configuration Options
+	private Configuration configuration;
 	private int port;
 	private String connectionInfo;
 	
@@ -48,10 +50,9 @@ public class Server
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public Server()
+	public Server( Configuration configuration )
 	{
-		// configuration defaults
-		this.port = 23114;
+		this.configuration = configuration;
 		this.connectionInfo = "Not Connected";
 		
 		// blank these out for now - we attach them in connect()
@@ -70,9 +71,12 @@ public class Server
 	/////////////////////////////////////////////////////////////////
 	public void startup() throws Exception
 	{
-		this.serverSocket = new ServerSocket( this.port );
+		this.serverSocket = new ServerSocket();
+		InetSocketAddress sa = new InetSocketAddress( configuration.getAddress(),
+		                                              configuration.getPort() );
+		this.serverSocket.bind( sa );
+
 		this.connectionInfo = this.serverSocket.toString();
-		
 		this.connectionAcceptor = new ConnectionAcceptor();
 		this.connectionAcceptor.start();
 	}
@@ -84,11 +88,6 @@ public class Server
 		this.connectionInfo = "Not Connected";
 		this.connectionAcceptor.interrupt();
 		this.connectionAcceptor.join();
-		
-		// stop processing messages
-//		this.repeater.interrupt();
-//		this.repeater.join();
-		
 	}
 	
 	/////////////////////////////////////////////////////////////////
@@ -111,7 +110,7 @@ public class Server
 	
 		public void run()
 		{
-			System.out.println( "Ready to accept connections" );
+			System.out.println( "Ready to accept connections: "+serverSocket.toString() );
 			while( Thread.interrupted() == false )
 			{
 				try
