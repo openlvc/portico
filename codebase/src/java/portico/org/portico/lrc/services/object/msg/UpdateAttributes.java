@@ -218,7 +218,7 @@ public class UpdateAttributes extends PorticoMessage implements Externalizable, 
 			int attributeHandle = buffer.readInt();
 			int valueSize = buffer.readInt();
 			byte[] attributeValue = new byte[valueSize];
-			buffer.read( attributeValue, 0, valueSize );
+			buffer.readFully( attributeValue, 0, valueSize );
 			this.attributes.put( attributeHandle, attributeValue );
 		}
 	}
