@@ -47,6 +47,7 @@ public class Main
     		System.out.println( "Configuration" );
     		System.out.println( "  - Address: "+configuration.getAddress() );
     		System.out.println( "  -    Port: "+configuration.getPort() );
+    		System.out.println( "  - Metrics: "+configuration.recordMetrics() );
     		System.out.println( "" );
     		
     		

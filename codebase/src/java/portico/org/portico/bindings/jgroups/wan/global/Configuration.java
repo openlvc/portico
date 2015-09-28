@@ -24,7 +24,8 @@ public class Configuration
 	public enum Argument
 	{
 		Address("address",1),
-		Port("port",1);
+		Port("port",1),
+		Metrics("metrics",1);
 		
 		private String name;
 		private int valueCount;
@@ -58,6 +59,7 @@ public class Configuration
 	//----------------------------------------------------------
 	private InetAddress address;
 	private int port;
+	private boolean recordMetrics = false;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -67,6 +69,7 @@ public class Configuration
 		// set defaults
 		this.setAddress( "127.0.0.1" );
 		this.port = 23114;
+		this.recordMetrics = false;
 	}
 
 	//----------------------------------------------------------
@@ -92,6 +95,9 @@ public class Configuration
 	
 	public int getPort() { return this.port; }
 	public void setPort( int port ) { this.port = port; }
+
+	public boolean recordMetrics() { return this.recordMetrics; }
+	public void setRecordMetrics( boolean record ) { this.recordMetrics = record; }
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
@@ -119,6 +125,8 @@ public class Configuration
 				case Port:
 					configuration.setPort( Integer.parseInt(args[i+1]) );
 					break;
+				case Metrics:
+					configuration.setRecordMetrics( Boolean.valueOf(args[i+1]) );
 			}
 			
 			i += argument.valueCount;

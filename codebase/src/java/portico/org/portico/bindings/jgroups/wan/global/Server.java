@@ -57,7 +57,7 @@ public class Server
 		
 		// blank these out for now - we attach them in connect()
 		this.serverSocket = null;
-		this.connectionAcceptor = new ConnectionAcceptor();
+		this.connectionAcceptor = new ConnectionAcceptor( this );
 		
 		// message processing
 		this.repeater = new Repeater();
@@ -77,7 +77,7 @@ public class Server
 		this.serverSocket.bind( sa );
 
 		this.connectionInfo = this.serverSocket.toString();
-		this.connectionAcceptor = new ConnectionAcceptor();
+		this.connectionAcceptor = new ConnectionAcceptor( this );
 		this.connectionAcceptor.start();
 	}
 	
@@ -98,14 +98,26 @@ public class Server
 		return this.connectionInfo;
 	}
 	
+	public Repeater getRepeater()
+	{
+		return this.repeater;
+	}
+	
+	public Configuration getConfiguration()
+	{
+		return this.configuration;
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////// Private Inner Class: ConnectionAcceptor ////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
 	private class ConnectionAcceptor extends Thread
 	{
-		public ConnectionAcceptor()
+		private Server server;
+		public ConnectionAcceptor( Server server )
 		{
 			super( "Connection Acceptor" );
+			this.server = server;
 		}
 	
 		public void run()
@@ -116,7 +128,7 @@ public class Server
 				try
 				{
 					Socket socket = serverSocket.accept();
-					Host host = new Host( socket, repeater );
+					Host host = new Host( server, socket );
 					host.startup();
 					System.out.println( "  (Accepted) Now serving "+socket.getRemoteSocketAddress() );
 				}

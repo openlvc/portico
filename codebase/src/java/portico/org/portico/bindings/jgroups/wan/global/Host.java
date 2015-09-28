@@ -16,8 +16,10 @@ package org.portico.bindings.jgroups.wan.global;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
@@ -35,6 +37,9 @@ public class Host
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private Server server;
+	
+	// network information
 	private Socket socket;
 	private DataInputStream instream;
 	private DataOutputStream outstream;
@@ -47,6 +52,9 @@ public class Host
 	private Thread sendThread;
 
 	// message transmission stats
+	private boolean useMetrics; // whether we should record metrics or not -- from global config
+	private int sampleRate;     // after how many messages we should take samples
+	private Metrics metrics;
 	private volatile long messagesSentTo;
 	private volatile long messagesReceivedFrom;
 	private volatile long bytesSentTo;
@@ -55,13 +63,16 @@ public class Host
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public Host( Socket socket, Repeater repeater ) throws IOException
+	public Host( Server server, Socket socket ) throws IOException
 	{
+		this.server = server;
+
+		// network members
 		this.socket = socket;
 		this.instream = new DataInputStream( socket.getInputStream() );
 		this.outstream = new DataOutputStream( socket.getOutputStream() );
 		this.sendQueue = new LinkedBlockingQueue<WanMessage>();
-		this.repeater = repeater;
+		this.repeater = server.getRepeater();
 
 		this.hostID = ID_GENERATOR.incrementAndGet();
 		this.running = false;
@@ -73,6 +84,11 @@ public class Host
 		this.messagesReceivedFrom = 0;
 		this.bytesSentTo = 0;
 		this.bytesReceivedFrom = 0;
+		
+		// Metrics
+		this.useMetrics = server.getConfiguration().recordMetrics();
+		this.sampleRate = 100;
+		this.metrics = new Metrics();
 	}
 
 	//----------------------------------------------------------
@@ -133,6 +149,10 @@ public class Host
 		// TODO log information here about the number of messages left
 		this.sendQueue.clear();
 		this.running = false;
+		
+		// log our metrics
+		if( this.useMetrics )
+			this.metrics.writeToCVS();
 	}
 
 	public boolean isRunning()
@@ -230,6 +250,9 @@ public class Host
 					// store some status information we can call up later
 					++messagesSentTo;
 					bytesSentTo += (message.buffer.length+5);
+					
+					if( useMetrics && (messagesSentTo % sampleRate == 0) )
+						metrics.sample();
 				}
 				catch( InterruptedException ie )
 				{
@@ -313,4 +336,61 @@ public class Host
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// Private Class: Metrics  /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This class captures send/receive metrics for this particular host at regular intervals.
+	 */
+	private class Metrics
+	{
+		// Member Variables
+		private ArrayList<Sample> samples = new ArrayList<Sample>();
+
+		public void sample()
+		{
+			samples.add( new Sample(System.currentTimeMillis(),messagesSentTo,sendQueue.size()) );
+		}
+		
+		/** Write our sample data to a CSV file with the name hostID.csv */
+		public void writeToCVS()
+		{
+			try
+			{
+				FileWriter writer = new FileWriter(hostID+".csv");
+				writer.write( "timestamp,processed,queued\n" );
+				for( Sample sample : samples )
+				{
+					writer.write( String.format("%d,%d,%d\n",
+					                            sample.timestamp,
+					                            sample.processed,
+					                            sample.waiting) );
+				}
+				writer.close();
+			}
+			catch( Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Represents a single metric sample containing the number of messages that have been
+	 * processed and the number that are waiting at the same point.
+	 */
+	private class Sample
+	{
+		public long timestamp;
+		public long processed;
+		public long waiting;
+		public Sample( long timestamp, long processed, long waiting )
+		{
+			this.timestamp = timestamp;
+			this.processed = processed;
+			this.waiting = waiting;
+		}
+	}
+
 }
