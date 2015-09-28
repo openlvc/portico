@@ -179,32 +179,36 @@ public class SendInteractionTest extends Abstract13Test
 	//////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * According to a bug report filed against Portico (using JGroups), there are problems with
-	 * bytes being zero'd out after a certain number when sending large updates (PORT-929). This
-	 * method generates an interaction with a parameter of size 1024 to test for this behaviour.
+	 * bytes being zero'd out after a certain number when sending large updates (GH #65). This
+	 * method generates an interaction with a parameter of size 1MB to test for this behaviour.
 	 * Random values are used to fill the byte[]'s sent.
 	 */
 	@Test(groups="jgroups")
 	public void testROInteractionWithLargeParameterValue()
 	{
-		byte[] sent1024 = new byte[1024];
+		// let's just specify how large a message we want to use for testing in one
+		// place so that we can change it quickly.
+		int payloadSize = 1048576; // 1MiB
+
+		byte[] sentArray = new byte[payloadSize];
 		Random random = new Random();
-		random.nextBytes( sent1024 );
+		random.nextBytes( sentArray );
 		
 		// package this into an interaction and sent it from the sender to the receiver
 		Map<String,byte[]> parameters = new HashMap<String,byte[]>();
-		parameters.put( "xa", sent1024 );
+		parameters.put( "xa", sentArray );
 		defaultFederate.quickSend( "InteractionRoot.X.Y", parameters, null );
 		
 		// validate that the values reach the other side ok
 		Test13Interaction temp = secondFederate.fedamb.waitForROInteraction( "InteractionRoot.X" );
 		
 		// ensure that it has all the appropriate values
-		byte[] received1024 = temp.getParameterValue( xaHandle );
-		assertNotNull( received1024, "did not receive update for correct parameter" );
-		assertEquals( received1024.length, 1024, "received wrong number of bytes in parameter" );
+		byte[] receivedArray = temp.getParameterValue( xaHandle );
+		assertNotNull( receivedArray, "did not receive update for correct parameter" );
+		assertEquals( receivedArray.length, payloadSize, "received wrong amount of data" );
 		for( int i = 0; i < 1024; i++ )
 		{
-			assertEquals( received1024[i], sent1024[i], "byte at ["+i+"] was incorrect" );
+			assertEquals( receivedArray[i], sentArray[i], "byte at ["+i+"] was incorrect" );
 		}
 	}
 
