@@ -23,20 +23,23 @@ public class Configuration
 	//----------------------------------------------------------
 	public enum Argument
 	{
-		Address("address",1),
-		Port("port",1),
-		Metrics("metrics",1);
+		Address( "address",   1, "IP Address of NIC to communicate on (default: 127.0.0.1)"),
+		Port(       "port",   1, "Port to communicate on (default: 23114)"),
+		Metrics( "metrics",   1, "Dump metrics to CSV file as client disconnects (default:false)");
 		
 		private String name;
 		private int valueCount;
-		private Argument( String name, int valueCount )
+		private String description;
+		private Argument( String name, int valueCount, String description )
 		{
 			this.name = name;
 			this.valueCount = valueCount;
+			this.description = description;
 		}
 		
 		public String getName() { return this.name; }
 		public int getValueCount() { return this.valueCount; }
+		public String getDescription() { return this.description; }
 
 		public static Argument find( String name )
 		{
@@ -47,6 +50,18 @@ public class Configuration
 			}
 			
 			return null;
+		}
+		
+		public static String toHelpString()
+		{
+			StringBuilder builder = new StringBuilder();
+			builder.append( "Usage: ./wanrouter [arguments]\n" );
+			builder.append( "" );
+			for( Argument argument: values() )
+				builder.append( String.format("%14s %s\n",argument.name,argument.description) );
+			
+			builder.append("");
+			return builder.toString();
 		}
 	}
 

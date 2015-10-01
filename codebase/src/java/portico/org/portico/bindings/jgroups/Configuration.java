@@ -70,6 +70,8 @@ public class Configuration
 	///// wan properties /////////////////////////////////////////////////////////////////////
 	public static final String PROP_JGROUPS_WAN_ENABLED = "portico.wan.enabled";
 	public static final String PROP_JGROUPS_WAN_ROUTER  = "portico.wan.router";
+	public static final String PROP_JGROUPS_WAN_BUNDLE_SIZE = "portico.wan.bundle.maxsize";
+	public static final String PROP_JGROUPS_WAN_BUNDLE_TIME = "portico.wan.bundle.timeout";
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -196,22 +198,6 @@ public class Configuration
 		return Boolean.valueOf( System.getProperty(PROP_JGROUPS_WAN_ENABLED,"false") ); 
 	}
 
-	private static List<String> explode( String string, String delimiter )
-	{
-		List<String> list = new ArrayList<String>();
-		StringTokenizer tokenizer = new StringTokenizer( string, delimiter );
-		while( tokenizer.hasMoreTokens() )
-		{
-			String temp = tokenizer.nextToken().trim();
-			if( temp.equals("") )
-				continue;
-			else
-				list.add( temp );
-		}
-		
-		return list;
-	}
-
 	/**
 	 * Return the parsed, validated IP & Port of the WAN Router configuration property
 	 * contained in the RID. Throws an exception if the string is not in an appropriate
@@ -247,4 +233,90 @@ public class Configuration
 			throw new JConfigurationException( "Error parsing WAN Router address", e );
 		}
 	}
+
+	/**
+	 * Return the maximum size a bundle should grow to (bytes) before it is flushed.
+	 * Default is 64K.
+	 */
+	public static int getWanBundleSize()
+	{
+		String value = System.getProperty( PROP_JGROUPS_WAN_BUNDLE_SIZE, "64k" );
+		value = value.trim().toLowerCase();
+
+		try
+		{
+			if( value.endsWith("k") )
+			{
+				int size = Integer.parseInt( value.substring(0,value.length()-1) );
+				return size*1000;
+			}
+			else if( value.endsWith("m") )
+			{
+				int size = Integer.parseInt( value.substring(0,value.length()-1) );
+				return size*1000*1000;
+			}
+			else if( value.endsWith("g") )
+			{
+				int size = Integer.parseInt( value.substring(0,value.length()-1) );
+				throw new JConfigurationException( "A max bundle size of " + size +
+				                                   "GB? Go home. You're drunk." );
+			}
+			else if( value.endsWith("b") )
+			{
+				int size = Integer.parseInt( value.substring(0,value.length()-1) );
+				return size;
+			}
+			else
+			{
+				return Integer.parseInt( value );
+			}
+		}
+		catch( NumberFormatException e )
+		{
+			throw new JConfigurationException( "Could not parse max bundle size: " +
+			                                   PROP_JGROUPS_WAN_BUNDLE_SIZE+"="+value );
+		}
+	}
+
+	/**
+	 * Return the maximum amount of time (millis) the bundler should hold a message for
+	 * before flushing, regardless of bundled size.
+	 * Default: 20ms
+	 */
+	public static int getWanBundleTimeout()
+	{
+		String value = System.getProperty( PROP_JGROUPS_WAN_BUNDLE_TIME, "20" );
+		value = value.trim();
+
+		try
+		{
+			return Integer.parseInt( value );
+		}
+		catch( NumberFormatException e )
+		{
+			throw new JConfigurationException( "Could not parse max time size: "+
+			                                   PROP_JGROUPS_WAN_BUNDLE_TIME+"="+value );
+		}
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////
+	//// Private Helper Methods     //////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////
+	private static List<String> explode( String string, String delimiter )
+	{
+		List<String> list = new ArrayList<String>();
+		StringTokenizer tokenizer = new StringTokenizer( string, delimiter );
+		while( tokenizer.hasMoreTokens() )
+		{
+			String temp = tokenizer.nextToken().trim();
+			if( temp.equals("") )
+				continue;
+			else
+				list.add( temp );
+		}
+		
+		return list;
+	}
+
+
 }

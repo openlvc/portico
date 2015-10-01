@@ -14,31 +14,26 @@
  */
 package org.portico;
 
-import java.util.Arrays;
-
 import org.portico.container.Container;
-import org.portico.lrc.PorticoConstants;
-import org.portico.lrc.utils.RID;
 import org.portico.utils.SystemInformation;
 import org.portico.utils.logging.Log4jConfigurator;
 
 /**
- * This class exists inside the Portico jar file to provide diagnoistic information as
- * output when invoked. Portico is a library, not an application, so when someone invokes
- * the jar file directly, the main method from this class will run and will print
- * version and diagnostics information. Handy for quickly getting details about the
- * version of Portico a user is running.
+ * `Main` is set as the Portico jar file's main class in the manifest. If invoked with no
+ * arguments, it will just print some diagnostic information. If it is invoked with arguments,
+ * the first argument will be considered the "application" we want to load. Currently, the
+ * following applications are supported:
+ * 
+ *   - "wanrouter": The Portico WAN Router for connecting disconnected sites
+ * 
+ * If the application is known, processing, and all additional command line args will be
+ * handed off the applicable application.
  */
 public class Main
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	static
-	{
-		System.setProperty( "java.net.preferIPv4Stack", "true" );
-		RID.load();
-	}
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -57,112 +52,27 @@ public class Main
 	//----------------------------------------------------------
 	public static void main( String[] args )
 	{
-		if( args.length == 0 )
-			printSystemInformation();
-		
-		/////////////////////////////////////
-		// Should we start the WAN Router? //
-		/////////////////////////////////////
-		if( args[0].equals("wanrouter") )
-		{
-			// configure logging first
-			//Container.instance();
-			Log4jConfigurator.bootstrapLogging();
-			Log4jConfigurator.setLevel( "INFO", "org.jgroups" );
-			
-			if( true )
-			{
-				org.portico.bindings.jgroups.wan.global.Main.main( args );
-				return;
-			}
-			
-			if( args.length == 1 )
-			{
-				startWanRouter( new String[]{"-port", "12001"} );
-			}
-			else
-			{
-    			String[] modifiedArgs = new String[args.length-1];
-    			for( int i = 1; i < args.length; i++ )
-    				modifiedArgs[i-1] = args[i];
-
-    			startWanRouter( modifiedArgs );
-			}
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// Start WAN Router ////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	private static void startWanRouter( String[] args )
-	{
-		System.out.println( "Starting Portico WAN Router: "+Arrays.toString(args) );
-		try
-		{
-			org.jgroups.stack.GossipRouter.main( args );
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// Print System Information ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	private static void printSystemInformation()
-	{
-		// load the Container which loads the RID file
+		// Initialize environment
+		// The container will parse config the set up logging
+		System.setProperty( "java.net.preferIPv4Stack", "true" );
 		Container.instance();
 
-		// get the system information
-		SystemInformation info = SystemInformation.LOCAL;
-		StringBuilder buf = new StringBuilder( "\n" );
+		if( args.length == 0 )
+			System.out.println( SystemInformation.getSystemInformationSummary() );
 
-		buf.append( "##########################################################\n" );
-		buf.append( "#                   Portico Open RTI                     #\n" );
-		buf.append( "#            Welcome to Portico for the HLA!             #\n" );
-		buf.append( "#                                                        #\n" );
-		buf.append( "#     Portico is distributed by under the terms of       #\n" );
-		buf.append( "#    the Common Development and Distribution License.    #\n" );
-		buf.append( "#    For a copy of the license, see the LICENSE file     #\n" );
-		buf.append( "#     included in the root of the distributable you      #\n" );
-		buf.append( "#                      downloaded.                       #\n" );
-		buf.append( "##########################################################\n" );
-		buf.append( "#                                                        #\n" );
-		buf.append( "#                    System Information                  #\n" );
-		buf.append( "#                                                        #\n" );
-		buf.append( pad( "# Portico Version:          " + PorticoConstants.RTI_VERSION ) );
-		buf.append( pad( "# Platform Architecture:    " + info.getPlatform() ) );
-		buf.append( pad( "# CPUs:                     " + info.getCPUCount() ) );
-		buf.append( pad( "# Operating System:         " + info.getOS() ) );
-		buf.append( pad( "# Operating System Version: " + info.getOSVersion() ) );
-		buf.append( pad( "# Java Version:             " + info.getJavaVersion() ) );
-		buf.append( pad( "# Java Vendor:              " + info.getJavaVendor() ) );
-		buf.append( "#                                                        #\n" );
-		buf.append( pad( "# Startup Time:             "+info.getStartupTime() ) );
-		buf.append( pad( "# RID File:                 "+PorticoConstants.getRidFileLocation()) );
-		buf.append( pad( "# Log Level:                "+PorticoConstants.PORTICO_LOG_LEVEL) );
-		buf.append( "#                                                        #\n" );
-		buf.append( "##########################################################\n" );
-		buf.append( " => RTI Home: "+PorticoConstants.getRtiHome() );
-
-		System.out.println( buf.toString() );
-	}
-	
-	private static String pad( String initial )
-	{
-		// at the moment the length of the main delimiters for the licence info
-		// is 54 characters. Pad it out to that
-		int count = initial.length();
-		StringBuffer buf = new StringBuffer( initial );
-		while( count < 57 )
+		//
+		// look for an application we support
+		//
+		if( args[0].equals("wanrouter") )
 		{
-			buf.append( " " );
-			++count;
+			/////////////////////////////////
+			// Application: WAN Router   ////
+			/////////////////////////////////
+			// configure logging first
+			//Container.instance();
+			Log4jConfigurator.setLevel( "INFO", "org.jgroups" );
+			org.portico.bindings.jgroups.wan.global.Main.main( args );
+			return;
 		}
-
-		buf.append( "#\n" );
-		return buf.toString();
 	}
 }

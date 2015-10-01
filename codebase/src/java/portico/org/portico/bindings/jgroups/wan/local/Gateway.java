@@ -14,6 +14,8 @@
  */
 package org.portico.bindings.jgroups.wan.local;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,27 +33,34 @@ import org.portico.bindings.jgroups.channel.ControlHeader;
 import org.portico.bindings.jgroups.channel.UUIDHeader;
 import org.portico.bindings.jgroups.wan.global.Header;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.utils.StringUtils;
 import org.portico.utils.bithelpers.BitHelpers;
 
 /**
- * This class represents the local connection to the WAN router. Messages can be sent here to be
- * forwarded over the WAN to other clusters running externally. This class also started a separate
- * thread to receive incoming messages from the WAN which it will then package and send out to the
- * local cluster.
+ * This class is the gateway to the wider WAN network for the local connection. Messages sent
+ * here are forwarded to other connections via the WAN router.  
+ * 
+ * ### Lifecycle
+ * 
+ * All connections will create an instance of this class, but the internal mechanics will not
+ * be started unless WAN mode is enabled in the RID file.
+ * 
+ * This class starts _TWO DISTINCT THREADS_. The first reads incoming messages from the socket
+ * that connects us to the WAN router. The other is started by the {@link Bundler} and sends
+ * outgoing messages to the router.
+ * 
  * 
  * ### Sending to the WAN
- * 
- * As messages are received by the JGroups channel listener, they are sent to the local federate
- * to be processed, but also handed off to {@link #forwardToGateway(ControlHeader, Message)} to
- * be send over the WAN.
- * 
- * It is expected that messages will not be given to this class unless WAN-mode is turned on in
- * the RID file for the federate.
+ *
+ * As the JGroups `ChannelListener` receives messages from the local cluster, they both given
+ * to the local federate for processing, but also forwarded here to be sent to the gateway.
+ * The method {@link #forwardToGateway(ControlHeader, Message)} does that processing, handing
+ * messages off to the {@link Bundler}, which will send them over the WAN in an efficient manner.
  * 
  * 
  * ### Receiving messages from the WAN
  * 
- * Messages are received from the WAN by the inner class, {@link GatewayListener} running in its
+ * Messages are received from the WAN by the `GatewayListener` inner class which is running its
  * own separate thread. When received, they are packaged into JGroups `Message` types and handed
  * off to the {@link Channel} class to be sent to the local cluster.
  * 
@@ -59,7 +68,7 @@ import org.portico.utils.bithelpers.BitHelpers;
  * loops all messages back to the local member, so rather than explicitly process them as received,
  * we catch them as they're looped back just as if they came from the local cluster. 
  */
-public class LocalGateway
+public class Gateway
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -70,28 +79,27 @@ public class LocalGateway
 	//----------------------------------------------------------
 	private Federation federation;
 	private Logger logger;
-	private String fedname;
 	private boolean connected;
 
 	// Gateway connection properties
 	private Socket socket;
 	private DataInputStream instream;
 	private DataOutputStream outstream;
-	private GatewayListener gatewayListener;
 
+	// Sending and Receiving
+	private GatewayListener receiver;  // receiving
+	private Bundler bundler;           // sending
+	
 	// Statistics keeping
-	private volatile long messagesToWAN = 0;
-	private volatile long messagesFromWAN = 0;
-	private volatile long bytesToWAN = 0;
-	private volatile long bytesFromWAN = 0;
+	private long totalMessagesReceived = 0;
+	private long totalBytesReceived = 0;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public LocalGateway( Federation federation )
+	public Gateway( Federation federation )
 	{
 		this.federation = federation;
-		this.fedname = federation.getFederationName();
 		this.logger = Logger.getLogger( "portico.lrc.wan" );
 		this.connected = false;
 
@@ -99,6 +107,13 @@ public class LocalGateway
 		this.socket = null;
 		this.instream = null;
 		this.outstream = null;
+		
+		// Sending and Receiving
+		this.receiver = null;
+		this.bundler = new Bundler();
+		
+		this.totalMessagesReceived = 0;
+		this.totalBytesReceived = 0;
 	}
 
 	//----------------------------------------------------------
@@ -119,13 +134,20 @@ public class LocalGateway
 		try
 		{
 			InetSocketAddress address = Configuration.getWanRouter();
-			this.socket = new Socket( address.getAddress(), address.getPort() );
-			this.instream = new DataInputStream( socket.getInputStream() );
+			logger.debug( "Opening connection to WAN router: "+address );
+
+			// create the socket - try and give it decent sized buffers
+			this.socket = new Socket();
+			this.socket.setTcpNoDelay( true );
+			this.socket.connect( address );
+
+			this.instream = new DataInputStream( new BufferedInputStream(socket.getInputStream()) );
 			this.outstream = new DataOutputStream( socket.getOutputStream() );
+			logger.debug( "Connection to WAN router successful: "+address );
 		}
 		catch( IOException ioex )
 		{
-			throw new JRTIinternalError( "Couldn't connect to WAN Router: "+ioex.getMessage(), ioex );
+			throw new JRTIinternalError( " connect to WAN Router: "+ioex.getMessage(), ioex );
 		}
 
 		//
@@ -161,16 +183,19 @@ public class LocalGateway
 			outstream.writeByte( Header.READY );
 
 			//
-			// Start the receiver thread
+			// Start the sending and receiving threads
 			//
-			this.gatewayListener = new GatewayListener();
-			this.gatewayListener.start();
-			
+			this.receiver = new GatewayListener();
+			this.receiver.start();
+			// fire up the bundler for sending
+			this.bundler.connect( this.outstream );
+
+			// all done!
 			this.connected = true;
 		}
-		catch( IOException ioex )
+		catch( IOException e )
 		{
-			throw new JRTIinternalError( "Problem talking to WAN Router: "+ioex.getMessage(), ioex );
+			throw new JRTIinternalError( "Problem connecting to WAN Router: "+e.getMessage(), e );
 		}
 	}
 
@@ -183,17 +208,21 @@ public class LocalGateway
 		if( this.connected == false )
 			return;
 		
+		// Stop sending to the router
+		this.bundler.disconnect();
+
 		//
 		// Kill our pipe, we're done
 		//
 		try
 		{
+			logger.debug( "Disconnected WAN Router socket " );
 			socket.close();
 		}
 		catch( Exception e )
 		{
 			// nfi - just log it and move on, we need to kill the active thread regardless
-			e.printStackTrace();
+			logger.warn( "Error while disconnecting from WAN router", e );
 		}
 
 		//
@@ -201,13 +230,21 @@ public class LocalGateway
 		//
 		try
 		{
-    		gatewayListener.interrupt();
-    		gatewayListener.join();
+    		receiver.interrupt();
+    		receiver.join();
 		}
 		catch( InterruptedException ie )
 		{
 			// we're shutting down anyway - ignore this
 		}
+		
+		// log some parting metrics
+		logger.info( "WAN Gateway shutdown." );
+		String bytesSent = StringUtils.getSizeString( bundler.getSentBytesCount() );
+		String messagesSent = StringUtils.getSizeString( bundler.getSentMessageCount() );
+		String bytesReceived = StringUtils.getSizeString( totalBytesReceived );
+		logger.info( "       Sent: "+bytesSent+" ("+messagesSent+" messages)" );
+		logger.info( "   Received: "+bytesReceived+" ("+totalMessagesReceived+" messages)" );
 		
 		// Annnnnnnnd, we're done
 		this.connected = false;
@@ -231,85 +268,48 @@ public class LocalGateway
 		{
 			// this is a control message - forward with the appropriate header
 			UUID sender = ((UUIDHeader)message.getHeader(UUIDHeader.HEADER)).getUUID();
-			switch( header.getMessageType() )
-			{
-				case ControlHeader.FIND_COORDINATOR:
-					relay( Header.FIND_COORD, sender, message.getBuffer() );
-					break;
-				case ControlHeader.SET_MANIFEST:
-					relay( Header.SET_MANIFEST, sender, message.getBuffer() );
-					break;
-				case ControlHeader.CREATE_FEDERATION:
-					relay( Header.CREATE_FEDERATION, sender, message.getBuffer() );
-					break;
-				case ControlHeader.JOIN_FEDERATION:
-					relay( Header.JOIN_FEDERATION, sender, message.getBuffer() );
-					break;
-				case ControlHeader.RESIGN_FEDERATION:
-					relay( Header.RESIGN_FEDERATION, sender, message.getBuffer() );
-					break;
-				case ControlHeader.DESTROY_FEDERATION:
-					relay( Header.DESTROY_FEDERATION, sender, message.getBuffer() );
-					break;
-				case ControlHeader.GOODBYE:
-					break; // no processing of this one
-				default:
-					logger.warn( "Unknown control message [type="+header.getMessageType()+"]. Ignore." );
-			}
+			byte convertedHeader = convertHeader( header );
+			if( convertedHeader != -1 )
+				relay( convertedHeader, sender, message.getBuffer() );
 		}
 	}
 	
+	private byte convertHeader( ControlHeader controlHeader )
+	{
+		switch( controlHeader.getMessageType() )
+		{
+			case ControlHeader.FIND_COORDINATOR:   return Header.FIND_COORD;
+			case ControlHeader.SET_MANIFEST:       return Header.SET_MANIFEST;
+			case ControlHeader.CREATE_FEDERATION:  return Header.CREATE_FEDERATION;
+			case ControlHeader.JOIN_FEDERATION:    return Header.JOIN_FEDERATION;
+			case ControlHeader.RESIGN_FEDERATION:  return Header.RESIGN_FEDERATION;
+			case ControlHeader.DESTROY_FEDERATION: return Header.DESTROY_FEDERATION;
+			case ControlHeader.GOODBYE:            return -1; // don't log, but don't process
+			default:                               // drop through
+		}
+
+		logger.warn( "Unknown header [type="+controlHeader.getMessageType()+"]. Ignore." );
+		return -1;
+	}
+
 	/**
-	 * Send the given message to the {@link LocalGateway} so that it can be relayed to other
+	 * Send the given message to the {@link Gateway} so that it can be relayed to other
 	 * connected hosts. If the message is a connection control one (find coordinator, set
 	 * manifest, create, join, etc...) the `sender` must be a value UUID; otherwise it should
 	 * be `null`.
 	 */
-	private void relay( byte header, UUID sender, byte[] message )
+	private synchronized void relay( byte header, UUID sender, byte[] message )
 	{
-		int length = message.length;
-		
 		if( logger.isDebugEnabled() )
 		{
-			logger.debug( "(LOCAL->WAN) "+Header.toString(header)+
-			              ", sender="+sender+", payload="+message.length+"b" );
+			String headerString = Header.toString( header );
+			int length = message.length;
+			logger.debug( "(LOCAL->WAN) "+headerString+", sender="+sender+", payload="+length+"b" );
 		}
 
-		try
-		{
-			synchronized(outstream)
-			{
-    			// header
-    			outstream.writeByte( header );
-    			
-    			// payload
-    			if( sender == null )
-    			{
-    				// no UUID needed for simple relay messages, just write them
-    				outstream.writeInt( message.length );
-    				outstream.write( message, 0, message.length );
-    				
-    				// keep the stats
-    				++messagesToWAN;
-    				bytesToWAN += (message.length+5);
-    			}
-    			else
-    			{
-    				// UUID used for control messages, write the UUID and then the payload
-    				outstream.writeInt( 16 + message.length );
-    				outstream.write( BitHelpers.uuidToBytes(sender), 0, 16 );
-    				outstream.write( message, 0, length );
-    				
-    				// keep some stats
-    				++messagesToWAN;
-    				bytesToWAN += (message.length+5);
-    			}
-			}
-		}
-		catch( Exception e )
-		{
-			logger.error( "Problem forwarding message to WAN Router: "+e.getMessage(), e );
-		}
+		// Give the message to the bundler for sending to the WAN router.
+		// If bundler is currently sending, this method will block until it is finished.
+		bundler.submit( header, sender, message );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -326,42 +326,14 @@ public class LocalGateway
 			{
 				try
 				{
-					// Read the next message from the sender. Pull out the header and then
-					// the payload of the packet to follow.
+					// Read the next message from sender
 					byte code = instream.readByte();
-					byte[] payload = readPayload();
+					int length = instream.readInt();
+					byte[] payload = new byte[length];
+					instream.readFully( payload );
 
-					// keep some stats
-					++messagesFromWAN;
-					bytesFromWAN += (payload.length+1);
-
-					switch( code )
-					{
-						case Header.RELAY:
-							receiveRelay( payload );
-							break;
-						case Header.FIND_COORD:
-							receiveFindCoordinator( payload );
-							break;
-						case Header.SET_MANIFEST:
-							receiveSetManifest( payload );
-							break;
-						case Header.CREATE_FEDERATION:
-							receiveCreateFederation( payload );
-							break;
-						case Header.JOIN_FEDERATION:
-							receiveJoinFederation( payload );
-							break;
-						case Header.RESIGN_FEDERATION:
-							receiveResignFederation( payload );
-							break;
-						case Header.DESTROY_FEDERATION:
-							receiveDestroyFederation( payload );
-							break;
-						default:
-							logger.warn( "Unknown message type received: "+Header.toString(code) );
-							break;
-					}					
+					// process the given payload (individual message or bundle) 
+					receive( code, payload );
 				}
 				catch( SocketException se )
 				{
@@ -370,31 +342,71 @@ public class LocalGateway
 					logger.debug( "Connection to Gateway was closed. Listener thread exiting" );
 					return;
 				}
-				catch( Exception ioex )
+				catch( Exception e )
 				{
 					// Failure with the comms pipe, let's shut this puppy down
-					ioex.printStackTrace();
+					e.printStackTrace();
 					return;
 				}
 			}
 		}
 
-		/**
-		 * Reads a message payload from the stream.
-		 * 
-		 *      (int) length
-		 *   (byte[]) payload
-		 * 
-		 * Returns the payload once complete.
-		 */
-		private byte[] readPayload() throws Exception
+		private void receive( byte header, byte[] payload ) throws Exception
 		{
-			int length = instream.readInt();
-			byte[] buffer = new byte[length];
-			instream.readFully( buffer );
-			return buffer;
-		}
+			//
+			// Bundle Processing
+			//
+			if( header == Header.BUNDLE )
+			{
+				DataInputStream dis = new DataInputStream( new ByteArrayInputStream(payload) );
+				while( dis.available() > 0 )
+				{
+					byte subHeader = dis.readByte();
+					int subLength = dis.readInt();
+					byte[] subPayload = new byte[subLength];
+					dis.readFully( subPayload );
+					receive( subHeader, subPayload );
+				}
+			}
+			//
+			// Individual Message Processing
+			//
+			else
+			{
+				// keep some stats
+				++totalMessagesReceived;
+				totalBytesReceived += (payload.length+1);
 
+				switch( header )
+				{
+					case Header.RELAY:
+						receiveRelay( payload );
+						break;
+					case Header.FIND_COORD:
+						receiveFindCoordinator( payload );
+						break;
+					case Header.SET_MANIFEST:
+						receiveSetManifest( payload );
+						break;
+					case Header.CREATE_FEDERATION:
+						receiveCreateFederation( payload );
+						break;
+					case Header.JOIN_FEDERATION:
+						receiveJoinFederation( payload );
+						break;
+					case Header.RESIGN_FEDERATION:
+						receiveResignFederation( payload );
+						break;
+					case Header.DESTROY_FEDERATION:
+						receiveDestroyFederation( payload );
+						break;
+					default:
+						logger.warn( "Unknown message type received: "+Header.toString(header) );
+						break;
+				}		
+			}
+		}
+		
 		/**
 		 * Received a request to relay a message. Because we ignore our own messages
 		 * we need to both forward it to the local channel, but also up our own stack.
@@ -436,14 +448,14 @@ public class LocalGateway
 			// read out the UUID and remainder of the payload
 			UUID sender = BitHelpers.readUUID( payload, 0 );
 			byte[] remainder = BitHelpers.readByteArray( payload, 16, payload.length-16 );
-			forwardToChannel( ControlHeader.newCreateHeader(), sender, payload );
+			forwardToChannel( ControlHeader.newCreateHeader(), sender, remainder );
 		}
 		
 		private void receiveJoinFederation( byte[] payload ) throws Exception
 		{
 			UUID sender = BitHelpers.readUUID( payload, 0 );
 			byte[] remainder = BitHelpers.readByteArray( payload, 16, payload.length-16 );
-			forwardToChannel( ControlHeader.newJoinHeader(), sender, payload );
+			forwardToChannel( ControlHeader.newJoinHeader(), sender, remainder );
 		}
 		
 		private void receiveResignFederation( byte[] payload ) throws Exception
@@ -471,7 +483,7 @@ public class LocalGateway
 				logger.debug( "(WAN->LOCAL) "+header+", sender="+sender+
 				              ", payload="+payload.length+"b" );
 			}
-			
+
 			Message message = new Message();
 			message.putHeader( ControlHeader.HEADER, header );
 			message.putHeader( UUIDHeader.HEADER, new UUIDHeader(sender) );
@@ -483,6 +495,7 @@ public class LocalGateway
 			federation.getChannel().forwardToChannel( message );
 		}
 	}
+	
 	
 	//----------------------------------------------------------
 	//                     STATIC METHODS

@@ -1,3 +1,3 @@
 #!/bin/bash
-java -jar lib/portico.jar wanrouter $*
+java -Xmx4G -jar lib/portico.jar wanrouter $*
 

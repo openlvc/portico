@@ -12,24 +12,13 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.bindings.jgroups.wan.global;
+package org.portico.utils;
 
-public class Header
+public class StringUtils
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final byte WELCOME            = 1;
-	public static final byte READY              = 2;
-	public static final byte FIND_COORD         = 3;
-	public static final byte SET_MANIFEST       = 4;
-	public static final byte RELAY              = 5;
-	public static final byte CREATE_FEDERATION  = 6;
-	public static final byte JOIN_FEDERATION    = 7;
-	public static final byte RESIGN_FEDERATION  = 8;
-	public static final byte DESTROY_FEDERATION = 9;
-	
-	public static final byte BUNDLE             = 127;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -47,23 +36,31 @@ public class Header
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 	/**
-	 * For the given `value` representing a header, return a descriptive name.
+	 * Convert the given size (in bytes) to a more human readable string. Returned values
+	 * will be in the form: "16B", "16KB", "16MB", "16GB".
 	 */
-	public static final String toString( byte value )
+	public static String getSizeString( long size )
 	{
-		switch( value )
-		{
-			case 1: return "WELCOME";
-			case 2: return "READY";
-			case 3: return "FIND_COORD";
-			case 4: return "SET_MANIFEST";
-			case 5: return "RELAY";
-			case 6: return "CREATE_FEDERATION";
-			case 7: return "JOIN_FEDERATION";
-			case 8: return "RESIGN_FEDERATION";
-			case 9: return "DESTROY_FEDERATION";
-			case 127: return "BUNDLE";
-			default: return "UNKNOWN";
-		}
+		return getSizeString( size, 2 );
+	}
+	
+	/**
+	 * Convert the given size (in bytes) to a more human readable string. Returned values
+	 * will be in the form: "16B", "16KB", "16MB", "16GB".
+	 */
+	public static String getSizeString( long bytes, int decimalPlaces )
+	{
+		// let's see how much we have so we can figure out the right qualifier
+		double totalkb = bytes / 1000;
+		double totalmb = totalkb / 1000;
+		double totalgb = totalmb / 1000;
+		if( totalgb >= 1 )
+			return String.format( "%4."+decimalPlaces+"fGB", totalgb );
+		else if( totalmb >= 1 )
+			return String.format( "%4."+decimalPlaces+"fMB", totalmb );
+		else if( totalkb >= 1 )
+			return String.format( "%4."+decimalPlaces+"fKB", totalkb );
+		else
+			return bytes+"b";
 	}
 }

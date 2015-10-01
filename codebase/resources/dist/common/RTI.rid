@@ -288,6 +288,25 @@
 #
 # portico.wan.router = 127.0.0.1:23114
 
+# (5.3) Max Bundle Size
+#       Messages sent over the WAN will be grouped into bundles and sents as
+#       a batch when their total size exceeds this value. Specify a size with
+#       a suffix of 'b', 'k' or 'm' (or 'g' if you dare!)
+#
+#       Default: 64k
+#
+# portico.wan.bundle.maxsize = 64K
+
+# (5.4) Max Bundle Timeout
+#       The maximum amount of time we will hold messages in the bundler for while
+#       waiting for more messages to arrive and bundle together. From the time that
+#       a message is received, the bundler will hold it for no longer than this
+#       value (specified in milliseconds).
+#
+#       Default: 20
+#
+# portico.wan.bundle.timeout = 20
+
 
 # =========================================
 # A51. Undocumented Settings

@@ -87,7 +87,7 @@ public class Host
 		
 		// Metrics
 		this.useMetrics = server.getConfiguration().recordMetrics();
-		this.sampleRate = 100;
+		this.sampleRate = 1000;
 		this.metrics = new Metrics();
 	}
 
@@ -253,6 +253,8 @@ public class Host
 					
 					if( useMetrics && (messagesSentTo % sampleRate == 0) )
 						metrics.sample();
+
+//System.out.println( "Sent "+message.buffer.length+" bytes to "+hostID );
 				}
 				catch( InterruptedException ie )
 				{
@@ -359,13 +361,14 @@ public class Host
 			try
 			{
 				FileWriter writer = new FileWriter(hostID+".csv");
-				writer.write( "timestamp,processed,queued\n" );
+				writer.write( "timestamp,processed,queued,heap-used\n" );
 				for( Sample sample : samples )
 				{
-					writer.write( String.format("%d,%d,%d\n",
+					writer.write( String.format("%d,%d,%d,%d\n",
 					                            sample.timestamp,
 					                            sample.processed,
-					                            sample.waiting) );
+					                            sample.waiting,
+					                            sample.heapused) );
 				}
 				writer.close();
 			}
@@ -385,11 +388,13 @@ public class Host
 		public long timestamp;
 		public long processed;
 		public long waiting;
+		public long heapused;
 		public Sample( long timestamp, long processed, long waiting )
 		{
 			this.timestamp = timestamp;
 			this.processed = processed;
 			this.waiting = waiting;
+			this.heapused = Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory();
 		}
 	}
 

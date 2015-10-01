@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import org.jgroups.util.Util;
 import org.portico.bindings.jgroups.channel.Channel;
 import org.portico.bindings.jgroups.channel.Manifest;
-import org.portico.bindings.jgroups.wan.local.LocalGateway;
+import org.portico.bindings.jgroups.wan.local.Gateway;
 import org.portico.lrc.LRC;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
@@ -39,7 +39,7 @@ import org.portico.utils.messaging.PorticoMessage;
 /**
  * Class represents a link to a particular federation. This contains the actual
  * {@link Channel} that is used for communication and potentially an instance of 
- * the {@link LocalGateway} for a WAN connection if relevant. Instances of this
+ * the {@link Gateway} for a WAN connection if relevant. Instances of this
  * class are created and stored in a connection even before we know there is actually
  * a federate operating on the channel (we need to connect to find this out, and
  * this class is created to hold the connection).
@@ -73,7 +73,7 @@ public class Federation
 	
 	// WAN properties
 	private boolean wanEnabled;
-	private LocalGateway gateway;
+	private Gateway gateway;
 
 	// write metadata about incoming/outgoing message flow
 	private Auditor auditor;
@@ -122,7 +122,7 @@ public class Federation
 		this.channel.connect();
 		
 		// create the WAN gateway - but don't enable it unless we need it
-		this.gateway = new LocalGateway( this );
+		this.gateway = new Gateway( this );
 		if( this.wanEnabled )
 			this.gateway.connect();
 
@@ -623,7 +623,7 @@ public class Federation
 		return this.channel;
 	}
 
-	public LocalGateway getGateway()
+	public Gateway getGateway()
 	{
 		return this.gateway;
 	}

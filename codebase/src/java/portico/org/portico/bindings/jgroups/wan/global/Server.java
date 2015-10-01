@@ -18,6 +18,9 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
+import org.portico.utils.SystemInformation;
+
 /**
  * Server class has x main purposes:
  * 
@@ -36,15 +39,18 @@ public class Server
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private Logger logger;
+
 	// Configuration Options
 	private Configuration configuration;
-	private int port;
+	private InetSocketAddress socketAddress;
 	private String connectionInfo;
 	
 	// Runtime stuff
 	private ServerSocket serverSocket;
 	private ConnectionAcceptor connectionAcceptor;
 	
+	// Message forwarding
 	private Repeater repeater;
 
 	//----------------------------------------------------------
@@ -52,14 +58,19 @@ public class Server
 	//----------------------------------------------------------
 	public Server( Configuration configuration )
 	{
+		this.logger = Logger.getLogger( "portico.wan" );
+
+		// Configuration Options
 		this.configuration = configuration;
+		this.socketAddress = new InetSocketAddress( configuration.getAddress(),
+		                                            configuration.getPort() );
 		this.connectionInfo = "Not Connected";
 		
-		// blank these out for now - we attach them in connect()
-		this.serverSocket = null;
+		// Runtime properties
+		this.serverSocket = null; // set on connect()
 		this.connectionAcceptor = new ConnectionAcceptor( this );
 		
-		// message processing
+		// Message forwarding
 		this.repeater = new Repeater();
 	}
 
@@ -71,10 +82,22 @@ public class Server
 	/////////////////////////////////////////////////////////////////
 	public void startup() throws Exception
 	{
+		// print some general system information
+		logger.info( SystemInformation.getSystemInformationSummary() );
+		
+		// print some local configuration information
+		logger.info( "WAN Router Configuration:" );
+		logger.info( "|------------------------------------|" );
+		logger.info( "| Address: "+String.format("%-25s |",configuration.getAddress()) );
+		logger.info( "|    Port: "+String.format("%-25s |",configuration.getPort()) );
+		logger.info( "| Metrics: "+String.format("%-25s |",configuration.recordMetrics()) );
+		logger.info( "|------------------------------------|" );
+		logger.info( "" );
+		logger.info( "Starting Portico WAN Router. Press \"x\" to exit" );
+		logger.info( "" );
+		
 		this.serverSocket = new ServerSocket();
-		InetSocketAddress sa = new InetSocketAddress( configuration.getAddress(),
-		                                              configuration.getPort() );
-		this.serverSocket.bind( sa );
+		this.serverSocket.bind( this.socketAddress );
 
 		this.connectionInfo = this.serverSocket.toString();
 		this.connectionAcceptor = new ConnectionAcceptor( this );
@@ -128,6 +151,7 @@ public class Server
 				try
 				{
 					Socket socket = serverSocket.accept();
+					socket.setTcpNoDelay( true );
 					Host host = new Host( server, socket );
 					host.startup();
 					System.out.println( "  (Accepted) Now serving "+socket.getRemoteSocketAddress() );

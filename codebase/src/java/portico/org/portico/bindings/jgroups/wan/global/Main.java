@@ -17,6 +17,8 @@ package org.portico.bindings.jgroups.wan.global;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.portico.utils.logging.Log4jConfigurator;
+
 public class Main
 {
 	//----------------------------------------------------------
@@ -40,17 +42,28 @@ public class Main
 	//----------------------------------------------------------
 	public static void main( String[] args )
 	{
+		//
+		// Check to see if they have asked us to print our help information
+		//
+		for( String arg : args )
+		{
+			if( arg.trim().equalsIgnoreCase("--help") ||
+				arg.trim().equalsIgnoreCase("-h") )
+			{
+				System.out.println( Configuration.Argument.toHelpString() );
+				return;
+			}
+		}
+
+		//
+		// Start the WAN Router
+		//
 		try
 		{
 			Configuration configuration = Configuration.parse( args );
-    		System.out.println( "Starting Portico WAN Router. Press \"x\" to exit" );
-    		System.out.println( "Configuration" );
-    		System.out.println( "  - Address: "+configuration.getAddress() );
-    		System.out.println( "  -    Port: "+configuration.getPort() );
-    		System.out.println( "  - Metrics: "+configuration.recordMetrics() );
-    		System.out.println( "" );
-    		
-    		
+			Log4jConfigurator.setLevel( "INFO", "portico.wan" );
+
+			// Fire the server up and start listening for the trigger to exit!
     		Server server = new Server( configuration );
     		server.startup();
     		
@@ -72,6 +85,8 @@ public class Main
 		}
 		catch( Exception e )
 		{
+			System.out.println( "Error Occured." );
+			System.out.println( Configuration.Argument.toHelpString() );
 			e.printStackTrace();
 		}
 	}
