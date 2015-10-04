@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2015 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -33,10 +33,15 @@ public class ControlHeader extends Header
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 	public static final short HEADER                 = 7777;
-	public static final short CREATE_FEDERATION      = 1;
-	public static final short JOIN_FEDERATION        = 2;
-	public static final short RESIGN_FEDERATION      = 3;
-	public static final short DESTROY_FEDERATION     = 4;
+	public static final short FIND_COORDINATOR       = 1;
+	public static final short SET_MANIFEST           = 2; // sent in reply to FIND_COORDINATOR
+
+	public static final short CREATE_FEDERATION      = 3;
+	public static final short JOIN_FEDERATION        = 4;
+	public static final short RESIGN_FEDERATION      = 5;
+	public static final short DESTROY_FEDERATION     = 6;
+	
+	public static final short GOODBYE                = 100; // sent when disconnecting from channel
 
 	static
 	{
@@ -81,8 +86,8 @@ public class ControlHeader extends Header
 	}
 	
 	public void readFrom( DataInput in ) throws IOException,
-	                                            IllegalAccessException,
-	                                            InstantiationException
+												IllegalAccessException,
+												InstantiationException
 	{
 		this.messageType = in.readShort();
 	}
@@ -91,6 +96,10 @@ public class ControlHeader extends Header
 	{
 		switch( messageType )
 		{
+			case FIND_COORDINATOR:
+				return "FindCoordinator";
+			case SET_MANIFEST:
+				return "SetManifest";
 			case CREATE_FEDERATION:
 				return "CreateFederation";
 			case JOIN_FEDERATION:
@@ -99,6 +108,8 @@ public class ControlHeader extends Header
 				return "ResignFederation";
 			case DESTROY_FEDERATION:
 				return "DestroyFederation";
+			case GOODBYE:
+				return "Goodbye";
 			default:
 				return "Unknown";
 		}
@@ -107,6 +118,16 @@ public class ControlHeader extends Header
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static ControlHeader findCoordinator()
+	{
+		return new ControlHeader( FIND_COORDINATOR );
+	}
+	
+	public static ControlHeader setManifest()
+	{
+		return new ControlHeader( SET_MANIFEST );
+	}
+
 	public static ControlHeader newCreateHeader()
 	{
 		return new ControlHeader( CREATE_FEDERATION );
@@ -125,5 +146,10 @@ public class ControlHeader extends Header
 	public static ControlHeader newDestroyHeader()
 	{
 		return new ControlHeader( DESTROY_FEDERATION );
+	}
+	
+	public static ControlHeader goodbye()
+	{
+		return new ControlHeader( GOODBYE );
 	}
 }

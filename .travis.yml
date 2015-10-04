@@ -1,14 +1,11 @@
 sudo: false
 language: java
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 install:
-  - cd codebase
-
+- cd codebase
 script:
-  - ./ant release
-
+- ./ant release
 notifications:
   hipchat:
     rooms:

@@ -56,9 +56,6 @@
          waiting at most timeout millis before giving up and calling it dead -->
     <VERIFY_SUSPECT timeout="500"/>
 
-    <!-- Used internally to block threads during state transfer -->
-    <BARRIER/>
-
     <!-- NAKACK2 provides the reliable, ordered properties to our comms -->
     <pbcast.NAKACK2 xmit_interval="1000"
                     xmit_table_num_rows="100"
@@ -102,9 +99,6 @@
 
     <!-- FRAG2 breaks up large messages into smaller sizes so they can be send in chunks -->
     <FRAG2 frag_size="${portico.jgroups.frag.size:60K}"/>
-
-    <!-- Handles streaming state transfer when applications join a channel -->
-    <pbcast.STATE_TRANSFER/>
 
     <!-- FLUSH forces all group members to send all pending messages prior to
          some event such as the joining of a new member -->

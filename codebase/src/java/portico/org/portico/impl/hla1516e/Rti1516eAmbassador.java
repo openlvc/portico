@@ -219,7 +219,7 @@ public class Rti1516eAmbassador implements RTIambassador
 			throw new AlreadyConnected("");
 
 		// store the FederateAmbassador for now, we'll stick it on the join call shortly
-		this.helper.setFederateAmbassador( federateReference );
+		this.helper.connected( federateReference );
 	}
 
 	// 4.3
@@ -236,7 +236,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		}
 		
 		// remove our federate ambassador reference to signal we're "disconnected" :P
-		this.helper.setFederateAmbassador( null );
+		this.helper.disconnected();
 		
 		// turn off the immediate callback handler if we have to
 		if( helper.getCallbackModel() == CallbackModel.HLA_IMMEDIATE )

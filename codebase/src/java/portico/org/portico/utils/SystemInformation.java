@@ -18,6 +18,8 @@ import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.Date;
 
+import org.portico.lrc.PorticoConstants;
+
 /**
  * This singleton provides a number of useful pieces of information about the current system.
  * <b>IMPORTANT:</b> If you want the time methods to work (startup time etc...) you must make at
@@ -250,5 +252,57 @@ public class SystemInformation
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
+	/** Fetch some system information printed out in a nice command-line friendly table. */
+	public static String getSystemInformationSummary()
+	{
+		// get the system information
+		SystemInformation info = SystemInformation.LOCAL;
+		StringBuilder buf = new StringBuilder( "\n" );
+
+		buf.append( "##########################################################\n" );
+		buf.append( "#                   Portico Open RTI                     #\n" );
+		buf.append( "#            Welcome to Portico for the HLA!             #\n" );
+		buf.append( "#                                                        #\n" );
+		buf.append( "#     Portico is distributed by under the terms of       #\n" );
+		buf.append( "#    the Common Development and Distribution License.    #\n" );
+		buf.append( "#    For a copy of the license, see the LICENSE file     #\n" );
+		buf.append( "#     included in the root of the distributable you      #\n" );
+		buf.append( "#                      downloaded.                       #\n" );
+		buf.append( "##########################################################\n" );
+		buf.append( "#                                                        #\n" );
+		buf.append( "#                    System Information                  #\n" );
+		buf.append( "#                                                        #\n" );
+		buf.append( pad( "# Portico Version:          " + PorticoConstants.RTI_VERSION ) );
+		buf.append( pad( "# Platform Architecture:    " + info.getPlatform() ) );
+		buf.append( pad( "# CPUs:                     " + info.getCPUCount() ) );
+		buf.append( pad( "# Operating System:         " + info.getOS() ) );
+		buf.append( pad( "# Operating System Version: " + info.getOSVersion() ) );
+		buf.append( pad( "# Java Version:             " + info.getJavaVersion() ) );
+		buf.append( pad( "# Java Vendor:              " + info.getJavaVendor() ) );
+		buf.append( "#                                                        #\n" );
+		buf.append( pad( "# Startup Time:             "+info.getStartupTime() ) );
+		buf.append( pad( "# RID File:                 "+PorticoConstants.getRidFileLocation()) );
+		buf.append( pad( "# Log Level:                "+PorticoConstants.PORTICO_LOG_LEVEL) );
+		buf.append( "#                                                        #\n" );
+		buf.append( "##########################################################\n" );
+		buf.append( " => RTI Home: "+PorticoConstants.getRtiHome() );
+
+		return buf.toString();
+	}
+
+	private static String pad( String text )
+	{
+		// at the moment the length of the main delimiters for the licence info
+		// is 54 characters. Pad it out to that
+		int count = text.length();
+		StringBuffer buf = new StringBuffer( text );
+		while( count < 57 )
+		{
+			buf.append( " " );
+			++count;
+		}
+
+		buf.append( "#\n" );
+		return buf.toString();
+	}
 }

@@ -445,9 +445,9 @@ public class Auditor
 	/** Populate our filter list from configuration */
 	private void populateFilters()
 	{
-		this.directionFilters = JGroupsProperties.getAuditorDirectionFilters();
-		this.messageFilters   = JGroupsProperties.getAuditorMessageFilters();
-		this.fomtypeFilters   = JGroupsProperties.getAuditorFomtypeFilters();
+		this.directionFilters = Configuration.getAuditorDirectionFilters();
+		this.messageFilters   = Configuration.getAuditorMessageFilters();
+		this.fomtypeFilters   = Configuration.getAuditorFomtypeFilters();
 		
 		// if "all" is set, clear the filter
 		if( shouldDisableFilter(directionFilters) )
@@ -495,7 +495,7 @@ public class Auditor
 		if( this.recording )
 			return;
 
-		this.summaryOnlyMode = JGroupsProperties.isAuditorSummaryOnly();
+		this.summaryOnlyMode = Configuration.isAuditorSummaryOnly();
 		this.federationName = federationName;
 		this.federateName = federateName;
 		this.lrc = lrc;

@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2015 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -18,16 +18,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.portico.bindings.ConnectedRoster;
-import org.portico.bindings.jgroups.channel.FederationManifest;
+import org.portico.bindings.jgroups.channel.Manifest;
 import org.portico.lrc.model.ObjectModel;
 
 /**
  * Portico bindings each have to provide an implementation of the {@link ConnectedRoster}
- * interface so that the framework can access membership information in a connection-neutral
- * manner. This class provides that implementation for the JGroups binding, wrapping
- * information from a {@link FederationManifest}.
+ * so that the framework can access membership information in a connection-neutral manner.
+ * This class provides that implementation for the JGroups binding, wrapping
+ * information from a {@link Manifest}.
  */
-public class JGroupsRoster implements ConnectedRoster
+public class Roster implements ConnectedRoster
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -43,7 +43,7 @@ public class JGroupsRoster implements ConnectedRoster
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public JGroupsRoster( int localHandle, Set<Integer> remoteHandles, ObjectModel fom )
+	public Roster( int localHandle, Set<Integer> remoteHandles, ObjectModel fom )
 	{
 		this.localHandle = localHandle;
 		this.remoteHandles = new HashSet<Integer>( remoteHandles );
@@ -88,3 +88,4 @@ public class JGroupsRoster implements ConnectedRoster
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 }
+
