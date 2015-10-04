@@ -17,6 +17,7 @@ package org.portico.bindings.jgroups.wan.global;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.apache.log4j.Logger;
 import org.portico.utils.logging.Log4jConfigurator;
 
 public class Main
@@ -56,38 +57,51 @@ public class Main
 		}
 
 		//
-		// Start the WAN Router
+		// Parse the Configuration
 		//
+		Configuration configuration;
 		try
 		{
-			Configuration configuration = Configuration.parse( args );
-			Log4jConfigurator.setLevel( "INFO", "portico.wan" );
-
-			// Fire the server up and start listening for the trigger to exit!
-    		Server server = new Server( configuration );
-    		server.startup();
-    		
-    		BufferedReader reader = new BufferedReader( new InputStreamReader(System.in) );
-    		boolean keepalive = true;
-    		do
-    		{
-    			String command = reader.readLine();
-    			if( command.equals("x") )
-    				keepalive = false;
-    			else
-    				System.out.println( "Unknown command: ["+command+"]" );
-    		}
-    		while( keepalive );
-    		
-    		System.out.println( "Shutting down" );
-    		server.shutdown();
-    		System.out.println( "Exiting" );
+			configuration = Configuration.parse( args );
 		}
 		catch( Exception e )
 		{
-			System.out.println( "Error Occured." );
 			System.out.println( Configuration.Argument.toHelpString() );
 			e.printStackTrace();
+			return;
+		}
+		
+		//
+		// Start the WAN Router
+		//
+		Log4jConfigurator.setLevel( "INFO", "portico.wan" );
+		Logger logger = Logger.getLogger( "portico.wan" );
+		try
+		{
+
+			// Fire the server up and start listening for the trigger to exit!
+			Server server = new Server( configuration );
+			server.startup();
+
+			BufferedReader reader = new BufferedReader( new InputStreamReader(System.in) );
+			boolean keepalive = true;
+			do
+			{
+				String command = reader.readLine();
+				if( command.equals("x") )
+					keepalive = false;
+				else
+					logger.error( "Unknown command: ["+command+"]" );
+			}
+			while( keepalive );
+
+			logger.info( "Received shutdown command" );
+			server.shutdown();
+			logger.info( "Router has shutdown" );
+		}
+		catch( Exception e )
+		{
+			logger.error( "Error occured: "+e.getMessage(), e );
 		}
 	}
 }

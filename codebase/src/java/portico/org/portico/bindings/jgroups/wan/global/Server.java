@@ -131,6 +131,11 @@ public class Server
 		return this.configuration;
 	}
 	
+	public Logger getLogger()
+	{
+		return this.logger;
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////// Private Inner Class: ConnectionAcceptor ////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +150,7 @@ public class Server
 	
 		public void run()
 		{
-			System.out.println( "Ready to accept connections: "+serverSocket.toString() );
+			logger.info( "Ready to accept connections" );
 			while( Thread.interrupted() == false )
 			{
 				try
@@ -154,23 +159,19 @@ public class Server
 					socket.setTcpNoDelay( true );
 					Host host = new Host( server, socket );
 					host.startup();
-					System.out.println( "  (Accepted) Now serving "+socket.getRemoteSocketAddress() );
+					logger.info( " (Accepted) Connection ID="+host.getID()+
+					             ", ip="+socket.getRemoteSocketAddress() );
 				}
 				catch( Exception e )
 				{
 					if( Thread.interrupted() )
-					{
 						break;
-					}
 					else
-					{
-						System.out.println( "Error starting host"+e.getMessage() );
-						e.printStackTrace();
-					}
+						logger.error( "Error starting host. "+e.getMessage(), e );
 				}
 			}
-			
-			System.out.println( "Stopped accepting new connections" );
+
+			logger.info( "Stopped accepting new connections, shutting down" );
 		}
 	}
 	

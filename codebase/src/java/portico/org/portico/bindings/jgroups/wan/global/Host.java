@@ -24,7 +24,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.log4j.Logger;
 import org.portico.lrc.PorticoConstants;
+import org.portico.utils.StringUtils;
 
 public class Host
 {
@@ -37,7 +39,7 @@ public class Host
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Server server;
+	private Logger logger;
 	
 	// network information
 	private Socket socket;
@@ -65,7 +67,7 @@ public class Host
 	//----------------------------------------------------------
 	public Host( Server server, Socket socket ) throws IOException
 	{
-		this.server = server;
+		this.logger = server.getLogger();
 
 		// network members
 		this.socket = socket;
@@ -117,7 +119,6 @@ public class Host
 				
 		// mark us as up and running
 		this.running = true;
-		System.out.println( "Host ["+hostID+"] is up and running" );
 	}
 	
 	public void shutdown()
@@ -145,10 +146,16 @@ public class Host
 			e.printStackTrace();
 		}
 		
-		// clear out our message queue
-		// TODO log information here about the number of messages left
+		// clear out our message queue		
 		this.sendQueue.clear();
 		this.running = false;
+
+		// user feedback
+		String dataReceived = StringUtils.getSizeString( bytesReceivedFrom, 2 );
+		String dataSent = StringUtils.getSizeString( bytesSentTo, 2 );
+		logger.info( "  (Removed) Connection ID="+hostID+" has disconnected" );
+		logger.info( "            Packets From: "+messagesReceivedFrom+" packets, "+dataReceived );
+		logger.info( "            Packets Sent: "+messagesSentTo+" packets, "+dataSent );
 		
 		// log our metrics
 		if( this.useMetrics )
@@ -253,8 +260,6 @@ public class Host
 					
 					if( useMetrics && (messagesSentTo % sampleRate == 0) )
 						metrics.sample();
-
-//System.out.println( "Sent "+message.buffer.length+" bytes to "+hostID );
 				}
 				catch( InterruptedException ie )
 				{
