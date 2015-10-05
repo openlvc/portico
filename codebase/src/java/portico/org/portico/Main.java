@@ -55,7 +55,6 @@ public class Main
 		// Initialize environment
 		// The container will parse config the set up logging
 		System.setProperty( "java.net.preferIPv4Stack", "true" );
-		Container.instance();
 
 		if( args.length == 0 )
 			System.out.println( SystemInformation.getSystemInformationSummary() );
@@ -69,7 +68,8 @@ public class Main
 			// Application: WAN Router   ////
 			/////////////////////////////////
 			// configure logging first
-			//Container.instance();
+			Log4jConfigurator.DEFAULT_PATTERN = "%-5p [%c]: %x%m%n";
+			Container.instance();
 			Log4jConfigurator.setLevel( "INFO", "org.jgroups" );
 			org.portico.bindings.jgroups.wan.global.Main.main( args );
 			return;
