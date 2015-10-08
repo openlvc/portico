@@ -312,6 +312,10 @@ public class Federation
 		// send to the local channel
 		channel.sendResignFederation( payload );
 		
+		// disconnect from the WAN gateway if need be
+		if( gateway != null )
+			gateway.disconnect();
+		
 		// all done, disconnect our incoming receiver
 		// we received the message sent above as well, so the receiver will update the
 		// manifest as it updates it for any federate resignation
