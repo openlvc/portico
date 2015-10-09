@@ -70,8 +70,9 @@ public class Configuration
 	///// wan properties /////////////////////////////////////////////////////////////////////
 	public static final String PROP_JGROUPS_WAN_ENABLED = "portico.wan.enabled";
 	public static final String PROP_JGROUPS_WAN_ROUTER  = "portico.wan.router";
-	public static final String PROP_JGROUPS_WAN_BUNDLE_SIZE = "portico.wan.bundle.maxsize";
-	public static final String PROP_JGROUPS_WAN_BUNDLE_TIME = "portico.wan.bundle.timeout";
+	public static final String PROP_JGROUPS_WAN_BUNDLE_ENABLE = "portico.wan.bundle.enabled";
+	public static final String PROP_JGROUPS_WAN_BUNDLE_SIZE   = "portico.wan.bundle.maxsize";
+	public static final String PROP_JGROUPS_WAN_BUNDLE_TIME   = "portico.wan.bundle.timeout";
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -234,6 +235,13 @@ public class Configuration
 		}
 	}
 
+	/** Is bundling turned on? Default to `true()` */
+	public static boolean isWanBundlingEnabled()
+	{
+		String value = System.getProperty( PROP_JGROUPS_WAN_BUNDLE_ENABLE, "true" );
+		return Boolean.valueOf( value );
+	}
+	
 	/**
 	 * Return the maximum size a bundle should grow to (bytes) before it is flushed.
 	 * Default is 64K.

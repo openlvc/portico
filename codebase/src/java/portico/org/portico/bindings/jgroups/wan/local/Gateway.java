@@ -111,7 +111,12 @@ public class Gateway
 		// Sending and Receiving
 		this.receiver = null;
 		this.bundler = new Bundler();
-		
+		if( Configuration.isWanBundlingEnabled() == false )
+		{
+			this.bundler.setBundling( false );
+			this.logger.debug( "Message bundling disabled for WAN" );
+		}
+
 		this.totalMessagesReceived = 0;
 		this.totalBytesReceived = 0;
 	}
@@ -266,6 +271,15 @@ public class Gateway
 		}
 		else
 		{
+			// Make sure we're connected first. On resign we will immediately disconnect
+			// from the WAN for various reasons, so for control messages it isn't a given
+			// that we're actually still attached
+			if( socket.isConnected() == false )
+			{
+				logger.fatal( "WAN connection not open. Discarding control message: "+header );
+				return;
+			}
+
 			// this is a control message - forward with the appropriate header
 			UUID sender = ((UUIDHeader)message.getHeader(UUIDHeader.HEADER)).getUUID();
 			byte convertedHeader = convertHeader( header );

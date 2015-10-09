@@ -31,8 +31,8 @@ import org.portico.utils.StringUtils;
 import org.portico.utils.bithelpers.BitHelpers;
 
 /**
- * This class is responsible for sending messages to the WAN router. It will bundle a number of
- * messages together to ensure efficient use of network resources and enable higher throughput.
+ * This class is responsible for sending all messages to the WAN router. It will bundle a number
+ * of messages together to ensure efficient use of network resources and enable higher throughput.
  * This class handles all message sending.
  * 
  * ## Bundling
@@ -50,6 +50,12 @@ import org.portico.utils.bithelpers.BitHelpers;
  * calls {@link #flush()}, sending all the messages to the router. This will cause the call to
  * `submit()` to block until that flush is complete. This helps throttle the sender somewhat to
  * prevent overloading.
+ * 
+ * ## Disable Bundling
+ * Although the default behaviour of this component is to bundle messages, it is also the main
+ * interface to the WAN router. When required, the actual bundling of the messages can be turned
+ * off, causing every messaegs to be flushed to the WAN router as soon as the call to
+ * {@link #submit(byte, UUID, byte[])} is made. See {@link #setBundling(boolean)}.
  */
 public class Bundler
 {
@@ -63,11 +69,12 @@ public class Bundler
 	private Logger logger;
 
 	// message queuing
-	private int sizeLimit;       // max bytes to hold onto before release
-	private int timeLimit;       // max amount of time to hold onto messages before release
-	private ByteBuffer buffer;   // store incoming messages here prior to flush
-	private int queuedMessages;  // number of messages we currently have queued
-	private long oldestMessage;  // time (millis) when first message turned up in queue
+	private boolean bundleMessages; // bundle messages or not - if false, flush on every submit
+	private int sizeLimit;          // max bytes to hold onto before release
+	private int timeLimit;          // max amount of time to hold onto messages before release
+	private ByteBuffer buffer;      // store incoming messages here prior to flush
+	private int queuedMessages;     // number of messages we currently have queued
+	private long oldestMessage;     // time (millis) when first message turned up in queue
 
 	// output writing
 	private DataOutputStream outstream; // connection to the router
@@ -93,6 +100,7 @@ public class Bundler
 		this.logger = Logger.getLogger( "portico.lrc.wan" );
 
 		// message queuing
+		this.bundleMessages = true;
 		this.sizeLimit = Configuration.getWanBundleSize();
 		this.timeLimit = Configuration.getWanBundleTimeout();
 		this.buffer = ByteBuffer.allocate( (int)(sizeLimit*1.1) );
@@ -125,6 +133,10 @@ public class Bundler
 	 * 
 	 *    - If the total size of bundled messages exceeds the limit, causing a flush
 	 *    - If a flush is already under way
+	 * 
+	 * #### Disable Bundling
+	 * Bundling can be disabled in configuration. If this is the case, submitted messages
+	 * will immediately be flushed to the router.
 	 */
 	public void submit( byte header, UUID sender, byte[] message )
 	{
@@ -159,6 +171,13 @@ public class Bundler
 				queuedMessages++;
 			}
 			
+			// if actual message bundling is turned off, flush right away
+			if( this.bundleMessages == false )
+			{
+				flush();
+				return;
+			}
+
 			// check if we need to reset the time trigger
 			if( this.oldestMessage == 0 )
 			{
@@ -235,7 +254,7 @@ public class Bundler
 		}
 		catch( IOException ioex )
 		{
-			logger.error( "Error while sending messages to WAN router: "+ioex.getMessage(), ioex );
+			logger.error( "Error while sending messages to WAN router: "+ioex.getMessage() );
 		}
 		finally
 		{
@@ -308,6 +327,16 @@ public class Bundler
 		return this.totalBytesSent;
 	}
 
+	public boolean isBundling()
+	{
+		return this.bundleMessages;
+	}
+	
+	public void setBundling( boolean bundle )
+	{
+		this.bundleMessages = bundle;
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////
 	////// Private Class: Sender   ///////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -329,8 +358,8 @@ public class Bundler
 					// The flush condition we were waiting for has triggered.
 					// Either our wait time expired, or we reached our size threshold
 					// and this condition was manually triggered
-					@SuppressWarnings("unused")
-					boolean triggered = flushCondition.await( timeLimit, TimeUnit.MILLISECONDS );
+					//boolean triggered = flushCondition.await( timeLimit, TimeUnit.MILLISECONDS );
+					flushCondition.await( timeLimit, TimeUnit.MILLISECONDS );
 
 					//if( triggered )
 					//	logger.trace( "Bundler triggered by busting our SIZE cap, flushing" );

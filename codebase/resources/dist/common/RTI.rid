@@ -288,6 +288,18 @@
 #
 # portico.wan.router = 127.0.0.1:23114
 
+# (5.2) Enable / Disable Bundling
+#       Bundling enables higher throughput by grouping together a number of
+#       smaller messages and sending them as one. This makes much more efficient
+#       use of the network and provides considerable improvements to throughput
+#       at a minor cost to latency.
+#
+#       If enabled, the subsequent options will control how it is applied.
+#
+#       Default: true
+#
+# portico.wan.bundle.enabled = true
+
 # (5.3) Max Bundle Size
 #       Messages sent over the WAN will be grouped into bundles and sents as
 #       a batch when their total size exceeds this value. Specify a size with
