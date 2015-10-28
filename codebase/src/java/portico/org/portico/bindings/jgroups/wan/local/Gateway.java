@@ -152,7 +152,8 @@ public class Gateway
 		}
 		catch( IOException ioex )
 		{
-			throw new JRTIinternalError( " connect to WAN Router: "+ioex.getMessage(), ioex );
+			throw new JRTIinternalError( "Failed to connect to WAN Router at address: "+
+			                             Configuration.getWanRouter(), ioex );
 		}
 
 		//
