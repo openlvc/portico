@@ -416,8 +416,7 @@ public class Module
 	 * 
 	 * @param handlerClass The class of the handler to create and register
 	 * @param messageSink The {@link MessageSink} to register the handler with
-	 * @param messages An array of all the message types to register the handler with on the sink
-	 *                 (unless it is a global handler)
+	 * @param message Message that the handler supports
 	 * @param global The value from the {@link MessageHandler} annotation for the class. If this is
 	 *               {@link MessageSink.Global#NONE} then the handler is treated as a regular
 	 *               handler. If it is anything else, then the messages are ignored and the handler
@@ -425,7 +424,7 @@ public class Module
 	 */
 	private void applyHandlerToSink( Class<? extends IMessageHandler> handlerClass,
 	                                 MessageSink messageSink,
-	                                 Class<? extends PorticoMessage>[] messages,
+	                                 Class<? extends PorticoMessage> message,
 	                                 MessageSink.Global global,
 	                                 Map<String,Object> givenProperties )
 		throws MessagingException
@@ -454,8 +453,7 @@ public class Module
 		if( global == MessageSink.Global.NONE /*non-global handler*/ )
 		{
 			// register it with the sink for each message type it wants
-			for( Class<? extends PorticoMessage> message : messages )
-				messageSink.registerHandler( handler, message );
+			messageSink.registerHandler( handler, message );
 		}
 		else
 		{

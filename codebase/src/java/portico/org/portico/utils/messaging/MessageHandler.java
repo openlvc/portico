@@ -53,7 +53,8 @@ public @interface MessageHandler
 	String[] keywords() default {};
 	
 	/** The classes of all the {@link PorticoMessage} children the handler wants to handle */
-	Class<? extends PorticoMessage>[] messages() default {};
+	Class<? extends PorticoMessage> messages();
+	//Class<? extends PorticoMessage>[] messages() default {};
 
 	/** The global message sink the handler should be added to. Only set this if you want your
 	    handler to be a global handler. Defaults to "NONE" which marks it as a regular handler */
