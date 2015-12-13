@@ -43,7 +43,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jsig"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cppunit"/>
 								</option>
-								<option id="macosx.cpp.link.option.flags.46649063" superClass="macosx.cpp.link.option.flags" value="-stdlib=libstdc++" valueType="string"/>
+								<option id="macosx.cpp.link.option.flags.46649063" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-stdlib=libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.732398003" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -71,8 +71,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/src/cpp/hla13/test}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.dialect.std.1920500347" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1330742298" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -stdlib=libstdc++" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.1920500347" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.1330742298" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -stdlib=libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1588409369" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug.2004940265" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug">
