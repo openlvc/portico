@@ -52,6 +52,8 @@ public class Main
 				arg.trim().equalsIgnoreCase("-h") )
 			{
 				System.out.println( Configuration.Argument.toHelpString() );
+				System.out.println( Configuration.getAvailableAddresses() );
+				System.out.println( "" );
 				return;
 			}
 		}
