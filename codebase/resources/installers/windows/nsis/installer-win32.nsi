@@ -24,7 +24,7 @@
 
   ;Name and file
   Name "Portico v${VERSION} (32-bit)"
-  OutFile "${OUTDIR}\portico-${VERSION}-win32.exe"
+  OutFile "${OUTDIR}\${DIST_NAME}-${VERSION}-win32.exe"
 
   ;Use something a little stronger
   SetCompressor /SOLID lzma
