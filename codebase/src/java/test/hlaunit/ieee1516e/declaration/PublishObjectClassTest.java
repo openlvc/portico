@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
                                "publishObject",
                                "publish",
                                "pubsub",
-                               "declarationManagement"})
+                               "declarationManagement","temp"})
 public class PublishObjectClassTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

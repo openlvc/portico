@@ -65,6 +65,11 @@ public class MomFederate
 
 	public byte[] getFederateType()
 	{
+		return JEncodingHelpers.encodeString( federate.getFederateName() ); // wrong in 1516e
+	}
+	
+	public byte[] getFederateName()
+	{
 		return JEncodingHelpers.encodeString( federate.getFederateName() );
 	}
 
@@ -203,6 +208,9 @@ public class MomFederate
 			Mom.Federate enumValue = Mom.Federate.forHandle( attributeHandle );
 			switch( enumValue )
 			{
+				case FederateName:
+					attributes.put( attributeHandle, getFederateName() );
+					break;
 				case FederateHandle:
 					attributes.put( attributeHandle, getFederateHandle() );
 					break; // not yet supported

@@ -71,12 +71,6 @@ public class MomManager implements SaveRestoreTarget
 		this.hlaVersion = hlaVersion;
 		this.logger = logger;
 		this.isRestore = false;
-		
-		if( hlaVersion == HLAVersion.IEEE1516e && this.enabled )
-		{
-			logger.info( "MOM support is currently unsupported in IEEE-1516e federations." );
-			this.enabled = false;
-		}
 	}
 
 	//----------------------------------------------------------
@@ -181,12 +175,32 @@ public class MomManager implements SaveRestoreTarget
 
 	private OCMetadata getFederationClass()
 	{
-		return lrcState.getFOM().getObjectClass( "Manager.Federation" );
+		switch( hlaVersion )
+		{
+			case HLA13:
+				return lrcState.getFOM().getObjectClass( "Manager.Federation" );
+			case IEEE1516:
+				return lrcState.getFOM().getObjectClass( "HLAmanager.HLAfederation" );
+			case IEEE1516e:
+				return lrcState.getFOM().getObjectClass( "HLAmanager.HLAfederation" );
+			default:
+				return null;
+		}
 	}
 	
 	private OCMetadata getFederateClass()
 	{
-		return lrcState.getFOM().getObjectClass( "Manager.Federate" );
+		switch( hlaVersion )
+		{
+			case HLA13:
+				return lrcState.getFOM().getObjectClass( "Manager.Federate" );
+			case IEEE1516:
+				return lrcState.getFOM().getObjectClass( "HLAmanager.HLAfederate" );
+			case IEEE1516e:
+				return lrcState.getFOM().getObjectClass( "HLAmanager.HLAfederate" );
+			default:
+				return null;
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////

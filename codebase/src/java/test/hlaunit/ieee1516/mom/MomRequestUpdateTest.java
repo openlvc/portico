@@ -78,11 +78,11 @@ public class MomRequestUpdateTest extends Abstract1516Test
 
 		this.federateMomHandle = defaultFederate.quickOCHandle( "HLAmanager.HLAfederate" );
 		this.federateTypeMomHandle =
-			defaultFederate.quickACHandle( "HLAmanager.HLAfederate", "FederateType" );
+			defaultFederate.quickACHandle( "HLAmanager.HLAfederate", "HLAfederateType" );
 		
 		this.federationMomHandle = defaultFederate.quickOCHandle( "HLAmanager.HLAfederation" );
 		this.federationNameMomHandle =
-			defaultFederate.quickACHandle( "HLAmanager.HLAfederation", "FederationName" );
+			defaultFederate.quickACHandle( "HLAmanager.HLAfederation", "HLAfederationName" );
 	}
 	
 	@AfterMethod(alwaysRun=true)
@@ -104,7 +104,7 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	public void testRequestObjectUpdateForFederate()
 	{
 		// have the second federate discover the federate objects through subscription
-		secondFederate.quickSubscribe( "Manager.Federate", "FederateType" );
+		secondFederate.quickSubscribe( "Manager.Federate", "HLAfederateType" );
 		TestObject one = secondFederate.fedamb.waitForLatestDiscovery( federateMomHandle );
 		TestObject two = secondFederate.fedamb.waitForLatestDiscovery( federateMomHandle );
 		
@@ -132,7 +132,7 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	@Test
 	public void testRequestObjectUpdateForFederation()
 	{
-		defaultFederate.quickSubscribe( "Manager.Federation", "FederationName" );
+		defaultFederate.quickSubscribe( "Manager.Federation", "HLAfederationName" );
 		TestObject one = defaultFederate.fedamb.waitForLatestDiscovery( federationMomHandle );
 		defaultFederate.quickProvide( one.getHandle(), federationNameMomHandle );
 		defaultFederate.fedamb.waitForUpdate( one.getHandle() );
@@ -147,7 +147,7 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	public void testRequestClassUpdateForFederates()
 	{
 		// have the second federate discover the federate objects through subscription
-		secondFederate.quickSubscribe( "Manager.Federate", "FederateType" );
+		secondFederate.quickSubscribe( "Manager.Federate", "HLAfederateType" );
 		TestObject one = secondFederate.fedamb.waitForLatestDiscovery( federateMomHandle );
 		TestObject two = secondFederate.fedamb.waitForLatestDiscovery( federateMomHandle );
 		
@@ -174,7 +174,7 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	@Test
 	public void testRequestClassUpdateForFederation()
 	{
-		defaultFederate.quickSubscribe( "Manager.Federation", "FederationName" );
+		defaultFederate.quickSubscribe( "Manager.Federation", "HLAfederationName" );
 		TestObject one = defaultFederate.fedamb.waitForLatestDiscovery( federationMomHandle );
 		defaultFederate.quickProvideClass( federationMomHandle, federationNameMomHandle );
 		defaultFederate.fedamb.waitForUpdate( one.getHandle() );
