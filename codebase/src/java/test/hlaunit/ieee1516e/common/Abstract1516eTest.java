@@ -15,8 +15,13 @@
 package hlaunit.ieee1516e.common;
 
 import org.apache.log4j.Logger;
-
+import org.portico.impl.hla1516e.types.HLA1516eHandle;
+import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.testng.Assert;
+
+import hla.rti1516e.RtiFactoryFactory;
+import hla.rti1516e.encoding.EncoderFactory;
+import hla.rti1516e.encoding.HLAunicodeString;
 
 /**
  * This class provides access to common state and helper methods for tests
@@ -31,6 +36,7 @@ public abstract class Abstract1516eTest
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	protected Logger logger;
+	protected EncoderFactory encoder;
 	protected TestFederate defaultFederate;
 
 	//----------------------------------------------------------
@@ -40,6 +46,16 @@ public abstract class Abstract1516eTest
 	protected Abstract1516eTest()
 	{
 		this.logger = Logger.getLogger( "portico." + this.getClass().getSimpleName() );
+
+		// get a reference to the encoder factory to serializing and deserializing things
+		try
+		{
+			this.encoder = RtiFactoryFactory.getRtiFactory().getEncoderFactory();
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Could not get Encoder Factory: "+e.getMessage(), e );
+		}
 	}
 
 	//----------------------------------------------------------
@@ -99,6 +115,34 @@ public abstract class Abstract1516eTest
 		
 		Assert.fail( "Unexpected exception. Expected [" + builder.toString() + "] received [" +
 		             received.getClass().getName() + "]: " + received.getMessage(), received );
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// Encoding / Decoding Helpers    //////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	protected String decodeString( byte[] bytes )
+	{
+		try
+		{
+    		HLAunicodeString temp = encoder.createHLAunicodeString();
+    		temp.decode( bytes );
+    		return temp.getValue();
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Failed to decode HLAunicodeString: "+e.getMessage(), e );
+			return null;
+		}
+	}
+	
+	protected int decodeHandle( byte[] handle )
+	{
+		return HLA1516eHandle.decode( handle );
+	}
+	
+	protected double decodeTime( byte[] time )
+	{
+		return DoubleTime.decode( time );
 	}
 
 	//----------------------------------------------------------

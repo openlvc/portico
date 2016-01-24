@@ -126,6 +126,13 @@ public class DoubleTime implements HLAfloat64Time
 	{
 		return this.time;
 	}
+	
+	public byte[] toByteArray()
+	{
+		byte[] buffer = new byte[encodedLength()];
+		encode( buffer, 0 );
+		return buffer;
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
@@ -144,6 +151,11 @@ public class DoubleTime implements HLAfloat64Time
 		{
 			throw new InvalidLogicalTime( "Expecting DoubleTime, found: null" );
 		}
+	}
+	
+	public static double decode( byte[] buffer )
+	{
+		return BitHelpers.readDoubleBE( buffer, 0 );
 	}
 
 }

@@ -342,9 +342,6 @@ public class Mom
 	 */
 	public static int getMomAttributeHandle( HLAVersion version, int classHandle, String name )
 	{
-		if( name.equals("HLAFDDID") )
-			System.out.println( "YUP: "+name+", version="+version );
-		
 		try
 		{
     		if( classHandle == FederateClass )

@@ -217,7 +217,7 @@ public class MomManager implements SaveRestoreTarget
 		MomFederate momFederate = momFederation.getFederate( federateHandle );
 		if( momFederate != null )
 		{
-			return momFederate.generateUpdate( attributes );
+			return momFederate.generateUpdate( hlaVersion, attributes );
 		}
 		else
 		{
@@ -233,7 +233,7 @@ public class MomManager implements SaveRestoreTarget
 	public UpdateAttributes updateFederationMomObject( Set<Integer> attributes )
 		throws JAttributeNotDefined
 	{
-		return momFederation.generateUpdate( attributes );
+		return momFederation.generateUpdate( hlaVersion, attributes );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////

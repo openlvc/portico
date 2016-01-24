@@ -25,7 +25,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import hla.rti.jlc.EncodingHelpers;
 import hlaunit.ieee1516.common.Abstract1516Test;
 import hlaunit.ieee1516.common.TestObject;
 
@@ -206,7 +205,7 @@ public class MomFederationTest extends Abstract1516Test
 		HashMap<Integer,byte[]> values = instance.getAttributes();
 
 		// check a value //
-		Assert.assertEquals( EncodingHelpers.decodeString(values.get(ahFederationName)),
+		Assert.assertEquals( decodeString(values.get(ahFederationName)),
 		                     defaultFederate.simpleName,
 		                     "Value returned by MOM did not match federation name" );
 	}
@@ -252,11 +251,10 @@ public class MomFederationTest extends Abstract1516Test
 		
 		// check the values //
 		HashMap<Integer,byte[]> values = fedInstance.getAttributes();
-		Assert.assertEquals( EncodingHelpers.decodeString(values.get(bhFederateType)),
+		Assert.assertEquals( decodeString(values.get(bhFederateType)),
 		                     defaultFederate.federateName,
 		                     "Value returned by MOM did not match federate name" );
-		String sFederateHandle = EncodingHelpers.decodeString( values.get(bhFederateHandle) );
-		Assert.assertEquals( Integer.parseInt(sFederateHandle),
+		Assert.assertEquals( decodeHandle(values.get(bhFederateHandle)),
 		                     defaultFederate.federateHandle,
 		                     "Value returned by MOM did not match federate handle" );
 		

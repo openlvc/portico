@@ -14,8 +14,6 @@
  */
 package hlaunit.ieee1516.mom;
 
-import hla.rti.jlc.EncodingHelpers;
-
 import org.portico.lrc.PorticoConstants;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -117,8 +115,8 @@ public class MomFederateLifecycleTest extends Abstract1516Test
 		// check the names //
 		defaultFederate.fedamb.waitForUpdate( one.getHandle() );
 		defaultFederate.fedamb.waitForUpdate( two.getHandle() );
-		String oneName = EncodingHelpers.decodeString( one.getAttributes().get(nameHandle) );
-		String twoName = EncodingHelpers.decodeString( two.getAttributes().get(nameHandle) );
+		String oneName = decodeString( one.getAttributes().get(nameHandle) );
+		String twoName = decodeString( two.getAttributes().get(nameHandle) );
 		Assert.assertEquals( oneName, "defaultFederate" );
 		Assert.assertEquals( twoName, "secondFederate" );
 		
