@@ -30,14 +30,14 @@ IEEE1516E_NS_START
 //////////////////////////////////////////
 //////// Floating Point Time Base ////////
 //////////////////////////////////////////
-struct HLAfloat64TimeImpl
+class HLAfloat64TimeImpl
 {
-	Float64 time;
+	public: Float64 time;
 };
 
-struct HLAfloat64IntervalImpl
+class HLAfloat64IntervalImpl
 {
-	Float64 time;
+	public: Float64 time;
 };
 
 #define HLA_TIME_FLOAT_MIN DBL_MIN
@@ -46,14 +46,14 @@ struct HLAfloat64IntervalImpl
 //////////////////////////////////////////
 ////////// Integer Time Base /////////////
 //////////////////////////////////////////
-struct HLAinteger64TimeImpl
+class HLAinteger64TimeImpl
 {
-	Integer64 time;
+	public: Integer64 time;
 };
 
-struct HLAinteger64IntervalImpl
+class HLAinteger64IntervalImpl
 {
-	Integer64 time;
+	public: Integer64 time;
 };
 
 #define HLA_TIME_INTEGER_MIN 0

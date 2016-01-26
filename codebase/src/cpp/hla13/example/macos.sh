@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="usage: macos.sh [compile] [clean] [execute [federate-name]]"
+USAGE="usage: macos.sh [compile] [clean] [debug] [execute [federate-name]]"
 
 ################################
 # check command line arguments #
@@ -50,10 +50,20 @@ if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
 	g++ -O1 -fPIC -I$RTI_HOME/include/hla13 \
+	    -g \
 	    -DRTI_USES_STD_FSTREAM \
-		-lRTI-NG64 -lFedTime64 -L$RTI_HOME/lib/gcc4 \
+		-lRTI-NG_64d -lFedTime_64d -L$RTI_HOME/lib/gcc4 \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
 	exit;	
+fi
+
+############################################
+### (target) debug #########################
+############################################
+if [ $1 = "debug" ]
+then
+	echo "starting up gdb"
+	ggdb -x gdb.env ./example-federate
 fi
 
 ############################################

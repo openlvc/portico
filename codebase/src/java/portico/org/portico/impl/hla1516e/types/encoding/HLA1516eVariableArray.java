@@ -42,7 +42,7 @@ public class HLA1516eVariableArray<T extends DataElement>
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eVariableArray( DataElementFactory<T> factory, T... provided )
+	public HLA1516eVariableArray( DataElementFactory<T> factory, @SuppressWarnings("unchecked") T... provided )
 	{
 		this.factory = factory;
 		this.elements = new ArrayList<T>( provided.length );

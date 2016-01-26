@@ -661,7 +661,7 @@ JNIEnv* Runtime::attachToJVM() throw( RTIinternalError )
 {
 	JNIEnv* jnienv = NULL;
 
-	int status = jvm->GetEnv((void **)&jnienv, getJNIVersion());
+	jvm->GetEnv((void **)&jnienv, getJNIVersion());
 
 	if(jnienv == NULL)
 	{

@@ -116,7 +116,7 @@ public class HLA1516eEncoderFactory implements EncoderFactory
 		return new HLA1516eFixedArray<T>( factory, size );
 	}
 
-	public <T extends DataElement> HLAfixedArray<T> createHLAfixedArray( T... elements )
+	public <T extends DataElement> HLAfixedArray<T> createHLAfixedArray( @SuppressWarnings("unchecked") T... elements )
 	{
 		return new HLA1516eFixedArray<T>( elements );
 	}
@@ -282,7 +282,7 @@ public class HLA1516eEncoderFactory implements EncoderFactory
 	}
 
 	public <T extends DataElement> HLAvariableArray<T>
-	       createHLAvariableArray( DataElementFactory<T> factory, T... elements )
+	       createHLAvariableArray( DataElementFactory<T> factory, @SuppressWarnings("unchecked") T... elements )
 	{
 		return new HLA1516eVariableArray<T>( factory, elements );
 	}

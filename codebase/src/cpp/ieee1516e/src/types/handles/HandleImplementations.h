@@ -24,9 +24,9 @@
 // in a stndard form.
 //
 #define HANDLE_IMPL_HEADER(Name)  \
-struct Name                       \
-{                                 \
-	int32_t value;                \
+class Name                       \
+{                                \
+	public: int32_t value;       \
 };
 
 // expand the macro

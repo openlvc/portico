@@ -5,8 +5,8 @@ environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571.201707815
 environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571.201707815/append=true
 environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571.201707815/appendContributed=true
 environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/MACOSX_JAVA_HOME/delimiter=\:
-environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/MACOSX_JAVA_HOME/operation=append
-environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/MACOSX_JAVA_HOME/value=/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home
+environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/MACOSX_JAVA_HOME/operation=replace
+environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/MACOSX_JAVA_HOME/value=/Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home
 environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/append=true
 environment/project/cdt.managedbuild.config.macosx.so.debug.1509176571/appendContributed=true
 indexer/indexAllFiles=true
