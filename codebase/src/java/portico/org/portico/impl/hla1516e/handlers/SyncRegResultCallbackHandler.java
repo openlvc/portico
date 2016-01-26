@@ -58,16 +58,19 @@ public class SyncRegResultCallbackHandler extends HLA1516eCallbackHandler
 		if( request.wasSuccess() )
 		{
 			logger.trace( "CALLBACK synchronizationPointRegistrationSucceeded(label="+label+")" );
-			helper.getFederateAmbassador().synchronizationPointRegistrationSucceeded( label );
+			fedamb().synchronizationPointRegistrationSucceeded( label );
+			logger.trace( "         synchronizationPointRegistrationSucceeded() callback complete" );
 			
 			// deliver the announcement for the local federate as well
 			logger.trace( "CALLBACK announceSynchronizationPoint(label="+label+")" );
 			fedamb().announceSynchronizationPoint( label, request.getTag() );
+			logger.trace( "         announceSynchronizationPoint() callback complete" );
 		}
 		else
 		{
 			logger.trace( "CALLBACK synchronizationPointRegistrationFailed(label="+label+")" );
 			fedamb().synchronizationPointRegistrationFailed( label, null );
+			logger.trace( "         synchronizationPointRegistrationFailed() callback complete" );
 		}
 		
 		context.success();

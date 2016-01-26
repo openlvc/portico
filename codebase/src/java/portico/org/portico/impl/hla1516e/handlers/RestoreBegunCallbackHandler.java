@@ -59,6 +59,9 @@ public class RestoreBegunCallbackHandler extends HLA1516eCallbackHandler
 		
 		// mark the call as successful
 		context.success();
+		
+		if( logger.isTraceEnabled() )
+			logger.trace( "         federationRestoreBegun() callback complete" );
 	}
 
 	//----------------------------------------------------------

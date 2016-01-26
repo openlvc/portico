@@ -66,6 +66,9 @@ public class ObjectNameReservationCallbackHandler extends HLA1516eCallbackHandle
 				logger.trace( "CALLBACK objectInstanceNameReservationSucceeded(name="+name+")" );
 
 			fedamb().objectInstanceNameReservationSucceeded( name );
+			
+			if( logger.isTraceEnabled() )
+				logger.trace( "         objectInstanceNameReservationSucceeded() callback complete" );
 		}
 		else
 		{
@@ -73,6 +76,9 @@ public class ObjectNameReservationCallbackHandler extends HLA1516eCallbackHandle
 				logger.trace( "CALLBACK objectInstanceNameReservationFailed(name="+name+")" );
 
 			fedamb().objectInstanceNameReservationFailed( name );
+			
+			if( logger.isTraceEnabled() )
+				logger.trace( "         objectInstanceNameReservationFailed() callback complete" );
 		}
 		
 		context.success();

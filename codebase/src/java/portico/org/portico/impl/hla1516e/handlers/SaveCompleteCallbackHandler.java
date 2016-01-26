@@ -64,6 +64,9 @@ public class SaveCompleteCallbackHandler extends HLA1516eCallbackHandler
 				logger.trace( "CALLBACK federationSaved()" );
 			
 			fedamb().federationSaved();
+			
+			if( logger.isTraceEnabled() )
+				logger.trace( "         federationSaved() complete" );
 		}
 		else
 		{
@@ -72,6 +75,9 @@ public class SaveCompleteCallbackHandler extends HLA1516eCallbackHandler
 			
 			// failure reason hard coded - needs to be fixed!
 			fedamb().federationNotSaved( SaveFailureReason.RTI_UNABLE_TO_SAVE );
+
+			if( logger.isTraceEnabled() )
+				logger.trace( "         federationNotSaved()" );
 		}
 
 		// mark the call as successful

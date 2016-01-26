@@ -91,6 +91,9 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 		}
 		
 		context.success();
+		
+		if( logger.isTraceEnabled() )
+			logger.trace( "         removeObjectInstance() callback complete" );
 	}
 	
 	//----------------------------------------------------------

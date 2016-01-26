@@ -64,6 +64,8 @@ public class SyncAchievedCallbackHandler extends HLA1516eCallbackHandler
 		fedamb().federationSynchronized( label, new HLA1516eFederateHandleSet() );
 
 		context.success();
+		
+		logger.trace( "         federationSynchronized() callback complete" );
 	}
 	
 	//----------------------------------------------------------

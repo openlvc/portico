@@ -108,6 +108,10 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 		}
 		
 		context.success();
+
+		if( logger.isTraceEnabled() )
+			logger.trace( "         receiveInteraction() callback complete" );
+
 	}
 
 	//----------------------------------------------------------

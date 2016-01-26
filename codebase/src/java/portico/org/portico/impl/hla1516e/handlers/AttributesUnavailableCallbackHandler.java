@@ -67,6 +67,8 @@ public class AttributesUnavailableCallbackHandler extends HLA1516eCallbackHandle
 		fedamb().attributeOwnershipUnavailable( new HLA1516eHandle(objectHandle), handleSet );
 		
 		context.success();
+		
+		logger.trace( "         attributeOwnershipUnavailable() callback complete" );
 	}
 
 	//----------------------------------------------------------

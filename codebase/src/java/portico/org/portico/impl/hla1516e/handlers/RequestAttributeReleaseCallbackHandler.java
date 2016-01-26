@@ -71,6 +71,9 @@ public class RequestAttributeReleaseCallbackHandler extends HLA1516eCallbackHand
 		                                           tag );
 		
 		context.success();
+		
+		if( logger.isTraceEnabled() )
+			logger.trace( "         requestAttributeOwnershipRelease() callback complete" );
 	}
 
 	//----------------------------------------------------------

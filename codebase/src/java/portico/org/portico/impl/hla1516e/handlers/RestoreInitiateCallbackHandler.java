@@ -69,6 +69,8 @@ public class RestoreInitiateCallbackHandler extends HLA1516eCallbackHandler
 
 		// mark the call as successful
 		context.success();
+		
+		logger.trace( "         initiateFederateRestore() callback complete" );
 	}
 
 	//----------------------------------------------------------

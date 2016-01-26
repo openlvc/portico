@@ -64,6 +64,10 @@ public class RestoreRequestCallbackHandler extends HLA1516eCallbackHandler
 				logger.trace( "CALLBACK requestFederationRestoreSucceeded(label="+label+")" );
 			
 			fedamb().requestFederationRestoreSucceeded( label );
+			
+			if( logger.isTraceEnabled() )
+				logger.trace( "         requestFederationRestoreSucceeded() callback complete" );
+			
 		}
 		else
 		{
@@ -74,6 +78,9 @@ public class RestoreRequestCallbackHandler extends HLA1516eCallbackHandler
 			}
 			
 			fedamb().requestFederationRestoreFailed( label );
+			
+			if( logger.isTraceEnabled() )
+				logger.trace( "         requestFederationRestoreFailed() callback complete" );
 		}
 
 		// mark the call as successful

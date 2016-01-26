@@ -64,6 +64,9 @@ public class RestoreCompleteCallbackHandler extends HLA1516eCallbackHandler
 				logger.trace( "CALLBACK federationRestored()" );
 			
 			fedamb().federationRestored();
+
+			if( logger.isTraceEnabled() )
+				logger.trace( "         federationRestored() callback complete" );
 		}
 		else
 		{
@@ -72,6 +75,9 @@ public class RestoreCompleteCallbackHandler extends HLA1516eCallbackHandler
 
 			// failure reason hard coded - needs to be fixed!
 			fedamb().federationNotRestored( RestoreFailureReason.RTI_UNABLE_TO_RESTORE );
+
+			if( logger.isTraceEnabled() )
+				logger.trace( "         federationNotRestored() callback complete" );
 		}
 
 		// mark the call as successful

@@ -55,6 +55,9 @@ public class TimeAdvanceGrantCallbackHandler extends HLA1516eCallbackHandler
 			logger.trace( "CALLBACK timeAdvanceGrant(time="+grant.getTime()+")" );
 		fedamb().timeAdvanceGrant( new DoubleTime(grant.getTime()) );
 		context.success();
+
+		if( logger.isTraceEnabled() )
+			logger.trace( "         timeAdvanceGrant() callback complete" );
 	}
 	
 	//----------------------------------------------------------

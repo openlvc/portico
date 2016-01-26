@@ -71,6 +71,8 @@ public class AttributeOwnershipQueryCallbackHandler extends HLA1516eCallbackHand
 			
 			fedamb().attributeIsNotOwned( new HLA1516eHandle(objectHandle),
 			                              new HLA1516eHandle(attributeHandle) );
+			
+			logger.trace( "         attributeIsNotOwned() callback complete" );
 		}
 		else if( callback.isOwnedByRti() )
 		{
@@ -86,6 +88,8 @@ public class AttributeOwnershipQueryCallbackHandler extends HLA1516eCallbackHand
 			// owned by the RTI
 			fedamb().attributeIsOwnedByRTI( new HLA1516eHandle(objectHandle),
 			                                new HLA1516eHandle(attributeHandle) );
+			
+			logger.trace( "         attributeOwnedByRTI() callback complete" );
 		}
 		else
 		{
@@ -101,6 +105,8 @@ public class AttributeOwnershipQueryCallbackHandler extends HLA1516eCallbackHand
 			fedamb().informAttributeOwnership( new HLA1516eHandle(objectHandle),
 			                                   new HLA1516eHandle(attributeHandle),
 			                                   new HLA1516eHandle(owner) );
+			
+			logger.trace( "         informAttributeOwnership() callback compelte" );
 		}
 		
 		context.success();
