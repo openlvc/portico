@@ -15,8 +15,12 @@
 package hlaunit.ieee1516.common;
 
 import org.apache.log4j.Logger;
-
+import org.portico.impl.hla1516.types.DoubleTime;
+import org.portico.impl.hla1516e.types.HLA1516eHandle;                    // :( 1516e type
+import org.portico.impl.hla1516e.types.encoding.HLA1516eUnicodeString;    // :( 1516e type
 import org.testng.Assert;
+
+import hla.rti1516e.encoding.HLAunicodeString;
 
 /**
  * This class provides access to common state and helper methods for tests
@@ -97,6 +101,36 @@ public abstract class Abstract1516Test
 		Assert.fail( "Unexpected exception. Expected [" + builder.toString() + "] received [" +
 		             received.getClass().getName() + "]: " + received.getMessage(), received );
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// Encoding / Decoding Helpers    //////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	protected String decodeString( byte[] bytes )
+	{
+		// yes, 1516e type :(
+		try
+		{
+    		HLAunicodeString temp = new HLA1516eUnicodeString();
+    		temp.decode( bytes );
+    		return temp.getValue();
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Failed to decode HLAunicodeString: "+e.getMessage(), e );
+			return null;
+		}
+	}
+	
+	protected int decodeHandle( byte[] handle )
+	{
+		return HLA1516eHandle.decode( handle ); // yes, 1516e type :(
+	}
+	
+	protected double decodeTime( byte[] time )
+	{
+		return DoubleTime.fromBuffer( time );
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

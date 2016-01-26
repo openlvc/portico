@@ -632,14 +632,6 @@ public class Federation
 		return this.gateway;
 	}
 
-///////////////////////
-	/////
-/////
-	public LRC getJL()
-	{
-		return this.joinedLRC;
-	}
-	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

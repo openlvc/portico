@@ -64,11 +64,19 @@ public class CreateFederationHandler extends LRCMessageHandler
 		for( URL module : request.getFomModules() )
 			foms.add( FomParser.parse(module) );
 		
+		// -- NOT DONE ANY MORE --
+		// Used to be important, but we will manually insert the MOM with handles we can control
 		// check to make sure we have the standard MIM as well - if not, load it
-		validateStandardMimPresent( foms );
+		// validateStandardMimPresent( foms );
+
+		// merge the modules together
+		ObjectModel combinedFOM = ModelMerger.merge( foms );
 		
-		// merge all the modules together and store the grand unified fom!
-		request.setModel( ModelMerger.merge(foms) );
+		// dump out the MIM if it is present and then re-insert with specific handles
+		ObjectModel.mommify( combinedFOM );
+
+		// we have our grand unified FOM!
+		request.setModel( combinedFOM );
 		
 		// check that we don't have a null name
 		if( request.getFederationName() == null )

@@ -49,6 +49,7 @@
 		<!-- run the NSIS script for the installer -->
 		<echo>Creating Windows 32-bit Installer</echo>
 		<nsis-installer script="${nsis.resources.dir}/installer-win32.nsi">
+			<define name="DIST_NAME"    value="${dist.name}"/>     <!-- start of file name       -->
 			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put the installer here   -->
 			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
 			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
@@ -68,6 +69,7 @@
 		<!-- run the NSIS script for the installer -->
 		<echo>Creating Windows 64-bit Installer</echo>
 		<nsis-installer script="${nsis.resources.dir}/installer-win64.nsi">
+			<define name="DIST_NAME"    value="${dist.name}"/>     <!-- start of file name       -->
 			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put installer here       -->
 			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
 			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->

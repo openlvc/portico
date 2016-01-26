@@ -245,6 +245,23 @@ public class RegionGroup implements Serializable
 		return this.associations.isEmpty();
 	}
 
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder( "[" );
+		for( Integer handle : associations.keySet() )
+		{
+			builder.append( handle );
+			builder.append(":" );
+			builder.append( getRegionsForAttribute(handle) );
+			builder.append(", ");
+		}
+		
+		// put ] on the end and replace the left over ", "
+		builder.replace( builder.length()-2, builder.length(), "]" );
+		return builder.toString();
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

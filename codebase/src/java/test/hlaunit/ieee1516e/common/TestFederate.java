@@ -229,7 +229,7 @@ public class TestFederate
 
 		try
 		{
-			URL fom = ClassLoader.getSystemResource( "fom/testfom.xml" );
+			URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/testfom.xml" );
 			this.rtiamb.createFederationExecution( name, fom );
 		}
 		catch( Exception e )
@@ -249,7 +249,7 @@ public class TestFederate
 
 		try
 		{
-			URL fom = ClassLoader.getSystemResource( "fom/testfom.xml" );
+			URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/testfom.xml" );
 			this.rtiamb.createFederationExecution( this.simpleName, modules );
 		}
 		catch( Exception e )

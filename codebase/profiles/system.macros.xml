@@ -246,7 +246,7 @@
 				<copy todir="@{todir}/jre"><fileset dir="${_jdkpath}/jre"/></copy>
 			</then>
 			<else>
-				<exec executable="cp" dir="@{jre.dir}" failonerror="true">
+				<exec executable="cp" failonerror="true">
 					<arg line="-Rfp ${_jdkpath}/jre @{todir}/"/>
 				</exec>
 			</else></if>

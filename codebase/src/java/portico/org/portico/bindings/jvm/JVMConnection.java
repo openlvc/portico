@@ -204,7 +204,10 @@ public class JVMConnection implements IConnection
 		// make sure we are joined to a federation in the first place
 		if( this.federation == null )
 			throw new JFederateNotExecutionMember( "not joined to a federation" );
-		
+
+		// send the resign message to the federation so they know we're on the way out
+		broadcast( resignMessage );
+
 		// try to remove from the federation, if not joined, throw an exception
 		String federate = resignMessage.getFederateName();
 		String federation = resignMessage.getFederationName();

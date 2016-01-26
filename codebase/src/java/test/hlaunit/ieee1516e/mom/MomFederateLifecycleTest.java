@@ -1,5 +1,5 @@
 /*
- *   Copyright 2007 The Portico Project
+ *   Copyright 2016 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package hlaunit.ieee1516.mom;
+package hlaunit.ieee1516e.mom;
 
 import org.portico.lrc.PorticoConstants;
 import org.testng.Assert;
@@ -22,13 +22,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import hlaunit.ieee1516.common.Abstract1516Test;
-import hlaunit.ieee1516.common.TestFederate;
-import hlaunit.ieee1516.common.TestObject;
-import hlaunit.ieee1516.common.TimeoutException;
+import hlaunit.ieee1516e.common.Abstract1516eTest;
+import hlaunit.ieee1516e.common.TestFederate;
+import hlaunit.ieee1516e.common.TestObject;
+import hlaunit.ieee1516e.common.TimeoutException;
 
-@Test(sequential=true, groups={"MomFederateLifecycleTest", "mom"})
-public class MomFederateLifecycleTest extends Abstract1516Test
+@Test(sequential=true, groups={"MomFederateLifecycleTest","mom"})
+public class MomFederateLifecycleTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -53,18 +53,13 @@ public class MomFederateLifecycleTest extends Abstract1516Test
 	{
 		super.beforeClass();
 		this.secondFederate = new TestFederate( "secondFederate", this );
-	}
-	
-	@Override
-	@AfterClass(alwaysRun=true)
-	public void afterClass()
-	{
-		super.afterClass();
+		this.secondFederate.quickConnect();
 	}
 	
 	@BeforeMethod(alwaysRun=true)
 	public void beforeMethod()
 	{
+		
 		defaultFederate.quickCreate();
 		defaultFederate.quickJoin();
 		//secondFederate.quickJoin();
@@ -74,8 +69,16 @@ public class MomFederateLifecycleTest extends Abstract1516Test
 	public void afterMethod()
 	{
 		secondFederate.quickResign();
+		secondFederate.quickDisconnect();
 		defaultFederate.quickResign();
 		defaultFederate.quickDestroy();
+	}
+	
+	@Override
+	@AfterClass(alwaysRun=true)
+	public void afterClass()
+	{
+		super.afterClass();
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -90,15 +93,16 @@ public class MomFederateLifecycleTest extends Abstract1516Test
 	{
 		// subscribe to the MOM information //
 		int momHandle = defaultFederate.quickOCHandle( "HLAobjectRoot.HLAmanager.HLAfederate" );
-		int nameHandle = defaultFederate.quickACHandle( "HLAobjectRoot.HLAmanager.HLAfederate",
-		                                                "HLAfederateType" );
-		
-		defaultFederate.quickSubscribe( momHandle, nameHandle );
-		
+		int nameHandle = defaultFederate.quickACHandle( momHandle, "HLAfederateName" );
+		int typeHandle = defaultFederate.quickACHandle( momHandle, "HLAfederateType" );
+		int hostHandle = defaultFederate.quickACHandle( momHandle, "HLAfederateHost" );
+		int handleHandle = defaultFederate.quickACHandle( momHandle, "HLAfederateHandle" );
+		defaultFederate.quickSubscribe( momHandle, nameHandle, typeHandle, hostHandle, handleHandle );
+
 		////////////////////////////
 		// MOM instances creation //
 		////////////////////////////
-		// wait for a discover for both federates //
+		// wait for a discover for both default and second federates //
 		TestObject one = defaultFederate.fedamb.waitForLatestDiscovery( momHandle );
 		
 		// join the second federate and wait for the MOM instance to be discovered //
@@ -106,8 +110,8 @@ public class MomFederateLifecycleTest extends Abstract1516Test
 		TestObject two = defaultFederate.fedamb.waitForLatestDiscovery( momHandle );
 		
 		// get updates for the attributes //
-		defaultFederate.quickProvide( one.getHandle(), nameHandle );
-		defaultFederate.quickProvide( two.getHandle(), nameHandle );
+		defaultFederate.quickProvide( one.getHandle(), nameHandle, typeHandle, hostHandle, handleHandle );
+		defaultFederate.quickProvide( two.getHandle(), nameHandle, typeHandle, hostHandle, handleHandle );
 		
 		// give the other federate a chance to process the provide-request
 		secondFederate.quickTick( 0.1, 1.0 );

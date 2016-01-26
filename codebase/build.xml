@@ -114,6 +114,9 @@
 		<delete dir="${dist.dir}"/>
 	</target>
 
+	<!-- ============================================================ -->
+	<!--  Extension Targets - Variations and extenions on public ones -->
+	<!-- ============================================================ -->
 	<!-- Set the flag that says this is a release build. Usually used to control
 	     whether we execute time-intensive tasks that aren't necessary for testing
 	     such as the generation of API docs, etc... -->
@@ -121,5 +124,10 @@
 		<echo>Build flagged as a release build. Setting build.release property to true</echo>
 		<property name="build.release" value="true"/>
 	</target>
+
+	<!-- Do a complete sandbox build, jre included -->
+	<target name="sandbox.full"
+	        description="Build a complete sandbox, JRE included"
+	        depends="master.sandbox,java.sandbox.jre"/>
 
 </project>

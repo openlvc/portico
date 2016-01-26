@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.portico.impl.HLAVersion;
+import org.portico.impl.hla1516e.types.HLA1516eHandle;
+import org.portico.impl.hla1516e.types.encoding.HLA1516eBoolean;
+import org.portico.impl.hla1516e.types.encoding.HLA1516eUnicodeString;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JEncodingHelpers;
@@ -57,143 +61,176 @@ public class MomFederate
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	public byte[] getFederateHandle()
+	private byte[] getFederateHandle( HLAVersion version )
 	{
-		//return JEncodingHelpers.encodeInt( federate.getHandle() );
-		return JEncodingHelpers.encodeString( "" + federate.getFederateHandle() );
+		return encodeHandle( version, federate.getFederateHandle() );
 	}
 
-	public byte[] getFederateType()
+	private byte[] getFederateType( HLAVersion version )
 	{
-		return JEncodingHelpers.encodeString( federate.getFederateName() );
-	}
-
-	public byte[] getFederateHost()
-	{
-		return JEncodingHelpers.encodeString( "not currently supported" );
-	}
-
-	public byte[] getRTIversion()
-	{
-		return JEncodingHelpers.encodeString( PorticoConstants.RTI_NAME +
-		                                      " v" +
-		                                      PorticoConstants.RTI_VERSION );
-	}
-
-	public byte[] getFEDid()
-	{
-		return JEncodingHelpers.encodeString( "not currently supported" );
-	}
-
-	public byte[] getTimeConstrained()
-	{
-		//return JEncodingHelpers.encodeBoolean( federate.getTimeStatus().isConstrained() );
-		return JEncodingHelpers.encodeString( "" + federate.getTimeStatus().isConstrained() );
-	}
-
-	public byte[] getTimeRegulating()
-	{
-		//return JEncodingHelpers.encodeBoolean( federate.getTimeStatus().isRegulating() );
-		return JEncodingHelpers.encodeString( "" + federate.getTimeStatus().isRegulating() );
-	}
-
-	public byte[] getAsynchronousDelivery()
-	{
-		return notYetSupported("AsynchronousDelivery");
-	}
-
-	public byte[] getFederateState()
-	{
-		return notYetSupported("FederateState");
-	}
-
-	public byte[] getTimeManagerState()
-	{
-		return notYetSupported("TimeManagerState");
-	}
-
-	public byte[] getFederateTime()
-	{
-		//return JEncodingHelpers.encodeDouble( federate.getTimeStatus().getCurrentTime() );
-		return JEncodingHelpers.encodeString( "" + federate.getTimeStatus().getCurrentTime() );
-	}
-
-	public byte[] getLookahead()
-	{
-		//return JEncodingHelpers.encodeDouble( federate.getTimeStatus().getLookahead() );
-		return JEncodingHelpers.encodeString( "" + federate.getTimeStatus().getLookahead() );
-	}
-
-	public byte[] getLBTS()
-	{
-		//return JEncodingHelpers.encodeDouble( federate.getTimeStatus().getLBTS() );
-		return JEncodingHelpers.encodeString( "" + federate.getTimeStatus().getLbts() );
-	}
-
-	public byte[] getMinNextEventTime()
-	{
-		return getLBTS();
+		return encodeString( version, federate.getFederateName() ); // wrong in 1516e
 	}
 	
-	public byte[] getGALT()
+	private byte[] getFederateName( HLAVersion version )
 	{
-		return notYetSupported("GALT");
+		return encodeString( version, federate.getFederateName() );
 	}
 
-	public byte[] getLITS()
+	private byte[] getFederateHost( HLAVersion version )
 	{
-		return notYetSupported("LITS");
+		return notYetSupported( version, "FederateHost" );
+	}
+	
+	private byte[] getFomModuleDesignatorList( HLAVersion version )
+	{
+		return notYetSupported( version, "FomModuleDesignatorList" );
 	}
 
-	public byte[] getROlength()
+	private byte[] getRTIversion( HLAVersion version )
 	{
-		return notYetSupported("ROlength");
+		return encodeString( version, PorticoConstants.RTI_NAME+" v"+PorticoConstants.RTI_VERSION );
 	}
 
-	public byte[] getTSOlength()
+	private byte[] getFEDid( HLAVersion version )
 	{
-		return notYetSupported("TSOlength");
+		return notYetSupported( version, "FDDID" );
 	}
 
-	public byte[] getReflectionsReceived()
+	private byte[] getTimeConstrained( HLAVersion version )
 	{
-		return notYetSupported("ReflectionsReceived");
+		return encodeBoolean( version, federate.getTimeStatus().isConstrained() );
 	}
 
-	public byte[] getUpdatesSent()
+	private byte[] getTimeRegulating( HLAVersion version )
 	{
-		return notYetSupported("UpdatesSent");
+		return encodeBoolean( version, federate.getTimeStatus().isRegulating() );
 	}
 
-	public byte[] getInteractionsReceived()
+	private byte[] getAsynchronousDelivery( HLAVersion version )
 	{
-		return notYetSupported("InteractionsReceived");
+		return encodeBoolean( version, federate.getTimeStatus().isAsynchronous() );
 	}
 
-	public byte[] getInteractionsSent()
+	private byte[] getFederateState( HLAVersion version )
 	{
-		return notYetSupported("InteractionsSent");
+		return notYetSupported( version, "FederateState" );
 	}
 
-	public byte[] getObjectsOwned()
+	private byte[] getTimeManagerState( HLAVersion version )
 	{
-		return notYetSupported("ObjectOwned");
+		return notYetSupported( version, "TimeManagerState" );
 	}
 
-	public byte[] getObjectsUpdated()
+	private byte[] getFederateTime( HLAVersion version )
 	{
-		return notYetSupported("ObjectsUpdated");
+		return encodeTime( version, federate.getTimeStatus().getCurrentTime() );
 	}
 
-	public byte[] getObjectsReflected()
+	private byte[] getLookahead( HLAVersion version )
 	{
-		return notYetSupported("ObjectsReflected");
+		return encodeTime( version, federate.getTimeStatus().getLookahead() );
+	}
+
+	private byte[] getLBTS( HLAVersion version )
+	{
+		return encodeTime( version, federate.getTimeStatus().getLbts() );
+	}
+
+	private byte[] getMinNextEventTime( HLAVersion version )
+	{
+		return getLBTS( version );
+	}
+	
+	private byte[] getGALT( HLAVersion version )
+	{
+		return notYetSupported(version,"GALT");
+	}
+
+	private byte[] getLITS( HLAVersion version )
+	{
+		return notYetSupported(version,"LITS");
+	}
+
+	private byte[] getROlength( HLAVersion version )
+	{
+		return notYetSupported(version,"ROlength");
+	}
+
+	private byte[] getTSOlength( HLAVersion version )
+	{
+		return notYetSupported(version,"TSOlength");
+	}
+
+	private byte[] getReflectionsReceived( HLAVersion version )
+	{
+		return notYetSupported(version,"ReflectionsReceived");
+	}
+
+	private byte[] getUpdatesSent( HLAVersion version )
+	{
+		return notYetSupported(version,"UpdatesSent");
+	}
+
+	private byte[] getInteractionsReceived( HLAVersion version )
+	{
+		return notYetSupported(version,"InteractionsReceived");
+	}
+
+	private byte[] getInteractionsSent( HLAVersion version )
+	{
+		return notYetSupported(version,"InteractionsSent");
+	}
+
+	private byte[] getObjectsOwned( HLAVersion version )
+	{
+		return notYetSupported(version,"ObjectOwned");
+	}
+
+	private byte[] getObjectsUpdated( HLAVersion version )
+	{
+		return notYetSupported(version,"ObjectsUpdated");
+	}
+
+	private byte[] getObjectsReflected( HLAVersion version )
+	{
+		return notYetSupported(version,"ObjectsReflected");
+	}
+
+	private byte[] getObjectInstancesDeleted( HLAVersion version )
+	{
+		return notYetSupported( version, "ObjectInstancedDeleted" );
+	}
+
+	private byte[] getObjectInstancesRemoved( HLAVersion version )
+	{
+		return notYetSupported( version, "ObjectInstancedRemoved" );
+	}
+
+	private byte[] getObjectInstancesRegistered( HLAVersion version )
+	{
+		return notYetSupported( version, "ObjectInstancedRegistered" );
+	}
+
+	private byte[] getObjectInstancesDiscovered( HLAVersion version )
+	{
+		return notYetSupported( version, "ObjectInstancedDiscovered" );
+	}
+
+	private byte[] getTimeGrantedTime( HLAVersion version )
+	{
+		return encodeTime( version, federate.getTimeStatus().getCurrentTime() );
+	}
+
+	private byte[] getTimeAdvancingTime( HLAVersion version )
+	{
+		return encodeTime( version, federate.getTimeStatus().getRequestedTime() );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Update Generating Methods ///////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
-	public UpdateAttributes generateUpdate( Set<Integer> handles ) throws JAttributeNotDefined
+	public UpdateAttributes generateUpdate( HLAVersion version, Set<Integer> handles )
+		throws JAttributeNotDefined
 	{
 		HashMap<Integer,byte[]> attributes = new HashMap<Integer,byte[]>();
 
@@ -203,96 +240,102 @@ public class MomFederate
 			Mom.Federate enumValue = Mom.Federate.forHandle( attributeHandle );
 			switch( enumValue )
 			{
+				case FederateName:
+					attributes.put( attributeHandle, getFederateName(version) );
+					break;
 				case FederateHandle:
-					attributes.put( attributeHandle, getFederateHandle() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getFederateHandle(version) );
+					break;
 				case FederateType:
-					attributes.put( attributeHandle, getFederateType() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getFederateType(version) );
+					break;
 				case FederateHost:
-					attributes.put( attributeHandle, getFederateHost() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getFederateHost(version) );
+					break;
+				case FomModuleDesignatorList:
+					attributes.put( attributeHandle, getFomModuleDesignatorList(version) );
+					break;
 				case RtiVersion:
-					attributes.put( attributeHandle, getRTIversion() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getRTIversion(version) );
+					break;
 				case FedID:
-					attributes.put( attributeHandle, getFEDid() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getFEDid(version) );
+					break;
 				case TimeConstrained:
-					attributes.put( attributeHandle, getTimeConstrained() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getTimeConstrained(version) );
+					break;
 				case TimeRegulating:
-					attributes.put( attributeHandle, getTimeRegulating() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getTimeRegulating(version) );
+					break;
 				case AsynchronousDelivery:
-					attributes.put( attributeHandle, getAsynchronousDelivery() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getAsynchronousDelivery(version) );
+					break;
 				case FederateState:
-					attributes.put( attributeHandle, getFederateState() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getFederateState(version) );
+					break;
 				case TimeManagerState:
-					attributes.put( attributeHandle, getTimeManagerState() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getTimeManagerState(version) );
+					break;
 				case LogicalTime:
-					attributes.put( attributeHandle, getFederateTime() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getFederateTime(version) );
+					break;
 				case Lookahead:
-					attributes.put( attributeHandle, getLookahead() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getLookahead(version) );
+					break;
 				case LBTS:
-					attributes.put( attributeHandle, getLBTS() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getLBTS(version) );
+					break;
 				case GALT:
-					attributes.put( attributeHandle, getGALT() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getGALT(version) );
+					break;
 				case LITS:
-					attributes.put( attributeHandle, getLITS() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getLITS(version) );
+					break;
 				case ROlength:
-					attributes.put( attributeHandle, getROlength() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getROlength(version) );
+					break;
 				case TSOlength:
-					attributes.put( attributeHandle, getTSOlength() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getTSOlength(version) );
+					break;
 				case ReflectionsReceived:
-					attributes.put( attributeHandle, getReflectionsReceived() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getReflectionsReceived(version) );
+					break;
 				case UpdatesSent:
-					attributes.put( attributeHandle, getUpdatesSent() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getUpdatesSent(version) );
+					break;
 				case InteractionsReceived:
-					attributes.put( attributeHandle, getInteractionsReceived() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getInteractionsReceived(version) );
+					break;
 				case InteractionsSent:
-					attributes.put( attributeHandle, getInteractionsSent() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getInteractionsSent(version) );
+					break;
 				case ObjectInstancesThatCanBeDeleted:
-					attributes.put( attributeHandle, getObjectsOwned() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectsOwned(version) );
+					break;
 				case ObjectInstancesUpdated:
-					attributes.put( attributeHandle, getObjectsUpdated() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectsUpdated(version) );
+					break;
 				case ObjectInstancesReflected:
-					attributes.put( attributeHandle, getObjectsReflected() );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectsReflected(version) );
+					break;
 				case ObjectInstancesDeleted:
-					attributes.put( attributeHandle, notYetSupported("ObjectInstancesDeleted") );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectInstancesDeleted(version) );
+					break;
 				case ObjectInstancesRemoved:
-					attributes.put( attributeHandle, notYetSupported("ObjectInstancesRemoved") );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectInstancesRemoved(version) );
+					break;
 				case ObjectInstancesRegistered:
-					attributes.put( attributeHandle, notYetSupported("ObjectInstancesRegistered") );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectInstancesRegistered(version) );
+					break;
 				case ObjectInstancesDiscovered:
-					attributes.put( attributeHandle, notYetSupported("ObjectInstancesDiscovered") );
-					break; // not yet supported
+					attributes.put( attributeHandle, getObjectInstancesDiscovered(version) );
+					break;
 				case TimeGrantedTime:
-					attributes.put( attributeHandle, notYetSupported("TimeGrantedTime") );
-					break; // not yet supported
+					attributes.put( attributeHandle, getTimeGrantedTime(version) );
+					break;
 				case TimeAdvancingTime:
-					attributes.put( attributeHandle, notYetSupported("TimeAdvancingTime") );
-					break; // not yet supported
+					attributes.put( attributeHandle, getTimeAdvancingTime(version) );
+					break;
 				default:
 					break; // ignore
 			}
@@ -306,10 +349,70 @@ public class MomFederate
 		return update;
 	}
 	
-	private byte[] notYetSupported( String property )
+	private byte[] notYetSupported( HLAVersion version, String property )
 	{
 		momLogger.trace( "Requeted MOM property that isn't supported yet: Federate." + property );
-		return JEncodingHelpers.encodeString( "property ["+property+"] not yet supported" );
+		return encodeString( version, "property ["+property+"] not yet supported" );
+	}
+
+	private byte[] encodeString( HLAVersion version, String string )
+	{
+		switch( version )
+		{
+			case HLA13:
+				return JEncodingHelpers.encodeString( string );
+			case IEEE1516e:
+				return new HLA1516eUnicodeString(string).toByteArray();
+			case IEEE1516:
+				return new HLA1516eUnicodeString(string).toByteArray();
+			default:
+				throw new IllegalArgumentException( "Unknown Spec Version: "+version );
+		}
+	}
+	
+	private byte[] encodeHandle( HLAVersion version, int handle )
+	{
+		switch( version )
+		{
+			case HLA13:
+				return JEncodingHelpers.encodeString( ""+handle );
+			case IEEE1516e:
+				return new HLA1516eHandle(handle).getBytes();
+			case IEEE1516:
+				return new HLA1516eHandle(handle).getBytes();
+			default:
+				throw new IllegalArgumentException( "Unknown Spec Version: "+version );
+		}
+	}
+
+	private byte[] encodeBoolean( HLAVersion version, boolean value )
+	{
+		switch( version )
+		{
+			case HLA13:
+				return JEncodingHelpers.encodeString( ""+value );
+			case IEEE1516e:
+				return new HLA1516eBoolean(value).toByteArray();
+			case IEEE1516:
+				return new HLA1516eBoolean(value).toByteArray();
+			default:
+				throw new IllegalArgumentException( "Unknown Spec Version: "+version );
+		}
+	}
+	
+	private byte[] encodeTime( HLAVersion version, double time )
+	{
+		switch( version )
+		{
+			case HLA13:
+				return JEncodingHelpers.encodeString( ""+time );
+			case IEEE1516e:
+				return new org.portico.impl.hla1516e.types.time.DoubleTime(time).toByteArray();
+			case IEEE1516:
+				return new org.portico.impl.hla1516.types.DoubleTime(time).toByteArray();
+			default:
+				throw new IllegalArgumentException( "Unknown Spec Version: "+version );
+		}
 	}
 
 	//----------------------------------------------------------

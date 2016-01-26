@@ -24,7 +24,10 @@
 
   ;Name and file
   Name "Portico v${VERSION} (64-bit)"
-  OutFile "${OUTDIR}\portico-${VERSION}-win64.exe"
+  OutFile "${OUTDIR}\${DIST_NAME}-${VERSION}-win64.exe"
+
+  ;Use something a little stronger
+  SetCompressor /SOLID lzma 
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES64\Portico\portico-${VERSION}"
@@ -36,7 +39,7 @@
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Portico"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "The Portico Open Source RTI"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Calytrix Technologies"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Calytrix Technologies"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "The Portico Project"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Portico Installer"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}.${BUILD_NUMBER}"
 

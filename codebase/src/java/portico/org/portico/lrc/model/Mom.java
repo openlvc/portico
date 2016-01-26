@@ -15,8 +15,8 @@
 package org.portico.lrc.model;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.compat.JAttributeNotDefined;
 
 /**
@@ -46,35 +46,37 @@ public class Mom
 	public enum Federate
 	{
 		FederateHandle(4),
-		FederateType(5),
-		FederateHost(6),
-		RtiVersion(7),
-		FedID(8),
-		TimeConstrained(9),
-		TimeRegulating(10),
-		AsynchronousDelivery(11),
-		FederateState(12),
-		TimeManagerState(13),
-		LogicalTime(14),
-		Lookahead(15),
-		LBTS(16), // synonym for LITS
-		GALT(17),
-		LITS(18), // NextMinEventTime in 1.3,
-		ROlength(19),
-		TSOlength(20),
-		ReflectionsReceived(21),
-		UpdatesSent(22),
-		InteractionsReceived(22),
-		InteractionsSent(23),
-		ObjectInstancesThatCanBeDeleted(24), // ObjectsOwned in 1.3
-		ObjectInstancesUpdated(25),          // ObjectsUpdated in 1.3
-		ObjectInstancesReflected(26),        // ObjectsReflected in 1.3
-		ObjectInstancesDeleted(27),
-		ObjectInstancesRemoved(28),
-		ObjectInstancesRegistered(29),
-		ObjectInstancesDiscovered(30),
-		TimeGrantedTime(31),
-		TimeAdvancingTime(32);
+		FederateName(5),                     // 1516e
+		FederateType(6),
+		FederateHost(7),
+		FomModuleDesignatorList(8),          // 1516e
+		RtiVersion(9),
+		FedID(10),
+		TimeConstrained(11),
+		TimeRegulating(12),
+		AsynchronousDelivery(13),
+		FederateState(14),
+		TimeManagerState(15),
+		LogicalTime(16),
+		Lookahead(17),
+		LBTS(18), // synonym for LITS
+		GALT(19),
+		LITS(20), // NextMinEventTime in 1.3,
+		ROlength(21),
+		TSOlength(22),
+		ReflectionsReceived(23),
+		UpdatesSent(24),
+		InteractionsReceived(25),
+		InteractionsSent(26),
+		ObjectInstancesThatCanBeDeleted(27), // ObjectsOwned in 1.3
+		ObjectInstancesUpdated(28),          // ObjectsUpdated in 1.3
+		ObjectInstancesReflected(29),        // ObjectsReflected in 1.3
+		ObjectInstancesDeleted(30),
+		ObjectInstancesRemoved(31),
+		ObjectInstancesRegistered(32),
+		ObjectInstancesDiscovered(33),
+		TimeGrantedTime(34),
+		TimeAdvancingTime(35);
 		
 		public final int handle;
 		private Federate( int handle )
@@ -101,16 +103,20 @@ public class Mom
 	/** Same solution as for Federate above, see that comment for my thoughts */
 	public enum Federation
 	{
-		FederationName(33),
-		FederatesInFederation(34),
-		RtiVersion(35),
-		FedID(36),
-		LastSaveName(37),
-		LastSaveTime(38),
-		NextSaveName(39),
-		NextSaveTime(40),
-		AutoProvide(41),                // not in 1.3
-		ConveyRegionDesignatorSets(42); // not in 1.3
+		FederationName(36),
+		FederatesInFederation(37),
+		RtiVersion(38),
+		MimDesignator(39),              // 1516e
+		FomModuleDesignatorList(40),    // 1516e
+		CurrentFdd(41),                 // 1516e
+		FedID(42),
+		TimeImplementationName(43),     // 1516e
+		LastSaveName(44),
+		LastSaveTime(45),
+		NextSaveName(46),
+		NextSaveTime(47),
+		AutoProvide(48),                // not in 1.3
+		ConveyRegionDesignatorSets(49); // not in 1.3
 		
 		public final int handle;
 		private Federation( int handle )
@@ -141,9 +147,9 @@ public class Mom
 	private HashMap<String,Mom.Federation> federation13Attributes;
 	private HashMap<String,Mom.Federate> federate1516Attributes;
 	private HashMap<String,Mom.Federation> federation1516Attributes;
+	private HashMap<String,Mom.Federate> federate1516eAttributes;
+	private HashMap<String,Mom.Federation> federation1516eAttributes;
 	
-	private HashSet<Integer> allFederateHandles;
-	private HashSet<Integer> allFederationHandles;
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -154,8 +160,8 @@ public class Mom
 		this.federation13Attributes   = new HashMap<String,Mom.Federation>();
 		this.federate1516Attributes   = new HashMap<String,Mom.Federate>();
 		this.federation1516Attributes = new HashMap<String,Mom.Federation>();
-		this.allFederateHandles       = new HashSet<Integer>();
-		this.allFederationHandles     = new HashSet<Integer>();
+		this.federate1516eAttributes  = new HashMap<String,Mom.Federate>();
+		this.federation1516eAttributes= new HashMap<String,Mom.Federation>();
 		
 		////////////////////////////////////////////////////////////////
 		////////////////////////// Initialize //////////////////////////
@@ -234,49 +240,52 @@ public class Mom
 		federation1516Attributes.put( "HLAautoProvide", Federation.AutoProvide );
 		federation1516Attributes.put( "HLAconveyRegionDesignatorSets", Federation.ConveyRegionDesignatorSets );
 		
-		// All Handles //
-		allFederateHandles.add( Federate.FederateHandle.handle );
-		allFederateHandles.add( Federate.FederateType.handle );
-		allFederateHandles.add( Federate.FederateHost.handle );
-		allFederateHandles.add( Federate.RtiVersion.handle );
-		allFederateHandles.add( Federate.FedID.handle );
-		allFederateHandles.add( Federate.TimeConstrained.handle );
-		allFederateHandles.add( Federate.TimeRegulating.handle );
-		allFederateHandles.add( Federate.AsynchronousDelivery.handle );
-		allFederateHandles.add( Federate.FederateState.handle );
-		allFederateHandles.add( Federate.TimeManagerState.handle );
-		allFederateHandles.add( Federate.LogicalTime.handle );
-		allFederateHandles.add( Federate.Lookahead.handle );
-		allFederateHandles.add( Federate.LBTS.handle );
-		allFederateHandles.add( Federate.GALT.handle );
-		allFederateHandles.add( Federate.LITS.handle );
-		allFederateHandles.add( Federate.ROlength.handle );
-		allFederateHandles.add( Federate.TSOlength.handle );
-		allFederateHandles.add( Federate.ReflectionsReceived.handle );
-		allFederateHandles.add( Federate.UpdatesSent.handle );
-		allFederateHandles.add( Federate.InteractionsReceived.handle );
-		allFederateHandles.add( Federate.InteractionsSent.handle );
-		allFederateHandles.add( Federate.ObjectInstancesThatCanBeDeleted.handle );
-		allFederateHandles.add( Federate.ObjectInstancesUpdated.handle );
-		allFederateHandles.add( Federate.ObjectInstancesReflected.handle );
-		allFederateHandles.add( Federate.ObjectInstancesDeleted.handle );
-		allFederateHandles.add( Federate.ObjectInstancesRemoved.handle );
-		allFederateHandles.add( Federate.ObjectInstancesRegistered.handle );
-		allFederateHandles.add( Federate.ObjectInstancesDiscovered.handle );
-		allFederateHandles.add( Federate.TimeGrantedTime.handle );
-		allFederateHandles.add( Federate.TimeAdvancingTime.handle );
-		
-		allFederationHandles.add( Federation.FederationName.handle );
-		allFederationHandles.add( Federation.FederatesInFederation.handle );
-		allFederationHandles.add( Federation.RtiVersion.handle );
-		allFederationHandles.add( Federation.FedID.handle );
-		allFederationHandles.add( Federation.LastSaveName.handle );
-		allFederationHandles.add( Federation.LastSaveTime.handle );
-		allFederationHandles.add( Federation.NextSaveName.handle );
-		allFederationHandles.add( Federation.NextSaveTime.handle );
-		allFederationHandles.add( Federation.AutoProvide.handle );
-		allFederationHandles.add( Federation.ConveyRegionDesignatorSets.handle );
+		// HLA 1516-Evolved //
+		federate1516eAttributes.put( "HLAfederateHandle", Federate.FederateHandle );
+		federate1516eAttributes.put( "HLAfederateName", Federate.FederateName );
+		federate1516eAttributes.put( "HLAfederateType", Federate.FederateType );
+		federate1516eAttributes.put( "HLAfederateHost", Federate.FederateHost );
+		federate1516eAttributes.put( "HLARTIversion", Federate.RtiVersion );
+		federate1516eAttributes.put( "HLAFOMmoduleDesignatorList", Federate.FomModuleDesignatorList );
+		federate1516eAttributes.put( "HLAtimeConstrained", Federate.TimeConstrained );
+		federate1516eAttributes.put( "HLAtimeRegulating", Federate.TimeRegulating );
+		federate1516eAttributes.put( "HLAasynchronousDelivery", Federate.AsynchronousDelivery );
+		federate1516eAttributes.put( "HLAfederateState", Federate.FederateState );
+		federate1516eAttributes.put( "HLAtimeManagerState", Federate.TimeManagerState );
+		federate1516eAttributes.put( "HLAlogicalTime", Federate.LogicalTime );
+		federate1516eAttributes.put( "HLAlookahead", Federate.Lookahead );
+		federate1516eAttributes.put( "HLAGALT", Federate.GALT );
+		federate1516eAttributes.put( "HLALITS", Federate.LITS );
+		federate1516eAttributes.put( "HLAROlength", Federate.ROlength );
+		federate1516eAttributes.put( "HLATSOlength", Federate.TSOlength );
+		federate1516eAttributes.put( "HLAreflectionsReceived", Federate.ReflectionsReceived );
+		federate1516eAttributes.put( "HLAupdatesSent", Federate.UpdatesSent );
+		federate1516eAttributes.put( "HLAinteractionsReceived", Federate.InteractionsReceived );
+		federate1516eAttributes.put( "HLAinteractionsSent", Federate.InteractionsSent );
+		federate1516eAttributes.put( "HLAobjectInstancesThatCanBeDeleted", Federate.ObjectInstancesThatCanBeDeleted );
+		federate1516eAttributes.put( "HLAobjectInstancesUpdated", Federate.ObjectInstancesUpdated );
+		federate1516eAttributes.put( "HLAobjectInstancesReflected", Federate.ObjectInstancesReflected );
+		federate1516eAttributes.put( "HLAobjectInstancesDeleted", Federate.ObjectInstancesDeleted );
+		federate1516eAttributes.put( "HLAobjectInstancesRemoved", Federate.ObjectInstancesRemoved );
+		federate1516eAttributes.put( "HLAobjectInstancesRegistered", Federate.ObjectInstancesRegistered );
+		federate1516eAttributes.put( "HLAobjectInstancesDiscovered", Federate.ObjectInstancesDiscovered );
+		federate1516eAttributes.put( "HLAtimeGrantedTime", Federate.TimeGrantedTime );
+		federate1516eAttributes.put( "HLAtimeAdvancingTime", Federate.TimeAdvancingTime );
+
+		federation1516eAttributes.put( "HLAfederationName", Federation.FederationName );
+		federation1516eAttributes.put( "HLAfederatesInFederation", Federation.FederatesInFederation );
+		federation1516eAttributes.put( "HLARTIversion", Federation.RtiVersion );
+		federation1516eAttributes.put( "HLAMIMdesignator", Federation.MimDesignator );
+		federation1516eAttributes.put( "HLAFOMmoduleDesignatorList", Federation.FomModuleDesignatorList );
+		federation1516eAttributes.put( "HLAcurrentFDD", Federation.CurrentFdd );
+		federation1516eAttributes.put( "HLAtimeImplementationName", Federation.TimeImplementationName );
+		federation1516eAttributes.put( "HLAlastSaveName", Federation.LastSaveName );
+		federation1516eAttributes.put( "HLAlastSaveTime", Federation.LastSaveTime );
+		federation1516eAttributes.put( "HLAnextSaveName", Federation.NextSaveName );
+		federation1516eAttributes.put( "HLAnextSaveTime", Federation.NextSaveTime );
+		federation1516eAttributes.put( "HLAautoProvide", Federation.AutoProvide );
 	}
+
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -284,24 +293,12 @@ public class Mom
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static HashSet<Integer> getFederateAttributes()
-	{
-		// return a COPY!!
-		return new HashSet<Integer>( INSTANCE.allFederateHandles );
-	}
-	
-	public static HashSet<Integer> getFederationAttributes()
-	{
-		// return a COPY!!
-		return new HashSet<Integer>( INSTANCE.allFederationHandles );
-	}
-	
 	/**
 	 * Fetch the handle for the MOM class of the given name. This will work when given either
 	 * HLA 1.3 or HLA 1516 style MOM names. If the class name is unknown,
 	 * {@link ObjectModel#INVALID_HANDLE} will be returned.
 	 */
-	public static int getMomClassHandle( String className )
+	public static int getMomClassHandle( HLAVersion version, String className )
 	{
 		////////////////////////////////
 		// strip out any HLA prefixes //
@@ -343,39 +340,46 @@ public class Mom
 	 * handle. If the handle is not recognized or the name isn't a valid attribute,
 	 * {@link ObjectModel#INVALID_HANDLE} will be returned.
 	 */
-	public static int getMomAttributeHandle( int classHandle, String name )
+	public static int getMomAttributeHandle( HLAVersion version, int classHandle, String name )
 	{
-		// figure out if this is a 1516 or 1.3 request
-		if( name.startsWith("HLA") )
+		try
 		{
-			/////////////////////////
-			// it is a 1516 handle //
-			/////////////////////////
-			switch( classHandle )
-			{
-				case FederateClass:
-					return INSTANCE.federate1516Attributes.get(name).handle;
-				case FederationClass:
-					return INSTANCE.federation1516Attributes.get(name).handle;
-				default:
-					return ObjectModel.INVALID_HANDLE;
-			}
+    		if( classHandle == FederateClass )
+    		{
+    			switch( version )
+    			{
+    				case HLA13:
+    					return INSTANCE.federate13Attributes.get(name).handle;
+    				case IEEE1516e:
+    					return INSTANCE.federate1516eAttributes.get(name).handle;
+    				case IEEE1516:
+    					return INSTANCE.federate1516Attributes.get(name).handle;
+    				default:
+    					return ObjectModel.INVALID_HANDLE;
+    			}
+    		}
+    		else if( classHandle == FederationClass )
+    		{
+    			switch( version )
+    			{
+    				case HLA13:
+    					return INSTANCE.federation13Attributes.get(name).handle;
+    				case IEEE1516e:
+    					return INSTANCE.federation1516eAttributes.get(name).handle;
+    				case IEEE1516:
+    					return INSTANCE.federation1516Attributes.get(name).handle;
+    				default:
+    					return ObjectModel.INVALID_HANDLE;
+    			}
+    		}
 		}
-		else
+		catch( NullPointerException npe )
 		{
-			////////////////////////
-			// it is a 1.3 handle //
-			////////////////////////
-			switch( classHandle )
-			{
-				case FederateClass:
-					return INSTANCE.federate13Attributes.get(name).handle;
-				case FederationClass:
-					return INSTANCE.federation13Attributes.get(name).handle;
-				default:
-					return ObjectModel.INVALID_HANDLE;
-			}
+			// can happen if the handle name isn't valid for the version type
+			// just drop through - this is the same as not having a valid handle at all
 		}
+
+		return ObjectModel.INVALID_HANDLE;
 	}
 
 	/**
@@ -578,6 +582,88 @@ public class Mom
 		ACMetadata crds = newAttribute( "HLAconveyRegionDesignatorSets",
 		                                Federation.ConveyRegionDesignatorSets.handle );
 		federation.addAttribute( crds );
+		
+		//////////////////////////////////////
+		// patch the manager into the model //
+		//////////////////////////////////////
+		theModel.addObjectClass( manager );
+		theModel.addObjectClass( federate );
+		theModel.addObjectClass( federation );
+	}
+
+	/**
+	 * Patch the supported MOM hierarchy into the given object model. Presumes that any
+	 * modification of it has already been stripped out elsewhere so that we can patch
+	 * it in clean.
+	 */
+	public static void insertMomHierarchy1516e( ObjectModel theModel )
+	{
+		// create the manager class //
+		OCMetadata manager = new OCMetadata( "HLAmanager", ManagerClass );
+		manager.setModel( theModel );
+		manager.setParent( theModel.getObjectRoot() );
+		
+		///////////////////////////////////////////////////////////////
+		////////////////// create the federate class //////////////////
+		///////////////////////////////////////////////////////////////
+		OCMetadata federate = new OCMetadata( "HLAfederate", FederateClass );
+		federate.setModel( theModel );
+		federate.setParent( manager );
+		
+		// populate it //
+		federate.addAttribute( newAttribute("HLAfederateHandle",Federate.FederateHandle.handle) );
+		federate.addAttribute( newAttribute("HLAfederateName",Federate.FederateName.handle) );
+		federate.addAttribute( newAttribute("HLAfederateType",Federate.FederateType.handle) );
+		federate.addAttribute( newAttribute("HLAfederateHost",Federate.FederateHost.handle) );
+		federate.addAttribute( newAttribute("HLARTIversion",Federate.RtiVersion.handle) );
+		federate.addAttribute( newAttribute("HLAFOMmoduleDesignatorList",Federate.FomModuleDesignatorList.handle) );
+		federate.addAttribute( newAttribute("HLAtimeConstrained",Federate.TimeConstrained.handle) );
+		federate.addAttribute( newAttribute("HLAtimeRegulating",Federate.TimeRegulating.handle) );
+		federate.addAttribute( newAttribute("HLAasynchronousDelivery",Federate.AsynchronousDelivery.handle) );
+		federate.addAttribute( newAttribute("HLAfederateState",Federate.FederateState.handle) );
+		federate.addAttribute( newAttribute("HLAtimeManagerState",Federate.TimeManagerState.handle) );
+		federate.addAttribute( newAttribute("HLAlogicalTime",Federate.LogicalTime.handle) );
+		federate.addAttribute( newAttribute("HLAlookahead",Federate.Lookahead.handle) );
+		federate.addAttribute( newAttribute("HLAGALT",Federate.GALT.handle) );
+		federate.addAttribute( newAttribute("HLALITS",Federate.LITS.handle) );
+		federate.addAttribute( newAttribute("HLAROlength",Federate.ROlength.handle) );
+		federate.addAttribute( newAttribute("HLATSOlength",Federate.TSOlength.handle) );
+		federate.addAttribute( newAttribute("HLAreflectionsReceived",Federate.ReflectionsReceived.handle) );
+		federate.addAttribute( newAttribute("HLAupdatesSent",Federate.UpdatesSent.handle) );
+		federate.addAttribute( newAttribute("HLAinteractionsReceived",Federate.InteractionsReceived.handle) );
+		federate.addAttribute( newAttribute("HLAinteractionsSent",Federate.InteractionsSent.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesThatCanBeDeleted",Federate.ObjectInstancesThatCanBeDeleted.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesUpdated",Federate.ObjectInstancesUpdated.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesReflected",Federate.ObjectInstancesReflected.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesDeleted",Federate.ObjectInstancesDeleted.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesRemoved",Federate.ObjectInstancesRemoved.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesRegistered",Federate.ObjectInstancesRegistered.handle) );
+		federate.addAttribute( newAttribute("HLAobjectInstancesDiscovered",Federate.ObjectInstancesDiscovered.handle) );
+		federate.addAttribute( newAttribute("HLAtimeGrantedTime",Federate.TimeGrantedTime.handle) );
+		federate.addAttribute( newAttribute("HLAtimeAdvancingTime",Federate.TimeAdvancingTime.handle) );
+		federate.addAttribute( newAttribute("HLAconveyRegionDesignatorSets",498) );
+		federate.addAttribute( newAttribute("HLAconveyProducingFederate",499) );
+
+		///////////////////////////////////////////////////////////////
+		///////////////// create the federation class /////////////////
+		///////////////////////////////////////////////////////////////
+		OCMetadata federation = new OCMetadata( "HLAfederation", FederationClass );
+		federation.setModel( theModel );
+		federation.setParent( manager );
+		
+		// populate it //
+		federation.addAttribute( newAttribute("HLAfederationName",Federation.FederationName.handle) );
+		federation.addAttribute( newAttribute("HLAfederatesInFederation",Federation.FederatesInFederation.handle) );
+		federation.addAttribute( newAttribute("HLARTIversion",Federation.RtiVersion.handle) );
+		federation.addAttribute( newAttribute("HLAMIMdesignator",Federation.MimDesignator.handle) );
+		federation.addAttribute( newAttribute("HLAFOMmoduleDesignatorList",Federation.FomModuleDesignatorList.handle) );
+		federation.addAttribute( newAttribute("HLAcurrentFDD",Federation.CurrentFdd.handle) );
+		federation.addAttribute( newAttribute("HLAtimeImplementationName",Federation.TimeImplementationName.handle) );
+		federation.addAttribute( newAttribute("HLAlastSaveName",Federation.LastSaveName.handle) );
+		federation.addAttribute( newAttribute("HLAlastSaveTime",Federation.LastSaveTime.handle) );
+		federation.addAttribute( newAttribute("HLAnextSaveName",Federation.NextSaveName.handle) );
+		federation.addAttribute( newAttribute("HLAnextSaveTime",Federation.NextSaveTime.handle) );
+		federation.addAttribute( newAttribute("HLAautoProvide",Federation.AutoProvide.handle) );
 		
 		//////////////////////////////////////
 		// patch the manager into the model //

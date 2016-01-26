@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.portico.impl.HLAVersion;
+import org.portico.impl.hla1516e.types.encoding.HLA1516eUnicodeString;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JEncodingHelpers;
@@ -84,56 +86,75 @@ public class MomFederation
 	/////////////////////////////////////////////////////////////////////////////////
 	//////////////////////// Property Serialization Methods /////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
-	private byte[] getFederationName()
+	private byte[] getFederationName( HLAVersion version )
 	{
-		return JEncodingHelpers.encodeString( federation.getFederationName() );
+		return encodeString( version, federation.getFederationName() );
 	}
 	
-	private byte[] getFederatesInFederation()
+	private byte[] getFederatesInFederation( HLAVersion version )
 	{
 		//FIXME yeah, clearly in need of fixing :P
-		return notYetSupported( "FederatesInFederation" );
+		return notYetSupported( version, "FederatesInFederation" );
 	}
 	
-	private byte[] getRtiVersion()
+	private byte[] getRtiVersion( HLAVersion version )
 	{
-		return JEncodingHelpers.encodeString( PorticoConstants.RTI_NAME +
-		                                      " v" +
-		                                      PorticoConstants.RTI_VERSION );
+		return encodeString( version, PorticoConstants.RTI_NAME+" v"+PorticoConstants.RTI_VERSION );
 	}
-	
-	private byte[] getFedID()
+
+	private byte[] getMimDesignator( HLAVersion version )
+	{
+		return notYetSupported( version, "MimDesignator" );
+	}
+
+	private byte[] getFomModuleDesignatorList( HLAVersion version )
+	{
+		return notYetSupported( version, "HLAversion" );
+	}
+
+	private byte[] getCurrentFdd( HLAVersion version )
+	{
+		return notYetSupported( version, "CurrentFDD" );
+	}
+
+	private byte[] getTimeImplementationName( HLAVersion version )
+	{
+		return notYetSupported( version, "TimeImplementation" );
+	}
+
+	private byte[] getFedID( HLAVersion version )
 	{
 		//FIXME Obviously
-		return notYetSupported( "FedID" );
+		return notYetSupported( version, "FedID" );
 	}
 	
-	private byte[] getLastSaveName()
+	private byte[] getLastSaveName( HLAVersion version )
 	{
-		return notYetSupported( "LastSaveName" );
+		return notYetSupported( version, "LastSaveName" );
 	}
 	
-	private byte[] getLastSaveTime()
-	{
-		//return JEncodingHelpers.encodeDouble( 0.0 );
-		return notYetSupported( "LastSaveTime" );
-	}
-	
-	private byte[] getNextSaveName()
-	{
-		return notYetSupported( "NextSaveName" );
-	}
-	
-	private byte[] getNextSaveTime()
+	private byte[] getLastSaveTime( HLAVersion version )
 	{
 		//return JEncodingHelpers.encodeDouble( 0.0 );
-		return notYetSupported( "NextSaveTime" );
+		return notYetSupported( version, "LastSaveTime" );
+	}
+	
+	private byte[] getNextSaveName( HLAVersion version )
+	{
+		return notYetSupported( version, "NextSaveName" );
+	}
+	
+	private byte[] getNextSaveTime( HLAVersion version )
+	{
+		//return JEncodingHelpers.encodeDouble( 0.0 );
+		return notYetSupported( version, "NextSaveTime" );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Update Generating Methods ///////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
-	public UpdateAttributes generateUpdate( Set<Integer> handles ) throws JAttributeNotDefined
+	public UpdateAttributes generateUpdate( HLAVersion version, Set<Integer> handles )
+		throws JAttributeNotDefined
 	{
 		HashMap<Integer,byte[]> attributes = new HashMap<Integer,byte[]>();
 
@@ -144,34 +165,46 @@ public class MomFederation
 			switch( enumValue )
 			{
 				case FederationName:
-					attributes.put( attributeHandle, getFederationName() );
+					attributes.put( attributeHandle, getFederationName(version) );
 					break;
 				case FederatesInFederation:
-					attributes.put( attributeHandle, getFederatesInFederation() );
+					attributes.put( attributeHandle, getFederatesInFederation(version) );
 					break;
 				case RtiVersion:
-					attributes.put( attributeHandle, getRtiVersion() );
+					attributes.put( attributeHandle, getRtiVersion(version) );
+					break;
+				case MimDesignator:
+					attributes.put( attributeHandle, getMimDesignator(version) );
+					break;
+				case FomModuleDesignatorList:
+					attributes.put( attributeHandle, getFomModuleDesignatorList(version) );
+					break;
+				case CurrentFdd:
+					attributes.put( attributeHandle, getCurrentFdd(version) );
 					break;
 				case FedID:
-					attributes.put( attributeHandle, getFedID() );
+					attributes.put( attributeHandle, getFedID(version) );
+					break;
+				case TimeImplementationName:
+					attributes.put( attributeHandle, getTimeImplementationName(version) );
 					break;
 				case LastSaveName:
-					attributes.put( attributeHandle, getLastSaveName() );
+					attributes.put( attributeHandle, getLastSaveName(version) );
 					break;
 				case LastSaveTime:
-					attributes.put( attributeHandle, getLastSaveTime() );
+					attributes.put( attributeHandle, getLastSaveTime(version) );
 					break;
 				case NextSaveName:
-					attributes.put( attributeHandle, getNextSaveName() );
+					attributes.put( attributeHandle, getNextSaveName(version) );
 					break;
 				case NextSaveTime:
-					attributes.put( attributeHandle, getNextSaveTime() );
+					attributes.put( attributeHandle, getNextSaveTime(version) );
 					break;
 				case AutoProvide:
-					attributes.put( attributeHandle, notYetSupported("AutoProvide") );
+					attributes.put( attributeHandle, notYetSupported(version,"AutoProvide") );
 					break;
 				case ConveyRegionDesignatorSets:
-					attributes.put( attributeHandle, notYetSupported("ConveyRegionDesignatorSets") );
+					attributes.put( attributeHandle, notYetSupported(version,"ConveyRegionDesignatorSets") );
 					break;
 				default:
 					break;
@@ -185,12 +218,27 @@ public class MomFederation
 		return update;
 	}
 
-	private byte[] notYetSupported( String property )
+	private byte[] notYetSupported( HLAVersion version, String property )
 	{
 		momLogger.trace( "Requeted MOM property that isn't supported yet: Federation." + property );
-		return JEncodingHelpers.encodeString( "property ["+property+"] not yet supported" );
+		return encodeString( version, "property ["+property+"] not yet supported" );
 	}
-
+	
+	private byte[] encodeString( HLAVersion version, String string )
+	{
+		switch( version )
+		{
+			case HLA13:
+				return JEncodingHelpers.encodeString( string );
+			case IEEE1516e:
+				return new HLA1516eUnicodeString(string).toByteArray();
+			case IEEE1516:
+				return new HLA1516eUnicodeString(string).toByteArray();
+			default:
+				throw new IllegalArgumentException( "Unknown Spec Version: "+version );
+		}
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

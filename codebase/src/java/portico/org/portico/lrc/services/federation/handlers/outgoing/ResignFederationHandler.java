@@ -74,12 +74,8 @@ public class ResignFederationHandler extends LRCMessageHandler
 
 		// validate that we are in the proper state for the given resign action
 		validateResignAction( request.getResignAction(), lrcState.getFederateHandle() );
-		
-		// broadcast out the resignation so that other federates know we've ditched them
-		// we have to do this BEFORE we actually resign because the infrastructure will
-		// be wiped when we notify the connection of resignation
-		connection.broadcast( request );
 
+		// send the resign notification to the connection and the federation
 		connection.resignFederation( request );
 		
 		// notify the notification manager

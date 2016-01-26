@@ -241,7 +241,7 @@ public class Channel
 
 	public void sendResignFederation( byte[] payload ) throws Exception
 	{
-		sendAsyncControlMessage( ControlHeader.newResignHeader(), payload );
+		sendSyncControlMessage( ControlHeader.newResignHeader(), payload );
 	}
 	
 	public void sendDestroyFederation( byte[] payload ) throws Exception
