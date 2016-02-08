@@ -363,12 +363,9 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// 1. Set up the Java Classpath //
 	//////////////////////////////////
 	// pick up the system classpath and put $RTI_HOME/lib/portico.jar on the end
-	string systemClasspath( getenv("CLASSPATH") );
-	if( systemClasspath.empty() )
-	{
-		logger->debug( "CLASSPATH not set, using ." );
-		systemClasspath = "./";
-	}
+	string systemClasspath( "./" );
+	if( getenv("CLASSPATH") != NULL )
+		systemClasspath = string( getenv("CLASSPATH") );
 
 	// create out classpath
 	stringstream classpath;
@@ -381,10 +378,13 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// 2. Set up the library path //
 	////////////////////////////////
 	// Get the system path
+	string systemPath( "." );
 	#ifdef __APPLE__
-	string systemPath( getenv("DYLD_LIBRARY_PATH") );
+	if( getenv("DYLD_LIBRARY_PATH") != NULL )
+		systemPath = string( getenv("DYLD_LIBRARY_PATH") );
 	#else
-	string systemPath( getenv("LD_LIBRARY_PATH") );
+	if( getenv("LD_LIBRARY_PATH") )
+		systemPath = string( getenv("LD_LIBRARY_PATH") );
 	#endif
 
 	// make sure we have a system path

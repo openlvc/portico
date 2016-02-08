@@ -11,18 +11,6 @@ then
 	exit;
 fi
 
-######################
-# test for JAVA_HOME #
-######################
-JAVA=java
-if [ "$JAVA_HOME" = "" ]
-then
-	echo WARNING Your JAVA_HOME environment variable is not set!
-	#exit;
-else
-        JAVA=$JAVA_HOME/bin/java
-fi
-
 ###################
 # Set up RTI_HOME #
 ###################
@@ -54,7 +42,7 @@ then
 	    -DRTI_USES_STD_FSTREAM \
 		-lRTI-NG_64d -lFedTime_64d -L$RTI_HOME/lib/gcc4 \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
-	exit;	
+	exit;
 fi
 
 ############################################
@@ -72,7 +60,7 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/server" ./example-federate $*
+	DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$RTI_HOME/jre/lib/server" ./example-federate $*
 	exit;
 fi
 
