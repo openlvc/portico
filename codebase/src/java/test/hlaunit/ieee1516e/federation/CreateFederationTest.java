@@ -91,16 +91,6 @@ public class CreateFederationTest extends Abstract1516eTest
 	//                                                                          //
 	//////////////////////////////////////////////////////////////////////////////
 
-	// TODO: Add tests for NotConnected
-	
-	@Test(groups="temp")
-	public void testSpecialFom() throws Exception
-	{
-		URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/Link16/L16.xml" ); 
-		defaultFederate.rtiamb.createFederationExecution( "test", fom );
-		System.out.println( "*pew pew*" );
-	}
-
 	//////////////////////////////////////////////////////////////////////////////
 	// createFederationExecution( String, URL ) //////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////
