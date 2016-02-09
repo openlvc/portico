@@ -125,9 +125,4 @@
 		<property name="build.release" value="true"/>
 	</target>
 
-	<!-- Do a complete sandbox build, jre included -->
-	<target name="sandbox.full"
-	        description="Build a complete sandbox, JRE included"
-	        depends="master.sandbox,java.sandbox.jre"/>
-
 </project>

@@ -11,18 +11,6 @@ then
 	exit;
 fi
 
-######################
-# test for JAVA_HOME #
-######################
-JAVA=java
-if [ "$JAVA_HOME" = "" ]
-then
-	echo WARNING Your JAVA_HOME environment variable is not set!
-	#exit;
-else
-        JAVA=$JAVA_HOME/bin/java
-fi
-
 #####################
 # test for RTI_HOME #
 #####################
@@ -55,12 +43,22 @@ then
 fi
 
 ############################################
+### (target) debug #########################
+############################################
+if [ $1 = "debug" ]
+then
+	echo "starting ggdb - we need to sudo to avoide a bunch of code-signing stuff - sorry :("
+	sudo ggdb -x gdb-macos.env ./example-federate
+	exit;
+fi
+
+############################################
 ### (target) execute #######################
 ############################################
 if [ $1 = "execute" ]
 then
 	shift;
-	PORTICO_DEBUG=OFF DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/server" ./example-federate $*
+	PORTICO_DEBUG=OFF DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$RTI_HOME/jre/lib/server" ./example-federate $*
 	exit;
 fi
 

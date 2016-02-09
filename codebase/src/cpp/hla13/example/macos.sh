@@ -50,8 +50,9 @@ fi
 ############################################
 if [ $1 = "debug" ]
 then
-	echo "starting up gdb"
-	ggdb -x gdb.env ./example-federate
+	echo "starting ggdb - we need to sudo to avoide a bunch of code-signing stuff - sorry :("
+	sudo ggdb -x gdb-macos.env ./example-federate
+	exit;
 fi
 
 ############################################
