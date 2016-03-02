@@ -37,6 +37,12 @@ public class CommonSetup
 	 * is taken to be the fully qualified name of the binding implementation to use. 
 	 */
 	public static final String BINDING_PROPERTY = "test.binding";
+
+	/**
+	 * Which interface to tell JGroups to use. Can be: SITE_LOCAL, LINK_LOCAL, LOOPBACK, GLOBAL
+	 * or the IP of the interface you want used.
+	 */
+	public static final String JGROUPS_INTERFACE = "jgroups.interface";
 	
 	public static long TIMEOUT = 1000;
 
@@ -104,6 +110,13 @@ public class CommonSetup
 				// we're running everything off the same machine, there is little worry
 				// about needing a bigger timeout to discover an active group
 				System.setProperty( Configuration.PROP_JGROUPS_GMS_TIMEOUT, "100" );
+				
+				String jgroupsInterface = System.getProperty( JGROUPS_INTERFACE );
+				if( jgroupsInterface != null )
+				{
+					System.out.println( "JGroups Interface: "+jgroupsInterface );
+					System.setProperty( "portico.jgroups.udp.bindAddress", jgroupsInterface );
+				}
 			}
 			else if( binding.equals("ptalk") )
 			{

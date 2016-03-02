@@ -345,6 +345,44 @@ public class AcquireOwnershipTest extends Abstract13Test
 		// delete the object in the second federate now that we've transferred ownership
 		secondFederate.quickDelete( theObject );
 	}
+
+	/////////////////////////////////////////////////
+	// TEST: (valid) testRapidDivestAndReacquire() //
+	/////////////////////////////////////////////////
+	//
+	// This test is currently failing for JGroups only. Everything works fine in JVM binding.
+	// Report is that if the wait time between return exchange of ownership is long enough,
+	// it will work (hence the two quickTick() blocks for testing various cadences).
+	//
+	@Test
+	public void testRapidDivestAndReacquire()
+	{
+		// exchange ownership of privilege to delete between the two federates
+		int aa = secondFederate.quickACHandle( "ObjectRoot.A", "aa" );
+		int ab = secondFederate.quickACHandle( "ObjectRoot.A", "ab" );
+		int ac = secondFederate.quickACHandle( "ObjectRoot.A", "ac" );
+		
+		for( int i = 0; i < 10; i++ )
+		{
+			//System.out.println( "Starting exchange "+i );
+			//System.out.print( "   Hand off..." );
+			secondFederate.quickExchangeOwnership( defaultFederate, theObject, aa, ab, ac );
+			secondFederate.quickAssertIOwn( theObject, aa, ab, ac );
+			defaultFederate.quickAssertIDontOwn( theObject, aa, ab, ac );
+			//System.out.println( "done" );
+			
+			defaultFederate.quickTick();
+			secondFederate.quickTick();
+			
+			//System.out.print( "   Take back..." );
+			defaultFederate.quickExchangeOwnership( secondFederate, theObject, aa, ab, ac );
+			defaultFederate.quickAssertIOwn( theObject, aa, ab, ac );
+			secondFederate.quickAssertIDontOwn( theObject, aa, ab, ac );
+
+			defaultFederate.quickTick();
+			secondFederate.quickTick();
+		}
+	}
 	
 	///////////////////////////////////////////////////////
 	// TEST: testAttributeAcquisitionWithUnknownObject() //

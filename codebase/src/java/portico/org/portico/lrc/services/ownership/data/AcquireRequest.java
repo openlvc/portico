@@ -153,9 +153,26 @@ public class AcquireRequest implements Serializable
 			}
 			else
 			{
-				// if the EXISTING status is RELEASED, do not make a change, there is nothing left
+				// if the EXISTING status is RELEASED, only make a change if the incoming status
+				// is a new request.
+				// Fixes GH #166: A federate may release some attributes and then immediately
+				//                request them back, which is fine, but we may not have yet
+				//                received the acquisition notification from the other federate,
+				//                so although these are just sitting here marked as released, it
+				//                prevents us from marking them locally as requested by us. For
+				//                this reason, if they are marked as released and the incoming
+				//                status is a request, we mark it as that.
 				if( attributeRequest.status == Status.RELEASED || incomingStatus == Status.RELEASED )
+				{
+					if( incomingStatus == Status.REQUEST )
+					{
+						attributeRequest.status = Status.REQUEST;
+						attributeRequest.federateHandle = federateHandle;
+					}
+
+					// nothing more to do
 					continue;
+				}
 				
 				// if we get here, the only valid states for EXISTING status are
 				// Status.REQUEST and Status.REQUEST_AVAILABLE
@@ -295,6 +312,17 @@ public class AcquireRequest implements Serializable
 	public boolean isEmpty()
 	{
 		return requests.isEmpty();
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append( "objectHandle=" );
+		builder.append( objectHandle );
+		builder.append( " " );
+		builder.append( requests );
+		return builder.toString();
 	}
 
 	//----------------------------------------------------------
