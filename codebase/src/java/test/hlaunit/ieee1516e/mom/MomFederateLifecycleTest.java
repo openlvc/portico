@@ -59,7 +59,6 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	@BeforeMethod(alwaysRun=true)
 	public void beforeMethod()
 	{
-		
 		defaultFederate.quickCreate();
 		defaultFederate.quickJoin();
 		//secondFederate.quickJoin();
@@ -69,7 +68,6 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	public void afterMethod()
 	{
 		secondFederate.quickResign();
-		secondFederate.quickDisconnect();
 		defaultFederate.quickResign();
 		defaultFederate.quickDestroy();
 	}
