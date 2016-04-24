@@ -16,6 +16,10 @@ package org.portico.bindings.jgroups.channel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -51,6 +55,12 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	private Logger logger;
 	private String channelName;
 	private Federation federation;
+	
+	// Set of addresses we have received a Suspect message for
+	// Use to determine whether an incoming View update is a result
+	// of a removal following a failure
+	private Map<Address,UUID> allSeenMembers;  // map of all channel members
+	private Set<Address> suspected;            // set of those we have a suspect message for
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -60,6 +70,9 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 		this.federation = federation;
 		this.logger = federation.getLogger();
 		this.channelName = federation.getFederationName();
+
+		this.allSeenMembers = new HashMap<>();
+		this.suspected = new HashSet<>();
 	}
 
 	//----------------------------------------------------------
@@ -71,16 +84,32 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	/** No-op */ public void block() {}
 	/** No-op */ public void unblock() {}
-	/** No-op */ public void viewAccepted( View newView ) {}
+
+	/** Watch changing views to see if anyone crashes */
+	public void viewAccepted( View newView )
+	{
+		// check the new view to see if any of the suspected members have been removed
+		for( Address suspected : suspected )
+		{
+			if( newView.containsMember(suspected) == false )
+				federation.receiveCrashed( allSeenMembers.get(suspected) );
+		}
+	}
 
 	/**
 	 * A hint from JGroups that this federate may have gone AWOL.
 	 */
 	public void suspect( Address suspectedDropout )
 	{
-		// just log for information
-		//channel.manifest.getFederateName( suspectedDropout );
-		//logger.warn( "Detected that federate ["+1+"] may have crashed, investigating..." );
+		this.suspected.add( suspectedDropout );
+		
+		
+		UUID uuid = this.allSeenMembers.get( suspectedDropout );
+		String federateName = federation.getManifest().getFederateName( uuid );
+		logger.warn( "Detected that federate ["+federateName+"] may have crashed, investigating..." );
+		
+		if( uuid != null )
+			this.suspected.add( suspectedDropout );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +196,9 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 				default:
 					logger.warn( "Unknown control message [type="+header.getMessageType()+"]. Ignore." );
 			}
+			
+			// store the UUID against the address so we can watch to see if it disappears later
+			allSeenMembers.put( message.getSrc(), sender );
 		}
 		
 		//

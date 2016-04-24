@@ -61,12 +61,12 @@ public class Federation
 
 	// Connection State
 	private String fedname;
-	private boolean connected;	
+	private boolean connected;
 	private UUID uuid;
 	private Manifest manifest;
 
 	// Active Federation Connection
-	private LRC joinedLRC;
+	public LRC joinedLRC;
 	
 	// Local Connection
 	private Channel channel;
@@ -581,10 +581,10 @@ public class Federation
 			// Turn the message into a byte[] -- this is what the receive method wants even
 			// thought it is going to turn it right back into a PorticoMessage. Given how
 			// infrequent we will be doing this it isn't a big deal
-			this.receiveAsynchronous( MessageHelpers.deflate(resign) );
+			this.receiveResignFederation( leaver, MessageHelpers.deflate(resign) );
 			
 			logger.info( "Federate ["+federateName+","+federateHandle+
-			             "] disconnected, synthesizing resign message" );
+			             "] disconnected, synthesized resign message. All done." );
 		}
 
 		//
@@ -594,6 +594,23 @@ public class Federation
 		manifest.memberLeftChannel( leaver );
 	}
 
+	/** Confirmation that a federate has left when we did not expect */
+	public void receiveCrashed( UUID crashed )
+	{
+		if( manifest.isJoinedFederate(crashed) )
+		{
+			String federateName = manifest.getFederateName( crashed );
+			logger.warn( "Federate ["+federateName+
+			             "] has crashed. Sending fake resignation because it was too rude to." );
+			
+			receiveGoodbye( crashed, new byte[]{} );
+		}
+		else
+		{
+			logger.warn( "Unknown channel member crashed. Don't think it was a federate. Ignoring. uuid="+crashed );
+		}
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////
 	/// Getter and Setter Methods  ///////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////

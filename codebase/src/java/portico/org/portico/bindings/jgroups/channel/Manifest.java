@@ -95,7 +95,8 @@ public class Manifest implements Serializable
 	
 	public String getFederateName( UUID uuid )
 	{
-		return federates.get(uuid).name;
+		FederateInfo info = federates.get(uuid);
+		return info != null ? info.name : "unkonwn";
 	}
 	
 	public int getFederateHandle( UUID uuid )
@@ -305,7 +306,7 @@ public class Manifest implements Serializable
 	/**
 	 * This class stores basic information about a joined federate.
 	 */
-	public class FederateInfo implements Serializable
+	private class FederateInfo implements Serializable
 	{
 		private static final long serialVersionUID = 98121116105109L;
 		public int handle;
