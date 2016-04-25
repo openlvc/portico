@@ -98,7 +98,7 @@ public class ConnectTest extends Abstract1516eTest
 	@Test
 	public void testConnectWhenAlreadyConnected()
 	{
-		federateOne.quickConnect();
+		federateOne.quickConnectWithImmediateCallbacks();
 		
 		try
 		{

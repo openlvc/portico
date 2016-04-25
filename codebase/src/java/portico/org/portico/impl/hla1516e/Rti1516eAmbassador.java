@@ -207,6 +207,10 @@ public class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
+		// check to make sure we're not already connected
+		if( helper.getFederateAmbassador() != null )
+			throw new AlreadyConnected("");
+
 		// set the callback model on the LRC approrpriately
 		this.helper.setCallbackModel( callbackModel );
 		if( callbackModel == CallbackModel.HLA_EVOKED )
@@ -214,10 +218,6 @@ public class Rti1516eAmbassador implements RTIambassador
 		else if( callbackModel == CallbackModel.HLA_IMMEDIATE )
 			helper.getLrc().enableImmediateCallbackProcessing();
 	
-		// check to make sure we're not already connected
-		if( helper.getFederateAmbassador() != null )
-			throw new AlreadyConnected("");
-
 		// store the FederateAmbassador for now, we'll stick it on the join call shortly
 		this.helper.connected( federateReference );
 	}
