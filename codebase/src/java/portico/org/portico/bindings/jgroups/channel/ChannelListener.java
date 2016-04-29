@@ -89,10 +89,10 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	public void viewAccepted( View newView )
 	{
 		// check the new view to see if any of the suspected members have been removed
-		for( Address suspected : suspected )
+		for( Address suspect : suspected )
 		{
-			if( newView.containsMember(suspected) == false )
-				federation.receiveCrashed( allSeenMembers.get(suspected) );
+			if( newView.containsMember(suspect) == false )
+				federation.receiveCrashed( allSeenMembers.get(suspect) );
 		}
 	}
 
