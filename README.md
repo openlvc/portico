@@ -1,20 +1,22 @@
 Welcome to Portico
 ===================
-Portico is an open source HLA Run-Time Infrastructure (RTI) implementation. It is designed to
-ensure open and free access to the necessary infrastructure needed to drive HLA federations.
+Portico is an open source [HLA Run-Time Infrastructure](https://en.wikipedia.org/wiki/High-level_architecture)
+(RTI) implementation. It is designed to ensure open and free access to the necessary infrastructure
+needed to drive HLA federations.
 
-Portico is released under the terms of the **Common Distribution and Developer License (CDDL)**,
+Portico is released under the terms of the
+**[Common Distribution and Developer License (CDDL)](https://opensource.org/licenses/CDDL-1.0)**,
 which means you can repackage and redistribute it with your applications, and you can modify
 the source as long as changes are submitted back to the project.
 
 ### Website
-You can find all the docs online at `http://porticoproject.org`.
+You can find all the docs online at <http://porticoproject.org>.
 
 ### Get Notified
 If you haven't signed up to the mailing list yet, do so now! It's very low traffic and helps us
 gauge the level of community interest in the project. You can sign up from the URL below:
 
-`https://porticoproject.org/getnotified.html`
+<https://porticoproject.org/getnotified.html>
 
 ### Table of Contents
   1. Getting Started - What is in the package
@@ -108,7 +110,7 @@ gauge the level of community interest in the project. You can sign up from the U
   their environment correctly, and to provide some sample HLA code to get you started.
   For complete instructions on writing federates, please see the website:
 
-  `http://porticoproject.org/documentation/developer/`
+  <http://porticoproject.org/documentation/developer/>
 
 
 ### Writing Java Federates
@@ -155,13 +157,13 @@ gauge the level of community interest in the project. You can sign up from the U
   guides on deploying Portico with common LVC tools, writing federates with Portico,
   how to build Portico for yourself, API references, support information and much more.
 
-  `http://porticoproject.org`
+  <http://porticoproject.org>
 
 ### Bugs and Problems
   If you have found bugs or find that Portico is not working as you would expect, you
   should open an issue via the GitHub project:
 
-  `http://github.com/openlvc/portico`
+  <http://github.com/openlvc/portico>
 
 ### Support
   Developer support, provided by living, breathing, full-time job having people is provided.
