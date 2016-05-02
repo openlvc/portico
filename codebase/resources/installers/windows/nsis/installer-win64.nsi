@@ -74,12 +74,13 @@ Section "Portico" SecPORTICO
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File /r "${SANDBOX}\*.*"      ;copy the sandbox in, without bin and lib
-  RMDir /r "$INSTDIR\lib"       ;remove the lib and bin dirs (we'll put them back in a second)
+  File /r "${SANDBOX}\*.*"        ;copy the sandbox in, without bin and lib
+  RMDir /r "$INSTDIR\lib"         ;remove the lib and bin dirs (we'll put them back in a second)
   RMDir /r "$INSTDIR\bin"
-  File /r "${SANDBOX}\*64*.*"   ;copy back only the 64-bit libs and dlls
-  File /r "${SANDBOX}\*.jar"    ;copy back all the jar files
-  File /r "${JREPATH}" ;copy the jre in
+  File /r "${SANDBOX}\*64*.*"     ;copy back only the 64-bit libs and dlls
+  File /r "${SANDBOX}\wan*.*"     ;copy back the WAN launcher scripts
+  File /r "${SANDBOX}\*.jar"      ;copy back all the jar files
+  File /r "${JREPATH}"            ;copy the jre in
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"

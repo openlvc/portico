@@ -49,12 +49,12 @@
 		<!-- run the NSIS script for the installer -->
 		<echo>Creating Windows 32-bit Installer</echo>
 		<nsis-installer script="${nsis.resources.dir}/installer-win32.nsi">
-			<define name="DIST_NAME"    value="${dist.name}"/>     <!-- start of file name       -->
-			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put the installer here   -->
-			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
-			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
-			<define name="LICENSE"      value="${license}"/>       <!-- presented during install -->
-			<define name="SANDBOX"      value="${sandbox.dir}"/>   <!-- contents of the app      -->
+			<define name="DIST_NAME"    value="${build.shortname}"/> <!-- start of file name       -->
+			<define name="OUTDIR"       value="${dist.dir}"/>        <!-- put the installer here   -->
+			<define name="VERSION"      value="${build.version}"/>   <!-- e.g. "2.0.0"             -->
+			<define name="BUILD_NUMBER" value="${build.number}"/>    <!-- shown in file details    -->
+			<define name="LICENSE"      value="${license}"/>         <!-- presented during install -->
+			<define name="SANDBOX"      value="${sandbox.dir}"/>     <!-- contents of the app      -->
 			<define name="JREPATH"      value="${jdk.home.win32}\jre"/> <!-- jre to bundle  -->
 		</nsis-installer>
 	</target>
@@ -69,12 +69,12 @@
 		<!-- run the NSIS script for the installer -->
 		<echo>Creating Windows 64-bit Installer</echo>
 		<nsis-installer script="${nsis.resources.dir}/installer-win64.nsi">
-			<define name="DIST_NAME"    value="${dist.name}"/>     <!-- start of file name       -->
-			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put installer here       -->
-			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
-			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
-			<define name="LICENSE"      value="${license}"/>       <!-- presented during install -->
-			<define name="SANDBOX"      value="${sandbox.dir}"/>   <!-- contents of the app      -->
+			<define name="DIST_NAME"    value="${build.shortname}"/> <!-- start of file name       -->
+			<define name="OUTDIR"       value="${dist.dir}"/>        <!-- put installer here       -->
+			<define name="VERSION"      value="${build.version}"/>   <!-- e.g. "2.0.0"             -->
+			<define name="BUILD_NUMBER" value="${build.number}"/>    <!-- shown in file details    -->
+			<define name="LICENSE"      value="${license}"/>         <!-- presented during install -->
+			<define name="SANDBOX"      value="${sandbox.dir}"/>     <!-- contents of the app      -->
 			<define name="JREPATH"      value="${jdk.home.win64}\jre"/> <!-- jre to bundle -->
 		</nsis-installer>
 	</target>
