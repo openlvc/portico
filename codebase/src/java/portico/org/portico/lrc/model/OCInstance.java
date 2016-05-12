@@ -54,7 +54,7 @@ public class OCInstance implements Serializable
 		this.discoveredType = null;
 		this.attributes = new HashMap<Integer,ACInstance>();
 	}
-
+	
 	public OCInstance( int handle, String name, OCMetadata registeredAs, OCMetadata discoveredAs )
 	{
 		this();
@@ -63,16 +63,16 @@ public class OCInstance implements Serializable
 		this.registeredType = registeredAs;
 		//this.discoveredType = discoveredAs;
 	}
-
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	/**
 	 * Stores the given attribute in this object instance. This will set the container of the
-	 * instance to this OCInstance and will store it locally. No check is made to see if this is
-	 * actually valid according to the FOM or not. The attributes are stored locally in a map, the
-	 * key to which is the handle of the attribute (as defined from the FOM). If there is already
-	 * an attribute for that attribute handle in this object, it will be overwritten.
+	 * instance to this OCInstance and will store it locally. No check is made to see if this
+	 * is actually valid according to the FOM or not. The attributes are stored locally in a
+	 * map, the key to which is the handle of the attribute (as defined from the FOM). If there
+	 * is already an attribute for that attribute handle in this object, it will be overwritten.
 	 */
 	public void addAttribute( ACInstance attribute )
 	{
@@ -81,21 +81,21 @@ public class OCInstance implements Serializable
 		{
 			return;
 		}
-
+		
 		// remove the association between this object and the currently stored attribute if one
 		// is already in the local map
 		int aHandle = attribute.getHandle();
-		if( this.attributes.containsKey( aHandle ) )
+		if( this.attributes.containsKey(aHandle) )
 		{
-			this.attributes.get( aHandle ).setContainer( null );
+			this.attributes.get(aHandle).setContainer( null );
 		}
-
+		
 		// set us as the container
 		attribute.setContainer( this );
 		// store the attribute
 		this.attributes.put( attribute.getHandle(), attribute );
 	}
-
+	
 	/**
 	 * This method will just call {@link #addAttribute(ACInstance) addAttribute(ACInstance)} for
 	 * each of the attributes contained in the given set.
@@ -107,11 +107,11 @@ public class OCInstance implements Serializable
 			this.addAttribute( temp );
 		}
 	}
-
+	
 	/**
-	 * Remove and return the attribute contained within this instance of the given handle. If
-	 * there is no attribute for that handle, null will be returned. If there is, its contains
-	 * variable will be set to null as it is removed and returned.
+	 * Remove and return the attribute contained within this instance of the given handle. If there
+	 * is no attribute for that handle, null will be returned. If there is, its contains variable
+	 * will be set to null as it is removed and returned.
 	 */
 	public ACInstance removeAttribute( int handle )
 	{
@@ -120,10 +120,10 @@ public class OCInstance implements Serializable
 		{
 			instance.setContainer( null );
 		}
-
+		
 		return instance;
 	}
-
+	
 	/**
 	 * Fetch and return the contained attribute of the given handle. If there is none, null will
 	 * be returned.
@@ -132,7 +132,7 @@ public class OCInstance implements Serializable
 	{
 		return this.attributes.get( handle );
 	}
-
+	
 	/**
 	 * Returns a set of all the contained attributes for this object instance.
 	 */
@@ -140,7 +140,7 @@ public class OCInstance implements Serializable
 	{
 		return new HashSet<ACInstance>( attributes.values() );
 	}
-
+	
 	/**
 	 * Returns a set of all the attribute instances contained within this instance that are owned
 	 * by the federate of the given handle. If none are owned, an empty set is returned.
@@ -153,10 +153,10 @@ public class OCInstance implements Serializable
 			if( attribute.getOwner() == federateHandle )
 				instances.add( attribute );
 		}
-
+		
 		return instances;
 	}
-
+	
 	/**
 	 * Returns <code>true</code> if the federate with the given handle owns at least one of the
 	 * attributes contained in this instance. Returns <code>false</code> otherwise.
@@ -168,10 +168,10 @@ public class OCInstance implements Serializable
 			if( attribute.getOwner() == federateHandle )
 				return true;
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 * Returns a map containing the set of attributes that have regions associated with them. The
 	 * keys are the attribute instances, the values are the region instances. If there are no
@@ -186,10 +186,10 @@ public class OCInstance implements Serializable
 			if( region != null )
 				map.put( attribute, region );
 		}
-
+		
 		return map;
 	}
-
+	
 	public int getHandle()
 	{
 		return handle;
@@ -212,9 +212,9 @@ public class OCInstance implements Serializable
 
 	/**
 	 * Returns the handle of the owning federate or {@link PorticoConstants#NULL_HANDLE} if it is
-	 * not owned. This method will look for the privilegeToDelete attribute within the instance
-	 * and return the owner of that. If it can't be found for any reason,
-	 * PorticoConstants.NULL_HANDLER will be returned.
+	 * not owned. This method will look for the privilegeToDelete attribute within the instance and
+	 * return the owner of that. If it can't be found for any reason, PorticoConstants.NULL_HANDLER
+	 * will be returned.
 	 * <p/>
 	 * <i>The "owner" of the instance is defined as the federate that holds ownership of the
 	 * privilegeToDelete attribute.</i>
@@ -229,7 +229,7 @@ public class OCInstance implements Serializable
 				return att.getOwner();
 			}
 		}
-
+		
 		// if we get here, we didn't find the privilegeToDelete attribute
 		return PorticoConstants.NULL_HANDLE;
 	}
@@ -254,7 +254,7 @@ public class OCInstance implements Serializable
 			return this.getOwner() == federateHandle;
 		}
 	}
-
+	
 	/**
 	 * Returns <code>true</code> if the instance has been discovered (that is, it has its
 	 * discoveryType set), <code>false</code> otherwise.
@@ -263,7 +263,7 @@ public class OCInstance implements Serializable
 	{
 		return this.discoveredType != null;
 	}
-
+	
 	public OCMetadata getRegisteredType()
 	{
 		return registeredType;
@@ -273,7 +273,7 @@ public class OCInstance implements Serializable
 	{
 		this.registeredType = registeredType;
 	}
-
+	
 	/**
 	 * Depending on the subscription interests of a federate, objects can be discovered as a
 	 * different type to what they actually are. This method will return the {@link OCMetadata}
@@ -284,11 +284,11 @@ public class OCInstance implements Serializable
 	{
 		return this.discoveredType;
 	}
-
+	
 	/**
 	 * Depending on the subscription interests of a federate, objects can be discovered as a
-	 * different type to what they actually are. This method will set the {@link OCMetadata} that
-	 * corresponds to the type this object has been discovered as.
+	 * different type to what they actually are. This method will set the {@link OCMetadata}
+	 * that corresponds to the type this object has been discovered as.
 	 */
 	public void setDiscoveredType( OCMetadata metadata )
 	{
@@ -307,7 +307,7 @@ public class OCInstance implements Serializable
 	{
 		return this.registeredType.getHandle();
 	}
-
+	
 	public boolean equals( Object other )
 	{
 		if( other instanceof OCInstance )
