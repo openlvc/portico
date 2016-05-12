@@ -23,6 +23,7 @@ import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JObjectClassNotPublished;
 import org.portico.lrc.compat.JOwnershipAcquisitionPending;
 import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.pubsub.msg.PublishObjectClass;
 import org.portico.lrc.services.pubsub.msg.UnpublishObjectClass;
 import org.portico.utils.messaging.MessageContext;
@@ -93,7 +94,7 @@ public class PublishObjectClassHandler extends LRCMessageHandler
 		int ptdHandle = lrcState.getFOM().getPrivilegeToDelete();
 		//int ptdHandle = state.getFOM().getObjectRoot().getAttributeHandle( "privilegeToDelete" );
 		// 2. check the set for it                                        //
-		if( attributes.contains(ptdHandle) == false )                     //
+		if( ptdHandle != ObjectModel.INVALID_HANDLE && attributes.contains(ptdHandle) == false )                     //
 		{                                                                 //
 			// it's not there, add it                                     //
 			attributes.add( ptdHandle );                                  //
