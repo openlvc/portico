@@ -72,7 +72,9 @@ public class CreateFederationHandler extends LRCMessageHandler
 		// merge the modules together
 		ObjectModel combinedFOM = ModelMerger.merge( foms );
 		
-		// dump out the MIM if it is present and then re-insert with specific handles
+		// Now we have a single .. super model (which may include the MIM) we can post-process.
+		// Ditch the MIM if it is present and then re-insert with specific handles so that we can
+		// look up MOM handles without using names (thus support cross spec-version naming schemes).
 		ObjectModel.mommify( combinedFOM );
 
 		// we have our grand unified FOM!
@@ -89,25 +91,25 @@ public class CreateFederationHandler extends LRCMessageHandler
 		logger.info( "SUCCESS Created federation execution [" + request.getFederationName() + "]" );
 	}
 
-	private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
-	{
-		boolean found = false;
-		for( ObjectModel model : foms )
-		{
-			if( model.getPrivilegeToDelete() != -1 )
-			{
-				found = true;
-				break;
-			}
-		}
-		
-		if( found == false )
-		{
-			logger.debug( "Standard MIM not present - adding it" );
-			URL mim = ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
-			foms.add( 0, FomParser.parse(mim) );
-		}
-	}
+	//private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
+	//{
+	//	boolean found = false;
+	//	for( ObjectModel model : foms )
+	//	{
+	//		if( model.getPrivilegeToDelete() != -1 )
+	//		{
+	//			found = true;
+	//			break;
+	//		}
+	//	}
+	//	
+	//	if( found == false )
+	//	{
+	//		logger.debug( "Standard MIM not present - adding it" );
+	//		URL mim = ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
+	//		foms.add( 0, FomParser.parse(mim) );
+	//	}
+	//}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

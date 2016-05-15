@@ -563,6 +563,28 @@ public class CreateFederationTest extends Abstract1516eTest
 		}
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////
+	// User-Identified Defect Tests //////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	// Tests for specific cases identified by end-users
+	
+	/**
+	 * Reports that Portico v2.1.0 fails when trying to pub/sub with the RPR2 FOM due to
+	 * `privilegeToDelete` being `-1`. Create a test federation with the RPR2 FOM and confirm
+	 * that we can get a valid handle for this attribute.
+	 */
+	@Test
+	public void testCreateRpr2Federation()
+	{
+		defaultFederate.quickCreateWithModules( "resources/test-data/fom/ieee1516e/rpr/RPR-FOM2D18.xml" );
+		defaultFederate.quickJoin();
+		int handle = defaultFederate.quickACHandle( "HLAobjectRoot", "HLAprivilegeToDelete" );
+		
+		// make sure that we have a valid handle for privilegeToDelete
+		Assert.assertNotSame( handle, -1, "HLAprivilegeToDelete is not present in HLAobjectRoot" );
+	}
+
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

@@ -312,6 +312,29 @@ public class ObjectModel implements Serializable
 			}
 		}
 	}
+
+	/**
+	 * For 1516e FOMs we have a problem. The spec mandates that classes can only extend other
+	 * classes, they cannot add attributed to existing classes. This is fine for all classes
+	 * EXCEPT `ObjectRoot`. On create we are given a bunch of FOM modules. For us to get a valid
+	 * `privToDelete`, it must be explicitly declared inside the first module. Subsequent ones
+	 * cannot declare it because that would be adding to `ObjectRoot`.
+	 * 
+	 * What actually happens in reality is that no module declares the parameter (who knows which
+	 * one may be first in any given situation?). Net result: no `privToDelete`. As such, we have
+	 * to patch it in after the fact. That is what this method does. It also ensures that our
+	 * cached copy of the handle is updated to reflect the new handle.
+	 */
+	public void addPrivilegeToDeleteIfNotPresent()
+	{
+		ACMetadata temp = ocroot.getDeclaredAttribute( "privilegeToDelete" );
+		if( temp == null )
+		{
+			temp = this.newAttribute( "privilegeToDelete" );
+			ocroot.addAttribute( temp );
+			this.privilegeToDelete = temp.getHandle();
+		}
+	}
 	
 	/**
 	 * Get a set of all the object classes currently contained within this FOM.

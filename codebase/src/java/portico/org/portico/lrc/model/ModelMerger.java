@@ -369,6 +369,14 @@ public class ModelMerger
 	private ObjectModel validate( ObjectModel model ) throws JInconsistentFDD
 	{
 		// ensure that HLAobjectRoot is present
+		OCMetadata objectRoot = model.getObjectRoot();
+		if( objectRoot == null )
+			throw new JInconsistentFDD( "Object Root could not be found... something is drastically wrong" );
+		
+		// Ensure that privilegeToDelete is present -- see ObjectModel.addPrivilegeToDeleteIfNotPresent
+		if( objectRoot.getDeclaredAttributeCount() == 0 )
+			model.addPrivilegeToDeleteIfNotPresent();
+		
 		// ensure that HLAinteractionRoot is present
 		// TBC
 		return model;
