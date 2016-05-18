@@ -20,6 +20,8 @@ import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAvariantRecord;
 
+import java.beans.Encoder;
+
 /**
  * Urgh. Can't even touch this for now. Will have to go back and read. Le sigh.
  */
@@ -34,10 +36,20 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	T discriminant = null;
+	java.util.Map<T, DataElement> variants = new java.util.HashMap<>();
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+    HLA1516eVariantRecord()
+    {
+    }
+
+    HLA1516eVariantRecord(T discriminant)
+    {
+        this.discriminant = discriminant;
+    }
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -50,7 +62,7 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	 */
 	public void setVariant( T discriminant, DataElement dataElement )
 	{
-		
+		this.variants.put(discriminant, dataElement);
 	}
 
 	/**
@@ -60,7 +72,7 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	 */
 	public void setDiscriminant( T discriminant )
 	{
-		
+	    this.discriminant = discriminant;
 	}
 
 	/**
@@ -70,7 +82,7 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	 */
 	public T getDiscriminant()
 	{
-		return null;
+		return this.discriminant;
 	}
 
 	/**
@@ -80,7 +92,11 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	 */
 	public DataElement getValue()
 	{
-		return null;
+        if (!this.variants.containsKey(this.discriminant)) {
+            return null;
+        }
+
+        return this.variants.get(this.discriminant);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -89,37 +105,97 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	@Override
 	public int getOctetBoundary()
 	{
-		return 1;
+		if (this.discriminant == null) {
+            return 1;
+        }
+
+        int maxOctetBoundary = this.discriminant.getOctetBoundary();
+        for (DataElement variant: this.variants.values()) {
+            maxOctetBoundary = Math.max(maxOctetBoundary, variant.getOctetBoundary());
+        }
+
+        return maxOctetBoundary;
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		
+        if (this.discriminant == null) {
+            throw new EncoderException("No discriminant set in HLAvariantRecord");
+        }
+
+        if (this.getEncodedLength() > byteWrapper.remaining()) {
+            throw new EncoderException("Not enought space in ByteWrapper to encode HLAvariantRecord");
+        }
+
+        // ignoring padding for now
+        this.discriminant.encode(byteWrapper);
+        if (this.variants.containsKey(this.discriminant)) {
+            DataElement variant = this.variants.get(this.discriminant);
+            if (variant != null) {
+                this.variants.get(this.discriminant).encode(byteWrapper);
+            }
+        } else {
+            throw new EncoderException("Discriminant is unknown to this HLAvariantRecord");
+        }
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return -1;
+		if (this.discriminant == null) {
+            return 0;
+        }
+
+        int encodedLength = this.discriminant.getEncodedLength();
+        if (this.variants.containsKey(this.discriminant)) {
+            DataElement variant = this.variants.get(this.discriminant);
+            if (variant != null) {
+                encodedLength += this.variants.get(this.discriminant).getEncodedLength();
+            }
+        }
+
+        return encodedLength;
 	}
 
 	@Override
 	public byte[] toByteArray() throws EncoderException
 	{
-		return null;
+        ByteWrapper byteWrapper = new ByteWrapper(this.getEncodedLength());
+        this.encode(byteWrapper);
+
+		return byteWrapper.array();
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		
+	    if (this.discriminant == null) {
+            throw new DecoderException("No space to decode the discriminant");
+        }
+
+        if (this.discriminant.getEncodedLength() > byteWrapper.remaining()) {
+            throw new DecoderException("Not enough data in ByteWrapper to decode a discriminant");
+        }
+
+        this.discriminant.decode(byteWrapper);
+
+        if (this.variants.containsKey(this.discriminant)) {
+            if (this.variants.get(this.discriminant).getEncodedLength() > byteWrapper.remaining()) {
+                throw new DecoderException("Not enough data in ByteWrapper to decode variant associated with discriminant.");
+            }
+            this.variants.get(this.discriminant).decode(byteWrapper);
+        } else {
+            throw new DecoderException("Decoded discriminant is unknown to this HLAvariantRecord");
+        }
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		
+        ByteWrapper byteWrapper = new ByteWrapper(bytes);
+
+        this.decode(byteWrapper);
 	}
 
 	//----------------------------------------------------------

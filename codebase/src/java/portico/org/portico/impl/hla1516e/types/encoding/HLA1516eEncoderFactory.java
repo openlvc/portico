@@ -102,7 +102,7 @@ public class HLA1516eEncoderFactory implements EncoderFactory
 	public <T extends DataElement> HLAvariantRecord<T> createHLAvariantRecord( T discriminant )
 	{
 //still unimplemented 
-		return null;
+		return new HLA1516eVariantRecord<>(discriminant);
 	}
 
 	public HLAfixedRecord createHLAfixedRecord()

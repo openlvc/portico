@@ -114,6 +114,20 @@ public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 		this.value = bytes[0];
 	}
 
+    @Override
+    public int hashCode() {
+        return this.getValue();
+    }
+
+	@Override
+    public boolean equals(Object other) {
+        return (this == other) ||
+                ((other != null) &&
+                        (other instanceof HLA1516eOctet) &&
+                        (this.getValue() == ((HLA1516eOctet)other).getValue())
+                );
+    }
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
