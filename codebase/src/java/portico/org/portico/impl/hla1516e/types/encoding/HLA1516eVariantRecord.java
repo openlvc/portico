@@ -36,8 +36,12 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	T discriminant = null;
-	java.util.Map<T, DataElement> variants = new java.util.HashMap<>();
+    // an invariant of this class probably should be that if
+    // _discriminant_ is not null then it exists as a key in _variants_.
+    // It is currently possible to break this invariant at construction
+    // and through the call to setDiscriminant.
+	private T discriminant = null;
+	private java.util.Map<T, DataElement> variants = new java.util.HashMap<>();
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -72,7 +76,8 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	 */
 	public void setDiscriminant( T discriminant )
 	{
-	    this.discriminant = discriminant;
+	    // should this be avoided if discriminant does not exist in the variants map?
+		this.discriminant = discriminant;
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class HLA1516eVariantRecord<T extends DataElement>
 	/**
 	 * Returns element associated with the active discriminant.
 	 * 
-	 * @return value
+	 * @return value or null if there is no entry for the active discriminant
 	 */
 	public DataElement getValue()
 	{
@@ -109,7 +114,10 @@ public class HLA1516eVariantRecord<T extends DataElement>
             return 1;
         }
 
-        int maxOctetBoundary = this.discriminant.getOctetBoundary();
+        // the octet boundary of a HLAvariantRecord is the maximum of the octet boundary
+        // of the discriminant and each of the possible alternatives. See section 4.13.9.2
+        // of IEEE Std 1516-2010.2.
+        int maxOctetBoundary = 1;
         for (DataElement variant: this.variants.values()) {
             maxOctetBoundary = Math.max(maxOctetBoundary, variant.getOctetBoundary());
         }
@@ -128,11 +136,14 @@ public class HLA1516eVariantRecord<T extends DataElement>
             throw new EncoderException("Not enought space in ByteWrapper to encode HLAvariantRecord");
         }
 
-        // ignoring padding for now
         this.discriminant.encode(byteWrapper);
+        // ignoring padding after the discriminant for now
+
         if (this.variants.containsKey(this.discriminant)) {
+            // encode the variant if the discriminant exists ...
             DataElement variant = this.variants.get(this.discriminant);
             if (variant != null) {
+                // ... and has a value assigned.
                 this.variants.get(this.discriminant).encode(byteWrapper);
             }
         } else {
@@ -147,10 +158,20 @@ public class HLA1516eVariantRecord<T extends DataElement>
             return 0;
         }
 
+        if (!this.variants.containsKey(this.discriminant)) {
+            return 0;
+        }
+
+        // the encoded length is the encoded length of the discriminant ...
         int encodedLength = this.discriminant.getEncodedLength();
+
+        // ... plus any padding that comes after the discriminant (ignore for now) ...
+
         if (this.variants.containsKey(this.discriminant)) {
             DataElement variant = this.variants.get(this.discriminant);
             if (variant != null) {
+                // ... plus the encoded length of the variant if the discriminant
+                // exists and has an assigned variant.
                 encodedLength += this.variants.get(this.discriminant).getEncodedLength();
             }
         }
@@ -180,11 +201,22 @@ public class HLA1516eVariantRecord<T extends DataElement>
 
         this.discriminant.decode(byteWrapper);
 
+        // consume padding (ignored for now)
+
         if (this.variants.containsKey(this.discriminant)) {
-            if (this.variants.get(this.discriminant).getEncodedLength() > byteWrapper.remaining()) {
+            // if the decoded discriminant is known ...
+            DataElement variant = this.variants.get(this.discriminant);
+
+            if (variant == null) {
+                // we're done decoding, there is no variant assigned to this discriminant
+                return;
+            }
+
+            if (variant.getEncodedLength() > byteWrapper.remaining()) {
                 throw new DecoderException("Not enough data in ByteWrapper to decode variant associated with discriminant.");
             }
-            this.variants.get(this.discriminant).decode(byteWrapper);
+            // variant is not null and there is enough data left in the byte wrapper, decode the variant.
+            variant.decode(byteWrapper);
         } else {
             throw new DecoderException("Decoded discriminant is unknown to this HLAvariantRecord");
         }
