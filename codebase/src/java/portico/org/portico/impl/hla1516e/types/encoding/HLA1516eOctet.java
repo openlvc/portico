@@ -114,6 +114,34 @@ public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 		this.value = bytes[0];
 	}
 
+    /**
+     * hashCode is required so that HLA1516eOctet can be used as a key in
+     * java.util.HashMap, which is used by HLA1516eVariantRecord to store
+     * discriminant/variant pairs.
+     *
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return this.getValue();
+    }
+
+    /**
+     * equals is required so that HLA1516eOctet can be used as a key in
+     * java.util.HashMap, which is used by HLA1516eVariantRecord to store
+     * discriminant/variant pairs.
+     *
+     * @return
+     */
+	@Override
+    public boolean equals(Object other) {
+        return (this == other) ||
+                ((other != null) &&
+                        (other instanceof HLA1516eOctet) &&
+                        (this.getValue() == ((HLA1516eOctet)other).getValue())
+                );
+    }
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
