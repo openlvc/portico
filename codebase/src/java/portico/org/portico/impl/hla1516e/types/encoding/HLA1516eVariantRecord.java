@@ -20,8 +20,6 @@ import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAvariantRecord;
 
-import java.beans.Encoder;
-
 /**
  * Urgh. Can't even touch this for now. Will have to go back and read. Le sigh.
  */
