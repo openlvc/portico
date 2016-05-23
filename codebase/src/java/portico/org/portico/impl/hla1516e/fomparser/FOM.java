@@ -85,18 +85,26 @@ public class FOM
 		}
 		
 		// extract all the object classes
+		OCMetadata objectRoot = null;
 		if( objectsElement != null )
 		{
-			OCMetadata objectRoot = this.extractObjects( objectsElement );
-			this.fom.setObjectRoot( objectRoot );
+			objectRoot = this.extractObjects( objectsElement );
+		} else {
+			objectRoot = this.fom.newObject( "HLAobjectRoot" );
+			this.fom.addObjectClass( objectRoot );
 		}
+		this.fom.setObjectRoot( objectRoot);
 		
 		// extract all the interaction classes
+		ICMetadata interactionRoot = null;
 		if( interactionsElement != null )
 		{
-			ICMetadata interactionRoot = this.extractInteractions( interactionsElement );
-			this.fom.setInteractionRoot( interactionRoot );
+			interactionRoot = this.extractInteractions( interactionsElement );
+		} else {
+			interactionRoot = this.fom.newInteraction( "HLAinteractionRoot" );
+			this.fom.addInteractionClass( interactionRoot );
 		}
+		this.fom.setInteractionRoot( interactionRoot );
 		
 		if( dimensionsElement != null )
 		{

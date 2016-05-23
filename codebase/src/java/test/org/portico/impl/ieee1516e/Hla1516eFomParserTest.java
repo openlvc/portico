@@ -15,11 +15,18 @@
 package org.portico.impl.ieee1516e;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.testng.Assert.*;
 
+import org.apache.log4j.Logger;
 import org.portico.impl.hla1516e.fomparser.FOM;
+import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JErrorReadingFED;
+import org.portico.lrc.model.ModelMerger;
+import org.portico.lrc.model.ObjectModel;
+import org.portico.utils.fom.FomParser;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -51,6 +58,9 @@ public class Hla1516eFomParserTest
 	//private URL invalidIntBadSpace;
 	private URL invalidIntBadTransport;
 	private URL invalidIntBadOrder;
+	private URL validFomModule;
+	private URL validFomModuleNoInteractions;
+	private URL validFomModuleNoObjects;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -64,6 +74,9 @@ public class Hla1516eFomParserTest
 	public void beforeClass()
 	{
 		this.validFom               = ClassLoader.getSystemResource( "fom/testfom.xml" );
+		this.validFomModule         = ClassLoader.getSystemResource( "fom/ieee1516e/testfomModule.xml" );
+		this.validFomModuleNoInteractions   = ClassLoader.getSystemResource( "fom/ieee1516e/testfomModuleNoInteractions.xml" );
+		this.validFomModuleNoObjects   = ClassLoader.getSystemResource( "fom/ieee1516e/testfomModuleNoObjects.xml" );
 		//this.validWithoutSpaces     = ClassLoader.getSystemResource( "fom/ieee1516e/testfom-nospaces.xml" );
 		//this.invalidUnbalanced      = ClassLoader.getSystemResource( "fom/ieee1516e/testfom-unbalanced.xml" );
 		//this.invalidBadComment      = ClassLoader.getSystemResource( "fom/ieee1516e/testfom-badcomment.xml" );
@@ -88,6 +101,57 @@ public class Hla1516eFomParserTest
 		try
 		{
 			FOM.parseFOM( this.validFom );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Unexpected exception parsing valid FOM: " + e.getMessage(), e );
+		}
+	}
+	
+	/**
+	 * Parse in a valid HLA 1516e FOM where one module has no interactions element.
+	 */
+	@Test
+	public void parseValidHla1516eFomModuleNoInteractions()
+	{
+		try
+		{
+			List<ObjectModel> foms = new ArrayList<ObjectModel>();
+			foms.add( FomParser.parse(this.validFomModule) );
+			foms.add( FomParser.parse(this.validFomModuleNoInteractions) );
+			
+			ObjectModel combinedFOM = ModelMerger.merge( foms );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Unexpected exception parsing valid FOM: " + e.getMessage(), e );
+		}
+		
+		try
+		{
+			List<ObjectModel> foms = new ArrayList<ObjectModel>();
+			foms.add( FomParser.parse(this.validFomModuleNoInteractions) );
+			foms.add( FomParser.parse(this.validFomModule) );
+			ObjectModel combinedFOM = ModelMerger.merge( foms );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Unexpected exception parsing valid FOM: " + e.getMessage(), e );
+		}
+	}
+	
+	/**
+	 * Parse in a valid HLA 1516e FOM where one module has no objects element.
+	 */
+	@Test
+	public void parseValidHla1516eFomModuleNoObjects()
+	{
+		try
+		{
+			List<ObjectModel> foms = new ArrayList<ObjectModel>();
+			foms.add( FomParser.parse(this.validFomModuleNoObjects) );
+			foms.add( FomParser.parse(this.validFomModule) );
+			ObjectModel combinedFOM = ModelMerger.merge( foms );
 		}
 		catch( Exception e )
 		{
