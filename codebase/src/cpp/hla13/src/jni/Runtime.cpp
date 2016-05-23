@@ -43,6 +43,7 @@ Runtime::Runtime() throw( HLA::RTIinternalError )
 	this->attached = false;
 	this->jvm      = NULL;
 	this->jvmenv   = NULL;
+	this->jniCheck = false;
 
 	this->activeRtis = new std::map<int,JavaRTI*>();
 
@@ -277,13 +278,14 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	////////////////////////////////
 	// 2. Set up the library path //
 	////////////////////////////////
-	// For the RTI to operate properly, the following must be on the path used to star the JVM:
-	//  * DLLs for the Portico C++ interface
-	//  * DLLs for the JVM
+	// For the RTI to operate properly, the following must be on the path used to start the JVM:
+	//  * DLLs for the Portico C++ interface   - $RTI_HOME/bin/[compiler_ver]
+	//  * DLLs for the JVM                     - $RTI_HOME/jre/lib/amd64/server
 	
-	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
-	// Any distribution should have a bundled JRE
-	string jrelocation( getenv("JAVA_HOME") );
+	// Assume a default JRE location of the current directory. We'll look inside RTI_HOME to try
+	// and find a JRE. If we don't, we'll use %JAVA_HOME% as a fallback if it exists. If it also
+	// does not exist, we'll fall back to what is set below.
+	string jrelocation( "." );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -295,7 +297,10 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	}
 	else
 	{
-		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME%: [%s]",
+		if( getenv("JAVA_HOME") != NULL )
+			jrelocation = string( getenv("JAVA_HOME") );
+
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME% or %CD%: [%s]",
 		              jrelocation.c_str() );
 	}
 
@@ -358,12 +363,9 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// 1. Set up the Java Classpath //
 	//////////////////////////////////
 	// pick up the system classpath and put $RTI_HOME/lib/portico.jar on the end
-	string systemClasspath( getenv("CLASSPATH") );
-	if( systemClasspath.empty() )
-	{
-		logger->debug( "CLASSPATH not set, using ." );
-		systemClasspath = "./";
-	}
+	string systemClasspath( "./" );
+	if( getenv("CLASSPATH") != NULL )
+		systemClasspath = string( getenv("CLASSPATH") );
 
 	// create out classpath
 	stringstream classpath;
@@ -376,10 +378,13 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	// 2. Set up the library path //
 	////////////////////////////////
 	// Get the system path
+	string systemPath( "." );
 	#ifdef __APPLE__
-	string systemPath( getenv("DYLD_LIBRARY_PATH") );
+	if( getenv("DYLD_LIBRARY_PATH") != NULL )
+		systemPath = string( getenv("DYLD_LIBRARY_PATH") );
 	#else
-	string systemPath( getenv("LD_LIBRARY_PATH") );
+	if( getenv("LD_LIBRARY_PATH") )
+		systemPath = string( getenv("LD_LIBRARY_PATH") );
 	#endif
 
 	// make sure we have a system path
@@ -388,7 +393,7 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
-	string jrelocation( getenv("JAVA_HOME") );
+	string jrelocation( "." );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -400,7 +405,10 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	}
 	else
 	{
-		logger->warn( "WARNING Could not locate bundled JRE, falling back on $JAVA_HOME: [%s]",
+		if( getenv("JAVA_HOME") != NULL )
+			jrelocation = string( getenv("JAVA_HOME") );
+
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on $JAVA_HOME or $PWD: [%s]",
 		              jrelocation.c_str() );
 	}
 

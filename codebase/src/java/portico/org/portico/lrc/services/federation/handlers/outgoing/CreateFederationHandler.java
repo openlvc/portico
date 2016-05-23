@@ -64,11 +64,21 @@ public class CreateFederationHandler extends LRCMessageHandler
 		for( URL module : request.getFomModules() )
 			foms.add( FomParser.parse(module) );
 		
+		// -- NOT DONE ANY MORE --
+		// Used to be important, but we will manually insert the MOM with handles we can control
 		// check to make sure we have the standard MIM as well - if not, load it
-		validateStandardMimPresent( foms );
+		// validateStandardMimPresent( foms );
+
+		// merge the modules together
+		ObjectModel combinedFOM = ModelMerger.merge( foms );
 		
-		// merge all the modules together and store the grand unified fom!
-		request.setModel( ModelMerger.merge(foms) );
+		// Now we have a single .. super model (which may include the MIM) we can post-process.
+		// Ditch the MIM if it is present and then re-insert with specific handles so that we can
+		// look up MOM handles without using names (thus support cross spec-version naming schemes).
+		ObjectModel.mommify( combinedFOM );
+
+		// we have our grand unified FOM!
+		request.setModel( combinedFOM );
 		
 		// check that we don't have a null name
 		if( request.getFederationName() == null )
@@ -81,25 +91,25 @@ public class CreateFederationHandler extends LRCMessageHandler
 		logger.info( "SUCCESS Created federation execution [" + request.getFederationName() + "]" );
 	}
 
-	private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
-	{
-		boolean found = false;
-		for( ObjectModel model : foms )
-		{
-			if( model.getPrivilegeToDelete() != -1 )
-			{
-				found = true;
-				break;
-			}
-		}
-		
-		if( found == false )
-		{
-			logger.debug( "Standard MIM not present - adding it" );
-			URL mim = ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
-			foms.add( 0, FomParser.parse(mim) );
-		}
-	}
+	//private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
+	//{
+	//	boolean found = false;
+	//	for( ObjectModel model : foms )
+	//	{
+	//		if( model.getPrivilegeToDelete() != -1 )
+	//		{
+	//			found = true;
+	//			break;
+	//		}
+	//	}
+	//	
+	//	if( found == false )
+	//	{
+	//		logger.debug( "Standard MIM not present - adding it" );
+	//		URL mim = ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
+	//		foms.add( 0, FomParser.parse(mim) );
+	//	}
+	//}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

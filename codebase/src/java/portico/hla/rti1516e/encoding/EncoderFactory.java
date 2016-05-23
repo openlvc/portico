@@ -35,7 +35,7 @@ public interface EncoderFactory {
 
    <T extends DataElement> HLAfixedArray<T> createHLAfixedArray(DataElementFactory<T> factory, int size);
 
-   <T extends DataElement> HLAfixedArray<T> createHLAfixedArray(T... elements);
+   <T extends DataElement> HLAfixedArray<T> createHLAfixedArray(@SuppressWarnings("unchecked") T... elements);
 
    HLAfloat32BE createHLAfloat32BE();
 
@@ -101,5 +101,5 @@ public interface EncoderFactory {
 
    HLAunicodeString createHLAunicodeString(String s);
 
-   <T extends DataElement> HLAvariableArray<T> createHLAvariableArray(DataElementFactory<T> factory, T... elements);
+   <T extends DataElement> HLAvariableArray<T> createHLAvariableArray(DataElementFactory<T> factory, @SuppressWarnings("unchecked") T... elements);
 }

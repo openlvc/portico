@@ -16,8 +16,9 @@
 
 IEEE1516E_NS_START
 
-struct VariableLengthDataImplementation
+class VariableLengthDataImplementation
 {
+public:
 	// pointer to the raw data, which will be dynamically allocated
 	void *data;
 	

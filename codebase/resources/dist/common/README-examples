@@ -1,58 +1,184 @@
-====================================================
-Building and Executing the Portico Example Federates
-====================================================
 
-The Example Federate
---------------------
-The example federate is designed to demonstrate how to:
+Portico Example Federates
+============================================
+  Portico ships with a simple example federate that has been implemented in each of the major
+  HLA API versions, and for both Java and C++. 
 
-1) Publish and Subscribe
-2) Register and delete an object
-3) Update attribute values
-4) Send an interaction
-5) Advance time
-6) Use synchronization points
+  In this document we'll tell you a bit about how to compile and run the examples, as well as
+  explaining how the federates work internally so that you can use the code as a guide to the
+  basics of writing a federate.
 
-The federate starts up and after going through setup (publication and subscription, enabling
-time regulation and constrained etc...) it advances time from 1-10 in 1.0 increments. Each step
-it will update the attributes of an object it has registered and will send an interaction. When
-it receives a reflection or an update, it will log this information to screen.
+### Table of Contents
 
-You can run multiple instances of the example federate at once by starting each with a different
-name. This is useful to see that all federates are communicating with one another. If they are,
-you should be print-outs for the information received by each federate from the others.
+  1. Finding the Examples
+  2. The Example Federate
+  3. Compiling
+  4. Running
 
-Compiling the Federate
-----------------------
-Portico ships with a pre-compiled version of each Java example federate, but users will have to
-compile the C++ versions for themselves with their compiler of choice.
+1. Finding the Examples
+------------------------
+  Portico ships with Java and C++ example federates for both the HLA 1.3 and IEEE-1516e interfaces.
+  These are provided as source code which must be compiled before you can use them.
 
-Each federate comes with helper scripts to do the compilation for you. Note that if you are using
-Java you must have JAVA_HOME set and javac must be available from the command line. If you are
-using C++, your compiler and all relevant libraries must be available from the command line.
+  To make sure this process is smooth, scripts are provided to do the compiling. These scripts
+  can also show you what variables you need to set up in your environment to get Portico operating
+  correctly.
 
-On windows you can use the helper batch files in %RTI_HOME%\bin\win32 to set up the environment
-for various versions of Visual Studio if they have been installed into the default locations.
-
-You can also set the RTI_HOME environment variable manually if you want. If you don't set this
-variable, the scripts will warn you and then guess at where RTI_HOME is located. As long as you
-are executing the scripts from the directory where they reside (RTI_HOME\examples\...) then you
-will be OK.
-
-To compile the examples, invoke the appropriate script with the "compile" argument:
-
-win32 compile
+  - Java HLA 1.3:   `RTI_HOME/examples/java/hla13`
+  - Java IEE-1516e: `RTI_HOME/examples/java/ieee1516e`
+  - C++ HLA 1.3     `RTI_HOME/examples/cpp/hla13`
+  - C++ IEE-1516e:  `RTI_HOME/examples/cpp/ieee1516e`
 
 
-Running the Federate
---------------------
-As with compiling, if you are using Java you must have JAVA_HOME set and "java" available from
-the command line. You can also set RTI_HOME if you want.
+2. The Example Federate
+------------------------
+  The example federate is designed to demonstrate how to:
 
-To run the example federate, use the appropriate script:
+  1. Publish and Subscribe
+  2. Register and delete an object
+  3. Update attribute values
+  4. Send an interaction
+  5. Advance time
+  6. Use synchronization points
 
-win32 execute [federateName]
+  The federate is time constrained and regulating. It has a simple basic lifecycle: Setup,
+  Main Loop, Tear Down. You should look through the code if you want a better insight into
+  what it is doing and how you can do the same. We'll talk about its high-level lifecycle
+  here.
 
-The "federateName" argument is optional. If you are running more than one federate at once, make
-sure you give each of them different names.
+  During the **setup phase** it will create a single object that it will update later while also
+  taking care of publication/subscription and enabling its time policy.
 
+  Coordination among the federates is handled by synchronization points. Once setup it complete
+  it prompt the user to hit Enter. When they do it will achieve the sync point `ReadyToRun` and
+  wait for others to do so.
+
+  During the **main loop** phase the federate will advance time from 1-20 in 1.0 increments.
+  At each step it will sent an attribute update for the object that it registered and will also
+  send a single interaction before requesting a time advancement.
+
+  Each received reflection/interaction has its details printed to the screen, allowing you to
+  see the information that is being received from other federates. If you run two instances of
+  the test federate you will be able to see this information coming in.
+
+  During the **tear down** phase, the federate will cease its activities, resign from the
+  federation and then attempt to destroy it (the last one out will be successful).
+
+  The standard demonstration for this example federate consists of running two instances of
+  it concurrently so that you can see the information being exchanged.
+
+
+3. Compiling
+-------------
+  Each federate ships as source code, so you have to compile it for your platform.
+  Helper scripts are provided to make this process as simple as possible.
+
+  Each example federate has helper scripts/batch files to aid in building and running the
+  federate. The scripts are either `linux64.sh` or `win64-vc10.bat`. The arguments they take
+  are identical for both (linux used in these examples):
+
+  - `./linux.sh clean`    => Remove all the code/jars that were created
+  - `./linux.sh compile`  => Compile the code for the federate
+  - `./linux.sh execute`  => Run the federate
+
+  **NOTE** If you want to compile the Java federates, you'll need to have a full JDK installed.
+           The JRE that ships with Portico is only sufficient for running existing federates.
+
+  **NOTE** If you want to build the C++ example federates, you will need to have a supported
+           compiler installed and have your environment set up for it.
+           On windows we suggest you execute these commands from the Visual Studio Command Prompt
+           (remember to pick the right one for 32 or 64-bit).
+
+
+### Windows C++ Example
+  ```
+  -- Open Visual Studio Command Prompt --
+  $ cd %RTI_HOME\examples\cpp\ieee1516e
+  $ win64-vc10 compile
+  $ win64-vc10 execute
+  ```
+
+### Linux C++ Example
+  ```
+  $ cd $RTI_HOME/examples/cpp/ieee1516e
+  $ ./linux64.sh compile
+  $ ./linux64.sh execute federateTwo
+  ```
+
+### Mac OS X C++ Example
+  ```
+  $ cd $RTI_HOME/examples/cpp/ieee1516e
+  $ ./macos.sh compile
+  $ ./macos.sh execute federateTwo
+  ```
+
+### Debugging C++ Federates
+  If you get a crash or just want to step through the C++ federates you can do so. They are
+  compiled against the debug libraries by default.
+
+  For Windows federates, you should use the Visual Studio debugging tools. They are well equipped
+  for this. Take a look at the batch files to see what compiler options and symbols are set so
+  that you can then set up your project correctly.
+
+  For Linux / Mac OS X, a GDB env file is provided. This means you can fire up GDB and get debugging
+  like it's 1985!
+
+  ```
+   Linux: gdb -x gdb-linux.env ./example-federate
+  Mac OS: sudo ggdb -x gdb-macos.env ./example-federate
+  ```
+
+
+4. Running
+-----------
+  After you have compiled the federate you can execute it using the helper scripts. You do this
+  by passing the `execute` argument to the script. If you want to give the federate a specific
+  name you can pass an additional argument for it to use. This will allow you to run multiple
+  example federates together without a name clash.
+
+  ```
+  examples:
+  $ ./linux64.sh execute               // runs with the federate name "exampleFederate"
+  $ ./linux64.sh execute federateTwo   // runs with the federate name "federateTwo"
+  ```
+
+  To avoid startup problems we recommend you start a single federate first, and proceed to start
+  the other federates once the first is prompting you to hit enter.
+
+  When all federates are started, hit enter on each and they will commence running. You will
+  see output something like the following:
+
+  ```
+  RTI_HOME environment variable is set to /opt/portico-2.1.0
+
+  -------------------------------------------------------------------
+  GMS: address=zapp-48803, cluster=ExampleFederation, physical address=192.168.0.10:63529
+  -------------------------------------------------------------------
+  Created Federation
+  Joined Federation as exampleFederate
+  Successfully registered sync point: ReadyToRun
+  Synchronization point announced: ReadyToRun
+   >>>>>>>>>> Press Enter to Continue <<<<<<<<<<
+
+  Achieved sync point: ReadyToRun, waiting for federation...
+  Federation Synchronized: ReadyToRun
+  Time Policy Enabled
+  Published and Subscribed
+  Registered Object, handle=2
+  Discoverd Object: handle=2097153, classHandle=508, name=HLA2097153
+  Reflection Received: object=2097153, tag=Hi!, attributeCount=3
+    attrHandle=509, attrValue=aa:1.000000
+    attrHandle=510, attrValue=ab:1.000000
+    attrHandle=511, attrValue=ac:1.000000
+  Interaction Received: handle=554, tag=Hi!, parameterCount=2
+    paramHandle=555, paramValue=xa:1.000000
+    paramHandle=556, paramValue=xa:1.000000
+  Reflection Received: object=2097153, tag=Hi!, time=1, attributeCount=3
+    attrHandle=509, attrValue=aa:1.000000
+    attrHandle=510, attrValue=ab:1.000000
+    attrHandle=511, attrValue=ac:1.000000
+  Interaction Received: handle=554, tag=Hi!, time=1, parameterCount=2
+    paramHandle=555, paramValue=xa:1.000000
+    paramHandle=556, paramValue=xa:1.000000
+  Time Advanced to 1
+  ```

@@ -53,6 +53,7 @@ public class TimeConstrainedEnabledCallbackHandler extends HLA1516eCallbackHandl
 		DoubleTime currentTime = new DoubleTime( lrcState.getCurrentTime() );
 		logger.trace( "CALLBACK timeConstrainedEnabled(time="+currentTime+")" );
 		fedamb().timeConstrainedEnabled( currentTime );
+		logger.trace( "         timeConstrainedEnabled() callback complete" );
 		context.success();
 	}
 	

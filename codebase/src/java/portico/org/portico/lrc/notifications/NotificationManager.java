@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.portico.container.Container;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.model.ObjectModel;
@@ -238,29 +237,9 @@ public class NotificationManager
 	public static synchronized final NotificationManager newNotificationManager()
 	{
 		if( LISTENER_CLASSES == null )
-		{
 			LISTENER_CLASSES = new HashSet<Class<?>>();
-			locateAllListeners();
-		}
 		
 		return new NotificationManager();
 	}
 	
-	private static final void locateAllListeners()
-	{
-		// the notfication listener logically belongs in with the LRC, but configuration wise,
-		// it really belongs with the container. We'll keep it in with the LRC, but use the same
-		// logger as the container for setup
-		Logger logger = Logger.getLogger( "portico.container" );
-		
-		// locate all the listeners with the NotificationListener annotation
-		Set<Class<?>> types = Container.instance().getClassesWithAnnotation( NotificationListener.class,
-		                                                                     INotificationListener.class );
-		LISTENER_CLASSES.addAll( types );
-		
-		// log about all the notification handlers we found
-		logger.info( "Located the following NotificationListeners:" );
-		for( Class<?> clazz: LISTENER_CLASSES )
-			logger.info( "  (NotificationListener) -> " + clazz.getCanonicalName() );
-	}
 }

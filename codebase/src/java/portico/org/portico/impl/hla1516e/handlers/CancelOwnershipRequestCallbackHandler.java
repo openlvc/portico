@@ -66,6 +66,8 @@ public class CancelOwnershipRequestCallbackHandler extends HLA1516eCallbackHandl
 		HLA1516eAttributeHandleSet handleSet = new HLA1516eAttributeHandleSet( attributes );
 		fedamb().confirmAttributeOwnershipAcquisitionCancellation( handle, handleSet );
 		context.success();
+		
+		logger.trace( "         confirmAttributeOwnershipAcquisitionCancellation() callback complete" );
 	}
 
 	//----------------------------------------------------------

@@ -64,9 +64,9 @@ public class AcquireOwnershipIncomingHandler extends LRCMessageHandler
 		if( logger.isDebugEnabled() )
 		{
 			String available = acquire.isIfAvailable() ? " (if available)" : "";
-			logger.debug( "@REMOTE Attribute acquisition request for attributes "+
-			              acMoniker(attributes)+" in object ["+objectMoniker(objectHandle)+
-			              "] by federate ["+moniker(sourceFederate)+"]"+available );
+			logger.debug( "@REMOTE Attribute acquisition request"+available+" by ["+
+			              moniker(sourceFederate)+"]: object="+objectMoniker(objectHandle)+
+			              ", attributes="+acMoniker(attributes) );
 		}
 		
 		// record the acquisition request, if it is an "if-available" request then our work is done

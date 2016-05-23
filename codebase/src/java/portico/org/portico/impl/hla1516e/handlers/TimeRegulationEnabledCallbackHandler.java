@@ -54,6 +54,7 @@ public class TimeRegulationEnabledCallbackHandler extends HLA1516eCallbackHandle
 		logger.trace( "CALLBACK timeRegulationEnabled(time="+currentTime+")" );
 		fedamb().timeRegulationEnabled( currentTime );
 		context.success();
+		logger.trace( "         timeRegulationEnabled() callback complete" );
 	}
 	
 	//----------------------------------------------------------

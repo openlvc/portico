@@ -62,7 +62,7 @@ public class ObjectModel implements Serializable
 	private OCMetadata ocroot;
 	private ICMetadata icroot;
 	
-	private int privilegeToDelete; // set with object root is set
+	private int privilegeToDelete; // set when object root is set
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -227,7 +227,7 @@ public class ObjectModel implements Serializable
 		
 		// the only other thing that could have gotten missed is a MOM class
 		// below will return null if it isn't a MOM class
-		return this.getObjectClass( Mom.getMomClassHandle(name) );
+		return this.getObjectClass( Mom.getMomClassHandle(version,name) );
 	}
 	
 	/**
@@ -258,7 +258,7 @@ public class ObjectModel implements Serializable
 			
 			// it sure is, do a special lookup because of the requirement to map names
 			// depending on the HLA version involved
-			int aHandle = Mom.getMomAttributeHandle( classHandle, attributeName );
+			int aHandle = Mom.getMomAttributeHandle( version, classHandle, attributeName );
 			return ocMetadata.getAttribute( aHandle );
 		}
 		else
@@ -310,6 +310,29 @@ public class ObjectModel implements Serializable
 				// set the handle for privilegeToDelete
 				this.privilegeToDelete = root.getAttributeHandle( "HLAprivilegeToDeleteObject" );
 			}
+		}
+	}
+
+	/**
+	 * For 1516e FOMs we have a problem. The spec mandates that classes can only extend other
+	 * classes, they cannot add attributed to existing classes. This is fine for all classes
+	 * EXCEPT `ObjectRoot`. On create we are given a bunch of FOM modules. For us to get a valid
+	 * `privToDelete`, it must be explicitly declared inside the first module. Subsequent ones
+	 * cannot declare it because that would be adding to `ObjectRoot`.
+	 * 
+	 * What actually happens in reality is that no module declares the parameter (who knows which
+	 * one may be first in any given situation?). Net result: no `privToDelete`. As such, we have
+	 * to patch it in after the fact. That is what this method does. It also ensures that our
+	 * cached copy of the handle is updated to reflect the new handle.
+	 */
+	public void addPrivilegeToDeleteIfNotPresent()
+	{
+		ACMetadata temp = ocroot.getDeclaredAttribute( "privilegeToDelete" );
+		if( temp == null )
+		{
+			temp = this.newAttribute( "privilegeToDelete" );
+			ocroot.addAttribute( temp );
+			this.privilegeToDelete = temp.getHandle();
 		}
 	}
 	
@@ -421,6 +444,7 @@ public class ObjectModel implements Serializable
 	{
 		return this.privilegeToDelete;
 	}
+
 	/////////////////////////////////////////////////////////////
 	////////////////// InteractionClass Methods /////////////////
 	/////////////////////////////////////////////////////////////
@@ -727,7 +751,7 @@ public class ObjectModel implements Serializable
 		// remove any MOM stuff that currently exists in the model //
 		/////////////////////////////////////////////////////////////
 		String managerName = "ObjectRoot.Manager";
-		if( model.version == HLAVersion.IEEE1516 )
+		if( model.version == HLAVersion.IEEE1516 || model.version == HLAVersion.IEEE1516e )
 		{
 			managerName = "HLAobjectRoot.HLAmanager";
 		}
@@ -755,7 +779,18 @@ public class ObjectModel implements Serializable
 		//////////////////////////////////
 		// add the predefined MOM stuff //
 		//////////////////////////////////
-		Mom.insertMomHierarchy( model );
+		switch( model.version )
+		{
+			case HLA13:
+			case IEEE1516:
+				Mom.insertMomHierarchy( model );
+				break;
+			case IEEE1516e:
+				Mom.insertMomHierarchy1516e( model );
+				break;
+			default:
+				throw new RuntimeException( "Could't determine spec version when inserting MOM" );
+		}
 		
 		// lock the model again //
 		if( wasLocked )

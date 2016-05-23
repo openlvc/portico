@@ -2273,18 +2273,50 @@ public class Test13Federate
 			}
 		}
 	}
+
+	/**
+	 * This method will go through each attribute handle and query who is the owner, asserting
+	 * that it IS THE CURRENT FEDERATE. If the current federate does not own one of the attributes,
+	 * the test will be failed.
+	 */	
+	public void quickAssertIOwn( int objectHandle, int...attributes )
+	{
+		for( int i = 0; i < attributes.length; i++ )
+		{
+			int owner = quickQueryOwnership( objectHandle, attributes[i] );
+			Assert.assertSame( owner, this.federateHandle, "Expected owner of attribute ["+
+			                   attributes[i]+"] in object ["+objectHandle+
+			                   "] to be us, but it was not." );
+		}		
+	}
 	
 	/**
-	 * This method handles the exchanging of ownership between the current federate (requesting)
-	 * and the attributes current owner. As action is needed by both federates, a reference to
-	 * both is needed. If there is a problem during the exchange, the current test will be failed.
+	 * This method will go through each attribute handle and query who is the owner, asserting
+	 * that it IS NOT the current federate. If the current federate does own one of the attributes,
+	 * the test will be failed.
+	 */
+	public void quickAssertIDontOwn( int objectHandle, int... attributes )
+	{
+		for( int i = 0; i < attributes.length; i++ )
+		{
+			int owner = quickQueryOwnership( objectHandle, attributes[i] );
+			Assert.assertNotSame( owner, this.federateHandle, "Expected owner of attribute ["+
+			                      attributes[i]+"] in object ["+objectHandle+
+			                      "] to not be us, but it was" );
+		}
+	}
+
+	/**
+	 * Exchange ownership between the current federate (requesting) and the given owner federate.
+	 * Exchange requires action by both federates, so this method will trigger each of the current
+	 * and owning federates to behave appropriately at the right times.
 	 * <p/>
-	 * The exchange process works like this:
+	 * The exchange process:
 	 * <ol>
-	 *   <li>Requesting federate requests ownership acquisition</li>
-	 *   <li>Current owning federate waits for ownership request of attributes</li>
-	 *   <li>Current owning federate releases ownership through release response</li>
-	 *   <li>Requesting federate waits until it has received ownership</li>
+	 *   <li>(This federate) Requests ownership acquisition</li>
+	 *   <li>(Owning federate) Wait for ownership request</li>
+	 *   <li>(Owning federate) Releases ownership through release response</li>
+	 *   <li>(This federate) Waits until it has received ownership</li>
 	 * </ol>
 	 */
 	public void quickExchangeOwnership( Test13Federate owningFederate,

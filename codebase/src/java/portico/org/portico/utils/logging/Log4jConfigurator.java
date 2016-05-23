@@ -178,8 +178,13 @@ public class Log4jConfigurator
 	
 	private static final void attachConsoleAppender( Logger logger )
 	{
+		attachConsoleAppender( logger, DEFAULT_PATTERN );
+	}
+	
+	private static final void attachConsoleAppender( Logger logger, String pattern )
+	{
 		// create the appender
-		PatternLayout layout = new PatternLayout( DEFAULT_PATTERN );
+		PatternLayout layout = new PatternLayout( pattern );
 		ConsoleAppender appender = new ConsoleAppender( layout, ConsoleAppender.SYSTEM_OUT );
 		appender.setThreshold( Level.TRACE ); // output restricted at logger level, not appender
 

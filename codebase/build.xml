@@ -114,6 +114,9 @@
 		<delete dir="${dist.dir}"/>
 	</target>
 
+	<!-- ============================================================ -->
+	<!--  Extension Targets - Variations and extenions on public ones -->
+	<!-- ============================================================ -->
 	<!-- Set the flag that says this is a release build. Usually used to control
 	     whether we execute time-intensive tasks that aren't necessary for testing
 	     such as the generation of API docs, etc... -->

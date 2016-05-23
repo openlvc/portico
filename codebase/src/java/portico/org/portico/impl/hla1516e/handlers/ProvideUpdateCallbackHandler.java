@@ -61,7 +61,7 @@ public class ProvideUpdateCallbackHandler extends HLA1516eCallbackHandler
 
 		if( logger.isTraceEnabled() )
 		{
-			logger.trace( "provideAttributeValueUpdate(object="+objectHandle+
+			logger.trace( "CALLBACK provideAttributeValueUpdate(object="+objectHandle+
 			              ",attributes="+attributes+")" );
 		}
 		
@@ -71,6 +71,9 @@ public class ProvideUpdateCallbackHandler extends HLA1516eCallbackHandler
 		                                      request.getTag() );
 
 		context.success();
+		
+		if( logger.isTraceEnabled() )
+			logger.trace( "         provideAttributeValueUpdate() callback complete" );
 	}
 
 	//----------------------------------------------------------

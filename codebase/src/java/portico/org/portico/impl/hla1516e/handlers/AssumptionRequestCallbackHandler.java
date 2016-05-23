@@ -71,6 +71,9 @@ public class AssumptionRequestCallbackHandler extends HLA1516eCallbackHandler
 		HLA1516eHandle hlaHandle = new HLA1516eHandle( objectHandle );
 		fedamb().requestAttributeOwnershipAssumption( hlaHandle, handleSet, null );
 		context.success();
+
+		logger.trace( "         requestAttributeOwnershipAssumption() callback complete" );
+
 	}
 
 	//----------------------------------------------------------

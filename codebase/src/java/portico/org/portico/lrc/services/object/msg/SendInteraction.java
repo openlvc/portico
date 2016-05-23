@@ -239,7 +239,7 @@ public class SendInteraction extends PorticoMessage implements Externalizable
 			int parmaterHandle = buffer.readInt();
 			int valueSize = buffer.readInt();
 			byte[] parameterValue = new byte[valueSize];
-			buffer.read( parameterValue, 0, valueSize );
+			buffer.readFully( parameterValue, 0, valueSize );
 			this.parameters.put( parmaterHandle, parameterValue );
 		}
 	}

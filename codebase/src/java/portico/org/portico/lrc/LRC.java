@@ -239,7 +239,7 @@ public class LRC
 		
 		// apply the modules to the contained sinks
 		logger.trace( "Applying modules using component keyword: " + component );
-		for( Module module : Container.instance().getModules() )
+		for( Module module : Container.instance().getHandlerRegistry().getAllModules() )
 		{
 			logger.trace( "STARTING Apply module [" +module.getName()+ "] to LRC" );
 			

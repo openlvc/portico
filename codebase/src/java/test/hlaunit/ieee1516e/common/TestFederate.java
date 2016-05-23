@@ -14,6 +14,7 @@
  */
 package hlaunit.ieee1516e.common;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -229,7 +230,7 @@ public class TestFederate
 
 		try
 		{
-			URL fom = ClassLoader.getSystemResource( "fom/testfom.xml" );
+			URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/testfom.xml" );
 			this.rtiamb.createFederationExecution( name, fom );
 		}
 		catch( Exception e )
@@ -249,8 +250,35 @@ public class TestFederate
 
 		try
 		{
-			URL fom = ClassLoader.getSystemResource( "fom/testfom.xml" );
+			URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/testfom.xml" );
 			this.rtiamb.createFederationExecution( this.simpleName, modules );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Exception in quickCreate in " + simpleName + " ("+e.getClass()+")", e );
+		}
+	}
+
+	/**
+	 * Same as {@link #quickCreate()} except that you can specify the paths to the FOM modules
+	 * you want to load. These will be resolved relative to `codebase`.
+	 */
+	public void quickCreateWithModules( String... modules )
+	{
+		quickConnectIfNot();
+		
+		try
+		{
+			// build up our array of FOM modules first
+			URL[] urls = new URL[modules.length];
+			for( int i = 0; i < modules.length; i++ )
+			{
+				File file = new File( modules[i] );
+				urls[i] = file.toURI().toURL();
+			}
+			
+			// create the federation
+			this.rtiamb.createFederationExecution( this.simpleName, urls );
 		}
 		catch( Exception e )
 		{

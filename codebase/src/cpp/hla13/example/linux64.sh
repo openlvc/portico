@@ -37,11 +37,21 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -O1 -fPIC -I$RTI_HOME/include/hla13 \
+	g++ -g -O1 -fPIC -I$RTI_HOME/include/hla13 \
 	    -DRTI_USES_STD_FSTREAM \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate \
-		-L$RTI_HOME/lib/gcc4 -lRTI-NG64 -lFedTime64 \
+		-L$RTI_HOME/lib/gcc4 -lRTI-NG_64d -lFedTime_64d \
 		-L$RTI_HOME/jre/lib/amd64/server -ljvm -ljsig 
+	exit;
+fi
+
+############################################
+### (target) debug #########################
+############################################
+if [ $1 = "debug" ]
+then
+	echo "starting gdb"
+	gdb -x gdb-linux.env ./example-federate
 	exit;
 fi
 

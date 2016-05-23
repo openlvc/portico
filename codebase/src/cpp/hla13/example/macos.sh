@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="usage: macos.sh [compile] [clean] [execute [federate-name]]"
+USAGE="usage: macos.sh [compile] [clean] [debug] [execute [federate-name]]"
 
 ################################
 # check command line arguments #
@@ -9,18 +9,6 @@ if [ $# = 0 ]
 then
 	echo $USAGE
 	exit;
-fi
-
-######################
-# test for JAVA_HOME #
-######################
-JAVA=java
-if [ "$JAVA_HOME" = "" ]
-then
-	echo WARNING Your JAVA_HOME environment variable is not set!
-	#exit;
-else
-        JAVA=$JAVA_HOME/bin/java
 fi
 
 ###################
@@ -50,10 +38,21 @@ if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
 	g++ -O1 -fPIC -I$RTI_HOME/include/hla13 \
+	    -g \
 	    -DRTI_USES_STD_FSTREAM \
-		-lRTI-NG64 -lFedTime64 -L$RTI_HOME/lib/gcc4 \
+		-lRTI-NG_64d -lFedTime_64d -L$RTI_HOME/lib/gcc4 \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate
-	exit;	
+	exit;
+fi
+
+############################################
+### (target) debug #########################
+############################################
+if [ $1 = "debug" ]
+then
+	echo "starting ggdb - we need to sudo to avoide a bunch of code-signing stuff - sorry :("
+	sudo ggdb -x gdb-macos.env ./example-federate
+	exit;
 fi
 
 ############################################
@@ -62,7 +61,7 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/server" ./example-federate $*
+	DYLD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$RTI_HOME/jre/lib/server" ./example-federate $*
 	exit;
 fi
 

@@ -68,6 +68,8 @@ public class SyncAnnounceCallbackHandler extends HLA1516eCallbackHandler
 		fedamb().announceSynchronizationPoint( request.getLabel(), request.getTag() );
 
 		context.success();
+		
+		logger.trace( "         announceSynchronizationPoint() callback complete" );
 	}
 	
 	//----------------------------------------------------------

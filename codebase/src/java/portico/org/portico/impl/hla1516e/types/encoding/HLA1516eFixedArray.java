@@ -41,7 +41,7 @@ public class HLA1516eFixedArray<T extends DataElement>
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eFixedArray( T... provided )
+	public HLA1516eFixedArray( @SuppressWarnings("unchecked") T... provided )
 	{
 		this.elements = new ArrayList<T>( provided.length );
 		for( T element : provided )

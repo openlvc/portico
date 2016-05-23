@@ -41,8 +41,18 @@ then
 	    -DRTI_USES_STD_FSTREAM \
 	    main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate \
 	    -L$RTI_HOME/lib/gcc4 -lrti1516e64 -lfedtime1516e64 \
-	    -L$JAVA_HOME/jre/lib/amd64/server -ljvm -ljsig
+	    -L$RTI_HOME/jre/lib/amd64/server -ljvm -ljsig
 	exit;	
+fi
+
+############################################
+### (target) debug #########################
+############################################
+if [ $1 = "debug" ]
+then
+	echo "starting gdb"
+	gdb -x gdb-linux.env ./example-federate
+	exit;
 fi
 
 ############################################
@@ -51,7 +61,7 @@ fi
 if [ $1 = "execute" ]
 then
 	shift;
-	LD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$JAVA_HOME/jre/lib/amd64/server" ./example-federate $*
+	LD_LIBRARY_PATH="$RTI_HOME/lib/gcc4:$RTI_HOME/jre/lib/amd64/server" ./example-federate $*
 	exit;
 fi
 

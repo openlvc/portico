@@ -1,40 +1,36 @@
+Portico Source Code
+====================
 If you are reading this, you are most likely looking around for the Portico
 source code. Well, you can stop looking because it isn't in here!
 
 The Portico source code is maintained in a public Git repository on GitHub at
 the following location:
 
-  * https://github.com/calytrix/portico
-
-For information on getting the source code, see:
-  * http://porticoproject.org/index.php?title=Source_Code
+  - `https://github.com/openlvc/portico`
 
 For information on how to build Portico, see:
-  * http://porticoproject.org/index.php?title=Building_Portico
+  - `http://porticoproject.org/documentation/developer/building.html`
 
 
 What on Earth is Git?
 ----------------------
 If you need help getting started with Git, we can recommend a few useful resources:
 
- * The Git home page
-   ** http://git-scm.org
-   ** The home of Git itself! Also provides lots of links to other resources
+ - The Git home page
+   - `http://git-scm.org`
+   - The home of Git itself! Also provides lots of links to other resources
 
- * The GitHub help pages
-   ** http://help.github.com/
-   ** These provide quite a lot of useful general Git information
+ - The GitHub help pages
+   - `http://help.github.com/`
+   - These provide quite a lot of useful general Git information
 
- * An Introduction to Git (video 1h22)
-   ** http://www.youtube.com/watch?v=ZDR433b0HJY
-   ** A presentation by Scott Chacon, this is an excellent primer and well
-      worth taking an hour out to sit down and watch. Highly recommended.
+ - An Introduction to Git (video 1h22)
+   - `http://www.youtube.com/watch?v=ZDR433b0HJY`
+   - A presentation by Scott Chacon, this is an excellent primer and well
+    worth taking an hour out to sit down and watch. Highly recommended.
 
 
-If you have any more questions, be sure to ask them!! Just jump on the forums
-and we'll do our best to get everything sorted out:
-
-http://forums.porticoproject.org
+If you have any more questions, be sure to ask them!! Just fire us an via support@openlvc.org.
 
 May Octocat bless your mighty house,
 The Portico development team

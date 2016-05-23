@@ -108,6 +108,9 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 		}
 		
 		context.success();
+		
+		if( logger.isTraceEnabled() )
+			logger.trace( "         reflectAttributeValues() callback complete" );
 	}
 
 	/**

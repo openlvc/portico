@@ -14,7 +14,9 @@
  */
 package org.portico.impl.hla1516.types;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 import hla.rti1516.IllegalTimeArithmetic;
@@ -33,6 +35,7 @@ public class DoubleTime implements LogicalTime
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private double time;
+
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -212,6 +215,31 @@ public class DoubleTime implements LogicalTime
 			throw new RuntimeException( e );
 		}
 	}
+
+	public double decode( byte[] buffer, int offset )
+	{
+		try
+		{
+			// convert the into an array
+			ByteArrayInputStream byteStream = new ByteArrayInputStream( buffer );
+			DataInputStream stream = new DataInputStream( byteStream );
+			double temp = stream.readDouble();
+			stream.close();
+			return temp;
+		}
+		catch( Exception e )
+		{
+			throw new RuntimeException( e );
+		}		
+	}
+
+	public byte[] toByteArray()
+	{
+		byte[] buffer = new byte[8];
+		encode( buffer, 0 );
+		return buffer;
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
@@ -230,4 +258,10 @@ public class DoubleTime implements LogicalTime
 			throw new InvalidLogicalTime( "Expecting DoubleTime, found: null" );
 		}
 	}
+
+	public static double fromBuffer( byte[] buffer )
+	{
+		return new DoubleTime().decode( buffer, 0 );
+	}
+
 }

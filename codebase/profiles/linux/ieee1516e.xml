@@ -256,7 +256,8 @@
 			         arch="@{arch}"
 			         compiler="g++"
 			         compilerArgs="${_cargs}"
-			         linkerArgs="${_largs}">
+			         linkerArgs="${_largs}"
+			         threadCount="auto">
 				<fileset dir="${ieee1516e.src.dir}">
 					<include name="**/*.cpp"/>
 					<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
@@ -281,7 +282,8 @@
 			         arch="@{arch}"
 			         compiler="g++"
 			         compilerArgs="${_cargs}"
-			         linkerArgs="${_largs}">
+			         linkerArgs="${_largs}"
+			         threadCount="auto">
 				<fileset dir="${ieee1516e.src.dir}">
 					<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
 				</fileset>

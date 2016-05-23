@@ -3,6 +3,9 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.macosx.so.debug.1509176571">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.macosx.so.debug.1509176571" moduleId="org.eclipse.cdt.core.settings" name="cpp-hla13-macosx">
+				<macros>
+					<stringMacro name="MACOSX_JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home"/>
+				</macros>
 				<externalSettings>
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/portico"/>
@@ -43,7 +46,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="jsig"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cppunit"/>
 								</option>
-								<option id="macosx.cpp.link.option.flags.46649063" superClass="macosx.cpp.link.option.flags" value="-stdlib=libstdc++" valueType="string"/>
+								<option id="macosx.cpp.link.option.flags.46649063" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-stdlib=libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.732398003" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -71,8 +74,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/src/cpp/hla13/test}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/portico/codebase/lib/cppunit/cppunit-1.12.1/include}&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.dialect.std.1920500347" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1330742298" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -stdlib=libstdc++" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.1920500347" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.1330742298" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -stdlib=libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1588409369" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug.2004940265" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.so.debug">
@@ -107,7 +110,7 @@
 		<cconfiguration id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.macosx.so.debug.1509176571.201707815" moduleId="org.eclipse.cdt.core.settings" name="cpp-ieee1516e-macosx">
 				<macros>
-					<stringMacro name="MACOSX_JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home"/>
+					<stringMacro name="MACOSX_JAVA_HOME" type="VALUE_TEXT" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home"/>
 				</macros>
 				<externalSettings>
 					<externalSetting>
@@ -247,4 +250,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

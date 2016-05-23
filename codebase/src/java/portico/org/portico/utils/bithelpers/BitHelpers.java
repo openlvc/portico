@@ -14,6 +14,8 @@
  */
 package org.portico.utils.bithelpers;
 
+import java.util.UUID;
+
 /**
  * A group of static utility methods to help with various bit manipulation tasks.
  */
@@ -514,5 +516,86 @@ public class BitHelpers
 		        ((buffer[2] & 255) << 16) +
 		        ((buffer[1] & 255) <<  8) +
 		        ((buffer[0] & 255) <<  0));
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////// General Methods //////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Convert the given UUID into a byte[] form for transmission. This will return a byte[16].
+	 */
+	public static byte[] uuidToBytes( UUID uuid )
+	{
+		byte[] buffer = new byte[16];
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
+
+		for (int i = 0; i < 8; i++)
+			buffer[i] = (byte) (msb >>> 8*(7-i) );
+
+		for (int i = 8; i < 16; i++)
+			buffer[i] = (byte) (lsb >>> 8*(7-i) );
+
+		return buffer;
+	}
+	
+	/**
+	 * Write the given UUID into the provided buffer, starting at the offset position.
+	 * If there is not enough space in the buffer, an IndexOutOfBoundsException will be thrown.
+	 * 
+	 * @return The buffer back to the called, now with the UUID marshalled
+	 */
+	public static void putUUID( UUID uuid, byte[] buffer, int offset )
+	{
+		if( buffer.length-offset < 16 )
+			throw new IndexOutOfBoundsException( "Need at least 16 bytes in buffer" );
+		
+		long msb = uuid.getMostSignificantBits();
+		long lsb = uuid.getLeastSignificantBits();
+
+		for (int i = offset; i < 8+offset; i++)
+			buffer[i] = (byte) (msb >>> 8*(7-i) );
+
+		for (int i = 8+offset; i < 16+offset; i++)
+			buffer[i] = (byte) (lsb >>> 8*(7-i) );
+	}
+	
+	/**
+	 * Convert the given byte[] buffer into a UUID and return. Expects a byte[] that was generated
+	 * using {@link #uuidToBytes(UUID)}. 
+	 */
+	public static UUID uuidFromBytes( byte[] buffer )
+	{
+		long msb = 0;
+		long lsb = 0;
+
+		for( int i = 0; i < 8; i++ )
+			msb = (msb << 8) | (buffer[i] & 0xff);
+
+		for( int i = 8; i < 16; i++ )
+			lsb = (lsb << 8) | (buffer[i] & 0xff);
+
+		return new UUID( msb, lsb );
+	}
+
+	/**
+	 * Read from the given buffer, starting at the given offset, and return a UUID using the
+	 * information found. An IndexOutOfBoundsException will be thrown if the buffer is too short.
+	 */
+	public static UUID readUUID( byte[] buffer, int offset )
+	{
+		if( buffer.length-offset < 16 )
+			throw new IndexOutOfBoundsException( "Need at least 16 bytes in buffer" );
+
+		long msb = 0;
+		long lsb = 0;
+
+		for( int i = offset; i < 8+offset; i++ )
+			msb = (msb << 8) | (buffer[i] & 0xff);
+
+		for( int i = 8+offset; i < 16+offset; i++ )
+			lsb = (lsb << 8) | (buffer[i] & 0xff);
+
+		return new UUID( msb, lsb );
 	}
 }

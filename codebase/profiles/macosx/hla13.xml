@@ -66,7 +66,7 @@
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG64d,FedTime64d"/>
+			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG_64d,FedTime_64d"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpptask>
 	</target>
@@ -212,10 +212,10 @@
 
 		<!-- Reconstruct the symlinks: Ant won't copy these properly, so we have to
 		     not copy them and recreate them in place. Booooooo. -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64"/>     <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG64d"/>    <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64"/>    <!-- hla13 -->
-		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime64d"/>   <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG_64"/>     <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libRTI-NG_64d"/>    <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime_64"/>    <!-- hla13 -->
+		<symlink-dylib directory="${sandbox.lib.dir}/gcc4" name="libFedTime_64d"/>   <!-- hla13 -->
 		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.dylib,**/*.jnilib,**/*.so"/>
 
 		<!-- ================================= -->
@@ -354,7 +354,8 @@
 					 arch="@{arch}"
 					 compiler="g++"
 					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
 				<fileset dir="${hla13.src.dir}">
 					<include name="time/RTIfedTime.cpp"/>
 					<include name="time/FedTime.cpp"/>
@@ -381,7 +382,8 @@
 					 arch="@{arch}"
 					 compiler="g++"
 					 compilerArgs="${_cargs}"
-					 linkerArgs="${_largs}">
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
 				<fileset dir="${hla13.src.dir}">
 					<include name="**/*.cpp"/>
 					<exclude name="time/RTIfedTime.cpp"/>

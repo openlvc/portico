@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
 import org.portico.bindings.ConnectedRoster;
 import org.portico.bindings.IConnection;
-import org.portico.bindings.jgroups.JGroupsRoster;
+import org.portico.bindings.jgroups.Roster;
 import org.portico.lrc.LRC;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
@@ -193,9 +193,9 @@ public class JVMConnection implements IConnection
 		// pack the FOM into the request object for use by the framework
 		//  -yes, you are seeing right, that says "JGroups" roster. We're "borrowing" their impl
 		logger.debug( "Joined federate [" + federate + "] to federation [" + federation + "]" );
-		ConnectedRoster roster = new JGroupsRoster( localHandle,
-		                                            broadcaster.getFederateHandles(),
-		                                            broadcaster.getFOM() );
+		ConnectedRoster roster = new Roster( localHandle,
+		                                     broadcaster.getFederateHandles(),
+		                                     broadcaster.getFOM() );
 		return roster;
 	}
 	
@@ -204,7 +204,10 @@ public class JVMConnection implements IConnection
 		// make sure we are joined to a federation in the first place
 		if( this.federation == null )
 			throw new JFederateNotExecutionMember( "not joined to a federation" );
-		
+
+		// send the resign message to the federation so they know we're on the way out
+		broadcast( resignMessage );
+
 		// try to remove from the federation, if not joined, throw an exception
 		String federate = resignMessage.getFederateName();
 		String federation = resignMessage.getFederationName();

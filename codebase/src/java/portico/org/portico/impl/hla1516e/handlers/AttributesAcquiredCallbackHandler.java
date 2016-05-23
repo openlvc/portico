@@ -70,6 +70,8 @@ public class AttributesAcquiredCallbackHandler extends HLA1516eCallbackHandler
 		fedamb().attributeOwnershipAcquisitionNotification( new HLA1516eHandle(objectHandle),
 		                                                    handleSet,
 		                                                    null );
+		
+		logger.trace( "         attributeOwnershipAcquisitionNotification() callback complete" );
 	}
 
 	//----------------------------------------------------------

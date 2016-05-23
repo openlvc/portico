@@ -62,6 +62,9 @@ public class InitiateSaveCallbackHandler extends HLA1516eCallbackHandler
 		fedamb().initiateFederateSave( label );
 
 		context.success();
+		
+		if( logger.isTraceEnabled() )
+			logger.trace( "         initiateFederateSave() callback complete" );
 	}
 
 	//----------------------------------------------------------

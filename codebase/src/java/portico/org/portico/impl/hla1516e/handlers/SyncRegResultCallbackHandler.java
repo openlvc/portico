@@ -20,6 +20,8 @@ import org.portico.lrc.services.sync.msg.RegisterSyncPointResult;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 
+import hla.rti1516e.SynchronizationPointFailureReason;
+
 /**
  * This handler generates IEEE1516e callbacks for synchronization registration results. If the point
  * registration was successful, it will also announce the point to the local federate AFTER the
@@ -58,16 +60,20 @@ public class SyncRegResultCallbackHandler extends HLA1516eCallbackHandler
 		if( request.wasSuccess() )
 		{
 			logger.trace( "CALLBACK synchronizationPointRegistrationSucceeded(label="+label+")" );
-			helper.getFederateAmbassador().synchronizationPointRegistrationSucceeded( label );
+			fedamb().synchronizationPointRegistrationSucceeded( label );
+			logger.trace( "         synchronizationPointRegistrationSucceeded() callback complete" );
 			
 			// deliver the announcement for the local federate as well
 			logger.trace( "CALLBACK announceSynchronizationPoint(label="+label+")" );
 			fedamb().announceSynchronizationPoint( label, request.getTag() );
+			logger.trace( "         announceSynchronizationPoint() callback complete" );
 		}
 		else
 		{
 			logger.trace( "CALLBACK synchronizationPointRegistrationFailed(label="+label+")" );
-			fedamb().synchronizationPointRegistrationFailed( label, null );
+			fedamb().synchronizationPointRegistrationFailed( label,
+			         SynchronizationPointFailureReason.SYNCHRONIZATION_POINT_LABEL_NOT_UNIQUE );
+			logger.trace( "         synchronizationPointRegistrationFailed() callback complete" );
 		}
 		
 		context.success();

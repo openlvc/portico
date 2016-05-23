@@ -184,12 +184,18 @@ public class FOM
 		for( Element attributeElement : attributes )
 		{
 			String attributeName = getChildValue( attributeElement, "name" );
-			String attributeOrder = getChildValue( attributeElement, "order" );
-			String attributeTransport = getChildValue( attributeElement, "transportation" );
-			
 			ACMetadata attribute = fom.newAttribute( attributeName );
-			attribute.setOrder( Order.fromFomString(attributeOrder) );
-			attribute.setTransport( Transport.fromFomString(attributeTransport) );
+
+			// Order and Transport
+			String attributeOrder = getChildValueForgiving( attributeElement, "order", attributeName );
+			if( attributeOrder != null )
+				attribute.setOrder( Order.fromFomString(attributeOrder) );
+
+			String attributeTransport = getChildValueForgiving( attributeElement, "transportation", attributeName );
+			if( attributeTransport != null )
+				attribute.setTransport( Transport.fromFomString(attributeTransport) );
+
+			// add the attribute to the containing class
 			clazz.addAttribute( attribute );
 		}
 	}
@@ -237,10 +243,11 @@ public class FOM
 		ICMetadata interactionRoot = fom.newInteraction("HLAinteractionRoot" );
 
 		// get the transport and order
-		String interactionOrder = getChildValueForgiving( interactionRootElement, "order" );
-		String interactionTransport = getChildValueForgiving( interactionRootElement, "transportation" );
+		String interactionOrder = getChildValueForgiving( interactionRootElement, "order", name );
 		if( interactionOrder != null )
 			interactionRoot.setOrder( Order.fromFomString(interactionOrder) );
+
+		String interactionTransport = getChildValueForgiving( interactionRootElement, "transportation", name );
 		if( interactionTransport != null )
 			interactionRoot.setTransport( Transport.fromFomString(interactionTransport) );
 
@@ -264,10 +271,13 @@ public class FOM
 			ICMetadata interactionClass = fom.newInteraction( interactionClassName );
 
 			// get the transport and order
-			String interactionOrder = getChildValue( current, "order" );
-			String interactionTransport = getChildValue( current, "transportation" );
-			interactionClass.setOrder( Order.fromFomString(interactionOrder) );
-			interactionClass.setTransport( Transport.fromFomString(interactionTransport) );
+			String interactionOrder = getChildValueForgiving( current, "order", interactionClassName );
+			if( interactionOrder != null )
+				interactionClass.setOrder( Order.fromFomString(interactionOrder) );
+
+			String interactionTransport = getChildValueForgiving( current, "transportation", interactionClassName );
+			if( interactionTransport != null )
+				interactionClass.setTransport( Transport.fromFomString(interactionTransport) );
 
 			// get all the interaction parameters
 			extractParameters( interactionClass, current );
@@ -373,11 +383,43 @@ public class FOM
 	 */
 	private String getChildValue( Element element, String name ) throws JErrorReadingFED
 	{
+		return getChildValue( element, name, null );
+	}
+
+	/**
+	 * To provide some better context to errors, this method takes an additional `typeName`
+	 * parameter that will be used in any exception reporting. This allows pretty generic,
+	 * difficult to find errors like "Element <interactionClass> missing child <order>" to
+	 * become a bit more descriptive by including the name value of the interaction class
+	 * (in this example).
+	 * 
+	 * @param element  Element to look for the child in
+	 * @param name     Name of the child to look for and return its value
+	 * @param typeName Name of the type we are looking in if known. `null` will cause the
+	 *                 name to not be printed and is still valid.
+	 * @return The value of the named sub-element inside the given element.
+	 * @throws JErrorReadingFed if the value cannot be found
+	 */
+	private String getChildValue( Element element, String name, String typeName )
+		throws JErrorReadingFED
+	{
+		if( typeName == null )
+			typeName = "unknown";
+
+		// check for the value of an attribute first
+		if( element.hasAttribute(name) )
+			return element.getAttribute( name );
+		
+		// if no attribute is present, look for a child element
 		Element child = getFirstChildElement( element, name );
 		if( child == null )
 		{
-			throw new JErrorReadingFED( "Element <"+element.getTagName()+"> missing child <"+
-			                            name+"> element" );
+			String message = String.format( "Element <%s name=\"%s\"> missing child <%s> element",
+			                                element.getTagName(),
+			                                typeName,
+			                                name );
+			
+			throw new JErrorReadingFED( message );
 		}
 		else
 		{
@@ -389,13 +431,13 @@ public class FOM
 	 * Same as {@link #getChildValue(Element, String)} except that it returns null if there is
 	 * no child rather than throwing an exception.
 	 * 
-	 * @see {@link #getChildValue(Element, String)}
+	 * @see {@link #getChildValue(Element, String, String)}
 	 */
-	private String getChildValueForgiving( Element element, String name )
+	private String getChildValueForgiving( Element element, String name, String typeName )
 	{
 		try
 		{
-			return getChildValue( element, name );
+			return getChildValue( element, name, typeName );
 		}
 		catch( JErrorReadingFED error )
 		{
