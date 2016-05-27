@@ -12,12 +12,13 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla13.fomparser;
+package hlaunit.hla13.fom;
 
 import java.net.URL;
 
 import static org.testng.Assert.*;
 
+import org.portico.impl.hla13.fomparser.FOM;
 import org.portico.lrc.compat.JErrorReadingFED;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.ieee1516e;
+package hlaunit.ieee1516e.fom;
 
 import java.net.URL;
 import java.util.ArrayList;
