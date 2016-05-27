@@ -266,14 +266,14 @@ public class ModelMerger
 		// Check to see if we can merge/extend //
 		/////////////////////////////////////////
 		// the appropriate merging action will depend on whether the class is a scaffodling
-		// type in either the base or extension module - let's get the att count to see
+		// type in either the base or extension module - let's get the parameter count to see
 		int baseParameters = base.getDeclaredParameters().size();
 		int extensionParameters = extension.getDeclaredParameters().size();
 		
 		// Neither base nor Extension have parameters - It's scaffolding in both modules, recurse
 		//if( baseParameters == 0 && extensionParameters == 0 ) {} -- here for comments
 
-		// Extension has no parameters - It's scaffolding for something further down, recuse
+		// Extension has no parameters - It's scaffolding for something further down, recurse
 		//if( baseParameters > 0 && extensionParameters == 0 ) {} -- here for comments
 
 		// Both Base and Extension declare parameters.
@@ -299,10 +299,10 @@ public class ModelMerger
 		}
 
 		//////////////////////////////////
-		// resurce down to the children //
+		// recurse down to the children //
 		//////////////////////////////////
 		// check to see if there are any types in the extension that can be inserted into the base
-		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
+		// take copy of the set to avoid concurrent modification exceptions if we extend the model
 		Set<ICMetadata> extensionChildren = new HashSet<ICMetadata>( extension.getChildTypes() );
 		for( ICMetadata extensionChild : extensionChildren )
 		{
