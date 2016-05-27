@@ -20,9 +20,7 @@ import java.util.List;
 
 import static org.testng.Assert.*;
 
-import org.apache.log4j.Logger;
 import org.portico.impl.hla1516e.fomparser.FOM;
-import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JErrorReadingFED;
 import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;

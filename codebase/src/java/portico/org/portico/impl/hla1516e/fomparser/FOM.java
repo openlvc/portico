@@ -89,7 +89,9 @@ public class FOM
 		if( objectsElement != null )
 		{
 			objectRoot = this.extractObjects( objectsElement );
-		} else {
+		}
+		else
+		{
 			objectRoot = this.fom.newObject( "HLAobjectRoot" );
 			this.fom.addObjectClass( objectRoot );
 		}
@@ -100,7 +102,9 @@ public class FOM
 		if( interactionsElement != null )
 		{
 			interactionRoot = this.extractInteractions( interactionsElement );
-		} else {
+		}
+		else
+		{
 			interactionRoot = this.fom.newInteraction( "HLAinteractionRoot" );
 			this.fom.addInteractionClass( interactionRoot );
 		}
