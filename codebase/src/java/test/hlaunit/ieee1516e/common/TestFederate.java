@@ -38,6 +38,7 @@ import hla.rti1516e.ResignAction;
 import hla.rti1516e.RTIambassador;
 import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
+import hla.rti1516e.exceptions.FederationExecutionDoesNotExist;
 import hla.rti1516e.exceptions.NameNotFound;
 import hlaunit.ieee1516e.TestSetup;
 
@@ -304,6 +305,12 @@ public class TestFederate
 		try
 		{
 			this.rtiamb.destroyFederationExecution( name );
+		}
+		catch( FederationExecutionDoesNotExist fedne )
+		{
+			// ignore - if everyone has resigned, the federation ceases to exist due to
+			// Portico's fully distributed model, so we can get false positives if we
+			// clean up correctly. Need a better solution to this in the JGroups connection.
 		}
 		catch( Exception e )
 		{
