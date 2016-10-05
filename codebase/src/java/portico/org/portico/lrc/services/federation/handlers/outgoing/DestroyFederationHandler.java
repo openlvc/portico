@@ -21,6 +21,8 @@ import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 
+import hla.rti.FederationExecutionDoesNotExist;
+
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="outgoing",
@@ -51,7 +53,9 @@ public class DestroyFederationHandler extends LRCMessageHandler
 	public void process( MessageContext context ) throws Exception
 	{
 		DestroyFederation request = context.getRequest( DestroyFederation.class, this );
-		
+		if( request.getFederationName() == null )
+			throw new FederationExecutionDoesNotExist( "Can't use null for federation name" );
+
 		// log the request and pass it on to the connection
 		logger.debug( "ATTEMPT Destroy federation execution [" +request.getFederationName()+ "]" );
 		connection.destroyFederation( request );

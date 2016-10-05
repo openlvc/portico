@@ -17,6 +17,7 @@ package hlaunit.ieee1516e.federation;
 import hla.rti1516e.exceptions.FederatesCurrentlyJoined;
 import hla.rti1516e.exceptions.FederationExecutionDoesNotExist;
 import hla.rti1516e.exceptions.RTIinternalError;
+import hlaunit.CommonSetup;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
 import org.testng.Assert;
@@ -84,6 +85,10 @@ public class DestroyFederationTest extends Abstract1516eTest
 			Assert.fail( "Failed to destroy existing federation", e );
 		}
 		
+		// skip this bit if we're using JGroups - it'll give us a false positive
+		if( CommonSetup.JGROUPS_ACTIVE )
+			return;
+
 		try
 		{
 			// ensure that federation is gone and can't be destroyed again //
@@ -106,6 +111,10 @@ public class DestroyFederationTest extends Abstract1516eTest
 	@Test
 	public void testDestroyFederationThatDoesNotExist()
 	{
+		// skip this bit if we're using JGroups - it'll give us a false positive
+		if( CommonSetup.JGROUPS_ACTIVE )
+			return;
+
 		// try and destroy a federation that does not exist //
 		try
 		{

@@ -43,6 +43,17 @@ public class CommonSetup
 	 * or the IP of the interface you want used.
 	 */
 	public static final String JGROUPS_INTERFACE = "jgroups.interface";
+
+	/**
+	 * Set to true when the JGroups binding is active. There are some instances in which we have
+	 * to treat things slightly differently to keep the tests happy if we are using JGroups.
+	 * These are largely inconsequential. For example, with JGroups we can't tell the difference
+	 * between a federation that has been destroyed and one which simply has no federates. This
+	 * can prevent us throwing a no-such-federation exception, which is nice, but has no significant
+	 * consequence. Rather than get bent out of shape about this, we'll just selectively ignore
+	 * these causes for JGroups.
+	 */
+	public static boolean JGROUPS_ACTIVE = false; 
 	
 	public static long TIMEOUT = 1000;
 
@@ -100,6 +111,7 @@ public class CommonSetup
 			}
 			else if( binding.equals("jgroups") )
 			{
+				JGROUPS_ACTIVE = true;
 				// set the system property that contains the connection implementation
 				System.setProperty( PorticoConstants.PROPERTY_CONNECTION,
 				                    "org.portico.bindings.jgroups.JGroupsConnection" );

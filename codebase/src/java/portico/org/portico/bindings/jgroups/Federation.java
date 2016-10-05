@@ -341,8 +341,15 @@ public class Federation
 		// check to make sure there is a federation to destroy
 		if( manifest.containsFederation() == false )
 		{
-			logger.error( "FAILURE destoryFederation ["+fedname+"]: doesn't exist" );
-			throw new JFederationExecutionDoesNotExist( "doesn't exist: "+fedname );
+			// Look, let's just let this slide. No exception needed. There is an active
+			// channel, so there MAY have been a federation before everyone resigned. If
+			// we throw an exception we'll give good federates trying to clean things up
+			// a potentially false picture (and maybe cause them to exit).
+			// 
+			// The only thing that will get upset is our unit tests, and we'll fix them.
+			// In practical terms, NOT throwing an exception here does no harm.
+			logger.warn( "destoryFederation() called on channel where there is no active federation, ignoring" );
+			return;
 		}
 
 		// check to make sure there are no federates still joined

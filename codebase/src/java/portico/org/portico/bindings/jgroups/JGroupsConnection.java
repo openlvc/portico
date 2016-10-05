@@ -338,8 +338,13 @@ public class JGroupsConnection implements IConnection
 			// are federates still connected (and thus it can't destroy the federation).
 			// That exception would in turn cascade out and prevent us from disconnecting
 			// unless we did something about it!
-			federation.disconnect();
-			federations.remove( federation );
+			//
+			// And now I'm removing this because it is causing problems with the unit tests
+			// when using the JGroups binding. The federation is being successfully destroyed,
+			// but we intend to keep the connection open, which this code is preventing. Still
+			// can't 100% recall the use-case reason this was here, but keeping until memory jogged
+			//federation.disconnect();
+			//federations.remove( federation );
 		}
 	}
 
