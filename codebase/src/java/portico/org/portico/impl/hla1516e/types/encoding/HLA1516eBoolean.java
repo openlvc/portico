@@ -116,6 +116,10 @@ public class HLA1516eBoolean extends HLA1516eDataElement implements HLAboolean
 			else
 				throw new DecoderException("Only valid values for boolean are 0 and 1, found: "+candidateValue);
 		}
+		catch( DecoderException de )
+		{
+			throw de;
+		}
 		catch( Exception e )
 		{
 			throw new DecoderException( e.getMessage(), e );

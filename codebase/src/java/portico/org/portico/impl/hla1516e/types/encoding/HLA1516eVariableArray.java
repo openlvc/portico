@@ -162,14 +162,14 @@ public class HLA1516eVariableArray<T extends DataElement>
     public void decode( ByteWrapper byteWrapper )
         throws DecoderException
     {
-		// Read in the number of elements to decode
-		if( byteWrapper.remaining() < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		// Make sure we have at least the minimum we need to read
+		super.checkForUnderflow( byteWrapper, 4 );
+		int size = byteWrapper.getInt();
+		super.checkForUnderflow( byteWrapper, size*getEncodedLength() );
 		
 		// Clear the underlying collection so that it's ready to receive the new values
 		this.elements.clear();
 		
-		int size = byteWrapper.getInt();
 		for( int i = 0 ; i < size ; ++i )
 		{
 			// Create a new element to house the new value and read it in from the byte wrapper

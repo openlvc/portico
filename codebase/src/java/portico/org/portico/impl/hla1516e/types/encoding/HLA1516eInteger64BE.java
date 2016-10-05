@@ -104,9 +104,7 @@ public class HLA1516eInteger64BE extends HLA1516eDataElement implements HLAinteg
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < 8 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( byteWrapper, 8 );
 		byte[] buffer = new byte[8];
 		byteWrapper.get( buffer );
 		decode( buffer );
@@ -115,14 +113,8 @@ public class HLA1516eInteger64BE extends HLA1516eDataElement implements HLAinteg
 	@Override
 	public final void decode( byte[] bytes ) throws DecoderException
 	{
-		try
-		{
-			this.value = BitHelpers.readLongBE( bytes, 0 );
-		}
-		catch( Exception e )
-		{
-			throw new DecoderException( e.getMessage(), e );
-		}
+		super.checkForUnderflow( bytes, 0, 8 );
+		this.value = BitHelpers.readLongBE( bytes, 0 );
 	}
 
 	//----------------------------------------------------------

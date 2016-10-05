@@ -89,19 +89,29 @@ public abstract class HLA1516eDataElement implements DataElement
 	/////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////// Helper Methods /////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
-	protected final void AvalidateNotNull( Object buffer ) throws DecoderException
+	protected final void verifyNotNull( Object buffer ) throws DecoderException
 	{
 		if( buffer == null )
 			throw new DecoderException( "buffer was null" );
 	}
 
-	protected final void AvalidateBytesRemaining( byte[] buffer, int offset, int expected )
+	protected final void checkForUnderflow( byte[] buffer, int offset, int expected )
 		throws DecoderException
 	{
 		if( buffer.length-offset < expected )
 		{
 			throw new DecoderException( "buffer underflow: expected "+expected+", found "+
 			                            (buffer.length-offset) );
+		}
+	}
+	
+	protected final void checkForUnderflow( ByteWrapper wrapper, int expected )
+		throws DecoderException
+	{
+		if( wrapper.remaining() < expected )
+		{
+			throw new DecoderException( "Buffer underflow. Expected "+expected+", found "+
+			                            wrapper.remaining() );
 		}
 	}
 

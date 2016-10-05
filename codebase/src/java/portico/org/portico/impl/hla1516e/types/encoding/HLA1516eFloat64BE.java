@@ -107,8 +107,7 @@ public class HLA1516eFloat64BE extends HLA1516eDataElement implements HLAfloat64
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < 8 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		super.checkForUnderflow( byteWrapper, 8 );
 		
 		byte[] buffer = new byte[8];
 		byteWrapper.get( buffer );
@@ -118,9 +117,7 @@ public class HLA1516eFloat64BE extends HLA1516eDataElement implements HLAfloat64
 	@Override
 	public final void decode( byte[] bytes ) throws DecoderException
 	{
-		if( bytes.length < 8 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( bytes, 0, 8 );
 		this.value = BitHelpers.readDoubleBE( bytes, 0 );
 	}
 

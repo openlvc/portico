@@ -102,6 +102,20 @@ public class ModelMerger
 		if( extension.getInteractionRoot() != null )
 			mergeInteractionClass( base.getInteractionRoot(), extension.getInteractionRoot() );
 		
+		//
+		// ignore the remaining - no way to get this info back out from RTIamb anyway
+		//
+		// merge the dimensions
+		// merge the time
+		// merge the user supplied tags
+		// merge the sync points
+		// merge the transport types
+		// merge the udpate rates
+		// merge the switches
+		// merge the data types
+		// merge the service usage
+		
+		
 		// return the merges model
 		return base;
 	}

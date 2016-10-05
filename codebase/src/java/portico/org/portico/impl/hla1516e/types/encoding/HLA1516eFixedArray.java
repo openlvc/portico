@@ -150,7 +150,7 @@ public class HLA1516eFixedArray<T extends DataElement>
 	{
 		// Need at least 4 bytes to read the number of elements
 		if( byteWrapper.remaining() < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+			throw new DecoderException( "Buffer underflow: Expected 4, found "+byteWrapper.remaining() );
 		
 		// Incoming size must match the size that the array was initialised with
 		int length = byteWrapper.getInt();

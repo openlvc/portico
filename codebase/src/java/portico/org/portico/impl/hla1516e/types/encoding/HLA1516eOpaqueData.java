@@ -164,17 +164,11 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		try
-		{
-    		int length = byteWrapper.getInt();
-    		this.value = new byte[length];
-    		
-    		byteWrapper.get( this.value );
-		}
-		catch( ArrayIndexOutOfBoundsException aioobe )
-		{
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		}
+		super.checkForUnderflow( byteWrapper, 4 );
+		int length = byteWrapper.getInt();
+		super.checkForUnderflow( byteWrapper, length );
+		this.value = new byte[length];
+		byteWrapper.get( this.value );
 	}
 
 	@Override

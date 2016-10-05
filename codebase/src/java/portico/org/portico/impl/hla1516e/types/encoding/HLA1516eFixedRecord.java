@@ -141,7 +141,7 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
 		if( this.elements.size() == 0 )
-			throw new EncoderException( "Cannot decode into an empty fixed record!" );
+			throw new DecoderException( "Cannot decode into an empty fixed record!" );
 		
 		for( DataElement element : this.elements )
 			element.decode( byteWrapper );

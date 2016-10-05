@@ -99,18 +99,14 @@ public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < this.getEncodedLength() )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( byteWrapper, 1 );
 		this.value = (byte)byteWrapper.get();
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		if( bytes.length < this.getEncodedLength() )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( bytes, 0, 1 );
 		this.value = bytes[0];
 	}
 

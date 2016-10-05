@@ -107,9 +107,7 @@ public class HLA1516eOctetPairBE extends HLA1516eDataElement implements HLAoctet
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < 2 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( byteWrapper, 2 );
 		byte[] buffer = new byte[2];
 		byteWrapper.get( buffer );
 		decode( buffer );
@@ -118,9 +116,7 @@ public class HLA1516eOctetPairBE extends HLA1516eDataElement implements HLAoctet
 	@Override
 	public final void decode( byte[] bytes ) throws DecoderException
 	{
-		if( bytes.length < 2 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( bytes, 0, 2 );
 		this.value = BitHelpers.readShortBE( bytes, 0 );
 	}
 

@@ -132,12 +132,14 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
+		super.checkForUnderflow( byteWrapper, 4 );
+		int length = byteWrapper.getInt();
+		super.checkForUnderflow( byteWrapper, length*2 );
+		byte[] buffer = new byte[length * 2];
+		byteWrapper.get( buffer );
+
 		try
 		{
-    		int length = byteWrapper.getInt();
-    		byte[] buffer = new byte[length * 2];
-    		byteWrapper.get( buffer );
-    		
     		this.value = new String( buffer, CHARSET );
 		}
 		catch( Exception e )
@@ -149,17 +151,7 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		try
-		{
-    		int length = BitHelpers.readIntBE( bytes, 0 );
-    		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length * 2 );
-		
-			this.value = new String( stringBytes, CHARSET );
-		}
-		catch( Exception e )
-		{
-			throw new DecoderException( e.getMessage(), e );
-		}
+		this.decode( new ByteWrapper(bytes) );
 	}
 
 	//----------------------------------------------------------
