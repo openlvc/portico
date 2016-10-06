@@ -314,7 +314,7 @@ public class JoinFederationTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////////
 	// TEST: (valid) testJoinFederationWithTypeAndModules() //
 	//////////////////////////////////////////////////////////
-	@Test(groups="poo")
+	@Test
 	public void testJoinFederationWithTypeAndModules()
 	{
 		// join the base federate to the federation

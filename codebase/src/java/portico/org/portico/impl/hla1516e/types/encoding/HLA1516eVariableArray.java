@@ -165,7 +165,6 @@ public class HLA1516eVariableArray<T extends DataElement>
 		// Make sure we have at least the minimum we need to read
 		super.checkForUnderflow( byteWrapper, 4 );
 		int size = byteWrapper.getInt();
-		super.checkForUnderflow( byteWrapper, size*getEncodedLength() );
 		
 		// Clear the underlying collection so that it's ready to receive the new values
 		this.elements.clear();
