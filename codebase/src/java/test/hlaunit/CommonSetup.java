@@ -86,6 +86,7 @@ public class CommonSetup
 		
 		// set the global log level based off the given level above
 		System.setProperty( PorticoConstants.PROPERTY_PORTICO_LOG_LEVEL, loglevel );
+		System.setProperty( PorticoConstants.PROPERTY_CONTAINER_LOG_LEVEL, "FATAL" );
 		
 		/////////////////////////////////////////////////////////////////////////////
 		// set up the plugins directory, otherwise the handlers might not be found //

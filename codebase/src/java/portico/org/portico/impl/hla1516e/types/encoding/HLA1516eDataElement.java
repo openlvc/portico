@@ -100,8 +100,9 @@ public abstract class HLA1516eDataElement implements DataElement
 	{
 		if( buffer.length-offset < expected )
 		{
-			throw new DecoderException( "buffer underflow: expected "+expected+", found "+
-			                            (buffer.length-offset) );
+			int remaining = buffer.length-offset;
+			throw new DecoderException( "Buffer Underflow. Remaining="+remaining+"b, Expected="+
+			                            expected+"b, Total Buffer="+buffer.length+"b" );
 		}
 	}
 	
@@ -110,8 +111,9 @@ public abstract class HLA1516eDataElement implements DataElement
 	{
 		if( wrapper.remaining() < expected )
 		{
-			throw new DecoderException( "Buffer underflow. Expected "+expected+", found "+
-			                            wrapper.remaining() );
+			int total = wrapper.getPos()+1+wrapper.remaining();
+			throw new DecoderException( "Buffer Underflow. Remaining="+wrapper.remaining()+
+			                            "b, Expected="+expected+"b, Total Buffer="+total+"b" );
 		}
 	}
 

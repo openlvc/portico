@@ -14,7 +14,6 @@
  */
 package hlaunit.ieee1516e.types.encoding;
 
-import org.portico.impl.hla1516e.types.encoding.HLA1516eEncoderFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -30,6 +29,7 @@ import hla.rti1516e.encoding.HLAASCIIstring;
 import hla.rti1516e.encoding.HLAboolean;
 import hla.rti1516e.encoding.HLAfixedRecord;
 import hla.rti1516e.encoding.HLAfloat32BE;
+import hla.rti1516e.encoding.HLAfloat64BE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
@@ -79,7 +79,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
 			super.unexpectedException( "Creating an EncoderFactory", rtiie );
 		}
 		
-		this.encoderFactory = new HLA1516eEncoderFactory();
+//		this.encoderFactory = new HLA1516eEncoderFactory();
 	}
 
 	@Override
@@ -110,47 +110,40 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     //////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////// Test Methods //////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////
+	@Test
+	public void testHlaFixedRecord() throws DecoderException
+	{
+		// Create a new fixed record representing a position
+		HLAfixedRecord before = encoderFactory.createHLAfixedRecord();
+		before.add( encoderFactory.createHLAfloat64BE() );
+		before.add( encoderFactory.createHLAfloat64BE() );
+		before.add( encoderFactory.createHLAfloat64BE() );
+		
+		// Populate it
+		double[] doubles = new double[]{ 12.3, 23.4, 34.5 };
+		for( int i = 0; i < 3; i++ )
+		{
+			((HLAfloat64BE)before.get(i)).setValue( doubles[i] );
+		}
+		
+		// Encode it
+		byte[] bytes = before.toByteArray();
+
+		// Decode it
+		HLAfixedRecord after = encoderFactory.createHLAfixedRecord();
+		after.add( encoderFactory.createHLAfloat64BE() );
+		after.add( encoderFactory.createHLAfloat64BE() );
+		after.add( encoderFactory.createHLAfloat64BE() );
+		after.decode( bytes );
+
+		// Compare the results
+		for( int i = 0; i < 3; i++ )
+		{
+			double afterValue = ((HLAfloat64BE)after.get(i)).getValue();
+			Assert.assertEquals( afterValue, doubles[i] );
+		}
+	}
 	
-    //////////////////////////////////////
-    // TEST: testHLAfixedRecordCreate() //
-    //////////////////////////////////////
-    @Test
-    public void testHLAfixedRecordCreate()
-    {
-    	// Only one constructor to test!
-    	HLAfixedRecord defaultConstructor = this.encoderFactory.createHLAfixedRecord();
-    	Assert.assertNotNull( defaultConstructor );
-    }
-    
-    ///////////////////////////////////
-    // TEST: testHLAfixedRecordAdd() //
-    ///////////////////////////////////
-    @Test
-    public void testHLAfixedRecordAdd()
-    {
-    	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
-    	
-    	// Add some fields to the record
-    	this.addTestFieldsToRecord( data, false );
-    	
-    	// Should now be 3 fields in the record
-    	Assert.assertEquals( data.size(), 3 );
-    }
-    
-    @Test
-    public void testHLAfixedRecordGet()
-    {
-    	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
-    	
-    	// Add some fields to the record
-    	this.addTestFieldsToRecord( data, false );
-    	
-    	// Order of fields and type information is maintained
-    	Assert.assertTrue( data.get(0) instanceof HLAfloat32BE );
-    	Assert.assertTrue( data.get(1) instanceof HLAASCIIstring );
-    	Assert.assertTrue( data.get(2) instanceof HLAboolean );
-    }
-    
     //////////////////////////////////////////////
     // TEST: testHLAfixedRecordGetOutOfBounds() //
     //////////////////////////////////////////////
