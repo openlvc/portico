@@ -68,8 +68,19 @@
 					 description="Compile the full IEEE-1516e interface"/>
 	
 	<!-- ================================================================= -->
-	<!--             Visual Studio 2010 (vc10) Compile Targets             -->
+	<!--             Visual Studio 2013 (vc12) Compile Targets             -->
 	<!-- ================================================================= -->
+	<!-- The Visual Studio 2013 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc12" extensionOf="compile">
+		<compile-ieee1516e compiler="vc12" arch="x86" build="debug"/>
+		<compile-ieee1516e compiler="vc12" arch="x86" build="release"/>
+		<compile-ieee1516e compiler="vc12" arch="amd64" build="debug"/>
+		<compile-ieee1516e compiler="vc12" arch="amd64" build="release"/>
+	</target>
+	
 	<!-- The Visual Studio 2010 related extension points.
 	     We have one of these for each supported platform architecture so
 		 that we can compile all the targets for each arch as a group.
