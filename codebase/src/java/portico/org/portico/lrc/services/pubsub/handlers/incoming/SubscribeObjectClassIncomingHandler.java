@@ -59,7 +59,7 @@ public class SubscribeObjectClassIncomingHandler extends LRCMessageHandler
 			String ddm = request.usesDdm() ? " (region: "+request.getRegionToken()+")" : "";
 			logger.debug( "@REMOTE Federate ["+moniker(request)+"] subscribed to object class ["+
 			              ocMoniker(request.getClassHandle())+"] with attributes "+
-			              acMoniker(request.getAttributes()) + "]" + ddm );
+			              acMoniker(request.getAttributes()) + ddm );
 		}
 		
 		// record the subscription

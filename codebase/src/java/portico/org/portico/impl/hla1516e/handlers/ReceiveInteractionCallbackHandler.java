@@ -24,7 +24,6 @@ import static org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFa
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
-import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
@@ -78,7 +77,7 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			if( logger.isTraceEnabled() )
 			{
 				logger.trace( "CALLBACK receiveInteraction(class="+classHandle+",parameters="+
-				              PorticoConstants.mapToStringWithSizes(parameters)+",time="+
+				              super.pcMonikerWithSizes(parameters)+",time="+
 				              timestamp+") (TSO)" );
 			}
 			
@@ -96,7 +95,7 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			if( logger.isTraceEnabled() )
 			{
 				logger.trace( "CALLBACK receiveInteraction(class="+classHandle+",parameters="+
-				              PorticoConstants.mapToStringWithSizes(parameters)+") (RO)" );
+				              super.pcMonikerWithSizes(parameters)+") (RO)" );
 			}
 			
 			fedamb().receiveInteraction( new HLA1516eHandle(classHandle),

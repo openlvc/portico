@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.HLA13ReflectedAttributes;
-import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
 import org.portico.utils.messaging.MessageContext;
@@ -85,7 +84,7 @@ public class ReflectAttributesCallbackHandler extends HLA13CallbackHandler
 			
 			
 			logger.trace( "CALLBACK reflectAttributeValues(object="+objectHandle+",attributes="+
-			              PorticoConstants.mapToStringWithSizes(filteredValuesOnly)+timeInfo );
+			              super.acMonikerWithSizes(filteredValuesOnly)+timeInfo );
 		}
 		
 		// do the callback

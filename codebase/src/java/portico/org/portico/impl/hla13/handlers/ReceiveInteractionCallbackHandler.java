@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.HLA13ReceivedInteraction;
-import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.model.RegionInstance;
 import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.utils.messaging.MessageContext;
@@ -74,7 +73,7 @@ public class ReceiveInteractionCallbackHandler extends HLA13CallbackHandler
 				timeInfo = ",time:"+timestamp+") (TSO)";
 
 			logger.trace( "CALLBACK receiveInteraction(class="+classHandle+",parameters="+
-			              PorticoConstants.mapToStringWithSizes(parameters)+timeInfo );
+			              pcMonikerWithSizes(parameters)+timeInfo );
 		}
 		
 		// do the callback

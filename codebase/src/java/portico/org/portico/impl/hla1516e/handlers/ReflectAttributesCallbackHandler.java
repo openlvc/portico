@@ -24,7 +24,6 @@ import static org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFa
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
-import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
 import org.portico.utils.messaging.MessageContext;
@@ -78,7 +77,7 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 			if( logger.isTraceEnabled() )
 			{
 				logger.trace( "CALLBACK reflectAttributeValues(object="+objectHandle+",attributes="+
-				              PorticoConstants.mapToStringWithSizes(attributes)+
+				              acMonikerWithSizes(attributes)+
 				              ",time="+timestamp+") (TSO)" );
 			}
 			
@@ -96,7 +95,7 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 			if( logger.isTraceEnabled() )
 			{
 				logger.trace( "CALLBACK reflectAttributeValues(object="+objectHandle+",attributes="+
-				              PorticoConstants.mapToStringWithSizes(attributes)+") (RO)" );
+				              acMonikerWithSizes(attributes)+") (RO)" );
 			}
 			
 			fedamb().reflectAttributeValues( new HLA1516eHandle(objectHandle),

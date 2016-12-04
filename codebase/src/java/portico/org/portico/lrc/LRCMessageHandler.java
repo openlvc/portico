@@ -451,6 +451,52 @@ public abstract class LRCMessageHandler extends AbstractMessageHandler
 
 		return attributes.toString();
 	}
+
+	/**
+	 * Returns a printable string for the given set of attributes that also includes the
+	 * size of the values provided in brackets after the name. For example [name(14b),other(4b)].
+	 * <p/>
+	 * The names are only substituted for handles if set to do so in the FOM.
+	 * (see {@link PorticoConstants#isPrintHandlesForAttributeClass()})
+	 */
+	protected String acMonikerWithSizes( Map<Integer,byte[]> attributes )
+	{
+		ArrayList<String> printable = new ArrayList<>();
+		final boolean printHandles = PorticoConstants.isPrintHandlesForAttributeClass();
+		for( Integer handle : attributes.keySet() )
+		{
+			int size = attributes.get(handle).length;
+			if( printHandles )
+				printable.add( handle+"("+size+"b)" );
+			else
+				printable.add( fom().findAttributeName(handle)+"("+size+"b)" );
+		}
+		
+		return printable.toString();
+	}
+	
+	/**
+	 * Returns a printable string for the given set of parameters that also includes the
+	 * size of the values provided in brackets after the name. For example [name(14b),other(4b)].
+	 * <p/>
+	 * The names are only substituted for handles if set to do so in the FOM.
+	 * (see {@link PorticoConstants#isPrintHandlesForAttributeClass()})
+	 */
+	protected String pcMonikerWithSizes( Map<Integer,byte[]> parameters )
+	{
+		ArrayList<String> printable = new ArrayList<>();
+		final boolean printHandles = PorticoConstants.isPrintHandlesForParameterClass();
+		for( Integer handle : parameters.keySet() )
+		{
+			int size = parameters.get(handle).length;
+			if( printHandles )
+				printable.add( handle+"("+size+"b)" );
+			else
+				printable.add( fom().findParameterName(handle)+"("+size+"b)" );
+		}
+
+		return printable.toString();
+	}
 	
 	/**
 	 * Returns a string that represents the interaction class. If logging with names is enabled
