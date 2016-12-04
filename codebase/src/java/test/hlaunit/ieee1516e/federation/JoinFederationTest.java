@@ -351,14 +351,18 @@ public class JoinFederationTest extends Abstract1516eTest
 		
 		// validate that the default federate now fetch information about the extended FOM
 		// classes from RestaurantProcess.xml
-		defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
-		secondFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
-		defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
-		secondFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		int handleA = defaultFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		int handleB = secondFederate.quickOCHandle( "HLAobjectRoot.Employee.Waiter" );
+		Assert.assertEquals( handleB, handleA );
+		
+		handleA = defaultFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		handleB = secondFederate.quickICHandle( "HLAinteractionRoot.CustomerTransactions.FoodServed" );
+		Assert.assertEquals( handleB, handleA );
 		
 		// classes from RestaurantFood.xml
-		defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
-		secondFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		handleA = defaultFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		handleB = secondFederate.quickOCHandle( "HLAobjectRoot.Food.SideDish.Corn" );
+		Assert.assertEquals( handleB, handleA );
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////
