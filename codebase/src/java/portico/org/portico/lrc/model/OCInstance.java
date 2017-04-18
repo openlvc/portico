@@ -243,7 +243,16 @@ public class OCInstance implements Serializable
 	 */
 	public boolean isOwner( int federateHandle )
 	{
-		return this.getOwner() == federateHandle;
+		int privHandle = this.registeredType.getModel().getPrivilegeToDelete();
+		
+		if( privHandle == ObjectModel.INVALID_HANDLE )
+		{
+			return true;
+		}
+		else
+		{
+			return this.getOwner() == federateHandle;
+		}
 	}
 	
 	/**
