@@ -61,7 +61,6 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	// Use to determine whether an incoming View update is a result
 	// of a removal following a failure
 	private Map<Address,UUID> allSeenMembers;  // map of all channel members
-	private Set<Address> suspected;            // set of those we have a suspect message for
 	private Set<Address> lastView;             // set of all federates in last view update
 
 	//----------------------------------------------------------
@@ -74,7 +73,6 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 		this.channelName = federation.getFederationName();
 
 		this.allSeenMembers = new HashMap<>();
-		this.suspected = new HashSet<>();
 		this.lastView = new HashSet<>();
 	}
 
@@ -101,13 +99,6 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 
 		lastView.clear();
 		lastView.addAll( newMembers );
-		
-		// check the new view to see if any of the suspected members have been removed
-		//for( Address suspect : suspected )
-		//{
-		//	if( newView.containsMember(suspect) == false )
-		//		federation.receiveCrashed( allSeenMembers.get(suspect) );
-		//}
 	}
 
 	/**
@@ -115,14 +106,9 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	 */
 	public void suspect( Address suspectedDropout )
 	{
-		//this.suspected.add( suspectedDropout );
-		
 		UUID uuid = this.allSeenMembers.get( suspectedDropout );
 		String federateName = federation.getManifest().getFederateName( uuid );
 		logger.warn( "Detected that federate ["+federateName+"] may have crashed, investigating..." );
-		
-		//if( uuid != null )
-		//	this.suspected.add( suspectedDropout );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////

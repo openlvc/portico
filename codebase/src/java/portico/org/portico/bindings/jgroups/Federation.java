@@ -604,17 +604,39 @@ public class Federation
 	/** Confirmation that a federate has left when we did not expect */
 	public void receiveCrashed( UUID crashed )
 	{
-		if( manifest.isJoinedFederate(crashed) )
+		// If we're not the coordinator this should never have been called.
+		// The only time this could be called is if the coordinator was the
+		// one who crashed AND we are the new JGroups coordinator (congrats)
+		if( manifest.getCoordinator().equals(crashed) )
 		{
-			String federateName = manifest.getFederateName( crashed );
-			logger.warn( "Federate ["+federateName+
-			             "] has crashed. Sending fake resignation because it was too rude to." );
-			
-			receiveGoodbye( crashed, new byte[]{} );
+			// The king is dead, all hail... us!
+			// What do we do now?
+			logger.warn( "Coordinator crashed. We are the new coordinator and immediately apply for leave" );
+			return;
 		}
-		else
+
+		// if we're not the coordinator then none of this mess is ours to worry about
+		if( manifest.isCoordinator() == false )
+			return;
+
+		// was the swine even joined!?
+		if( manifest.isJoinedFederate(crashed) == false )
 		{
+			// a connection crashed, but it wasn't yet a joined federate
 			logger.warn( "Unknown channel member crashed. Don't think it was a federate. Ignoring. uuid="+crashed );
+			return;
+		}
+
+		// OK - we have a crashed federate, we are the coordinator, it's up to us
+		try
+		{
+			String name = manifest.getFederateName( crashed );
+			logger.warn( "Federate ["+name+"] has crashed. Sending fake resignation because it was too rude to." );
+			channel.sendCrashedFederate( crashed );
+		}
+		catch( Exception e )
+		{
+			logger.error( "Exception while telling federation about a crashed federate, expect inconsistency", e );
 		}
 	}
 	

@@ -96,7 +96,7 @@ public class Manifest implements Serializable
 	public String getFederateName( UUID uuid )
 	{
 		FederateInfo info = federates.get(uuid);
-		return info != null ? info.name : "unkonwn";
+		return info != null ? info.name : "unknown";
 	}
 	
 	public int getFederateHandle( UUID uuid )

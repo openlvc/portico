@@ -14,6 +14,7 @@
  */
 package org.portico.bindings.jgroups.channel;
 
+import java.util.UUID;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
@@ -249,12 +250,27 @@ public class Channel
 		sendSyncControlMessage( ControlHeader.newDestroyHeader(), payload );
 	}
 	
+	public void sendCrashedFederate( UUID crashed ) throws Exception
+	{
+		sendAsyncControlMessage( crashed, ControlHeader.goodbye(), new byte[]{} );
+	}
+	
 	/** Sends without the RSVP header and thus will not block waiting for responses */
 	private void sendAsyncControlMessage( ControlHeader header, byte[] payload ) throws Exception
 	{
+		sendAsyncControlMessage( null, header, payload );
+	}
+	
+	/** Sends without the RSVP header and thus will not block waiting for responses */
+	private void sendAsyncControlMessage( UUID sender, ControlHeader header, byte[] payload )
+		throws Exception
+	{
+		if( sender == null )
+			sender = federation.getLocalUUID();
+
 		Message message = new Message();
 		message.putHeader( ControlHeader.HEADER, header );
-		message.putHeader( UUIDHeader.HEADER, new UUIDHeader(federation.getLocalUUID()) );
+		message.putHeader( UUIDHeader.HEADER, new UUIDHeader(sender) );
 		message.setBuffer( payload );
 		message.setFlag( Flag.DONT_BUNDLE );
 		message.setFlag( Flag.NO_FC );
@@ -265,9 +281,19 @@ public class Channel
 	/** Sends with the RSVP header. Will block while all other clients acknowledge */
 	private void sendSyncControlMessage( ControlHeader header, byte[] payload ) throws Exception
 	{
+		sendSyncControlMessage( null, header, payload );
+	}
+
+	/** Sends with the RSVP header and lets the user override who the sender is */
+	private void sendSyncControlMessage( UUID sender, ControlHeader header, byte[] payload )
+		throws Exception
+	{
+		if( sender == null )
+			sender = federation.getLocalUUID();
+		
 		Message message = new Message();
 		message.putHeader( ControlHeader.HEADER, header );
-		message.putHeader( UUIDHeader.HEADER, new UUIDHeader(federation.getLocalUUID()) );
+		message.putHeader( UUIDHeader.HEADER, new UUIDHeader(sender) );
 		message.setBuffer( payload );
 		message.setFlag( Flag.DONT_BUNDLE );
 		message.setFlag( Flag.NO_FC );
