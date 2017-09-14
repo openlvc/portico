@@ -35,6 +35,15 @@ public class ResignFederation extends PorticoMessage
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 
+	/**
+	 * Creates a new resign message with the default resign action of
+	 * {@link JResignAction#DELETE_OBJECTS_AND_RELEASE_ATTRIBUTES}.
+	 */
+	public ResignFederation()
+	{
+		this.resignAction = JResignAction.DELETE_OBJECTS_AND_RELEASE_ATTRIBUTES;
+	}
+
 	public ResignFederation( JResignAction resignAction )
 	{
 		this.resignAction = resignAction;
