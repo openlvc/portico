@@ -611,7 +611,16 @@ public class Federation
 		{
 			// The king is dead, all hail... us!
 			// What do we do now?
-			logger.warn( "Coordinator crashed. We are the new coordinator and immediately apply for leave" );
+			logger.warn( "Coordinator crashed. We are the new coordinator. The kind it dead, long live the king." );
+			try
+			{
+				channel.sendCrashedFederate( crashed );
+			}
+			catch( Exception e )
+			{
+				logger.error( "Exception while telling federation about crashed coordinator, expect inconsistency", e );
+			}
+
 			return;
 		}
 
