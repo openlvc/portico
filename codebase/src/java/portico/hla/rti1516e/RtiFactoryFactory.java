@@ -12,8 +12,11 @@ package hla.rti1516e;
 import hla.rti1516e.exceptions.RTIinternalError;
 
 import javax.imageio.spi.ServiceRegistry;
+
+import org.portico.impl.hla1516e.Rti1516eFactory;
+
 import java.util.HashSet;
-import java.util.Iterator;
+//import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -27,6 +30,7 @@ public class RtiFactoryFactory {
       throws
       RTIinternalError
    {
+	  /** Java 9 syas NO ServiceRegistry use for generic types
       Iterator<RtiFactory> i = ServiceRegistry.lookupProviders(RtiFactory.class);
       while (i.hasNext()) {
          RtiFactory rtiFactory = i.next();
@@ -35,27 +39,35 @@ public class RtiFactoryFactory {
          }
       }
       throw new RTIinternalError("Cannot find factory matching " + name);
+      */
+	  return new Rti1516eFactory();
    }
 
    public static RtiFactory getRtiFactory()
       throws
       RTIinternalError
    {
+	  /** Java 9 syas NO ServiceRegistry use for generic types
       Iterator<RtiFactory> i = ServiceRegistry.lookupProviders(RtiFactory.class);
       if (i.hasNext()) {
          return i.next();
       }
-      throw new RTIinternalError("Cannot find factory");
+      throw new RTIinternalError("Cannot find factory");*/
+	  return new Rti1516eFactory();
    }
 
    public static Set<RtiFactory> getAvailableRtiFactories()
    {
+      Set<RtiFactory> factories = new HashSet<RtiFactory>();
+      factories.add( new Rti1516eFactory() );
+      return factories;
+      /** Java 9 syas NO ServiceRegistry use for generic types
       Iterator<RtiFactory> i = ServiceRegistry.lookupProviders(RtiFactory.class);
       Set<RtiFactory> factories = new HashSet<RtiFactory>();
       while (i.hasNext()) {
          RtiFactory rtiFactory = i.next();
          factories.add(rtiFactory);
       }
-      return factories;
+      return factories;*/
    }
 }
