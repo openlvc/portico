@@ -604,17 +604,24 @@ public class Federation
 	/** Confirmation that a federate has left when we did not expect */
 	public void receiveCrashed( UUID crashed )
 	{
+		//
+		// NO NO NO NO -- This is now called for every federate because it is tied to goodbye()
+		//                How do we tell the diff between a federate that leaves and one that crashes??
+		//
+		
 		// If we're not the coordinator this should never have been called.
 		// The only time this could be called is if the coordinator was the
 		// one who crashed AND we are the new JGroups coordinator (congrats)
 		if( manifest.getCoordinator().equals(crashed) )
 		{
 			// The king is dead, all hail... us!
-			// What do we do now?
+			// What do we do now? Take over.
+			manifest.setCoordinator( uuid );
 			logger.warn( "Coordinator crashed. We are the new coordinator. The kind it dead, long live the king." );
 			try
 			{
 				channel.sendCrashedFederate( crashed );
+				channel.sendSetManifest( Util.objectToByteBuffer(manifest) );
 			}
 			catch( Exception e )
 			{
