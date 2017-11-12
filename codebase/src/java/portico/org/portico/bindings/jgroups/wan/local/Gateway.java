@@ -431,7 +431,7 @@ public class Gateway
 			if( logger.isDebugEnabled() )
 				logger.debug( "(WAN->LOCAL) relay("+payload.length+"b)" );
 
-			Message message = new Message( null /*destination*/, null /*source*/, payload );
+			Message message = new Message( null /*destination*/, payload );
 			message.setFlag( Flag.NO_RELAY ); // don't double up!
 			federation.getChannel().forwardToChannel( message );
 		}

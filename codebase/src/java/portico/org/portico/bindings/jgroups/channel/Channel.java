@@ -15,7 +15,6 @@
 package org.portico.bindings.jgroups.channel;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
 import org.jgroups.Address;
@@ -73,7 +72,6 @@ public class Channel
 		// channel details set when we connect
 		this.connected = false;
 		this.jchannel = null;
-		this.jdispatcher = null;
 		this.jlistener = new ChannelListener( federation );
 	}
 
@@ -123,7 +121,6 @@ public class Channel
 
 			// set the channel up
 			this.jchannel = constructChannel();
-			this.jdispatcher = new MessageDispatcher( jchannel, jlistener, jlistener, jlistener );
 
 			// connects to the channel and fetches state in single action
 			this.jchannel.connect( channelName );
@@ -157,21 +154,24 @@ public class Channel
 
 		// we are using daemon threds, so let's set the channel up to do so
 		// set the thread factory on the transport
-		ThreadGroup threadGroup = channel.getProtocolStack().getTransport().getChannelThreadGroup();
-		DefaultThreadFactory factory = new DefaultThreadFactory( threadGroup, "Incoming", true );
+		DefaultThreadFactory factory = new DefaultThreadFactory( "JG", true );
 		channel.getProtocolStack().getTransport().setThreadFactory( factory );
-		channel.getProtocolStack().getTransport().setOOBThreadPoolThreadFactory( factory );
-		channel.getProtocolStack().getTransport().setTimerThreadFactory( factory );
+		
+//		ThreadGroup threadGroup = channel.getProtocolStack().getTransport().getChannelThreadGroup();
+//		DefaultThreadFactory factory = new DefaultThreadFactory( threadGroup, "Incoming", true );
+//		channel.getProtocolStack().getTransport().setThreadFactory( factory );
+//		channel.getProtocolStack().getTransport().setOOBThreadPoolThreadFactory( factory );
+//		channel.getProtocolStack().getTransport().setTimerThreadFactory( factory );
 
 		// set the thread pools on the transport
-		ThreadPoolExecutor regular =
-		    (ThreadPoolExecutor)channel.getProtocolStack().getTransport().getDefaultThreadPool();
-		regular.setThreadFactory( new DefaultThreadFactory(threadGroup,"Regular",true) );
-
-		// do the same for the oob pool
-		ThreadPoolExecutor oob =
-		    (ThreadPoolExecutor)channel.getProtocolStack().getTransport().getOOBThreadPool();
-		oob.setThreadFactory( new DefaultThreadFactory(threadGroup,"OOB",true) );
+//		ThreadPoolExecutor regular =
+//		    (ThreadPoolExecutor)channel.getProtocolStack().getTransport().getDefaultThreadPool();
+//		regular.setThreadFactory( new DefaultThreadFactory(threadGroup,"Regular",true) );
+//
+//		// do the same for the oob pool
+//		ThreadPoolExecutor oob =
+//		    (ThreadPoolExecutor)channel.getProtocolStack().getTransport().getOOBThreadPool();
+//		oob.setThreadFactory( new DefaultThreadFactory(threadGroup,"OOB",true) );
 
 		return channel;
 	}
@@ -198,7 +198,7 @@ public class Channel
 		// send the message
 		try
 		{
-			Message message = new Message( null /*destination*/, null /*source*/, payload );
+			Message message = new Message( null /*destination*/, payload );
 			jchannel.send( message );
 		}
 		catch( Exception e )
