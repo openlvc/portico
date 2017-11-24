@@ -11,7 +11,7 @@ import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.Order;
 import org.portico.lrc.model.Space;
 import org.portico.lrc.model.Transport;
-
+import org.portico.lrc.model.datatype.NaType;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -301,7 +301,7 @@ public class FOM implements FOMConstants
 		Order order = null;
 		String spaceName = null;
 		jj_consume_token( ATTRIBUTE );
-		attribute = theModel.newAttribute( stringValue() );
+		attribute = theModel.newAttribute( stringValue(), NaType.INSTANCE );
 		transport = transport();
 		order = order();
 		switch( (jj_ntk == -1) ? jj_ntk() : jj_ntk )
@@ -461,7 +461,7 @@ public class FOM implements FOMConstants
 	    throws ParseException
 	{
 		jj_consume_token( PARAMETER );
-		theInteraction.addParameter( theModel.newParameter( stringValue() ) );
+		theInteraction.addParameter( theModel.newParameter(stringValue(), NaType.INSTANCE) );
 		jj_consume_token( P_CLOSE );
 	}
 

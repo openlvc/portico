@@ -251,7 +251,6 @@ public class TestFederate
 
 		try
 		{
-			URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/testfom.xml" );
 			this.rtiamb.createFederationExecution( this.simpleName, modules );
 		}
 		catch( Exception e )

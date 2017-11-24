@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectModel xmlns="http://standards.ieee.org/IEEE1516-2010"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 http://standards.ieee.org/downloads/1516/1516.2-2010/IEEE1516-DIF-2010.xsd">
+	<modelIdentification>
+		<name>Portico Test FOM</name>
+		<type>FOM</type>
+		<version>1.0</version>
+	</modelIdentification>
+	<objects/>
+	<interactions/>
+	<dimensions/>
+	<synchronizations/>
+	<transportations/>
+	<updateRates/>
+	<dataTypes>
+		<basicDataRepresentations/>
+		<simpleDataTypes/>
+		<enumeratedDataTypes>
+			<enumeratedData>
+				<name>WaiterTasks</name>
+				<!--<representation>HLAinteger32BE</representation>-->
+				<semantics>Possible activities of waiters</semantics>
+				<enumerator>
+					<name>TakingOrder</name>
+					<value>1</value>
+				</enumerator>
+				<enumerator>
+					<name>Serving</name>
+					<value>2</value>
+				</enumerator>
+				<enumerator>
+					<name>Cleaning</name>
+					<value>3</value>
+				</enumerator>
+				<enumerator>
+					<name>CalculatingBill</name>
+					<value>4</value>
+				</enumerator>
+				<enumerator>
+					<name>Other</name>
+					<value>5</value>
+				</enumerator>
+			</enumeratedData>
+		</enumeratedDataTypes>
+		<arrayDataTypes/>
+		<fixedRecordDataTypes/>
+		<variantRecordDataTypes/>
+	</dataTypes>
+	<notes/>
+</objectModel>

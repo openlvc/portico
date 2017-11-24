@@ -14,8 +14,26 @@
  */
 package org.portico.lrc.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+
+import org.portico.lrc.model.datatype.Alternative;
+import org.portico.lrc.model.datatype.ArrayType;
+import org.portico.lrc.model.datatype.BasicType;
+import org.portico.lrc.model.datatype.DatatypeClass;
+import org.portico.lrc.model.datatype.DatatypeHelpers;
+import org.portico.lrc.model.datatype.EnumeratedType;
+import org.portico.lrc.model.datatype.Enumerator;
+import org.portico.lrc.model.datatype.Field;
+import org.portico.lrc.model.datatype.FixedRecordType;
+import org.portico.lrc.model.datatype.IDatatype;
+import org.portico.lrc.model.datatype.IEnumerator;
+import org.portico.lrc.model.datatype.SimpleType;
+import org.portico.lrc.model.datatype.VariantRecordType;
 
 /**
  * This class will take an {@link ObjectModel} and render it as a String (complete with proper
@@ -62,6 +80,11 @@ public class StringRenderer
 		log( "===================================", builder, 0 );
 		renderInteraction( model.getInteractionRoot(), builder, 0 );
 		
+		log( "===================================", builder, 0 );
+		log( "==            Datatypes          ==", builder, 0 );
+		log( "===================================", builder, 0 );
+		renderDatatypes( model, builder, 0 );
+		
 		return builder.toString();
 	}
 	
@@ -102,8 +125,10 @@ public class StringRenderer
 		for( ACMetadata attribute : clazz.getDeclaredAttributes() )
 		{
 			String name = attribute.getName();
+			IDatatype datatype = attribute.getDatatype();
 			String desc = "   (attribute): " + name + ", " + pad(buffer-name.length()) +
-			              "handle=" + attribute.getHandle() + ", order=" + attribute.getOrder() +
+			              "handle=" + attribute.getHandle() + ", datatype=" + datatype.getName() +  
+			              ", order=" + attribute.getOrder() +
 			              ", transport=" + attribute.getTransport() + ", space=" +
 			              attribute.getSpace();
 			
@@ -137,8 +162,9 @@ public class StringRenderer
 		for( PCMetadata parameter : clazz.getDeclaredParameters() )
 		{
 			String name = parameter.getName();
+			IDatatype datatype = parameter.getDatatype();
 			String desc = "   (parameter): " + name + ", " + pad(buffer-name.length()) +
-			              "handle=" + parameter.getHandle();
+			              "handle=" + parameter.getHandle() + ", datatype=" + datatype.getName();
 			
 			log( desc, builder, (level+1) );
 		}
@@ -147,6 +173,110 @@ public class StringRenderer
 		for( ICMetadata subclass : clazz.getChildTypes() )
 		{
 			renderInteraction( subclass, builder, (level+1) );
+		}
+	}
+	
+	private void renderDatatypes( ObjectModel model, StringBuilder builder, int level )
+	{
+		List<IDatatype> types = new ArrayList<IDatatype>( model.getDatatypes() );
+		Collections.sort( types, new DatatypeComparator() );
+		
+		for( IDatatype type : types )
+		{
+			DatatypeClass typeClass = type.getDatatypeClass();
+			String desc = "-> (" + typeClass + "): " + type.getName();
+			switch( type.getDatatypeClass() )
+			{
+				case BASIC:
+				{
+					BasicType asBasic = (BasicType)type;
+					desc += " (size=" + asBasic.getSize() + "bit" +
+					        ", endianness: " + asBasic.getEndianness() + ")";
+					log( desc, builder, level );
+					break;
+				}
+				case SIMPLE:
+				{
+					SimpleType asSimple = (SimpleType)type;
+					desc += " (representation=" + asSimple.getRepresentation() + ")";
+					log( desc, builder, level );
+					break;
+				}
+				case ENUMERATED:
+				{
+					EnumeratedType asEnumerated = (EnumeratedType)type;
+					desc += " (representation=" + asEnumerated.getRepresentation() + ")";
+					log( desc, builder, level );
+					
+					List<Enumerator> enumerators = asEnumerated.getEnumerators();
+					int buffer = findEnumeratorBuffer( enumerators );
+					for( Enumerator enumerator : asEnumerated.getEnumerators() )
+					{
+						String name = enumerator.getName();
+						String enumDesc = "-> (enumerator): " + name + ", " + pad(buffer-name.length());
+						enumDesc += enumerator.getValue();
+						log( enumDesc, builder, level + 1 );
+					}
+					
+					break;
+				}
+				case ARRAY:
+				{
+					ArrayType asArray = (ArrayType)type;
+					desc += " (datatype=" + asArray.getDatatype().toString() + ")";
+					log( desc, builder, level );
+					
+					for( org.portico.lrc.model.datatype.Dimension dimension : asArray.getDimensions() )
+						log( "-> (dimension): " + dimension, builder, level + 1 );
+					break;
+				}
+				case FIXEDRECORD:
+				{
+					FixedRecordType asFixed = (FixedRecordType)type;
+					log( desc, builder, level );
+					List<Field> fields = asFixed.getFields();
+					int buffer = findFieldBuffer( fields );
+					for( Field field : fields )
+					{
+						String name = field.getName();
+						String fieldDesc = "-> (field): " + name + ", " + pad(buffer-name.length());
+						fieldDesc += "datatype=" + field.getDatatype();
+						log( fieldDesc, builder, level +1 );
+					}
+					
+					break;
+				}
+				case VARIANTRECORD:
+				{
+					VariantRecordType asVariant = (VariantRecordType)type;
+					log( desc, builder, level );
+					
+					String discDesc = "-> (discriminant): " + asVariant.getDiscriminantName() +  
+					                  ", datatype=" + asVariant.getDiscriminantDatatype(); 
+					log( discDesc, builder, level +1 );
+					
+					
+					List<Alternative> alternatives = 
+						new ArrayList<Alternative>( asVariant.getAlternatives() );
+					alternatives.sort( new AlternativeComparator() );
+					for( Alternative alternative : alternatives )
+					{
+						String name = alternative.getName();
+						int buffer = findAlternativeBuffer( alternatives );
+						String alternativeDesc = "-> (alternative): " + name + ", " + pad(buffer-name.length());
+						alternativeDesc += "datatype=" + alternative.getDatatype();
+						alternativeDesc += ", enumerators=";
+						
+						List<IEnumerator> enumerators = 
+							new ArrayList<IEnumerator>( alternative.getEnumerators() );
+						enumerators.sort( new EnumeratorComparator() );
+						alternativeDesc += enumerators.toString();
+						
+						log( alternativeDesc, builder, level + 2 );
+					}
+					break;
+				}
+			}
 		}
 	}
 	
@@ -186,6 +316,33 @@ public class StringRenderer
 		return longest;
 	}
 
+	private int findFieldBuffer( Collection<? extends Field> fields )
+	{
+		int longest = 0;
+		for( Field field : fields )
+			longest = Math.max( longest, field.getName().length() );
+		
+		return longest;
+	}
+	
+	private int findEnumeratorBuffer( Collection<? extends Enumerator> enumerators )
+	{
+		int longest = 0;
+		for( Enumerator enumerator : enumerators )
+			longest = Math.max( longest, enumerator.getName().length() );
+		
+		return longest;
+	}
+	
+	private int findAlternativeBuffer( Collection<? extends Alternative> alternatives )
+	{
+		int longest = 0;
+		for( Alternative alternative : alternatives )
+			longest = Math.max( longest, alternative.getName().length() );
+		
+		return longest;
+	}
+	
 	private String pad( int value )
 	{
 		char[] chars = new char[value];
@@ -210,5 +367,55 @@ public class StringRenderer
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	private static class DatatypeComparator implements Comparator<IDatatype>
+	{
+		@Override
+		public int compare( IDatatype o1, IDatatype o2 )
+		{
+			int result = o1.getDatatypeClass().compareTo( o2.getDatatypeClass() );
+			if( result == 0 )
+				result = o1.getName().compareTo( o2.getName() );
+			
+			return result;
+		}		
+	}
+	
+	private static class EnumeratorComparator implements Comparator<IEnumerator>
+	{
+		@Override
+		public int compare( IEnumerator o1, IEnumerator o2 )
+		{
+			long o1Value = o1.getValue().longValue();
+			long o2Value = o2.getValue().longValue();
+			
+			if( o1Value == o2Value )
+				return 0;
+			else if( o1Value > o2Value )
+				return 1;
+			else
+				return -1;
+		}
+		
+	}
+	
+	private static class AlternativeComparator implements Comparator<Alternative>
+	{
+		private EnumeratorComparator enumCompare;
+		
+		public AlternativeComparator()
+		{
+			this.enumCompare = new EnumeratorComparator();
+		}
+		
+		@Override
+		public int compare( Alternative o1, Alternative o2 )
+		{
+			IEnumerator o1Lowest = DatatypeHelpers.getLowestEnumerator( o1.getEnumerators() );
+			IEnumerator o2Lowest = DatatypeHelpers.getLowestEnumerator( o2.getEnumerators() );
+			
+			return enumCompare.compare( o1Lowest, o2Lowest );
+		}
+		
+	}
 }
 

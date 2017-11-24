@@ -26,6 +26,10 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.datatype.DatatypeHelpers;
+import org.portico.lrc.model.datatype.IDatatype;
+import org.portico.lrc.model.datatype.linker.Linker;
+import org.portico.lrc.model.datatype.linker.LinkerException;
 
 /**
  * This class provides the logic for merging multiple {@link ObjectModel}s together into a
@@ -69,7 +73,10 @@ public class ModelMerger
 	{
 		// if we only got one model, there's nothing to merge!
 		if( models.size() == 1 )
-			return validate( models.get(0) );
+		{
+			ObjectModel model = models.get( 0 );
+			return validate( model );
+		}
 
 		logger.trace( "Beginning merge of "+models.size()+" FOM models" );
 
@@ -83,7 +90,7 @@ public class ModelMerger
 			logger.trace( "Merging ["+current.getFileName()+"] into combined FOM" );
 			merge( base, current );
 		}
-
+		
 		// validate the model to ensure it has everything we need
 		return validate( base );
 	}
@@ -94,6 +101,24 @@ public class ModelMerger
 	 */
 	private ObjectModel merge( ObjectModel base, ObjectModel extension ) throws JInconsistentFDD
 	{
+		// begin with datatype definitions. These need to be in place before objects and 
+		// interactions are imported
+		for( IDatatype extensionType : extension.getDatatypes() )
+		{
+			IDatatype baseType = base.getDatatype( extensionType.getName() );
+			if( baseType == null )
+			{
+				insertDatatype( base, extensionType );
+			}
+			else
+			{
+				// As per 1516.2 Annex C.3 no actual merging takes place if the extension type 
+				// exists within the base model. We are only required to provide a warning if the 
+				// extension definition is incompatible to the base
+				validateDatatypeEquivalent( baseType, extension, extensionType );
+			}
+		}
+		
 		// merge objects, starting at the object root
 		if( extension.getObjectRoot() != null )
 			mergeObjectClass( base.getObjectRoot(), extension.getObjectRoot() );
@@ -112,14 +137,37 @@ public class ModelMerger
 		// merge the transport types
 		// merge the udpate rates
 		// merge the switches
-		// merge the data types
 		// merge the service usage
 		
 		
-		// return the merges model
+		// return the merged model
 		return base;
 	}
 
+	/**
+	 * Copies the datatype into the provided model.
+	 * <p/>
+	 * If the datatype refers to another datatype (e.g. A SimpleType specifies a BasicType 
+	 * representation), then that reference will be replaced with a placeholder so that
+	 * it may be linked later on when the model is complete.
+	 * 
+	 * @param model The baseModel to insert the datatype into
+	 * @param extension The datatype to import
+	 */
+	private void insertDatatype( ObjectModel baseModel, IDatatype extension )
+	{
+		// Insert
+		logger.trace( "   -> Inserting datatype ["+extension.getName()+"]" );
+		
+		// Create an unlinked copy of this type so that can re-link its dependencies later on to 
+		// types that are in the base data model. We can't do this straight away as we may not have 
+		// merged the dependent types yet
+		IDatatype copy = extension.createUnlinkedClone();
+		
+		// Add the new type to the model
+		baseModel.addDatatype( copy );
+	}
+	
 	/**
 	 * Merge the provided object classes together, extension the parent type with the extension
 	 * type.
@@ -191,11 +239,23 @@ public class ModelMerger
 		// (how does this work when multiple extend?)
 		if( baseAttributes == 0 && extensionAttributes > 0 )
 		{
+			ObjectModel model = base.getModel();
+			
 			// insert attributes base extension into the base
 			for( ACMetadata attribute : extension.getDeclaredAttributes() )
 			{
+				// Get the datatype of the attribute. This returns a datatype from the extension model
+				// so we then need to get the base model equivalent of it (which either exists already 
+				// in the base model, or was imported when insertDatatype() was called previously in
+				// the merge process
+				IDatatype type = attribute.getDatatype();
+				IDatatype baseAttributeType = model.getDatatype( type.getName() );
+				if( baseAttributeType == null )
+					throw new IllegalStateException( "extension attribute datatype not in base model" );
+				
 				ACMetadata newAttribute = new ACMetadata( attribute.getName(),
-				                                          base.getModel().generateHandle() );
+				                                          baseAttributeType,
+				                                          model.generateHandle() );
 				newAttribute.setOrder( attribute.getOrder() );
 				newAttribute.setTransport( attribute.getTransport() );
 				newAttribute.setSpace( attribute.getSpace() );
@@ -204,7 +264,7 @@ public class ModelMerger
 		}
 
 		//////////////////////////////////
-		// resurce down to the children //
+		// recurse down to the children //
 		//////////////////////////////////
 		// check to see if there are any types in the extension that can be inserted into the base
 		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
@@ -225,20 +285,23 @@ public class ModelMerger
 			}
 		}
 	}
-
+	
 	/**
 	 * Copies the child object class into the provided model, linking it up with the given parent.
 	 * This method reinitializes all the handles associated with the class so as to avoid handle
 	 * clash problems when merging from two already parsed FOMs (handles sadly assigned at parse
 	 * time, meaning we will most likely get clashes).
 	 * <p/>
-	 * This method will also recuse through all children doing the same thing.
+	 * This method will also recurse through all children doing the same thing.
+	 * <p/>
+	 * <b>Note:</b> Datatypes should have been merged before this method is called.
 	 * 
 	 * @param model The model to insert the child into
 	 * @param parent The parent the child will be linked to
 	 * @param child The child that should be inserted into the model
 	 */
-	private void insertObjectClass( OCMetadata parent, OCMetadata extension )
+	private void insertObjectClass( OCMetadata parent, OCMetadata extension ) 
+		throws JInconsistentFDD
 	{
 		logger.trace( "   -> Inserting class ["+extension.getQualifiedName()+"]" );
 
@@ -250,7 +313,18 @@ public class ModelMerger
 		// create new attributes for all those in the extension
 		for( ACMetadata attribute : extension.getDeclaredAttributes() )
 		{
-			ACMetadata newAttribute = new ACMetadata( attribute.getName(), model.generateHandle() );
+			// Get the datatype of the attribute. This returns a datatype from the extension model
+			// so we then need to get the base model equivalent of it (which either exists already 
+			// in the base model, or was imported when insertDatatype() was called previously in
+			// the merge process
+			IDatatype type = attribute.getDatatype();
+			IDatatype baseAttributeType = model.getDatatype( type.getName() );
+			if( baseAttributeType == null )
+				throw new IllegalStateException( "extension attribute datatype not in base model" );
+			
+			ACMetadata newAttribute = new ACMetadata( attribute.getName(), 
+			                                          baseAttributeType, 
+			                                          model.generateHandle() );
 			newAttribute.setOrder( attribute.getOrder() );
 			newAttribute.setTransport( attribute.getTransport() );
 			newAttribute.setSpace( attribute.getSpace() );
@@ -303,11 +377,24 @@ public class ModelMerger
 		// (how does this work when multiple extend?)
 		if( baseParameters == 0 && extensionParameters > 0 )
 		{
+			ObjectModel model = base.getModel();
+			
 			// insert attributes base extension into the base
 			for( PCMetadata parameter : extension.getDeclaredParameters() )
 			{
+				// Get the datatype of the parameter. This returns a datatype from the extension 
+				// model so we then need to get the base model equivalent of it (which either exists 
+				// already in the base model, or was imported when insertDatatype() was called 
+				// previously in the merge process
+				IDatatype type = parameter.getDatatype();
+				IDatatype baseParameterType = model.getDatatype( type.getName() );
+				if( baseParameterType == null )
+					throw new IllegalStateException( "extension parameter datatype not in base model" );
+				
 				PCMetadata newParameter = new PCMetadata( parameter.getName(),
-				                                          base.getModel().generateHandle() );
+				                                          baseParameterType,
+				                                          model.generateHandle() );
+				
 				base.addParameter( newParameter );
 			}
 		}
@@ -362,7 +449,18 @@ public class ModelMerger
 		// create new parameters for all those in the extension
 		for( PCMetadata parameter : extension.getDeclaredParameters() )
 		{
-			PCMetadata newParameter = new PCMetadata( parameter.getName(), model.generateHandle() );
+			// Get the datatype of the parameter. This returns a datatype from the extension 
+			// model so we then need to get the base model equivalent of it (which either exists 
+			// already in the base model, or was imported when insertDatatype() was called 
+			// previously in the merge process
+			IDatatype type = parameter.getDatatype();
+			IDatatype baseParameterType = model.getDatatype( type.getName() );
+			if( baseParameterType == null )
+				throw new IllegalStateException( "extension parameter datatype not in base model" );
+			
+			PCMetadata newParameter = new PCMetadata( parameter.getName(),
+			                                          baseParameterType,
+			                                          model.generateHandle() );
 			newClass.addParameter( newParameter );
 		}
 		
@@ -382,6 +480,9 @@ public class ModelMerger
 	 */
 	private ObjectModel validate( ObjectModel model ) throws JInconsistentFDD
 	{
+		// ensure that all datatypes with placeholder references are resolved
+		linkDatatypes( model );
+		
 		// ensure that HLAobjectRoot is present
 		OCMetadata objectRoot = model.getObjectRoot();
 		if( objectRoot == null )
@@ -396,6 +497,28 @@ public class ModelMerger
 		return model;
 	}
 
+	/**
+	 * Checks to see if both datatypes are equivalent, issuing a warning if they are not.
+	 * This is mainly just for information purposes. They can't be merged if they're not
+	 * equivalent, and if they are equivalent there is nothing to merge.
+	 */
+	private void validateDatatypeEquivalent( IDatatype baseType, 
+	                                         ObjectModel extensionModel, 
+	                                         IDatatype extensionType )
+		throws JInconsistentFDD
+	{
+		try
+		{
+			DatatypeHelpers.validateEquivalent( baseType, extensionType );
+		}
+		catch( JInconsistentFDD jifdd )
+		{
+			// Log a warning!
+			logger.warn( "Merging FOM Module ("+extensionModel.getFileName()+"): "+
+	                     "Ignoring Datatype ["+extensionType.getName()+"], "+jifdd.getMessage() );
+		}
+	}
+	
 	/**
 	 * Checks to see if both classes are equivalent, issuing a warning if they are not.
 	 * This is mainly just for information purposes. They can't be merged if they're not
@@ -543,7 +666,41 @@ public class ModelMerger
 			                             e.getMessage(), e );
 		}
 	}
-
+	
+	/**
+	 * Iterates through all datatypes in the model and resolves any outstanding placeholder
+	 * references with their actual datatype.
+	 * <p/>
+	 * Any data types imported from extension models will have had dependency references replaced 
+	 * with a placeholder while the merge is in progress as we can't garuntee that the depdent 
+	 * datatype will have been merged yet. The linking process resolves these placeholder references 
+	 * with the actual data types contained in the base model once the merge is complete.
+	 */
+	private void linkDatatypes( ObjectModel model ) throws JInconsistentFDD
+	{
+		Set<IDatatype> types = model.getDatatypes();
+		
+		// Create linker and add all model dataypes to the pool
+		Linker linker = new Linker();
+		linker.addCandidates( types );
+		
+		// Iterate over all the types and link them individually
+		for( IDatatype type : types )
+		{
+			try
+			{
+				linker.linkType( type );
+			}
+			catch( LinkerException le )
+			{
+				throw new JInconsistentFDD( "Could not resolve dependency of " + 
+				                            type.getDatatypeClass() + " " + 
+				                            type.getName(),
+				                            le );
+			}
+		}
+	}
+	
 	/**
 	 * Return a string in the format "(merging path/to/extension into path/to/base)" to be used
 	 * for logging information about the merge in error messages.

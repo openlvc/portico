@@ -25,6 +25,10 @@ import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.Order;
 import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.model.Transport;
+import org.portico.lrc.model.datatype.IDatatype;
+import org.portico.lrc.model.datatype.linker.Linker;
+import org.portico.lrc.model.datatype.linker.LinkerException;
+import org.portico.utils.fom.FedHelpers;
 
 import hla.rti1516.CouldNotOpenFDD;
 import hla.rti1516.ErrorReadingFDD;
@@ -32,6 +36,7 @@ import hla.rti1516.ErrorReadingFDD;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,29 +72,29 @@ public class FOM
 	//----------------------------------------------------------
 	public ObjectModel process( Element element ) throws JConfigurationException
 	{
-		NodeList list = element.getChildNodes();
+		Element datatypesElement = null;
+		Element objectsElement = null;
+		Element interactionsElement = null;
+		
+		for( Element temp : FedHelpers.getChildElements(element) )
+		{
+			String tagName = temp.getTagName();
+			if( tagName.equals("dataTypes") )
+				datatypesElement = temp;
+			else if( tagName.equals("objects") )
+				objectsElement = temp;
+			else if( tagName.equals("interactions") )
+				interactionsElement = temp;
+			else
+				continue;
+		}
 
+		if( datatypesElement != null )
+			this.processDatatypes( datatypesElement );
+		
 		////////////////////////////////
 		// process the object classes //
 		////////////////////////////////
-		Element objectsElement = null;
-		for( int i = 0; i < list.getLength(); i++ )
-		{
-			Node node = list.item( i );
-			if( node.getNodeType() != Node.ELEMENT_NODE )
-			{
-				// not an element, skip it
-				continue;
-			}
-			
-			Element temp = (Element)node;
-			if( temp.getTagName().equals("objects") )
-			{
-				objectsElement = temp;
-				break;
-			}
-		}
-		
 		// make sure we have some objects
 		if( objectsElement != null )
 		{
@@ -105,24 +110,6 @@ public class FOM
 		/////////////////////////////////////
 		// process the interaction classes //
 		/////////////////////////////////////
-		Element interactionsElement = null;
-		for( int i = 0; i < list.getLength(); i++ )
-		{
-			Node node = list.item( i );
-			if( node.getNodeType() != Node.ELEMENT_NODE )
-			{
-				// not an element, skip it
-				continue;
-			}
-			
-			Element temp = (Element)node;
-			if( temp.getTagName().equals("interactions") )
-			{
-				interactionsElement = temp;
-				break;
-			}
-		}
-		
 		// make sure we have some interactions
 		if( interactionsElement != null )
 		{
@@ -140,6 +127,37 @@ public class FOM
 		
 		// return the completed FOM
 		return this.fom;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////// Datatype Methods /////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	private void processDatatypes( Element datatypesElement ) throws JConfigurationException
+	{
+		Set<IDatatype> fedTypes = FedHelpers.extractDatatypes( datatypesElement, 
+		                                                       fom.getHlaVersion() );
+		
+		// Link and add types
+		Linker linker = new Linker();
+		linker.addCandidates( fom.getDatatypes() );
+		linker.addCandidates( fedTypes );
+		
+		for( IDatatype fedType : fedTypes )
+		{
+			try
+			{
+				linker.linkType( fedType );
+			}
+			catch( LinkerException le )
+			{
+				throw new JConfigurationException( "Could not resolve dependency of " + 
+				                                   fedType.getDatatypeClass() + " " + 
+				                                   fedType.getName(),
+				                                   le );
+			}
+			
+			fom.addDatatype( fedType );
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,16 +260,27 @@ public class FOM
 			////////////////////////////////////
 			// do we have the required attributes?
 			if( temp.hasAttribute("name") == false || 
+				temp.hasAttribute("dataType") == false ||
 				temp.hasAttribute("transportation") == false ||
 				temp.hasAttribute("order") == false )
 			{
 				throw new JConfigurationException( "attribute in class [" + 
-				    parent.getQualifiedName() + "] missing name, transportation or order" );
+				    parent.getQualifiedName() + "] missing name, dataType, transportation or order" );
 			}
 			
 			// create the attribute
 			String sName = temp.getAttribute( "name" );
-			ACMetadata attribute = this.fom.newAttribute( sName );
+			String sDatatype = temp.getAttribute( "dataType" );
+			IDatatype datatype = fom.getDatatype( sDatatype );
+			if( datatype == null )
+			{
+				String message = String.format( "attribute %s references unknown datatype %s",
+				                                sName,
+				                                sDatatype );
+				throw new JConfigurationException( message );
+			}
+			
+			ACMetadata attribute = this.fom.newAttribute( sName, datatype );
 			
 			// get the transport
 			String sTransport = temp.getAttribute( "transportation" );
@@ -433,15 +462,26 @@ public class FOM
 			// found an attribute, process it //
 			////////////////////////////////////
 			// do we have the required attributes?
-			if( temp.hasAttribute("name") == false ) 
+			if( temp.hasAttribute("name") == false || 
+				temp.hasAttribute("dataType") == false ) 
 			{
 				throw new JConfigurationException( "parameter in class [" + 
-				    parent.getQualifiedName() + "] missing name" );
+				    parent.getQualifiedName() + "] missing name or dataType" );
 			}
 			
 			// create the attribute
 			String sName = temp.getAttribute( "name" );
-			PCMetadata parameter = this.fom.newParameter( sName );
+			String sDatatype = temp.getAttribute( "dataType" );
+			IDatatype datatype = fom.getDatatype( sDatatype );
+			if( datatype == null )
+			{
+				String message = String.format( "parameter %s references unknown datatype %s",
+				                                sName,
+				                                sDatatype );
+				throw new JConfigurationException( message );
+			}
+			
+			PCMetadata parameter = this.fom.newParameter( sName, datatype );
 			// bind it to the parent
 			parent.addParameter( parameter );
 		}

@@ -14,6 +14,7 @@ import hla.rti1516e.exceptions.RTIinternalError;
 import javax.imageio.spi.ServiceRegistry;
 
 import org.portico.impl.hla1516e.Rti1516eFactory;
+import org.portico.impl.hla1516e.dtx.Rti1516eDtxFactory;
 
 import java.util.HashSet;
 //import java.util.Iterator;
@@ -40,7 +41,10 @@ public class RtiFactoryFactory {
       }
       throw new RTIinternalError("Cannot find factory matching " + name);
       */
-	  return new Rti1516eFactory();
+	  if( name.equals(Rti1516eDtxFactory.RTI_NAME) )
+		  return new Rti1516eDtxFactory();
+	  else
+		  return new Rti1516eFactory();
    }
 
    public static RtiFactory getRtiFactory()
@@ -60,6 +64,7 @@ public class RtiFactoryFactory {
    {
       Set<RtiFactory> factories = new HashSet<RtiFactory>();
       factories.add( new Rti1516eFactory() );
+      factories.add( new Rti1516eDtxFactory() );
       return factories;
       /** Java 9 syas NO ServiceRegistry use for generic types
       Iterator<RtiFactory> i = ServiceRegistry.lookupProviders(RtiFactory.class);

@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.HashMap;
 
 import org.portico.impl.HLAVersion;
+import org.portico.lrc.model.datatype.DatatypeHelpers;
+import org.portico.lrc.model.datatype.IDatatype;
 
 /**
  * This class represents a HLA FOM. It contains a set of object and interaction classes (routing
@@ -56,6 +58,7 @@ public class ObjectModel implements Serializable
 
 	private HLAVersion version;
 	private boolean locked;
+	private Map<String,IDatatype> datatypes;
 	private Map<Integer,OCMetadata> oclasses;
 	private Map<Integer,ICMetadata> iclasses;
 	private Map<Integer,Space> spaces;
@@ -71,6 +74,7 @@ public class ObjectModel implements Serializable
 	 */
 	public ObjectModel()
 	{
+		this.datatypes = new HashMap<String,IDatatype>();
 		this.oclasses = new HashMap<Integer,OCMetadata>();
 		this.iclasses = new HashMap<Integer,ICMetadata>();
 		this.spaces   = new HashMap<Integer,Space>();
@@ -80,6 +84,7 @@ public class ObjectModel implements Serializable
 		this.version  = HLAVersion.HLA13;
 		
 		this.privilegeToDelete = INVALID_HANDLE;
+		DatatypeHelpers.injectStandardDatatypes( this );
 	}
 	
 	/**
@@ -110,6 +115,52 @@ public class ObjectModel implements Serializable
 		return this.version;
 	}
 
+	/////////////////////////////////////////////////////////////
+	////////////////////// Datatype Methods /////////////////////
+	/////////////////////////////////////////////////////////////
+	/**
+	 * Add the given object class to this model. <i>If the model has been locked, or the datatype 
+	 * already exists, this request will be ignored.</i>
+	 */
+	public void addDatatype( IDatatype datatype )
+	{
+		String name = datatype.getName().toLowerCase();
+		
+		// make sure we're not locked and that the datatype doesn't already exist
+		if( datatype == null || this.locked || this.datatypes.containsKey(name) )
+			return;
+		
+		// add it
+		this.datatypes.put( name, datatype );
+	}
+	
+	/**
+	 * Returns whether this model contains a definition for a data type with the specified name.
+	 */
+	public boolean containsDatatype( String name )
+	{
+		String nameLower = name.toLowerCase();
+		return this.datatypes.containsKey( nameLower );
+	}
+	
+	/**
+	 * Fetch the datatype contained in this model that has the given name and return it. If the
+	 * datatype doesn't exist, return null.
+	 */
+	public IDatatype getDatatype( String name )
+	{
+		String nameLower = name.toLowerCase();
+		return this.datatypes.get( nameLower );
+	}
+	
+	/**
+	 * Returns the set of all datatypes that are contained in this model.
+	 */
+	public Set<IDatatype> getDatatypes()
+	{
+		return new HashSet<IDatatype>( this.datatypes.values() );
+	}
+	
 	/////////////////////////////////////////////////////////////
 	/////////////////////// Space Methods ///////////////////////
 	/////////////////////////////////////////////////////////////
@@ -327,10 +378,14 @@ public class ObjectModel implements Serializable
 	 */
 	public void addPrivilegeToDeleteIfNotPresent()
 	{
+		// TODO: As this is for 1516e shouldn't this be HLAprivilegeToDelete? getDeclaredAttribute
+		// does no cross-version name resolution
 		ACMetadata temp = ocroot.getDeclaredAttribute( "privilegeToDelete" );
 		if( temp == null )
 		{
-			temp = this.newAttribute( "privilegeToDelete" );
+			// TODO: This HLAprivilegeToDelete is NA in 1516 but HLAtoken in 1516e. This method
+			// looks to only ever called for 1516e foms, so I've hardcoded it for HLAtoken 
+			temp = this.newAttribute( "privilegeToDelete", getDatatype("HLAtoken") );
 			ocroot.addAttribute( temp );
 			this.privilegeToDelete = temp.getHandle();
 		}
@@ -659,39 +714,51 @@ public class ObjectModel implements Serializable
 	////////////////// Creation/Handle Methods //////////////////
 	/////////////////////////////////////////////////////////////
 	/**
-	 * Creates a new {@link OCMetadata OCMetadata} instance with the given name and a generaetd
+	 * Creates a new {@link OCMetadata} instance with the given name and a generated
 	 * handle.
+	 * <p/>
+	 * <b>Note:</b> This method will automatically associate the created {@link OCMetadata} with 
+	 * this Object Model
 	 */
 	public OCMetadata newObject( String name )
 	{
-		return new OCMetadata( name, generateHandle() );
+		OCMetadata object = new OCMetadata( name, generateHandle() );
+		object.setModel( this );
+		
+		return object;
 	}
 	
 	/**
-	 * Creates a new {@link ACMetadata ACMetadata} instance with the given name and a generated
-	 * handle.
+	 * Creates a new {@link ACMetadata ACMetadata} instance with the given name, type and a 
+	 * generated handle.
 	 */
-	public ACMetadata newAttribute( String name )
+	public ACMetadata newAttribute( String name, IDatatype datatype )
 	{
-		return new ACMetadata( name, generateHandle() );
+		return new ACMetadata( name, datatype, generateHandle() );
 	}
 	
 	/**
 	 * Creates a new {@link ICMetadata ICMetadata} instance with the given name and a generaetd
 	 * handle.
+	 * <p/>
+	 * <b>Note:</b> This method will automatically associate the created {@link ICMetadata} with 
+	 * this Object Model
 	 */
 	public ICMetadata newInteraction( String name )
 	{
-		return new ICMetadata( name, generateHandle() );
+		ICMetadata interaction = new ICMetadata( name, generateHandle() );
+		interaction.setModel( this );
+		
+		return interaction;
 	}
 	
 	/**
 	 * Creates a new {@link PCMetadata PCMetadata} instance with the given name and a generated
 	 * handle.
 	 */
-	public PCMetadata newParameter( String name )
+	public PCMetadata newParameter( String name, IDatatype datatype )
 	{
-		return new PCMetadata( name, generateHandle() );
+		return new PCMetadata( name, datatype, generateHandle() );
 	}
 
 	/**

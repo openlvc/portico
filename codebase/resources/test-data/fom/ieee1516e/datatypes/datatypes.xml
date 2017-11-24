@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectModel xmlns="http://standards.ieee.org/IEEE1516-2010"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://standards.ieee.org/IEEE1516-2010 http://standards.ieee.org/downloads/1516/1516.2-2010/IEEE1516-DIF-2010.xsd">
+	<modelIdentification>
+		<name>Portico Test FOM</name>
+		<type>FOM</type>
+		<version>1.0</version>
+	</modelIdentification>
+	<objects>
+		<objectClass>
+            <name>HLAobjectRoot</name>
+            <objectClass>
+                <name>ObjectOne</name>
+				<sharing>PublishSubscribe</sharing>
+				<attribute>
+                    <name>AttributeOne</name>
+                    <dataType>HLAinteger32BE</dataType>
+                    <updateType>Conditional</updateType>
+                    <updateCondition>On change</updateCondition>
+                    <ownership>NoTransfer</ownership>
+                    <sharing>PublishSubscribe</sharing>
+                    <dimensions/>
+                    <transportation>HLAbestEffort</transportation>
+                    <order>Receive</order>
+                    <semantics>-NULL-</semantics>
+                </attribute>
+				<attribute>
+                    <name>AttributeTwo</name>
+                    <dataType>FixedRecordExample</dataType>
+                    <updateType>Conditional</updateType>
+                    <updateCondition>On change</updateCondition>
+                    <ownership>NoTransfer</ownership>
+                    <sharing>PublishSubscribe</sharing>
+                    <dimensions/>
+                    <transportation>HLAbestEffort</transportation>
+                    <order>Receive</order>
+                    <semantics>-NULL-</semantics>
+                </attribute>
+			</objectClass>
+		</objectClass>
+	</objects>
+	<interactions>
+		<interactionClass>
+            <name>HLAinteractionRoot</name>
+            <interactionClass>
+				<name>InteractionOne</name>
+                <sharing>PublishSubscribe</sharing>
+                <dimensions/>
+                <transportation>HLAbestEffort</transportation>
+                <order>Receive</order>
+                <semantics>-NULL-</semantics>
+                <parameter>
+                    <name>ParameterOne</name>
+                    <dataType>HLAobjectClassBasedCount</dataType>
+                    <semantics>-NULL-</semantics>
+                </parameter>
+                <parameter>
+                    <name>ParameterTwo</name>
+                    <dataType>ForwardDeclArray</dataType>
+                    <semantics>-NULL-</semantics>
+                </parameter>
+			</interactionClass>
+		</interactionClass>
+	</interactions>
+	<dimensions/>
+	<synchronizations/>
+	<transportations/>
+	<updateRates/>
+	<dataTypes>
+		<basicDataRepresentations>
+			<!-- Custom basic datatype -->
+			<basicData>
+                <name>UnsignedShort</name>
+                <size>16</size>
+                <interpretation>Integer in the range [0, 2^16 - 1]</interpretation>
+                <endian>Big</endian>
+                <encoding>16-bit unsigned integer.</encoding>
+            </basicData>
+		</basicDataRepresentations>
+		<simpleDataTypes>
+			<!-- A simple type that references a standard basic type -->
+			<simpleData>
+                <name>int16</name>
+                <representation>HLAinteger16BE</representation>
+                <units>N/A</units>
+                <resolution>1</resolution>
+                <accuracy>perfect</accuracy>
+                <semantics>-NULL-</semantics>
+            </simpleData>
+			<!-- A simple type that references a custom basic type -->
+			<simpleData>
+                <name>Channel</name>
+                <representation>UnsignedShort</representation>
+                <units>N/A</units>
+                <resolution>1</resolution>
+                <accuracy>perfect</accuracy>
+                <semantics>-NULL-</semantics>
+            </simpleData>
+		</simpleDataTypes>
+		<enumeratedDataTypes>
+			<!-- An enumerated data type with several possible values -->
+            <enumeratedData>
+                <name>WaiterTasks</name>
+                <representation>HLAinteger32BE</representation>
+                <semantics>Possible activities of waiters</semantics>
+                <enumerator>
+                    <name>TakingOrder</name>
+                    <value>1</value>
+                </enumerator>
+                <enumerator>
+                    <name>Serving</name>
+                    <value>2</value>
+                </enumerator>
+                <enumerator>
+                    <name>Cleaning</name>
+                    <value>3</value>
+                </enumerator>
+                <enumerator>
+                    <name>CalculatingBill</name>
+                    <value>4</value>
+                </enumerator>
+                <enumerator>
+                    <name>Other</name>
+                    <value>5</value>
+                </enumerator>
+            </enumeratedData>
+		</enumeratedDataTypes>
+		<arrayDataTypes>
+			<!-- An array data type with fixed cardinality -->
+			<arrayData>
+                <name>FixedArray</name>
+                <dataType>HLAbyte</dataType>
+                <cardinality>2</cardinality>
+                <encoding>HLAfixedArray</encoding>
+                <semantics>-NULL-</semantics>
+            </arrayData>
+			<!-- An array data type with dynamnic cardinality -->
+            <arrayData>
+                <name>DynamicArray</name>
+                <dataType>HLAunicodeChar</dataType>
+                <cardinality>Dynamic</cardinality>
+                <encoding>HLAvariableArray</encoding>
+                <semantics>-NULL-</semantics>
+            </arrayData>
+			<!-- An array data type with cardinality in a range -->
+			<arrayData>
+                <name>RangeArray</name>
+                <dataType>HLAindex</dataType>
+                <cardinality>(2..5)</cardinality>
+                <encoding>HLAfixedArray</encoding>
+                <semantics>-NULL-</semantics>
+            </arrayData>
+			<!-- An array datatype with multiple dimensions -->
+			<arrayData>
+                <name>MultiDimensionArray</name>
+                <dataType>HLAoctetPairBE</dataType>
+                <cardinality>4,(1..4),Dynamic</cardinality>
+                <encoding>HLAvariableArray</encoding>
+                <semantics>-NULL-</semantics>
+            </arrayData>
+			<!-- An array data type that references a type yet to be parsed -->
+			<arrayData>
+                <name>ForwardDeclArray</name>
+                <dataType>FixedRecordExample</dataType>
+                <cardinality>Dynamic</cardinality>
+                <encoding>HLAvariableArray</encoding>
+                <semantics>-NULL-</semantics>
+            </arrayData>
+		</arrayDataTypes>
+		<fixedRecordDataTypes>
+			<fixedRecordData>
+                <name>FixedRecordExample</name>
+                <encoding>HLAfixedRecord</encoding>
+                <semantics>-NULL-</semantics>
+                <field>
+                    <name>FirstField</name>
+                    <dataType>DynamicArray</dataType>
+                    <semantics>-NULL-</semantics>
+                </field>
+                <field>
+                    <name>SecondField</name>
+                    <dataType>WaiterTasks</dataType>
+                    <semantics>-NULL-</semantics>
+                </field>
+            </fixedRecordData>
+		</fixedRecordDataTypes>
+		<variantRecordDataTypes>
+			<variantRecordData>
+                <name>VariantRecordExample</name>
+                <discriminant>ValIndex</discriminant>
+                <dataType>WaiterTasks</dataType>
+                <alternative>
+                    <enumerator>TakingOrder</enumerator>
+                    <name>AlternativeOne</name>
+                    <dataType>HLAboolean</dataType>
+                    <semantics>-NULL-</semantics>
+                </alternative>
+                <alternative>
+                    <enumerator>[Serving .. CalculatingBill]</enumerator>
+                    <name>AlternativeTwo</name>
+                    <dataType>DynamicArray</dataType>
+                    <semantics>-NULL-</semantics>
+                </alternative>
+                <alternative>
+                    <enumerator>HLAother</enumerator>
+                    <name>Other</name>
+                    <dataType>HLAtoken</dataType>
+                    <semantics>All others</semantics>
+                </alternative>
+                <encoding>HLAvariantRecord</encoding>
+                <semantics>-NULL-</semantics>
+            </variantRecordData>
+		</variantRecordDataTypes>
+	</dataTypes>
+	<notes/>
+</objectModel>
