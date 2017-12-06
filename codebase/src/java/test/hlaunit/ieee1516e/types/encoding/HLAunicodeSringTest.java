@@ -33,7 +33,7 @@ import hla.rti1516e.encoding.HLAunicodeString;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAunicodeStringTest", "types", "encoding"} )
+@Test(sequential=true, groups={"HLAunicodeStringTest","datatype","encoding"})
 public class HLAunicodeSringTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

@@ -17,10 +17,11 @@ package org.portico.impl.hla1516e.fomparser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.portico.impl.HLAVersion;
+import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JErrorReadingFED;
 import org.portico.lrc.model.ACMetadata;
@@ -30,10 +31,12 @@ import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.Order;
 import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.model.Transport;
+import org.portico.lrc.model.datatype.IDatatype;
+import org.portico.lrc.model.datatype.linker.Linker;
+import org.portico.lrc.model.datatype.linker.LinkerException;
+import org.portico.utils.fom.FedHelpers;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * The FOM paser for 1516e style federation description documents.
@@ -69,20 +72,29 @@ public class FOM
 	public ObjectModel process( Element element ) throws JErrorReadingFED
 	{
 		// locate the major elements we are interested in
+		Element datatypesElement = null;
 		Element objectsElement = null;
 		Element interactionsElement = null;
 		Element dimensionsElement = null;
-		for( Element temp : getChildElements(element) )
+		for( Element temp : FedHelpers.getChildElements(element) )
 		{
-			if( temp.getTagName().equals("objects") )
+			String tagName = temp.getTagName();
+			if( tagName.equals("dataTypes") )
+				datatypesElement = temp;
+			else if( tagName.equals("objects") )
 				objectsElement = temp;
-			else if( temp.getTagName().equals("interactions") )
+			else if( tagName.equals("interactions") )
 				interactionsElement = temp;
-			else if( temp.getTagName().equals("dimensions") )
+			else if( tagName.equals("dimensions") )
 				dimensionsElement = temp;
 			else
 				continue; // ignore
 		}
+		
+		// extract all datatypes (this must be done first so that we can reference the types when
+		// we extract objects and interactions)
+		if( datatypesElement != null )
+			this.extractDatatypes( datatypesElement );
 		
 		// extract all the object classes
 		OCMetadata objectRoot = null;
@@ -118,7 +130,47 @@ public class FOM
 		// return the completed FOM
 		return this.fom;
 	}
-
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////// Datatype Methods /////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	private void extractDatatypes( Element datatypesElement ) throws JErrorReadingFED
+	{
+		Set<IDatatype> fedTypes = null;
+		try
+		{
+			fedTypes = FedHelpers.extractDatatypes( datatypesElement, 
+			                                        fom.getHlaVersion() );
+		}
+		catch( JConfigurationException jce )
+		{
+			// rethrow as JErrorReadingFED
+			throw new JErrorReadingFED( jce );
+		}
+		
+		// Link and add types
+		Linker linker = new Linker();
+		linker.addCandidates( fom.getDatatypes() );
+		linker.addCandidates( fedTypes );
+		
+		for( IDatatype fedType : fedTypes )
+		{
+			try
+			{
+				linker.linkType( fedType );
+			}
+			catch( LinkerException le )
+			{
+				throw new JErrorReadingFED( "Could not resolve dependency of " + 
+				                            fedType.getDatatypeClass() + " " + 
+				                            fedType.getName(),
+				                            le );
+			}
+			
+			fom.addDatatype( fedType );
+		}
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////// Object Class Methods ///////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +198,8 @@ public class FOM
 	 */
 	private OCMetadata extractObjects( Element objectsElement ) throws JErrorReadingFED
 	{
-		Element objectRootElement = getFirstChildElement( objectsElement, "objectClass" );
+		Element objectRootElement = FedHelpers.getFirstChildElement( objectsElement, 
+		                                                             "objectClass" );
 		if( objectRootElement == null )
 		{
 			// no objects to process... OK, must be an extension module
@@ -154,7 +207,7 @@ public class FOM
 		}
 		
 		// validate that we have an object root
-		String name = getChildValue( objectRootElement, "name" );
+		String name = FedHelpers.getChildValue( objectRootElement, "name" );
 		if( name.equals("HLAobjectRoot") == false )
 		{
 			throw new JErrorReadingFED( "First <objectClass> must be HLAobjectRoot, found: "+name );
@@ -171,14 +224,15 @@ public class FOM
 
 	private void extractObjects( OCMetadata parent, Element parentElement ) throws JErrorReadingFED
 	{
-		List<Element> children = getAllChildElements( parentElement, "objectClass" );
+		List<Element> children = FedHelpers.getAllChildElements( parentElement, "objectClass" );
 		for( Element current : children )
 		{
-			String objectClassName = getChildValue( current, "name" );
+			String objectClassName = FedHelpers.getChildValue( current, "name" );
 			OCMetadata objectClass = fom.newObject( objectClassName );
-			extractAttributes( objectClass, current );
 			// link us to our parent
 			objectClass.setParent( parent );
+			extractAttributes( objectClass, current );
+			
 			fom.addObjectClass( objectClass );
 			// recurse and find all our children
 			extractObjects( objectClass, current );
@@ -192,18 +246,33 @@ public class FOM
 	 */
 	private void extractAttributes( OCMetadata clazz, Element element ) throws JErrorReadingFED
 	{
-		List<Element> attributes = getAllChildElements( element, "attribute" );
+		ObjectModel theModel = clazz.getModel();
+		List<Element> attributes = FedHelpers.getAllChildElements( element, "attribute" );
 		for( Element attributeElement : attributes )
 		{
-			String attributeName = getChildValue( attributeElement, "name" );
-			ACMetadata attribute = fom.newAttribute( attributeName );
+			String attributeName = FedHelpers.getChildValue( attributeElement, "name" );
+			String datatypeName = FedHelpers.getChildValue( attributeElement, "dataType" );
+			IDatatype datatype = theModel.getDatatype( datatypeName );
+			if( datatype == null )
+			{
+				String message = String.format( "attribute %s references unknown datatype %s",
+				                                attributeName,
+				                                datatypeName );
+				throw new JConfigurationException( message );
+			}
+			
+			ACMetadata attribute = fom.newAttribute( attributeName, datatype );
 
 			// Order and Transport
-			String attributeOrder = getChildValueForgiving( attributeElement, "order", attributeName );
+			String attributeOrder = FedHelpers.getChildValueForgiving( attributeElement, 
+			                                                           "order", 
+			                                                           attributeName );
 			if( attributeOrder != null )
 				attribute.setOrder( Order.fromFomString(attributeOrder) );
 
-			String attributeTransport = getChildValueForgiving( attributeElement, "transportation", attributeName );
+			String attributeTransport = FedHelpers.getChildValueForgiving( attributeElement, 
+			                                                               "transportation", 
+			                                                               attributeName );
 			if( attributeTransport != null )
 				attribute.setTransport( Transport.fromFomString(attributeTransport) );
 
@@ -236,7 +305,8 @@ public class FOM
 	 */
 	private ICMetadata extractInteractions( Element element ) throws JErrorReadingFED
 	{
-		Element interactionRootElement = getFirstChildElement( element, "interactionClass" );
+		Element interactionRootElement = FedHelpers.getFirstChildElement( element, 
+		                                                                  "interactionClass" );
 		if( interactionRootElement == null )
 		{
 			// no interactions to process... OK, must be an extension module
@@ -244,7 +314,7 @@ public class FOM
 		}
 
 		// validate that we have an interaction root
-		String name = getChildValue( interactionRootElement, "name" );
+		String name = FedHelpers.getChildValue( interactionRootElement, "name" );
 		if( name.equals("HLAinteractionRoot") == false )
 		{
 			throw new JErrorReadingFED( "First <interactionClass> must be "+
@@ -255,11 +325,13 @@ public class FOM
 		ICMetadata interactionRoot = fom.newInteraction("HLAinteractionRoot" );
 
 		// get the transport and order
-		String interactionOrder = getChildValueForgiving( interactionRootElement, "order", name );
+		String interactionOrder = FedHelpers.getChildValueForgiving( interactionRootElement, "order", name );
 		if( interactionOrder != null )
 			interactionRoot.setOrder( Order.fromFomString(interactionOrder) );
 
-		String interactionTransport = getChildValueForgiving( interactionRootElement, "transportation", name );
+		String interactionTransport = FedHelpers.getChildValueForgiving( interactionRootElement, 
+		                                                                 "transportation", 
+		                                                                 name );
 		if( interactionTransport != null )
 			interactionRoot.setTransport( Transport.fromFomString(interactionTransport) );
 
@@ -275,19 +347,24 @@ public class FOM
 	private void extractInteractions( ICMetadata parent, Element parentElement )
 		throws JErrorReadingFED
 	{
-		List<Element> children = getAllChildElements( parentElement, "interactionClass" );
+		List<Element> children = FedHelpers.getAllChildElements( parentElement, 
+		                                                         "interactionClass" );
 		for( Element current : children )
 		{
 			// create the metadata type
-			String interactionClassName = getChildValue( current, "name" );
+			String interactionClassName = FedHelpers.getChildValue( current, "name" );
 			ICMetadata interactionClass = fom.newInteraction( interactionClassName );
 
 			// get the transport and order
-			String interactionOrder = getChildValueForgiving( current, "order", interactionClassName );
+			String interactionOrder = FedHelpers.getChildValueForgiving( current, 
+			                                                             "order", 
+			                                                             interactionClassName );
 			if( interactionOrder != null )
 				interactionClass.setOrder( Order.fromFomString(interactionOrder) );
 
-			String interactionTransport = getChildValueForgiving( current, "transportation", interactionClassName );
+			String interactionTransport = FedHelpers.getChildValueForgiving( current, 
+			                                                                 "transportation", 
+			                                                                 interactionClassName );
 			if( interactionTransport != null )
 				interactionClass.setTransport( Transport.fromFomString(interactionTransport) );
 
@@ -310,11 +387,22 @@ public class FOM
 	 */
 	private void extractParameters( ICMetadata clazz, Element element ) throws JErrorReadingFED
 	{
-		List<Element> parameters = getAllChildElements( element, "parameter" );
+		ObjectModel theModel = clazz.getModel();
+		List<Element> parameters = FedHelpers.getAllChildElements( element, "parameter" );
 		for( Element parameterElement : parameters )
 		{
-			String parameterName = getChildValue( parameterElement, "name" );
-			PCMetadata parameter = fom.newParameter( parameterName );
+			String parameterName = FedHelpers.getChildValue( parameterElement, "name" );
+			String datatypeName = FedHelpers.getChildValue( parameterElement, "dataType" );
+			IDatatype datatype = theModel.getDatatype( datatypeName );
+			if( datatype == null )
+			{
+				String message = String.format( "parameter %s references unknown datatype %s",
+				                                parameterName,
+				                                datatypeName );
+				throw new JConfigurationException( message );
+			}
+			
+			PCMetadata parameter = fom.newParameter( parameterName, datatype );
 			clazz.addParameter( parameter );
 		}
 	}
@@ -322,142 +410,6 @@ public class FOM
 	////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////// Private Helper Methods //////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Return a list of child element types of the provided node. If the node has no children
-	 * or none of the children are element nodes, an empty list is returned.
-	 */
-	private List<Element> getChildElements( Node node )
-	{
-		NodeList list = node.getChildNodes();
-		ArrayList<Element> elements = new ArrayList<Element>();
-		for( int i = 0; i < list.getLength(); i++ )
-		{
-			Node temp = list.item(i);
-			if( temp.getNodeType() == Node.ELEMENT_NODE )
-				elements.add( (Element)temp );
-		}
-		
-		return elements;
-	}
-
-	/**
-	 * Return the first child element under node that has given given tag name.
-	 * If there is none that matches, return null.
-	 */
-	private Element getFirstChildElement( Node node, String tag )
-	{
-		NodeList list = node.getChildNodes();
-		for( int i = 0; i < list.getLength(); i++ )
-		{
-			Node temp = list.item(i);
-			if( temp.getNodeType() != Node.ELEMENT_NODE )
-				continue;
-			
-			Element tempElement = (Element)temp;
-			if( tempElement.getTagName().equals(tag) )
-				return tempElement;
-		}
-		
-		return null;
-	}
-
-	/**
-	 * Return a list of all the children elements of node with the given tag name.
-	 * If there are no matching elements, an empty list is returned.
-	 */
-	private List<Element> getAllChildElements( Node node, String tag )
-	{
-		NodeList list = node.getChildNodes();
-		ArrayList<Element> elements = new ArrayList<Element>();
-		for( int i = 0; i < list.getLength(); i++ )
-		{
-			Node temp = list.item(i);
-			if( temp.getNodeType() != Node.ELEMENT_NODE )
-				continue;
-			
-			Element tempElement = (Element)temp;
-			if( tempElement.getTagName().equals(tag) )
-				elements.add( tempElement );
-		}
-		
-		return elements;
-	}
-
-	private boolean isElement( Node node )
-	{
-		return node.getNodeType() == Node.ELEMENT_NODE;
-	}
-
-	/**
-	 * This method searches the given element for the first child element with the identified
-	 * tag-name. When it finds it, its text content is returned. If there is no child element
-	 * with the given tag-name, an exception is thrown.
-	 */
-	private String getChildValue( Element element, String name ) throws JErrorReadingFED
-	{
-		return getChildValue( element, name, null );
-	}
-
-	/**
-	 * To provide some better context to errors, this method takes an additional `typeName`
-	 * parameter that will be used in any exception reporting. This allows pretty generic,
-	 * difficult to find errors like "Element <interactionClass> missing child <order>" to
-	 * become a bit more descriptive by including the name value of the interaction class
-	 * (in this example).
-	 * 
-	 * @param element  Element to look for the child in
-	 * @param name     Name of the child to look for and return its value
-	 * @param typeName Name of the type we are looking in if known. `null` will cause the
-	 *                 name to not be printed and is still valid.
-	 * @return The value of the named sub-element inside the given element.
-	 * @throws JErrorReadingFed if the value cannot be found
-	 */
-	private String getChildValue( Element element, String name, String typeName )
-		throws JErrorReadingFED
-	{
-		if( typeName == null )
-			typeName = "unknown";
-
-		// check for the value of an attribute first
-		if( element.hasAttribute(name) )
-			return element.getAttribute( name );
-		
-		// if no attribute is present, look for a child element
-		Element child = getFirstChildElement( element, name );
-		if( child == null )
-		{
-			String message = String.format( "Element <%s name=\"%s\"> missing child <%s> element",
-			                                element.getTagName(),
-			                                typeName,
-			                                name );
-			
-			throw new JErrorReadingFED( message );
-		}
-		else
-		{
-			return child.getTextContent().trim();
-		}
-	}
-
-	/**
-	 * Same as {@link #getChildValue(Element, String)} except that it returns null if there is
-	 * no child rather than throwing an exception.
-	 * 
-	 * @see {@link #getChildValue(Element, String, String)}
-	 */
-	private String getChildValueForgiving( Element element, String name, String typeName )
-	{
-		try
-		{
-			return getChildValue( element, name, typeName );
-		}
-		catch( JErrorReadingFED error )
-		{
-			// let's just ignore this
-			return null;
-		}
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

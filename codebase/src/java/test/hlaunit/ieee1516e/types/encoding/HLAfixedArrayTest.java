@@ -37,7 +37,7 @@ import hla.rti1516e.encoding.HLAinteger32BE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAfixedArrayTest", "types", "encoding"} )
+@Test(sequential=true, groups={"HLAfixedArrayTest","datatype","encoding"})
 public class HLAfixedArrayTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
@@ -551,7 +551,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 			for( int i = 0 ; i < THREE_STRINGS.length ; ++i )
 			{
 				HLAASCIIstring element = data.get( i );
-				Assert.assertFalse( element.equals(NOTHING) );
+				Assert.assertFalse( element.getValue().equals(NOTHING) );
 				Assert.assertEquals( element.getValue(), THREE_STRINGS[i] );
 			}
 		}

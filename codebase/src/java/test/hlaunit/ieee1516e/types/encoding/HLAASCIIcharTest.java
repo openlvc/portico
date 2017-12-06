@@ -29,7 +29,7 @@ import hla.rti1516e.encoding.HLAASCIIchar;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAASCIIcharTest", "types", "encoding"} )
+@Test(sequential=true, groups={"HLAASCIIcharTest","datatype","encoding"})
 public class HLAASCIIcharTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

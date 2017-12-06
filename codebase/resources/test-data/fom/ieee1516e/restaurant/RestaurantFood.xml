@@ -241,6 +241,15 @@
         </requestUpdateTag>
     </tags>
     <dataTypes>
+		<basicDataRepresentations>
+			<basicData>
+				<name>UnsignedShort</name>
+				<size>16</size>
+				<interpretation>Integer in the range [0, 2^16 - 1]</interpretation>
+				<endian>Big</endian>
+				<encoding>16-bit unsigned integer.</encoding>
+			</basicData>
+		</basicDataRepresentations>
         <simpleDataTypes>
             <simpleData>
                 <name>DrinkCount</name>

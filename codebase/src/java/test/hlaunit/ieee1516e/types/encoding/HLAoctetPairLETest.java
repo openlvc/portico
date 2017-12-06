@@ -33,7 +33,7 @@ import hla.rti1516e.encoding.HLAoctetPairLE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAoctetPairLETest", "types", "encoding"} )
+@Test(sequential=true, groups={"HLAoctetPairLETest","datatype","encoding"})
 public class HLAoctetPairLETest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

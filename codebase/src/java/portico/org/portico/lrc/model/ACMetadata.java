@@ -16,6 +16,8 @@ package org.portico.lrc.model;
 
 import java.io.Serializable;
 
+import org.portico.lrc.model.datatype.IDatatype;
+
 /**
  * This class contains metadata about a FOM attribute class 
  */
@@ -30,6 +32,7 @@ public class ACMetadata implements Serializable
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String        name;
+	private IDatatype     datatype;
 	private int           handle;
 	private Order         order;
 	private Transport     transport;
@@ -43,9 +46,10 @@ public class ACMetadata implements Serializable
 	 * <b>NOTE:</b> This constructor should generally not be used. If you want an instance of this
 	 * class you should use the creation methods of {@link ObjectModel ObjectModel}.
 	 */
-	public ACMetadata( String name, int handle )
+	public ACMetadata( String name, IDatatype datatype, int handle )
 	{
 		this.name      = name;
+		this.datatype  = datatype;
 		this.handle    = handle;
 		this.order     = Order.TIMESTAMP;
 		this.transport = Transport.RELIABLE;
@@ -70,6 +74,11 @@ public class ACMetadata implements Serializable
 	public String getName()
 	{
 		return this.name;
+	}
+	
+	public IDatatype getDatatype()
+	{
+		return this.datatype;
 	}
 	
 	public int getHandle()
