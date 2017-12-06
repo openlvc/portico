@@ -551,7 +551,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 			for( int i = 0 ; i < THREE_STRINGS.length ; ++i )
 			{
 				HLAASCIIstring element = data.get( i );
-				Assert.assertFalse( element.equals(NOTHING) );
+				Assert.assertFalse( element.getValue().equals(NOTHING) );
 				Assert.assertEquals( element.getValue(), THREE_STRINGS[i] );
 			}
 		}

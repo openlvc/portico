@@ -461,7 +461,7 @@ public class DatatypeHelpers
 			
 			Set<IEnumerator> baseAlternativeEnums = baseAlternative.getEnumerators();
 			Set<IEnumerator> extensionAlternativeEnums = extensionAlternative.getEnumerators();
-			if( !baseAlternative.equals(extensionAlternativeEnums) )
+			if( !baseAlternativeEnums.equals(extensionAlternativeEnums) )
 			{
 				throw new JInconsistentFDD( "Alternative "+baseAlternativeName+
 				                            " enumerators differ (base="+baseAlternativeEnums.toString()+
