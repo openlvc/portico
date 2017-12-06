@@ -14,6 +14,7 @@
  */
 package hla.rti1516e.extensions;
 
+import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.datatype.ArrayType;
 import org.portico.lrc.model.datatype.BasicType;
 import org.portico.lrc.model.datatype.EnumeratedType;
@@ -67,6 +68,12 @@ public interface RTIambassadorEx extends RTIambassador
 	///////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////// Extended Object Model Methods //////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Return an in-memory representation of the unified Federation Object Model. This contains
+	 * all merged FOM modules and the standard MIM.
+	 */
+	public ObjectModel getFOM();
+	
 	/**
 	 * Returns the datatype of the specified Attribute.
 	 * <p/>
