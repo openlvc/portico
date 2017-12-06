@@ -33,7 +33,7 @@ import hla.rti1516e.encoding.HLAboolean;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAbooleanTest", "types", "encoding"} )
+@Test(sequential=true, groups={"HLAbooleanTest","datatype","encoding"})
 public class HLAbooleanTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
