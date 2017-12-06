@@ -341,6 +341,10 @@ public class FedHelpers
 			
 			List<Element> enumeratorElements = getAllChildElements( enumeratedElement, 
 			                                                        "enumerator" );
+			
+			if( enumeratorElements.isEmpty() )
+				throw new JConfigurationException( "Enumerator datatype has no values: "+name );
+			
 			for( Element enumeratorElement : enumeratorElements )
 			{
 				String enumeratorName = getChildValue( enumeratorElement, "name" );

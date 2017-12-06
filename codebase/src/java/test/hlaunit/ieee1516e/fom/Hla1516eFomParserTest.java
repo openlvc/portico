@@ -112,7 +112,7 @@ public class Hla1516eFomParserTest
 	 * Parse in a valid HLA 1516e FOM
 	 */
 	@Test
-	public void parseValidHla1516eFomFull()
+	public void testParseValidHla1516eFomFull()
 	{
 		try
 		{
@@ -128,7 +128,7 @@ public class Hla1516eFomParserTest
 	 * Parse in a valid HLA 1516e FOM where one module has no interactions element.
 	 */
 	@Test
-	public void parseValidHla1516eFomModuleNoInteractions()
+	public void testParseValidHla1516eFomModuleNoInteractions()
 	{
 		try
 		{
@@ -160,7 +160,7 @@ public class Hla1516eFomParserTest
 	 * Parse in a valid HLA 1516e FOM where one module has no objects element.
 	 */
 	@Test
-	public void parseValidHla1516eFomModuleNoObjects()
+	public void testParseValidHla1516eFomModuleNoObjects()
 	{
 		try
 		{
@@ -176,7 +176,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eDatatypesBasic()
+	public void testParseValidHla1516eDatatypesBasic()
 	{
 		try
 		{
@@ -207,7 +207,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eDatatypesSimple()
+	public void testParseValidHla1516eDatatypesSimple()
 	{
 		try
 		{
@@ -262,7 +262,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eDatatypesEnumerated()
+	public void testParseValidHla1516eDatatypesEnumerated()
 	{
 		try
 		{
@@ -319,7 +319,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eDatatypesArray()
+	public void testParseValidHla1516eDatatypesArray()
 	{
 		try
 		{
@@ -479,7 +479,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eDatatypesFixedRecord()
+	public void testParseValidHla1516eDatatypesFixedRecord()
 	{
 		try
 		{
@@ -518,7 +518,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eDatatypesVariantRecord()
+	public void testParseValidHla1516eDatatypesVariantRecord()
 	{
 		try
 		{
@@ -594,7 +594,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eObjectAttributeDatatypes()
+	public void testParseValidHla1516eObjectAttributeDatatypes()
 	{
 		try
 		{
@@ -626,7 +626,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseValidHla1516eInteractionParameterDatatypes()
+	public void testParseValidHla1516eInteractionParameterDatatypes()
 	{
 		try
 		{
@@ -661,7 +661,7 @@ public class Hla1516eFomParserTest
 	 * Parse a valid FOM that doesn't contain spaces
 	 */
 //	@Test
-//	public void parseValidHla13FomWithoutSpaces()
+//	public void testParseValidHla13FomWithoutSpaces()
 //	{
 //		// testfom-nospaces.fed
 //		try
@@ -681,7 +681,7 @@ public class Hla1516eFomParserTest
 	 * Parse the XML FOM file that has the wrong number of parenthesis
 	 */
 //	@Test
-//	public void parseInvalidHla13FomWithUnbalancedParenthesis()
+//	public void testParseInvalidHla13FomWithUnbalancedParenthesis()
 //	{
 //		// testfom-unbalanced.fed
 //		try
@@ -702,7 +702,7 @@ public class Hla1516eFomParserTest
 //	}
 	
 //	@Test
-//	public void parseInvalidHla13FomWithMalformedComment()
+//	public void testParseInvalidHla13FomWithMalformedComment()
 //	{
 //		// testfom-badcomment.fed
 //		try
@@ -723,7 +723,7 @@ public class Hla1516eFomParserTest
 //	}
 	
 //	@Test
-//	public void parseInvalidHla13FomWithRandomText()
+//	public void testParseInvalidHla13FomWithRandomText()
 //	{
 //		// testfom-randomtext.fed
 //		try
@@ -744,7 +744,7 @@ public class Hla1516eFomParserTest
 //	}
 	
 //	@Test
-//	public void parseInvalidHla13FomWithUndefinedSpaceForAttribute()
+//	public void testParseInvalidHla13FomWithUndefinedSpaceForAttribute()
 //	{
 //		// testfom-undefinedAttributeSpace.fed
 //		try
@@ -765,7 +765,7 @@ public class Hla1516eFomParserTest
 //	}
 	
 	@Test
-	public void parseInvalidHla1516eFomWithUndefinedTransportForAttribute()
+	public void testParseInvalidHla1516eFomWithUndefinedTransportForAttribute()
 	{
 		// testfom-undefinedAttributeTransport.fed
 		try
@@ -790,7 +790,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test
-	public void parseInvalidHla1516eFomWithUndefinedOrderForAttribute()
+	public void testParseInvalidHla1516eFomWithUndefinedOrderForAttribute()
 	{
 		// testfom-undefinedAttributeOrder.fed
 		try
@@ -814,7 +814,7 @@ public class Hla1516eFomParserTest
 	}
 	
 //	@Test
-//	public void parseInvalidHla13FomWithUndefinedSpaceForInteraction()
+//	public void testParseInvalidHla13FomWithUndefinedSpaceForInteraction()
 //	{
 //		// testfom-undefinedInteractionSpace.fed
 //		try
@@ -835,7 +835,7 @@ public class Hla1516eFomParserTest
 //	}
 	
 	@Test
-	public void parseInvalidHla1516eFomWithUndefinedTransportForInteraction()
+	public void testParseInvalidHla1516eFomWithUndefinedTransportForInteraction()
 	{
 		// testfom-undefinedInteractionTransport.fed
 		try
@@ -860,7 +860,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test
-	public void parseInvalidHla1516eFomWithUndefinedOrderForInteraction()
+	public void testParseInvalidHla1516eFomWithUndefinedOrderForInteraction()
 	{
 		// testfom-undefinedInteractionOrder.fed
 		try
@@ -884,7 +884,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithBasicDatatypeNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithBasicDatatypeNameMissing()
 	{
 		try
 		{
@@ -903,7 +903,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithBasicDatatypeNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithBasicDatatypeNameEmpty()
 	{
 		try
 		{
@@ -922,7 +922,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithBasicDatatypeSizeMissing()
+	public void testParseInvalidHla1516eFomModuleWithBasicDatatypeSizeMissing()
 	{
 		try
 		{
@@ -941,7 +941,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithBasicDatatypeSizeEmpty()
+	public void testParseInvalidHla1516eFomModuleWithBasicDatatypeSizeEmpty()
 	{
 		try
 		{
@@ -960,7 +960,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithBasicDatatypeSizeNonNumeric()
+	public void testParseInvalidHla1516eFomModuleWithBasicDatatypeSizeNonNumeric()
 	{
 		try
 		{
@@ -979,7 +979,7 @@ public class Hla1516eFomParserTest
 	}
 
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithBasicDatatypeSizeNegative()
+	public void testParseInvalidHla1516eFomModuleWithBasicDatatypeSizeNegative()
 	{
 		try
 		{
@@ -998,7 +998,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithSimpleDatatypeNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithSimpleDatatypeNameMissing()
 	{
 		try
 		{
@@ -1017,7 +1017,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithSimpleDatatypeNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithSimpleDatatypeNameEmpty()
 	{
 		try
 		{
@@ -1036,7 +1036,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationMissing()
+	public void testParseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationMissing()
 	{
 		try
 		{
@@ -1055,7 +1055,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationEmpty()
+	public void testParseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationEmpty()
 	{
 		try
 		{
@@ -1074,7 +1074,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationDoesntExist()
+	public void testParseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationDoesntExist()
 	{
 		try
 		{
@@ -1093,7 +1093,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationNotBasicType()
+	public void testParseInvalidHla1516eFomModuleWithSimpleDatatypeRepresentationNotBasicType()
 	{
 		try
 		{
@@ -1112,7 +1112,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeNameMissing()
 	{
 		try
 		{
@@ -1131,7 +1131,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeNameEmpty()
 	{
 		try
 		{
@@ -1150,7 +1150,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeDatatypeMissing()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeDatatypeMissing()
 	{
 		try
 		{
@@ -1169,7 +1169,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeDatatypeEmpty()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeDatatypeEmpty()
 	{
 		try
 		{
@@ -1188,7 +1188,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeDatatypeDoesntExist()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeDatatypeDoesntExist()
 	{
 		try
 		{
@@ -1207,7 +1207,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityMissing()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityMissing()
 	{
 		try
 		{
@@ -1226,7 +1226,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityEmpty()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityEmpty()
 	{
 		try
 		{
@@ -1245,7 +1245,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityNonNumeric()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityNonNumeric()
 	{
 		try
 		{
@@ -1264,7 +1264,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityNegative()
+	public void testParseInvalidHla1516eFomModuleWithArrayDatatypeCardinalityNegative()
 	{
 		try
 		{
@@ -1283,7 +1283,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeNameMissing()
 	{
 		try
 		{
@@ -1302,7 +1302,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeNameEmpty()
 	{
 		try
 		{
@@ -1321,7 +1321,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationMissing()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationMissing()
 	{
 		try
 		{
@@ -1340,7 +1340,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationEmpty()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationEmpty()
 	{
 		try
 		{
@@ -1359,7 +1359,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationDoesntExist()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationDoesntExist()
 	{
 		try
 		{
@@ -1378,7 +1378,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationNotBasicType()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeRepresentationNotBasicType()
 	{
 		try
 		{
@@ -1397,7 +1397,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeNoEnumerators()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeNoEnumerators()
 	{
 		try
 		{
@@ -1416,7 +1416,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorNameMissing()
 	{
 		try
 		{
@@ -1435,7 +1435,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorNameEmpty()
 	{
 		try
 		{
@@ -1454,7 +1454,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorValueMissing()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorValueMissing()
 	{
 		try
 		{
@@ -1473,7 +1473,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorValueEmpty()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorValueEmpty()
 	{
 		try
 		{
@@ -1492,7 +1492,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorValueNonNumeric()
+	public void testParseInvalidHla1516eFomModuleWithEnumeratedDatatypeEnumeratorValueNonNumeric()
 	{
 		try
 		{
@@ -1511,7 +1511,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordNameMissing()
 	{
 		try
 		{
@@ -1530,7 +1530,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordNameEmpty()
 	{
 		try
 		{
@@ -1549,7 +1549,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordFieldNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordFieldNameMissing()
 	{
 		try
 		{
@@ -1568,7 +1568,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordFieldNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordFieldNameEmpty()
 	{
 		try
 		{
@@ -1587,7 +1587,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordFieldDatatypeMissing()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordFieldDatatypeMissing()
 	{
 		try
 		{
@@ -1606,7 +1606,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordFieldDatatypeEmpty()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordFieldDatatypeEmpty()
 	{
 		try
 		{
@@ -1625,7 +1625,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithFixedRecordFieldDatatypeDoesntExist()
+	public void testParseInvalidHla1516eFomModuleWithFixedRecordFieldDatatypeDoesntExist()
 	{
 		try
 		{
@@ -1644,7 +1644,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeEnumeratorMissing()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeEnumeratorMissing()
 	{
 		try
 		{
@@ -1663,7 +1663,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeEnumeratorEmpty()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeEnumeratorEmpty()
 	{
 		try
 		{
@@ -1682,7 +1682,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeEnumeratorDoesntExist()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeEnumeratorDoesntExist()
 	{
 		try
 		{
@@ -1701,7 +1701,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeNameMissing()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeNameMissing()
 	{
 		try
 		{
@@ -1720,7 +1720,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeNameEmpty()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeNameEmpty()
 	{
 		try
 		{
@@ -1739,7 +1739,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeDatatypeMissing()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeDatatypeMissing()
 	{
 		try
 		{
@@ -1758,7 +1758,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeDatatypeEmpty()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeDatatypeEmpty()
 	{
 		try
 		{
@@ -1777,7 +1777,7 @@ public class Hla1516eFomParserTest
 	}
 	
 	@Test 
-	public void parseInvalidHla1516eFomModuleWithVariantRecordAlternativeDatatypeDoesntExist()
+	public void testParseInvalidHla1516eFomModuleWithVariantRecordAlternativeDatatypeDoesntExist()
 	{
 		try
 		{

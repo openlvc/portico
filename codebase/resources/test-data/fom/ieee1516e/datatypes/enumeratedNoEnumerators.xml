@@ -22,6 +22,7 @@
 				<representation>HLAinteger32BE</representation>
 				<semantics>Possible activities of waiters</semantics>
 				<!-- No enumerators -->
+			</enumeratedData>
 		</enumeratedDataTypes>
 		<arrayDataTypes/>
 		<fixedRecordDataTypes/>
