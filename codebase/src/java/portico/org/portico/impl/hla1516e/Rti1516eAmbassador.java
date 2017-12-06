@@ -151,7 +151,7 @@ import org.portico.utils.messaging.ResponseMessage;
 /**
  * The Portico implementation of the IEEE 1516-2010 (HLA Evolved) RTIambassador class.
  */
-public class Rti1516eAmbassador implements RTIambassador
+public abstract class Rti1516eAmbassador implements RTIambassador
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES

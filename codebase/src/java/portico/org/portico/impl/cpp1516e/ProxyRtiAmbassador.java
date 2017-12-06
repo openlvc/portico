@@ -35,7 +35,7 @@ import hla.rti1516e.exceptions.AlreadyConnected;
 
 import org.apache.log4j.Logger;
 import org.portico.impl.cpp1516e.NativeLibraryLoader;
-import org.portico.impl.hla1516e.Rti1516eAmbassador;
+import org.portico.impl.hla1516e.Rti1516eAmbassadorEx;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eDimensionHandleSet;
@@ -76,7 +76,7 @@ public class ProxyRtiAmbassador
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Rti1516eAmbassador rtiamb;
+	private Rti1516eAmbassadorEx rtiamb;
 	private ProxyFederateAmbassador fedamb;
 	private int id;
 	private Logger logger;
@@ -103,7 +103,7 @@ public class ProxyRtiAmbassador
 		// In this case, we fall back on the low-level JNI exception handling
 		// mechanics, hence the reason we don't catch the exception and just let
 		// it flow on through to the C++ side
-		this.rtiamb = new Rti1516eAmbassador();
+		this.rtiamb = new Rti1516eAmbassadorEx();
 
 		// fetch the LRC logger so that we have somewhere to notify of our events
 		this.logger = Logger.getLogger( "portico.lrc.cpp1516e" );

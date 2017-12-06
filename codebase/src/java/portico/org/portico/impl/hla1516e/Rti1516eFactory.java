@@ -49,7 +49,7 @@ public class Rti1516eFactory implements RtiFactory
 	//----------------------------------------------------------
 	public RTIambassador getRtiAmbassador() throws RTIinternalError
 	{
-		return new Rti1516eAmbassador();
+		return new Rti1516eAmbassadorEx();
 	}
 
 	public EncoderFactory getEncoderFactory() throws RTIinternalError
