@@ -16,7 +16,7 @@ You can find all the docs online at <http://porticoproject.org>.
 If you haven't signed up to the mailing list yet, do so now! It's very low traffic and helps us
 gauge the level of community interest in the project. You can sign up from the URL below:
 
-<https://porticoproject.org/getnotified.html>
+<https://porticoproject.org/>
 
 ### Table of Contents
   1. Getting Started - What is in the package
