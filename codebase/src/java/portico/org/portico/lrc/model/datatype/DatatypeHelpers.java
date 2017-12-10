@@ -53,7 +53,7 @@ public class DatatypeHelpers
 	public static void injectStandardDatatypes( ObjectModel model )
 	{
 		BasicType hlaInt32Be = new BasicType( "HLAinteger32BE", 32, Endianness.BIG );
-		BasicType hlaInt64Be = new BasicType( "HLAinteger32BE", 64, Endianness.BIG );
+		BasicType hlaInt64Be = new BasicType( "HLAinteger64BE", 64, Endianness.BIG );
 		BasicType hlaFloat64Be = new BasicType( "HLAfloat64BE", 64, Endianness.BIG );
 		BasicType hlaOctetPairBe = new BasicType( "HLAoctetPairBE", 16, Endianness.BIG );
 		BasicType hlaOctet = new BasicType( "HLAoctet", 8, Endianness.BIG );
