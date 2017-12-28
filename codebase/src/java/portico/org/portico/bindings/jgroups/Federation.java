@@ -226,6 +226,10 @@ public class Federation
 		byte[] buffer = Util.objectToByteBuffer( fom );
 		channel.sendCreateFederation( buffer );
 		
+		// store the model inside our copy of the manifest
+		// since we are creating the federation, we won't get a callback
+		manifest.setFom( fom );
+		
 		logger.info( "SUCCESS createFederation: name=" + fedname );
 	}
 
