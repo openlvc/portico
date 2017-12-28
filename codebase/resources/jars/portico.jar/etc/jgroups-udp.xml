@@ -12,6 +12,7 @@
 
          ip_mcast="true"
          disable_loopback="false"
+         enable_diagnostics="false"
 
          bundler_type="transfer-queue"         
          max_bundle_size="${portico.jgroups.bundling.maxSize:64K}"
@@ -64,8 +65,7 @@
     <!-- GMS provides generation Group Memebership Services, handling group join
          requests, view updates and changes and anything membership related -->
     <pbcast.GMS print_local_addr="true"
-                join_timeout="${portico.jgroups.gms.jointimeout:3000}"
-                view_bundling="true"/>
+                join_timeout="${portico.jgroups.gms.jointimeout:3000}"/>
 
     <!-- Flow control prevents any single sender overwhelming slower receivers
          with messages which could cause them to be dropped -->
