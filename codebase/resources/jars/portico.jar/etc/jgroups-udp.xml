@@ -11,7 +11,6 @@
          ucast_send_buf_size="640K"
 
          ip_mcast="true"
-         disable_loopback="false"
          enable_diagnostics="false"
 
          bundler_type="transfer-queue"         

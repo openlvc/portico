@@ -21,7 +21,6 @@ import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.Message.Flag;
-import org.jgroups.blocks.MessageDispatcher;
 import org.jgroups.util.DefaultThreadFactory;
 import org.portico.bindings.jgroups.Configuration;
 import org.portico.bindings.jgroups.Federation;
@@ -57,7 +56,6 @@ public class Channel
 	// JGroups connection information
 	private boolean connected;
 	protected JChannel jchannel;
-	private MessageDispatcher jdispatcher;
 	private ChannelListener jlistener;
 
 	//----------------------------------------------------------
@@ -121,6 +119,7 @@ public class Channel
 
 			// set the channel up
 			this.jchannel = constructChannel();
+			this.jchannel.setReceiver( jlistener );
 
 			// connects to the channel and fetches state in single action
 			this.jchannel.connect( channelName );

@@ -29,8 +29,10 @@ import org.jgroups.MembershipListener;
 import org.jgroups.Message;
 import org.jgroups.Message.Flag;
 import org.jgroups.MessageListener;
+import org.jgroups.Receiver;
 import org.jgroups.View;
 import org.jgroups.blocks.RequestHandler;
+import org.jgroups.blocks.Response;
 import org.portico.bindings.jgroups.Federation;
 import org.portico.bindings.jgroups.channel.ControlHeader;
 
@@ -44,7 +46,8 @@ import org.portico.bindings.jgroups.channel.ControlHeader;
  * to the `LocalGateway` class to send out to the broader network. WAN mode is enabled/disabled
  * from within the RID file and only a single federate should have this enabled per network.
  */
-public class ChannelListener implements RequestHandler, MessageListener, MembershipListener
+public class ChannelListener implements MessageListener, MembershipListener, Receiver,
+                                        /*Still use this without MessageDispatcher?*/ RequestHandler
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -83,10 +86,11 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// MembershipListener Methods ////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////
-	/** No-op */ public void block() {}
-	/** No-op */ public void unblock() {}
+	/** No-op */ @Override public void block() {}
+	/** No-op */ @Override public void unblock() {}
 
 	/** Watch changing views to see if anyone crashes */
+	@Override
 	public void viewAccepted( View newView )
 	{
 		// check to see if anyone left the federation since the last update we received
@@ -104,6 +108,7 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	/**
 	 * A hint from JGroups that this federate may have gone AWOL.
 	 */
+	@Override
 	public void suspect( Address suspectedDropout )
 	{
 		UUID uuid = this.allSeenMembers.get( suspectedDropout );
@@ -121,6 +126,7 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	 * against which we are expected to supply a response. We hand off to the federation for
 	 * processing.
 	 */
+	@Override
 	public Object handle( Message message )
 	{
 		// log that we have an incoming message
@@ -139,9 +145,16 @@ public class ChannelListener implements RequestHandler, MessageListener, Members
 	/** No-op. */ public void getState( OutputStream stream ) {}
 	/** No-op. */ public void setState( InputStream stream ) {}
 
+	@Override
+	public void handle( Message message, Response response )
+	{
+		System.out.println( "ERROR! ERROR! SHOULD NEVER HAPPEN!! ERROR! ERROR!" );
+	}
+	
 	/**
 	 * Asynchronous message received.
 	 */
+	@Override
 	public void receive( Message message )
 	{
 		// log that we have an incoming message
