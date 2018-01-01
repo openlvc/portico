@@ -24,7 +24,7 @@ import org.portico.utils.messaging.ExtendedSuccessMessage;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.ResponseMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla13.types.HLA13ByteArrayMap;
 import org.portico.impl.hla13.types.Java1Region;
 import org.portico.lrc.PorticoConstants;

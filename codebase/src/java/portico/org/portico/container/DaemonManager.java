@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.lrc.LRC;
 import org.portico.lrc.compat.JConfigurationException;
 

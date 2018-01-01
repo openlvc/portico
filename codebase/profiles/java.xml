@@ -72,7 +72,7 @@
 	     when defining paths and the like later in the build file -->
 	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-git"/>
-	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
+	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-2.10.0"/>
 	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
 
 	<!-- Classpaths for individual libraries -->

@@ -24,7 +24,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.Message;
 import org.jgroups.Message.Flag;
 import org.portico.bindings.jgroups.Configuration;
@@ -100,7 +101,7 @@ public class Gateway
 	public Gateway( Federation federation )
 	{
 		this.federation = federation;
-		this.logger = Logger.getLogger( "portico.lrc.wan" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.wan" );
 		this.connected = false;
 
 		// Gateway network properties

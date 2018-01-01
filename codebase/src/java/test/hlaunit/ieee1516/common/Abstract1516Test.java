@@ -14,7 +14,8 @@
  */
 package hlaunit.ieee1516.common;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516.types.DoubleTime;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;                    // :( 1516e type
 import org.portico.impl.hla1516e.types.encoding.HLA1516eUnicodeString;    // :( 1516e type
@@ -43,7 +44,7 @@ public abstract class Abstract1516Test
 
 	protected Abstract1516Test()
 	{
-		this.logger = Logger.getLogger( "portico." + this.getClass().getSimpleName() );
+		this.logger = LogManager.getFormatterLogger( "portico." + this.getClass().getSimpleName() );
 	}
 
 	//----------------------------------------------------------
