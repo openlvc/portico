@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.lrc.LRC;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
@@ -82,7 +83,7 @@ public class Container
 
 	private Container() throws JConfigurationException
 	{
-		this.logger = Logger.getLogger( "portico.container" );
+		this.logger = LogManager.getFormatterLogger( "portico.container" );
 		this.activeLrcs = new HashMap<String,LRC>();
 		this.handlerRegistry = new HandlerRegistry();
 		this.daemonManager = new DaemonManager( this );

@@ -14,7 +14,8 @@
  */
 package org.portico.impl.cpp13;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.lrc.PorticoConstants;
 
 /**
@@ -49,7 +50,7 @@ public class NativeLibraryLoader
 	private void loadNativeLibraries()
 	{
 		boolean windows = System.getProperty("os.name").contains("indows");
-		this.logger = Logger.getLogger( "portico.lrc.cpp13" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.cpp13" );
 		
 		if( windows )
 			loadWindowsLibraries();

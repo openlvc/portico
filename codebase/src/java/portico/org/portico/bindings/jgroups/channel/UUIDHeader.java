@@ -18,6 +18,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import org.jgroups.Header;
 import org.jgroups.conf.ClassConfigurator;
@@ -35,7 +36,8 @@ public class UUIDHeader extends Header
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final short HEADER = 7776;
+	// P = 16, Message 01
+	public static final short HEADER = 1601;
 	static
 	{
 		// register the header type
@@ -69,9 +71,21 @@ public class UUIDHeader extends Header
 	}
 
 	@Override
-	public int size()
+	public int serializedSize()
 	{
 		return 16;
+	}
+
+	@Override
+	public short getMagicId()
+	{
+		return HEADER;
+	}
+	
+	@Override
+	public Supplier<? extends Header> create()
+	{
+		return UUIDHeader::new;
 	}
 
 	public void writeTo( DataOutput out ) throws IOException

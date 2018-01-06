@@ -17,6 +17,7 @@ package org.portico.bindings.jgroups.channel;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import org.jgroups.Global;
 import org.jgroups.Header;
@@ -32,7 +33,8 @@ public class ControlHeader extends Header
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final short HEADER                 = 7777;
+	// P = 16, Message 02
+	public static final short HEADER                 = 1602;
 	public static final short FIND_COORDINATOR       = 1;
 	public static final short SET_MANIFEST           = 2; // sent in reply to FIND_COORDINATOR
 
@@ -74,12 +76,25 @@ public class ControlHeader extends Header
 	{
 		return this.messageType;
 	}
-	
-	public int size()
+
+	@Override
+	public int serializedSize()
 	{
 		return Global.SHORT_SIZE;
 	}
-	
+
+	@Override
+	public short getMagicId()
+	{
+		return HEADER;
+	}
+
+	@Override
+	public Supplier<? extends Header> create()
+	{
+		return ControlHeader::new;
+	}
+
 	public void writeTo( DataOutput out) throws IOException
 	{
 		out.writeShort( messageType );

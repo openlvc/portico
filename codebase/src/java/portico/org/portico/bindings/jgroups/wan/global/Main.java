@@ -17,7 +17,8 @@ package org.portico.bindings.jgroups.wan.global;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.utils.logging.Log4jConfigurator;
 
 public class Main
@@ -77,7 +78,7 @@ public class Main
 		// Start the WAN Router
 		//
 		Log4jConfigurator.setLevel( "INFO", "portico.wan" );
-		Logger logger = Logger.getLogger( "portico.wan" );
+		Logger logger = LogManager.getFormatterLogger( "portico.wan" );
 		try
 		{
 

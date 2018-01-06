@@ -21,7 +21,7 @@ import java.util.Set;
 import hla.rti.*;
 import hla.rti.jlc.RTIambassadorEx;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.DoubleTimeInterval;
 import org.portico.impl.hla13.types.HLA13AttributeHandleSet;

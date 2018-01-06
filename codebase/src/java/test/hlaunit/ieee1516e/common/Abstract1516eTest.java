@@ -14,7 +14,8 @@
  */
 package hlaunit.ieee1516e.common;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.testng.Assert;
@@ -45,7 +46,7 @@ public abstract class Abstract1516eTest
 
 	protected Abstract1516eTest()
 	{
-		this.logger = Logger.getLogger( "portico." + this.getClass().getSimpleName() );
+		this.logger = LogManager.getFormatterLogger( "portico." + this.getClass().getSimpleName() );
 
 		// get a reference to the encoder factory to serializing and deserializing things
 		try

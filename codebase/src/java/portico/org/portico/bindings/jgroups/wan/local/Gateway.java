@@ -24,7 +24,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.Message;
 import org.jgroups.Message.Flag;
 import org.portico.bindings.jgroups.Configuration;
@@ -100,7 +101,7 @@ public class Gateway
 	public Gateway( Federation federation )
 	{
 		this.federation = federation;
-		this.logger = Logger.getLogger( "portico.lrc.wan" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.wan" );
 		this.connected = false;
 
 		// Gateway network properties
@@ -431,7 +432,7 @@ public class Gateway
 			if( logger.isDebugEnabled() )
 				logger.debug( "(WAN->LOCAL) relay("+payload.length+"b)" );
 
-			Message message = new Message( null /*destination*/, null /*source*/, payload );
+			Message message = new Message( null /*destination*/, payload );
 			message.setFlag( Flag.NO_RELAY ); // don't double up!
 			federation.getChannel().forwardToChannel( message );
 		}

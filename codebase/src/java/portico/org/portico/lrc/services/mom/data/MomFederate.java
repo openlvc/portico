@@ -17,7 +17,7 @@ package org.portico.lrc.services.mom.data;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.encoding.HLA1516eBoolean;
