@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hla13", "hla13\hla13.vcxproj", "{584715B9-934A-45A6-9D35-2A68C63B35E0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D1EBD82-4842-4BB6-A2FF-E80740B5C813} = {4D1EBD82-4842-4BB6-A2FF-E80740B5C813}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hla13FedTime", "hla13FedTime\hla13FedTime.vcxproj", "{4D1EBD82-4842-4BB6-A2FF-E80740B5C813}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hla13Example", "hla13Example\hla13Example.vcxproj", "{346364C5-6909-4FD2-856A-7507A49732DD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{584715B9-934A-45A6-9D35-2A68C63B35E0} = {584715B9-934A-45A6-9D35-2A68C63B35E0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{415B2E40-C627-4EBA-B7E1-211DF3BD5F64}"
+	ProjectSection(ProjectDependencies) = postProject
+		{584715B9-934A-45A6-9D35-2A68C63B35E0} = {584715B9-934A-45A6-9D35-2A68C63B35E0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ieee1516e", "ieee1516e\ieee1516e.vcxproj", "{7DCB9DFF-9100-4495-AA75-52C96028AA70}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ieee1516eExample", "ieee1516eExample\ieee1516eExample.vcxproj", "{AD05BBCC-F329-4503-A427-9FE4F6043267}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AA1E9FA6-4EF9-4AB3-AD67-748A0D7C1A1B} = {AA1E9FA6-4EF9-4AB3-AD67-748A0D7C1A1B}
+		{7DCB9DFF-9100-4495-AA75-52C96028AA70} = {7DCB9DFF-9100-4495-AA75-52C96028AA70}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ieee1516eFedTime", "ieee1516eFedTime\ieee1516eFedTime.vcxproj", "{AA1E9FA6-4EF9-4AB3-AD67-748A0D7C1A1B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7DCB9DFF-9100-4495-AA75-52C96028AA70} = {7DCB9DFF-9100-4495-AA75-52C96028AA70}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{584715B9-934A-45A6-9D35-2A68C63B35E0}.Debug|x64.ActiveCfg = Debug|x64
+		{584715B9-934A-45A6-9D35-2A68C63B35E0}.Debug|x64.Build.0 = Debug|x64
+		{4D1EBD82-4842-4BB6-A2FF-E80740B5C813}.Debug|x64.ActiveCfg = Debug|x64
+		{4D1EBD82-4842-4BB6-A2FF-E80740B5C813}.Debug|x64.Build.0 = Debug|x64
+		{346364C5-6909-4FD2-856A-7507A49732DD}.Debug|x64.ActiveCfg = Debug|x64
+		{346364C5-6909-4FD2-856A-7507A49732DD}.Debug|x64.Build.0 = Debug|x64
+		{415B2E40-C627-4EBA-B7E1-211DF3BD5F64}.Debug|x64.ActiveCfg = Debug|x64
+		{415B2E40-C627-4EBA-B7E1-211DF3BD5F64}.Debug|x64.Build.0 = Debug|x64
+		{7DCB9DFF-9100-4495-AA75-52C96028AA70}.Debug|x64.ActiveCfg = Debug|x64
+		{7DCB9DFF-9100-4495-AA75-52C96028AA70}.Debug|x64.Build.0 = Debug|x64
+		{AD05BBCC-F329-4503-A427-9FE4F6043267}.Debug|x64.ActiveCfg = Debug|x64
+		{AD05BBCC-F329-4503-A427-9FE4F6043267}.Debug|x64.Build.0 = Debug|x64
+		{AA1E9FA6-4EF9-4AB3-AD67-748A0D7C1A1B}.Debug|x64.ActiveCfg = Debug|x64
+		{AA1E9FA6-4EF9-4AB3-AD67-748A0D7C1A1B}.Debug|x64.Build.0 = Debug|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\common">
+      <UniqueIdentifier>{bb13daee-42ea-4bdc-9e91-25dea8f40e3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{c59d4c99-4bcd-4fce-8194-b5f27bc89086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ddm">
+      <UniqueIdentifier>{1cc407f0-7d1b-4140-82e2-f504ef8737a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ddm">
+      <UniqueIdentifier>{ffff3abc-e6da-4f0a-a947-ea29dec0886d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\declaration">
+      <UniqueIdentifier>{73ce1f70-7703-4d28-a3f3-41d73dbee650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\declaration">
+      <UniqueIdentifier>{63f13b14-4da2-4c4c-a822-150b393afd49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\federation">
+      <UniqueIdentifier>{a0a6a994-e2ce-4b35-a256-c03ab3b264e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\federation">
+      <UniqueIdentifier>{b0f64a27-3998-47ba-9ce8-c70bd9257aea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\object">
+      <UniqueIdentifier>{71f876dd-7cae-466e-a96e-c4242c1938c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\object">
+      <UniqueIdentifier>{0d5172d8-d4c5-4589-92f2-97eeb43dbf34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ownership">
+      <UniqueIdentifier>{600d9c00-267f-4bd6-9c5d-b96ba0d23926}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ownership">
+      <UniqueIdentifier>{5e8b711e-3e27-41bd-a1fc-ef85fb2e1090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\saverestore">
+      <UniqueIdentifier>{f9cf1905-be91-48a6-9150-46b90316399f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\saverestore">
+      <UniqueIdentifier>{6c4bf2ee-95d4-4805-a4ce-377003e3d0e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\support">
+      <UniqueIdentifier>{4e9aefaa-754c-4690-8c6f-3b719a6e1bf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\support">
+      <UniqueIdentifier>{4309fe22-c4ff-4947-a220-c0eb22525dff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\synchronization">
+      <UniqueIdentifier>{e30c1e1b-cb4a-448e-9b57-c1e1f2e33d5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\synchronization">
+      <UniqueIdentifier>{559b9b0e-6084-44f9-817c-cf086dd0260f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\time">
+      <UniqueIdentifier>{52d003a7-395b-438a-8f7d-72e47afc2d67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\time">
+      <UniqueIdentifier>{a7226a13-cc4d-4903-9073-71f3ecb2251f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types">
+      <UniqueIdentifier>{15844585-30aa-42d0-acff-99d00a8c8aaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types">
+      <UniqueIdentifier>{7d685179-f5b1-47d3-9393-70c42b00c9f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\ActiveSR.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Common.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13Federate.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13FederateAmbassador.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13Interaction.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13Object.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeObjectWithRegionTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\AssociateRegionTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\DDMSupportServicesTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\ModifyRegionTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\RegisterObjectDDMTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\RequestUpdateWithRegionTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\SendInteractionWithRegionTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeInteractionWithRegionTest.h">
+      <Filter>Header Files\ddm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeObjectTest.h">
+      <Filter>Header Files\declaration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishInteractionTest.h">
+      <Filter>Header Files\declaration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishObjectTest.h">
+      <Filter>Header Files\declaration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeInteractionTest.h">
+      <Filter>Header Files\declaration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\ResignFederationTest.h">
+      <Filter>Header Files\federation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\CreateFederationTest.h">
+      <Filter>Header Files\federation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\DestroyFederationTest.h">
+      <Filter>Header Files\federation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\JoinFederationTest.h">
+      <Filter>Header Files\federation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\SendInteractionTest.h">
+      <Filter>Header Files\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\DeleteObjectTest.h">
+      <Filter>Header Files\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\ReflectAttributesTest.h">
+      <Filter>Header Files\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\RegisterObjectTest.h">
+      <Filter>Header Files\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ownership\QueryAttributeOwnershipTest.h">
+      <Filter>Header Files\ownership</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ownership\AcquireOwnershipTest.h">
+      <Filter>Header Files\ownership</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ownership\DivestOwnershipTest.h">
+      <Filter>Header Files\ownership</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationSaveTest.h">
+      <Filter>Header Files\saverestore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationRestoreTest.h">
+      <Filter>Header Files\saverestore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\support\QueryTest.h">
+      <Filter>Header Files\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\synchronization\RegisterSyncPointTest.h">
+      <Filter>Header Files\synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\synchronization\SynchronizationTest.h">
+      <Filter>Header Files\synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\time\TimeAdvanceRequestTest.h">
+      <Filter>Header Files\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\time\FedTimeTest.h">
+      <Filter>Header Files\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\time\FlushQueueRequestTest.h">
+      <Filter>Header Files\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\ParameterHandleValuePairSetTest.h">
+      <Filter>Header Files\types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleSetTest.h">
+      <Filter>Header Files\types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleValuePairSetTest.h">
+      <Filter>Header Files\types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\FederateHandleSetTest.h">
+      <Filter>Header Files\types</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13Object.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\ActiveSR.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Common.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\main.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13Federate.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13FederateAmbassador.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13Interaction.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeObjectWithRegionTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\AssociateRegionTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\DDMSupportServicesTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\ModifyRegionTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\RegisterObjectDDMTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\RequestUpdateWithRegionTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\SendInteractionWithRegionTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeInteractionWithRegionTest.cpp">
+      <Filter>Source Files\ddm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeObjectTest.cpp">
+      <Filter>Source Files\declaration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishInteractionTest.cpp">
+      <Filter>Source Files\declaration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishObjectTest.cpp">
+      <Filter>Source Files\declaration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeInteractionTest.cpp">
+      <Filter>Source Files\declaration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\ResignFederationTest.cpp">
+      <Filter>Source Files\federation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\CreateFederationTest.cpp">
+      <Filter>Source Files\federation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\DestroyFederationTest.cpp">
+      <Filter>Source Files\federation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\JoinFederationTest.cpp">
+      <Filter>Source Files\federation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\SendInteractionTest.cpp">
+      <Filter>Source Files\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\DeleteObjectTest.cpp">
+      <Filter>Source Files\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\ReflectAttributesTest.cpp">
+      <Filter>Source Files\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\RegisterObjectTest.cpp">
+      <Filter>Source Files\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ownership\QueryAttributeOwnershipTest.cpp">
+      <Filter>Source Files\ownership</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ownership\AcquireOwnershipTest.cpp">
+      <Filter>Source Files\ownership</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ownership\DivestOwnershipTest.cpp">
+      <Filter>Source Files\ownership</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationRestoreTest.cpp">
+      <Filter>Source Files\saverestore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationSaveTest.cpp">
+      <Filter>Source Files\saverestore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\support\QueryTest.cpp">
+      <Filter>Source Files\support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\synchronization\SynchronizationTest.cpp">
+      <Filter>Source Files\synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\synchronization\RegisterSyncPointTest.cpp">
+      <Filter>Source Files\synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\time\TimeAdvanceRequestTest.cpp">
+      <Filter>Source Files\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\time\FedTimeTest.cpp">
+      <Filter>Source Files\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\time\FlushQueueRequestTest.cpp">
+      <Filter>Source Files\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\ParameterHandleValuePairSetTest.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleSetTest.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleValuePairSetTest.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\FederateHandleSetTest.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
