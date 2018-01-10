@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{d0d024d6-da33-4301-8258-5d7543eafe02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{4360975f-3071-4c1a-9c21-1a610a2f7191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\fedamb">
+      <UniqueIdentifier>{76043c96-9dd6-44ca-bf5e-cecbcda47faa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\fedamb">
+      <UniqueIdentifier>{07c63de5-c28b-471f-8a62-51d117c5b626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\jni">
+      <UniqueIdentifier>{6d7f8b28-4545-4a07-84ab-b83edbcf2123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jni">
+      <UniqueIdentifier>{695792d2-c82a-46b6-a7cc-615fc805cf07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\platform">
+      <UniqueIdentifier>{4a96b943-4756-4cc4-aa81-c835d2370955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\platform\vc8">
+      <UniqueIdentifier>{45b7213b-da3e-4679-b0cd-644f8ad0a79b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rtiamb">
+      <UniqueIdentifier>{83246123-bcb1-4013-9214-441d24ff92fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rtiamb">
+      <UniqueIdentifier>{e5db74b1-e857-44e3-9f7a-5c456ed7703e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types">
+      <UniqueIdentifier>{32da9a9f-ef42-4b58-b173-e71a131063bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types\time">
+      <UniqueIdentifier>{295e1462-aa48-47ef-aef8-3805bdbd45d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types\handles">
+      <UniqueIdentifier>{049fed4c-b77f-41cc-8eae-4200c860d882}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types\encoding">
+      <UniqueIdentifier>{fa880ed2-72e9-4f5c-817f-ff0b537aabec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types">
+      <UniqueIdentifier>{5943b7ce-9dd9-4896-a537-9ee4f9536ade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types\time">
+      <UniqueIdentifier>{5c878f9c-903d-49c7-8925-863a4825de36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types\handles">
+      <UniqueIdentifier>{121a4ede-b0d5-4d0c-a45e-be6d36c9f8d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types\encoding">
+      <UniqueIdentifier>{f79a26ad-6dd9-43b9-b53a-c101f16322a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types\encoding\basic">
+      <UniqueIdentifier>{f5cc7530-9c64-4550-9a58-4346bca1213b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\types\encoding\aggregate">
+      <UniqueIdentifier>{450715bc-cd42-461c-b1b5-3370fc0e01a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types\encoding\basic">
+      <UniqueIdentifier>{f6c37783-1de6-4c80-bd40-4909764d1497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\types\encoding\aggregate">
+      <UniqueIdentifier>{b60e4717-3b9d-4cf4-9b40-cdfe24c22ee4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\BitHelpers.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\ExceptionHacks.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\Logger.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\StringUtils.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\org_portico_impl_cpp1516e_FederateAmbassadorLink.h">
+      <Filter>Header Files\fedamb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JavaRTI.h">
+      <Filter>Header Files\jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JniUtils.h">
+      <Filter>Header Files\jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\org_portico_impl_cpp1516e_ExceptionManager.h">
+      <Filter>Header Files\jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\Runtime.h">
+      <Filter>Header Files\jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\platform\vc8\stdint.h">
+      <Filter>Header Files\platform\vc8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\PorticoRtiAmbassador.h">
+      <Filter>Header Files\rtiamb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\BasicTypeImpl.h">
+      <Filter>Header Files\types\encoding\basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\AggregateTypeImpl.h">
+      <Filter>Header Files\types\encoding\aggregate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\BitHelpers.h">
+      <Filter>Header Files\types\encoding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\HandleFriends.h">
+      <Filter>Header Files\types\handles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\HandleImplementations.h">
+      <Filter>Header Files\types\handles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\TimeImplementations.h">
+      <Filter>Header Files\types\time</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\ExceptionHacks.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\Logger.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\StringUtils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\FederateAmbassador.cpp">
+      <Filter>Source Files\fedamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\FederateAmbassadorLink.cpp">
+      <Filter>Source Files\fedamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\NullFederateAmbassador.cpp">
+      <Filter>Source Files\fedamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\ExceptionManager.cpp">
+      <Filter>Source Files\jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JavaRTI.cpp">
+      <Filter>Source Files\jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JniUtils.cpp">
+      <Filter>Source Files\jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\Runtime.cpp">
+      <Filter>Source Files\jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\ApiSpecificServices.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\Constructors.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\DataDistributionManagement.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\DeclarationManagement.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\FederationManagement.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\ObjectManagement.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\OwnershipManagement.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\RTIambassadorFactory.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\SaveAndRestoreServices.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\SupportServices.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\SynchronizationServices.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\TimeManagement.cpp">
+      <Filter>Source Files\rtiamb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAASCIIChar.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAASCIIstring.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAboolean.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAbyte.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat32BE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat32LE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat64BE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat64LE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger16BE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger16LE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger32BE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger32LE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger64BE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger64LE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAoctet.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAoctetPairBE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAoctetPairLE.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAunicodeChar.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAunicodeString.cpp">
+      <Filter>Source Files\types\encoding\basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\AggregateTypeImpl.cpp">
+      <Filter>Source Files\types\encoding\aggregate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAfixedArray.cpp">
+      <Filter>Source Files\types\encoding\aggregate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAfixedRecord.cpp">
+      <Filter>Source Files\types\encoding\aggregate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAopaqueData.cpp">
+      <Filter>Source Files\types\encoding\aggregate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAvariableArray.cpp">
+      <Filter>Source Files\types\encoding\aggregate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAvariantRecord.cpp">
+      <Filter>Source Files\types\encoding\aggregate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\BitHelpers.cpp">
+      <Filter>Source Files\types\encoding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\DataElement.cpp">
+      <Filter>Source Files\types\encoding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\AttributeHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\DimensionHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\FederateHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\HandleFriends.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\InteractionClassHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\MessageRetractionHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\ObjectClassHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\ObjectInstanceHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\ParameterHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\RegionHandle.cpp">
+      <Filter>Source Files\types\handles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAfloat64Interval.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAfloat64Time.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAfloat64TimeFactory.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAinteger64Interval.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAinteger64Time.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAinteger64TimeFactory.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTime.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTimeFactory.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTimeFactoryFactory.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTimeInterval.cpp">
+      <Filter>Source Files\types\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\Exceptions.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\RangeBounds.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\SupportTypes.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\VariableLengthData.cpp">
+      <Filter>Source Files\types</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\src\cpp\ieee1516e\src\version.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
