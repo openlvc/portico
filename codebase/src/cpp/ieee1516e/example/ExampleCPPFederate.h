@@ -29,13 +29,12 @@ class ExampleCPPFederate
 		ExampleFedAmb *fedamb;
 
 		// fom handles //
-		ObjectClassHandle      aHandle;
-		AttributeHandle        aaHandle;
-		AttributeHandle        abHandle;
-		AttributeHandle        acHandle;
-		InteractionClassHandle xHandle;
-		ParameterHandle        xaHandle;
-		ParameterHandle        xbHandle;
+		ObjectClassHandle      sodaHandle;
+		AttributeHandle        numberOfCupsHandle;
+		AttributeHandle        flavourHandle;
+
+		InteractionClassHandle rootBeerServedHandle;
+		ParameterHandle        rootBeerCheckHandle;
 
 		// public methods //
 		ExampleCPPFederate();

@@ -92,15 +92,22 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	try
 	{
 		vector<wstring> foms;
-		foms.push_back( L"testfom.fed" );
-		
+       
+		foms.push_back( L"restaurant/RestaurantFood.xml" );
+		foms.push_back( L"restaurant/RestaurantDrinks.xml" );
+		foms.push_back( L"restaurant/RestaurantProcesses.xml" );
+
 		//rtiamb->createFederationExecution( L"ExampleFederation", L"testfom.fed" );
 		rtiamb->createFederationExecution( L"ExampleFederation", foms );
 		wcout << L"Created Federation" << endl;
 	}
-	catch( FederationExecutionAlreadyExists& exists )
+	catch ( FederationExecutionAlreadyExists& exists )
 	{
 		wcout << L"Didn't create federation, it already existed" << endl;
+	}
+	catch ( Exception& e )
+	{
+		wcout << L"Something else happened: " << e.what() << endl;
 	}
 
 	////////////////////////////
@@ -236,14 +243,12 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
  */
 void ExampleCPPFederate::initializeHandles()
 {
-	this->aHandle  = rtiamb->getObjectClassHandle( L"ObjectRoot.A" );
-	this->aaHandle = rtiamb->getAttributeHandle( aHandle, L"aa" );
-	this->abHandle = rtiamb->getAttributeHandle( aHandle, L"ab" );
-	this->acHandle = rtiamb->getAttributeHandle( aHandle, L"ac" );
+	this->sodaHandle = rtiamb->getObjectClassHandle( L"HLAobjectRoot.Food.Drink.Soda" );
+	this->numberOfCupsHandle = rtiamb->getAttributeHandle( sodaHandle, L"NumberCups" );
+	this->flavourHandle = rtiamb->getAttributeHandle( sodaHandle, L"Flavor" ); 
 
-	this->xHandle  = rtiamb->getInteractionClassHandle( L"InteractionRoot.X" );
-	this->xaHandle = rtiamb->getParameterHandle( xHandle, L"xa" );
-	this->xbHandle = rtiamb->getParameterHandle( xHandle, L"xb" );
+	this->rootBeerServedHandle = rtiamb->getInteractionClassHandle( L"HLAinteractionRoot.CustomerTransactions.FoodServed.RootBeerServed" );
+	this->rootBeerCheckHandle = rtiamb->getParameterHandle( rootBeerServedHandle, L"SodaType" );
 }
 
 /*
@@ -297,58 +302,57 @@ void ExampleCPPFederate::publishAndSubscribe()
 	////////////////////////////////////////////
 	// publish all attributes of ObjectRoot.A //
 	////////////////////////////////////////////
-	// before we can register instance of the object class ObjectRoot.A and
+	// before we can register instance of the object class HLAobjectRoot.Food.Drink.Soda and
 	// update the values of the various attributes, we need to tell the RTI
 	// that we intend to publish this information
 
 	// package the information into a handle set
 	AttributeHandleSet attributes;// = AttributeHandleSet();
-	attributes.insert( this->aaHandle );
-	attributes.insert( this->abHandle );
-	attributes.insert( this->acHandle );
+	attributes.insert( this->numberOfCupsHandle );
+	attributes.insert( this->flavourHandle ); 
 
 	// do the actual publication
-	rtiamb->publishObjectClassAttributes( this->aHandle, attributes );
+	rtiamb->publishObjectClassAttributes( this->sodaHandle, attributes );
 
 	/////////////////////////////////////////////////
-	// subscribe to all attributes of ObjectRoot.A //
+	// subscribe to all attributes of HLAobjectRoot.Food.Drink.Soda //
 	/////////////////////////////////////////////////
 	// we also want to hear about the same sort of information as it is
 	// created and altered in other federates, so we need to subscribe to it
-	rtiamb->subscribeObjectClassAttributes( this->aHandle, attributes );
+	rtiamb->subscribeObjectClassAttributes( this->sodaHandle, attributes );
 
 	/////////////////////////////////////////////////////
-	// publish the interaction class InteractionRoot.X //
+	// publish the interaction class HLAinteractionRoot.CustomerTransactions.FoodServed.RootBeerServed //
 	/////////////////////////////////////////////////////
-	// we want to send interactions of type InteractionRoot.X, so we need
+	// we want to send interactions of type HLAinteractionRoot.CustomerTransactions.FoodServed.RootBeerServedX, so we need
 	// to tell the RTI that we're publishing it first. We don't need to
 	// inform it of the parameters, only the class, making it much simpler
 
 	// do the publication
-	rtiamb->publishInteractionClass( this->xHandle );
+	rtiamb->publishInteractionClass( this->rootBeerServedHandle );
 
 	////////////////////////////////////////////////////
-	// subscribe to the InteractionRoot.X interaction //
+	// subscribe to the HLAinteractionRoot.CustomerTransactions.FoodServed.RootBeerServed interaction //
 	////////////////////////////////////////////////////
 	// we also want to receive other interaction of the same type that are
 	// sent out by other federates, so we have to subscribe to it first
-	rtiamb->subscribeInteractionClass( this->xHandle );
+	rtiamb->subscribeInteractionClass( this->rootBeerServedHandle );
 }
 
 /*
- * This method will register an instance of the class ObjectRoot.A and will
+ * This method will register an instance of the class HLAobjectRoot.Food.Drink.Soda and will
  * return the federation-wide unique handle for that instance. Later in the
  * simulation, we will update the attribute values for this instance
  */
 ObjectInstanceHandle ExampleCPPFederate::registerObject()
 {
-	return rtiamb->registerObjectInstance( rtiamb->getObjectClassHandle(L"ObjectRoot.A") );
+	return rtiamb->registerObjectInstance( rtiamb->getObjectClassHandle(L"HLAobjectRoot.Food.Drink.Soda") );
 }
 
 /*
  * This method will update all the values of the given object instance. It will
  * set each of the values to be a string which is equal to the name of the
- * attribute plus the current time. eg "aa:10.0" if the time is 10.0.
+ * attribute plus the current time. eg "cups:5" if the time is 10.0.
  * <p/>
  * Note that we don't actually have to update all the attributes at once, we
  * could update them individually, in groups or not at all!
@@ -364,17 +368,16 @@ void ExampleCPPFederate::updateAttributeValues( ObjectInstanceHandle objectHandl
 	
 	// generate the new values
 	// we use EncodingHelpers to make things nice friendly for both Java and C++
-	char aaValue[16], abValue[16], acValue[16];
-	sprintf( aaValue, "aa:%f", getLbts() );
-	sprintf( abValue, "ab:%f", getLbts() );
-	sprintf( acValue, "ac:%f", getLbts() );
+	char numberOfCupsValue[16], flavourValue[16];
+	sprintf(numberOfCupsValue, "cups:%d", 5);
+	sprintf(flavourValue, "flavour:%d", 102);
 	
-	VariableLengthData aaData( (void*)aaValue, strlen(aaValue)+1 );
-	VariableLengthData abData( (void*)abValue, strlen(abValue)+1 );
-	VariableLengthData acData( (void*)acValue, strlen(acValue)+1 );
-	attributes[aaHandle] = aaData;
-	attributes[abHandle] = abData;
-	attributes[acHandle] = acData;
+	VariableLengthData numberOfCupsData( (void*)numberOfCupsValue, strlen(numberOfCupsValue) + 1 );
+	VariableLengthData flavourData( (void*)flavourValue, strlen(flavourValue) + 1 );
+
+	attributes[numberOfCupsHandle] = numberOfCupsData;
+	attributes[flavourHandle] = flavourData;
+
 
 	//////////////////////////
 	// do the actual update //
@@ -382,15 +385,17 @@ void ExampleCPPFederate::updateAttributeValues( ObjectInstanceHandle objectHandl
 	VariableLengthData tag( (void*)"Hi!", 4 );
 	rtiamb->updateAttributeValues( objectHandle, attributes, tag );
 
+
 	// note that if you want to associate a particular timestamp with the
 	// update. here we send another update, this time with a timestamp:
-	auto_ptr<HLAfloat64Time> time( new HLAfloat64Time(fedamb->federateTime+
-	                                                  fedamb->federateLookahead) );
+	auto_ptr<HLAfloat64Time> time( new HLAfloat64Time( fedamb->federateTime+
+	                                                  fedamb->federateLookahead ) );
 	rtiamb->updateAttributeValues( objectHandle, attributes, tag, *time );
 }
 
 /*
- * This method will send out an interaction of the type InteractionRoot.X. Any
+ * This method will send out an interaction of the type 
+ * HLAinteractionRoot.CustomerTransactions.FoodServed.RootBeerServed. Any
  * federates which are subscribed to it will receive a notification the next time
  * they tick(). Here we are passing only two of the three parameters we could be
  * passing, but we don't actually have to pass any at all!
@@ -404,26 +409,23 @@ void ExampleCPPFederate::sendInteraction()
 	ParameterHandleValueMap parameters;
 
 	// generate the new values
-	char xaValue[16], xbValue[16];
-	sprintf( xaValue, "xa:%f", getLbts() );
-	sprintf( xbValue, "xb:%f", getLbts() );
-	VariableLengthData xaData( (void*)xaValue, strlen(xaValue)+1 );
-	VariableLengthData xbData( (void*)xaValue, strlen(xbValue)+1 );
-	parameters[xaHandle] = xaData;
-	parameters[xbHandle] = xbData;
+	char flavorValue[16];
+	sprintf( flavorValue, "flavor:%d", 103 );
+	VariableLengthData flavorData( (void*)flavorValue, strlen(flavorValue) + 1 );
+	parameters[rootBeerCheckHandle] = flavorData;
 
 	//////////////////////////
 	// send the interaction //
 	//////////////////////////
 	VariableLengthData tag( (void*)"Hi!", 4 );
-	rtiamb->sendInteraction( xHandle, parameters, tag );
+	rtiamb->sendInteraction( this->rootBeerServedHandle, parameters, tag );
 
 	// if you want to associate a particular timestamp with the
 	// interaction, you will have to supply it to the RTI. Here
 	// we send another interaction, this time with a timestamp:
-	auto_ptr<HLAfloat64Time> time( new HLAfloat64Time(fedamb->federateTime+
-	                                                  fedamb->federateLookahead) );
-	rtiamb->sendInteraction( xHandle, parameters, tag, *time );
+	auto_ptr<HLAfloat64Time> time( new HLAfloat64Time( fedamb->federateTime+
+	                                                  fedamb->federateLookahead ) );
+	rtiamb->sendInteraction( this->rootBeerServedHandle, parameters, tag, *time );
 }
 
 /*
@@ -459,7 +461,7 @@ void ExampleCPPFederate::deleteObject( ObjectInstanceHandle objectHandle )
 
 double ExampleCPPFederate::getLbts()
 {
-	return (fedamb->federateTime + fedamb->federateLookahead);
+	return ( fedamb->federateTime + fedamb->federateLookahead );
 }
 
 //------------------------------------------------------------------------------------------
