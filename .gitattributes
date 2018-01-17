@@ -1,7 +1,32 @@
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
+# Set default behaviour, in case users don't have core.autocrlf set.
 * text=auto
+
+# Explicitly declare text files we want to always be normalized and converted 
+# to native line endings on checkout.
+*.c text
+*.h text
+*.cpp text
+*.cxx text
+*.hpp text
+*.java text
+*.xml text
+*.properties text
+*.version text
+
+# Declare files that will always have CRLF line endings on checkout.
+*.sln text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.nlf text eol=crlf
+*.nsh text eol=crlf
+
+# Deflare files that will always have LF line endings on checkout
+*.sh text eol=lf
+*.sh.template text eol=lf
+
 
 ###############################################################################
 # Set default behavior for command prompt diff.
