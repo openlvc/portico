@@ -61,7 +61,13 @@
 	#endif
 
 	// windows platform, determine the compiler version
-	#if _MSC_VER >= 1700
+	#if _MSC_VER >= 1900
+		#define VC_VERSION vc14
+		#define VC14
+	#elif _MSC_VER >= 1800
+		#define VC_VERSION vc12
+		#define VC12
+	#elif _MSC_VER >= 1700
 		#define VC_VERSION vc11
 		#define VC11
 	#elif _MSC_VER >= 1600
