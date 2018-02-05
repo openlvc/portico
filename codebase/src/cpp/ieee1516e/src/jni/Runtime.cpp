@@ -451,7 +451,9 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
  */
 string Runtime::getMode() throw( RTIinternalError )
 {
-#ifdef DEBUG
+#ifdef _DEBUG
+	return string("-Dportico.cpp.mode=debug");
+#elif defined DEBUG
 	return string("-Dportico.cpp.mode=debug");
 #else
 	return string("-Dportico.cpp.mode=release");
