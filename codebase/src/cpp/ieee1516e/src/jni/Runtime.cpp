@@ -351,9 +351,6 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
 	            << rtihome << "\\bin\\"
-#ifdef VC12
-				<< "vc12"
-#endif
 #ifdef VC11
 	            << "vc11"
 #endif
@@ -468,9 +465,7 @@ string Runtime::getMode() throw( RTIinternalError )
  */
 string Runtime::getCompiler() throw( RTIinternalError )
 {
-#ifdef VC12
-	return string("-Dportico.cpp.compiler=vc12");
-#elif defined VC11
+#ifdef VC11
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );
