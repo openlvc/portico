@@ -9,61 +9,54 @@ CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(GetAttributeDatatype, "testGetBasicType");
 
 GetAttributeDatatype::GetAttributeDatatype()
 {
-	this->defaultFederate = new Test1516eFederate(L"defaultFederate");
-	this->listenerFederate = new Test1516eFederate(L"listenerFederate");
+	this->defaultFederate = new Test1516eFederate(L"defaultFederate"); 
 	this->tag = VariableLengthData((void*)"", 1); 
 }
 GetAttributeDatatype::~GetAttributeDatatype()
 {
-	delete this->defaultFederate;
-	delete this->listenerFederate;
+	delete this->defaultFederate; 
 }
  
 void GetAttributeDatatype::setUp()
-{
-	this->defaultFederate->quickCreate();
-	this->defaultFederate->quickJoin();
-	this->listenerFederate->quickJoin();
+{ 
+	this->defaultFederate->quickConnect();
+	this->defaultFederate->quickCreate();	
+	this->defaultFederate->quickJoin(); 
 
 	// publish and subscribe
-	std::vector<wstring> attributes;
-	attributes.push_back(L"aa");
-	attributes.push_back(L"aa");
-	defaultFederate->quickPublish(L"ObjectRoot.A.B", attributes);
-	listenerFederate->quickSubscribe(L"ObjectRoot.A", attributes);
+	this->sodeObject = this->defaultFederate->rtiamb->getObjectClassHandle(L"HLAobjectRoot.B");
+	this->flavor = this->defaultFederate->rtiamb->getAttributeHandle(this->sodeObject, L"bb");
+
+	std::vector<AttributeHandle> attributes;
+	attributes.push_back(this->flavor);
+	defaultFederate->quickPublish(this->sodeObject, attributes);
 
 	// set time up
-	defaultFederate->quickEnableRegulating(5.0);
-	listenerFederate->quickEnableAsync();
-	listenerFederate->quickEnableConstrained();
+	defaultFederate->quickEnableRegulating(5.0);  
 
 	// register and discover the object
-	theObject = defaultFederate->quickRegister(L"ObjectRoot.A.B");
-	//listenerFederate->fedamb->waitForDiscovery(theObject);
-
-
+	theObject = defaultFederate->quickRegister(this->sodeObject);
 }
 
 void GetAttributeDatatype::tearDown()
 {
-	this->listenerFederate->quickResign();
 	this->defaultFederate->quickResign();
 	this->defaultFederate->quickDestroy();
+	this->defaultFederate->quickDisconnect();
 }
 
 void GetAttributeDatatype::testGetBasicType()
 {
 	try
 	{
-		defaultFederate->rtiamb->deleteObjectInstance(theObject, tag);
+		this->defaultFederate->rtiamb->registerObjectInstance(this->sodeObject);
 	}
 	catch (Exception& e)
 	{
-		failTest("Unexpected exception while deleting object: %s", e.what());
+		failTest("Unexpected exception publishing object class: %s", e.what());
 	}
 
-	// make sure the listener gets the remove message
-	//listenerFederate->fedamb->waitForRORemoval(theObject);
-	//defaultFederate->fedamb->waitForRORemovalTimeout(theObject); // shouldn't get its own delete
+	// validate that we are publishing ObjectRoot.A, but not ObjectRoot.A.B
+	//validatePublished();
 }
 

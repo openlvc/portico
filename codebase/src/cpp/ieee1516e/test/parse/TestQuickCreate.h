@@ -2,7 +2,7 @@
 
 #include "../common/common.h"
 #include "../common/Test1516eFederate.h"
-class GetAttributeDatatype : public CppUnit::TestFixture
+class TestQuickCreate : public CppUnit::TestFixture
 {
 public:
 
@@ -14,19 +14,17 @@ public:
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 private:
-	Test1516eFederate *defaultFederate; 
+	Test1516eFederate *defaultFederate;
+	Test1516eFederate *listenerFederate;
 	ObjectInstanceHandle theObject;
 	VariableLengthData tag;
-
-	ObjectClassHandle sodeObject;
-	AttributeHandle   flavor; 
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 public:
-	GetAttributeDatatype();
-	virtual ~GetAttributeDatatype();
+	TestQuickCreate();
+	virtual ~TestQuickCreate();
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -36,14 +34,14 @@ public:
 	void tearDown();
 
 protected:
-	void testGetBasicType();
+	void testTestQuickCreate();
 	 
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	CPPUNIT_TEST_SUITE(GetAttributeDatatype);
-	CPPUNIT_TEST(testGetBasicType);
+	CPPUNIT_TEST_SUITE(TestQuickCreate);
+	CPPUNIT_TEST(testTestQuickCreate);
 	CPPUNIT_TEST_SUITE_END();
 };
 
