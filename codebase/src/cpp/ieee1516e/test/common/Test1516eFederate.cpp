@@ -13,7 +13,7 @@ Test1516eFederate::Test1516eFederate(const wstring& name)
 
 	// create the RTIambassador
 	RTIambassadorFactory factory = RTIambassadorFactory();
-	this->rtiamb = factory.createRTIambassadorEx().release();
+	this->rtiamb = factory.createRTIambassador().release();
 
 	federateHandle = FederateHandle(); 
 
@@ -53,31 +53,30 @@ void Test1516eFederate::quickCreate(const wstring& federationName)
 {
 	try
 	{
-		rtiamb->createFederationExecution(federationName, L"etc/testfom.xml");
+		rtiamb->createFederationExecution(federationName, L"complete/etc/testfom.xml");
 	}
+	catch (FederationExecutionAlreadyExists& exists)
+	{
+		wcout << L"Didn't create federation, it already existed" << endl;
+	} 
 	catch (Exception &e)
 	{
 		killTest(e, "quickCreate()");
 	}
 }
 
-FederateHandle Test1516eFederate::quickJoin()
+void Test1516eFederate::quickConnect()
 {
-	// just call into quickJoin( const char* )
-	return this->quickJoin(SIMPLE_NAME);
-}
-
-FederateHandle Test1516eFederate::quickJoin(const wstring& federationName)
-{
-	// create the FederateAmbassador implementation, removing the current one if it exists
+	// Create the FederateAmbassador implementation, removing the current one if it exists
 	if (this->fedamb != NULL)
 	{
 		delete this->fedamb;
 	}
-		
 
+	// Creat the federate ambassador.
 	this->fedamb = new Test1516eFedAmb();
 
+	// Try and connect
 	try
 	{
 		rtiamb->connect(*this->fedamb, HLA_EVOKED);
@@ -102,12 +101,22 @@ FederateHandle Test1516eFederate::quickJoin(const wstring& federationName)
 	{
 		wcout << L"Connection failed, Generic Error: " << error.what() << endl;
 	}
+}
 
+FederateHandle Test1516eFederate::quickJoin()
+{
+	// just call into quickJoin( const char* )
+	return this->quickJoin(SIMPLE_NAME);
+}
+
+FederateHandle Test1516eFederate::quickJoin(const wstring& federationName)
+{
+	
 	// try and join the federation
 	try
 	{
 		this->federateHandle =
-			rtiamb->joinFederationExecution(this->name, federationName, L"ExampleFederation");
+			rtiamb->joinFederationExecution(this->name, federationName, federationName);
 		return this->federateHandle;
 	}
 	catch (Exception &e)
@@ -167,6 +176,18 @@ void Test1516eFederate::quickDestroyNoFail()
 	catch (Exception &e)
 	{
 		// do nothing
+	}
+}
+
+void Test1516eFederate::quickDisconnect()
+{
+	try
+	{
+		rtiamb->disconnect();
+	}
+	catch (Exception &e)
+	{
+		killTest(e, "quickDisconnect()");
 	}
 }
 

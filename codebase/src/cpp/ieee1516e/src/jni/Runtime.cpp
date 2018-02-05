@@ -351,6 +351,9 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
 	            << rtihome << "\\bin\\"
+#ifdef VC12
+				<< "vc12"
+#endif
 #ifdef VC11
 	            << "vc11"
 #endif
@@ -451,7 +454,9 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
  */
 string Runtime::getMode() throw( RTIinternalError )
 {
-#ifdef DEBUG
+#ifdef _DEBUG
+	return string("-Dportico.cpp.mode=debug");
+#elif defined DEBUG
 	return string("-Dportico.cpp.mode=debug");
 #else
 	return string("-Dportico.cpp.mode=release");
@@ -463,7 +468,9 @@ string Runtime::getMode() throw( RTIinternalError )
  */
 string Runtime::getCompiler() throw( RTIinternalError )
 {
-#ifdef VC11
+#ifdef VC12
+	return string("-Dportico.cpp.compiler=vc12");
+#elif defined VC11
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );

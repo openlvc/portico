@@ -16,7 +16,7 @@
 #define TEST1516EFEDERATE_H_
 
 #include "Test1516eFedAmb.h"
-#include "common.h"
+#include "common.h" 
 #include <vector>
 using namespace rti1516e;
 using namespace std;
@@ -29,16 +29,16 @@ using namespace std;
 const wstring SIMPLE_NAME = L"Test1516eFederate";
 
 class Test1516eFederate
-{
-public:
+{ 
 	
 
 public:
 
-	RTIambassadorEx *rtiamb;
+	RTIambassador *rtiamb;
 	Test1516eFedAmb *fedamb;
 	FederateHandle federateHandle;
 	wstring name;
+
 
 public:
 
@@ -56,6 +56,7 @@ public:
 	/////////////////////////////////////////
 	void quickCreate();
 	void quickCreate(const wstring& federationName);
+	void quickConnect();
 	FederateHandle quickJoin();
 	FederateHandle quickJoin(const wstring& federationName);
 	void quickResign();
@@ -63,6 +64,7 @@ public:
 	void quickDestroy();
 	void quickDestroy(const wstring& federationName);
 	void quickDestroyNoFail();
+	void quickDisconnect();
 
 
 	/////////////////////////////////////////

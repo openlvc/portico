@@ -144,7 +144,7 @@
 	</target>
 
     <!-- ==================================== -->
-    <!--          HLA 1.3 Test Suite          -->
+    <!--          HLA Ieee1516e Test Suite          -->
     <!-- ==================================== -->
     <target name="test.compile" depends="compile.vc10" if="vc10.x86.debug">
         <cpptask compiler="vc10"
@@ -167,7 +167,7 @@
     </target>
 
     <!-- ==================================== -->
-    <!--          HLA 1.3 Test Suite          -->
+    <!--          HLA Ieee1516e Test Suite          -->
     <!-- ==================================== -->
     <target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile">
         <!-- 1. copy the testing resources into test dir (RID file etc...) -->

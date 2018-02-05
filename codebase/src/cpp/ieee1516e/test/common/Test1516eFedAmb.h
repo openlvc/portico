@@ -16,7 +16,7 @@
 #define Test1516eFedAmb_H_
 
 #include <string>
-#include <RTI/NullFederateAmbassador.h>
+#include <RTI/NullFederateAmbassador.h> 
 
 using namespace rti1516e; // because we get sick of typing it all the time!
 using namespace std;

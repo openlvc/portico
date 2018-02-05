@@ -37,6 +37,7 @@ Test1516eFedAmb::Test1516eFedAmb()
 
 Test1516eFedAmb::~Test1516eFedAmb() throw()
 {
+ 
 }
 
 //------------------------------------------------------------------------------------------
@@ -47,6 +48,8 @@ double Test1516eFedAmb::convertTime( const LogicalTime& theTime )
 	const HLAfloat64Time& castTime = dynamic_cast<const HLAfloat64Time&>(theTime);
 	return castTime.getTime();
 }
+
+ 
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////// Synchronization Point Callbacks ///////////////////////
