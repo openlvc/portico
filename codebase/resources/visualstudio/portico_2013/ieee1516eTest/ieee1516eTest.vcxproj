@@ -12,14 +12,14 @@
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFederate.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\GetAttributeDatatype.cpp" />
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestSuite.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestQuickCreate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\common.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFederate.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\GetAttributeDatatype.h" />
-    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestSuite.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestQuickCreate.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DD895E90-BAA3-49EB-93FB-D59A37F70EB5}</ProjectGuid>
