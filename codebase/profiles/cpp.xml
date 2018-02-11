@@ -57,6 +57,14 @@
 	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
 	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
 	<property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
+	
+	<!-- pugixml -->
+	<!-- Note that when updating this library, the expected directory structure
+	     is ${lib.dir}/pugixml/[platform]/[vcver] (vcver is only relevant)
+	     for windows and should be the Visual Studio version (e.g. vc10) -->
+	<property name="pugixml.dir"           location="${lib.dir}/pugixml"/>
+	<property name="pugixml.include"       location="${pugixml.dir}/include"/>
+	<property name="pugixml.lib"           location="${pugixml.dir}/${platform}"/>
 
 	<!-- ================================================= -->
 	<!--                task: cpp.strict                   -->

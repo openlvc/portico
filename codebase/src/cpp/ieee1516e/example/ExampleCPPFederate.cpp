@@ -18,13 +18,20 @@
 #include "RTI/time/HLAfloat64Time.h"
 
 #include "ExampleFedAmb.h"
-#include "ExampleCPPFederate.h"
+#include "ExampleCPPFederate.h" 
+#include "RTI/portico/types/BasicType.h"
+#include "RTI/portico/types/EnumeratedType.h"
+#include "RTI/portico/types/SimpleType.h"
+#include "RTI/portico/types/ArrayType.h"
+#include "RTI/portico/types/FixedRecordType.h"
+#include "RTI/portico/types/VariantRecordType.h"
 #include <string>
 
 #if __linux__
 	#include <string.h>
 	#include <stdio.h>
-#endif
+#endif 
+ 
 
 //------------------------------------------------------------------------------------------
 //                                       CONSTRUCTORS                                       
@@ -51,7 +58,7 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	// 1. create the RTIambassador //
 	/////////////////////////////////
 	RTIambassadorFactory factory = RTIambassadorFactory();
-	this->rtiamb = factory.createRTIambassador().release();
+	this->rtiamb = factory.createRTIambassadorEx().release();
 
 	///////////////////////////
 	// 2. connect to the RTI //
@@ -192,9 +199,89 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 		wcout << L"Time Advanced to " << fedamb->federateTime << endl;
 	}
 
+
+	//
+	// SIMPLE TYPE TEST
+	//
+	auto simpleTypeTest = rtiamb->getAttributeDatatype(this->employee, this->payRate);
+	SimpleType* st = nullptr;
+
+	if (simpleTypeTest->getDatatypeClass() == DatatypeClass::SIMPLE)
+	{
+		st = dynamic_cast<SimpleType*>(simpleTypeTest);
+		cout << "Simple Type Name is .... " << st->getName() << endl; 
+	}
+
+
+	//
+	// ENUM TYPE TEST
+	//
+	auto enumTypeTest = rtiamb->getAttributeDatatype(this->sodaHandle, this->flavourHandle);
+	EnumeratedType* et = nullptr;
+
+	if (enumTypeTest->getDatatypeClass() == DatatypeClass::ENUMERATED)
+	{
+		et = dynamic_cast<EnumeratedType*>(enumTypeTest);
+		cout << "NAME is .... " << et->getName() << endl;
+
+		std::list<Enumerator*> enums = et->getEnumerators();
+
+		std::list<Enumerator*>::iterator itr = enums.begin();
+		while (itr != enums.end())
+		{
+			cout << "Flavour is .... " << (*itr)->getName() << " - Value is: " << (*itr)->getValue() <<endl;
+			itr++;
+		}
+	}
+
+	
+	//
+	// ARRAY + FIXED TYPE TEST
+	//
+	auto fixRecTypeTest = rtiamb->getAttributeDatatype(this->employee, this->AddressBook);
+	FixedRecordType* ft = nullptr;
+	if (fixRecTypeTest->getDatatypeClass() == DatatypeClass::FIXEDRECORD)
+	{
+		ft = dynamic_cast<FixedRecordType*>(fixRecTypeTest);
+		cout << "Fixed Type Name is .... " << ft->getName() << endl; 
+	}
+
+	//
+	// VARIANT TYPE TEST
+	//
+	auto variantTypeTest = rtiamb->getAttributeDatatype(this->waiter, this->efficiency);
+	VariantRecordType* vt = nullptr;
+	if (variantTypeTest->getDatatypeClass() == DatatypeClass::VARIANTRECORD)
+	{
+		vt = dynamic_cast<VariantRecordType*>(variantTypeTest);
+		cout << "Variant Type Name is .... " << vt->getName() << endl;
+	}
+	
+
+	// PARAMETER TESTING
+	auto enumTypeTest2 = rtiamb->getParameterDatatype(this->rootBeerServedHandle, this->rootBeerCheckHandle);
+	EnumeratedType* et2 = nullptr;
+	if (enumTypeTest2->getDatatypeClass() == DatatypeClass::ENUMERATED)
+	{
+		et2 = dynamic_cast<EnumeratedType*>(enumTypeTest2);
+		cout << "parameter NAME is .... " << et->getName() << endl;
+
+		std::list<Enumerator*> enums = et2->getEnumerators();
+
+		std::list<Enumerator*>::iterator itr = enums.begin();
+		while (itr != enums.end())
+		{
+			cout << "Parameter Flavour is .... " << (*itr)->getName() << " - Value is: " << (*itr)->getValue() << endl;
+			itr++;
+		}
+	}
+
+	
+
 	//////////////////////////////////////
 	// 11. delete the object we created //
 	//////////////////////////////////////
+
 	deleteObject( objectHandle );
 	wcout << L"Deleted Object, handle=" << objectHandle << endl;
 
@@ -228,11 +315,11 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	/////////////////////////////////
 	// disconnect from the RTI
 	this->rtiamb->disconnect();
-
+ 
 	//////////////////
 	// 15. clean up //
 	//////////////////
-	delete this->rtiamb;
+	delete this->rtiamb; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -244,8 +331,26 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 void ExampleCPPFederate::initializeHandles()
 {
 	this->sodaHandle = rtiamb->getObjectClassHandle( L"HLAobjectRoot.Food.Drink.Soda" );
-	this->numberOfCupsHandle = rtiamb->getAttributeHandle( sodaHandle, L"NumberCups" );
+	this->employee = rtiamb->getObjectClassHandle(L"HLAobjectRoot.Employee");
+	this->waiter = rtiamb->getObjectClassHandle(L"HLAobjectRoot.Employee.Waiter"); 
+
+	// Basic type test
+
+	// Simple Type Test
+	this->payRate = rtiamb->getAttributeHandle(employee, L"PayRate");
+
+	// Enumerated type test 
 	this->flavourHandle = rtiamb->getAttributeHandle( sodaHandle, L"Flavor" ); 
+
+	// Array type test and Fixed record type tests as array of fixed records
+	this->AddressBook = rtiamb->getAttributeHandle(employee, L"HomeAddress");
+
+
+	// Variant recrd Type Tests
+	this->efficiency = rtiamb->getAttributeHandle(waiter, L"Efficiency");
+
+
+
 
 	this->rootBeerServedHandle = rtiamb->getInteractionClassHandle( L"HLAinteractionRoot.CustomerTransactions.FoodServed.RootBeerServed" );
 	this->rootBeerCheckHandle = rtiamb->getParameterHandle( rootBeerServedHandle, L"SodaType" );
@@ -307,8 +412,7 @@ void ExampleCPPFederate::publishAndSubscribe()
 	// that we intend to publish this information
 
 	// package the information into a handle set
-	AttributeHandleSet attributes;// = AttributeHandleSet();
-	attributes.insert( this->numberOfCupsHandle );
+	AttributeHandleSet attributes;// = AttributeHandleSet(); 
 	attributes.insert( this->flavourHandle ); 
 
 	// do the actual publication
@@ -374,8 +478,7 @@ void ExampleCPPFederate::updateAttributeValues( ObjectInstanceHandle objectHandl
 	
 	VariableLengthData numberOfCupsData( (void*)numberOfCupsValue, strlen(numberOfCupsValue) + 1 );
 	VariableLengthData flavourData( (void*)flavourValue, strlen(flavourValue) + 1 );
-
-	attributes[numberOfCupsHandle] = numberOfCupsData;
+	 
 	attributes[flavourHandle] = flavourData;
 
 

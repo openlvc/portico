@@ -12,11 +12,19 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.lrc.model;
+package org.portico.lrc.model; 
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Set;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -24,6 +32,7 @@ import java.util.HashMap;
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.model.datatype.DatatypeHelpers;
 import org.portico.lrc.model.datatype.IDatatype;
+import org.w3c.dom.Document;
 
 /**
  * This class represents a HLA FOM. It contains a set of object and interaction classes (routing
@@ -787,6 +796,29 @@ public class ObjectModel implements Serializable
 	public String toString()
 	{
 		return new StringRenderer().renderFOM( this );
+	}
+	
+	public String toXmlDocument()
+	{
+		Document xml = new XmlRenderer().renderFOM( this ); 
+		StringWriter writer = new StringWriter();
+		
+		try
+		{
+			TransformerFactory tf = TransformerFactory.newInstance();
+			tf.setAttribute("indent-number", new Integer(4));			
+			Transformer transformer = tf.newTransformer();			
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");	
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");			
+			transformer.transform(new DOMSource(xml), new StreamResult(writer));
+			
+		}
+		catch(Exception e)
+		{
+			throw new IllegalStateException(e);
+		}						 
+		
+		return writer.toString();
 	}
 	
 	//----------------------------------------------------------

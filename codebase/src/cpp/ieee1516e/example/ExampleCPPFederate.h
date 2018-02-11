@@ -25,14 +25,27 @@ using namespace std;
 class ExampleCPPFederate
 {
 	public:
-		RTIambassador *rtiamb;
+		RTIambassadorEx *rtiamb;
 		ExampleFedAmb *fedamb;
 
 		// fom handles //
-		ObjectClassHandle      sodaHandle;
-		AttributeHandle        numberOfCupsHandle;
-		AttributeHandle        flavourHandle;
 
+
+		// ATTRIBTE TESTS
+		// enumerated type tester
+		ObjectClassHandle      sodaHandle; 
+		AttributeHandle        flavourHandle;
+		// simple type tester
+		ObjectClassHandle      employee;
+		AttributeHandle        payRate; // dollar rate
+		// array type tester 
+		// fixed record type
+		AttributeHandle        AddressBook; // AddressType : employee
+		// variant record
+		ObjectClassHandle      waiter; // 
+		AttributeHandle        efficiency; // waiter value
+
+		// PARAMETER TESTS
 		InteractionClassHandle rootBeerServedHandle;
 		ParameterHandle        rootBeerCheckHandle;
 

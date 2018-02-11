@@ -73,6 +73,12 @@
     <Filter Include="Header Files\jni\types\time">
       <UniqueIdentifier>{4ad3f483-b69c-43f0-b131-10ce55f4dc50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\datatypes">
+      <UniqueIdentifier>{b08ce138-ada5-4d9b-9fa1-00d62ccb72b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\datatypes">
+      <UniqueIdentifier>{c2b59534-673f-4b90-8872-a185767ae04e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\common.h">
@@ -125,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\BitHelpers.h">
       <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.h">
+      <Filter>Header Files\datatypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -346,6 +355,48 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\Logger.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\PorticoRtiAmbassadorEx.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\AlternativeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\ArrayTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\BasicTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\DimensionImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\Endianness.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratedTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratorImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\FieldImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\FixedRecordTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\NaTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\SimpleTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\VariantRecordTypeImpl.cpp">
+      <Filter>Source Files\datatypes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
