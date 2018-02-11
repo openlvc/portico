@@ -37,12 +37,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\include;$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\src;C:\Program Files\Java\jdk1.8.0_144\include;C:\Program Files\Java\jdk1.8.0_144\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\include;$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\src;C:\Program Files\Java\jdk1.8.0_144\include;C:\Program Files\Java\jdk1.8.0_144\include\win32;$(ProjectDir)..\..\..\..\lib\pugixml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BUILDING_RTI;RTI_DISABLE_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_144\lib;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>jvm.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_144\lib;$(SolutionDir)..\..\..\lib\pugixml\win64\vc14</AdditionalLibraryDirectories>
+      <AdditionalDependencies>jvm.lib;pugixmld.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -52,6 +52,7 @@
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JniUtils.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\org_portico_impl_cpp1516e_ExceptionManager.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\Runtime.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\PorticoRtiAmbassador.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\AggregateTypeImpl.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\BasicTypeImpl.h" />
@@ -73,6 +74,20 @@
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JavaRTI.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JniUtils.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\Runtime.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\PorticoRtiAmbassadorEx.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\AlternativeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\ArrayTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\BasicTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\DimensionImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\Endianness.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratedTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratorImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\FieldImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\FixedRecordTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\NaTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\SimpleTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\VariantRecordTypeImpl.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\ApiSpecificServices.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\Constructors.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\DataDistributionManagement.cpp" />

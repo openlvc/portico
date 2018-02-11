@@ -99,12 +99,7 @@ public class Dimension implements Serializable
 	{
 		String descriptor = "cardinality=";
 		
-		if( isCardinalityDynamic() )
-			descriptor += "Dynamic";
-		else if( this.lowerCardinality == this.upperCardinality )
-			descriptor += this.lowerCardinality;
-		else
-			descriptor += "(" + this.lowerCardinality + ".." + this.upperCardinality + ")";
+		descriptor += toFomString(this);
 		
 		return descriptor;
 	}
@@ -112,6 +107,23 @@ public class Dimension implements Serializable
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
+	
+	public static String toFomString(Dimension dimension)
+	{
+		String descriptor = null;
+		
+		if( dimension.isCardinalityDynamic() )
+			descriptor = "Dynamic";
+		else if( dimension.lowerCardinality == dimension.upperCardinality )
+			descriptor = String.valueOf( dimension.lowerCardinality);
+		else
+			descriptor = "(" + dimension.lowerCardinality + ".." + dimension.upperCardinality + ")";
+		
+		return descriptor;			
+	}
+	
+	
 	/**
 	 * Builds a list of dimensions based on the cardinality value of an array datatype in the
 	 * FOM. As per the standard the cardinality value:
