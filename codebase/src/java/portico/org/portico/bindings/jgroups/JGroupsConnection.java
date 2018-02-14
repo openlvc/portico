@@ -28,12 +28,12 @@ import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.CreateFederation;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.utils.logging.Log4jConfigurator;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.common.services.federation.msg.DestroyFederation;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.ResignFederation;
 
 public class JGroupsConnection implements IConnection
 {

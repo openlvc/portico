@@ -17,6 +17,7 @@ package org.portico.lrc.services.ownership.msg;
 import java.util.Set;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * Message representing the request to cancel an attribute divestiture.
@@ -47,6 +48,12 @@ public class CancelDivest extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.CancelDivest;
+	}
+
 	public int getObjectHandle()
 	{
 		return objectHandle;

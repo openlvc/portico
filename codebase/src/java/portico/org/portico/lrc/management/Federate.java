@@ -17,7 +17,7 @@ package org.portico.lrc.management;
 import java.io.Serializable;
 
 import org.portico.lrc.LRCState;
-import org.portico.lrc.services.time.data.TimeStatus;
+import org.portico2.common.services.time.data.TimeStatus;
 
 /**
  * This method stores information about a particular federate, such as its name, handle, time

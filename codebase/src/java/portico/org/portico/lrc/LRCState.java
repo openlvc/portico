@@ -31,20 +31,20 @@ import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.notifications.INotificationListener;
 import org.portico.lrc.notifications.NullNotificationListener;
-import org.portico.lrc.services.federation.msg.RoleCall;
 import org.portico.lrc.services.mom.data.MomManager;
-import org.portico.lrc.services.object.data.InterestManager;
-import org.portico.lrc.services.object.data.RegionStore;
-import org.portico.lrc.services.object.data.Repository;
-import org.portico.lrc.services.ownership.data.OwnershipManager;
 import org.portico.lrc.services.saverestore.data.Manifest;
 import org.portico.lrc.services.saverestore.data.RestoreManager;
 import org.portico.lrc.services.saverestore.data.SaveManager;
 import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
 import org.portico.lrc.services.saverestore.data.Serializer;
 import org.portico.lrc.services.sync.data.SyncPointManager;
-import org.portico.lrc.services.time.data.TimeManager;
-import org.portico.lrc.services.time.data.TimeStatus;
+import org.portico2.common.services.ddm.data.RegionStore;
+import org.portico2.common.services.federation.msg.RoleCall;
+import org.portico2.common.services.ownership.data.OwnershipManager;
+import org.portico2.common.services.pubsub.data.InterestManager;
+import org.portico2.common.services.time.data.TimeStatus;
+import org.portico2.rti.services.object.data.Repository2;
+import org.portico2.rti.services.time.data.TimeManager;
 
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -56,7 +56,7 @@ import java.util.Properties;
  * Rather than pollute the {@link LRC} code with all this state-data, it was factored into this
  * separate class. The data here represents the state of the LRC (and the federate that is using
  * it) at any given time. Further entities are stored and accessible through here, including the
- * {@link Repository} that contains a cache of all the relevant object and attribute
+ * {@link Repository2} that contains a cache of all the relevant object and attribute
  * information that the LRC knows about (such as handles, owners, etc...). Also contained is the
  * {@link InterestManager}, which holds all the publication and subscription interests for the
  * federate.
@@ -110,7 +110,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	private SyncPointManager syncPointManager;
 	
 	// Instance Repository //
-	private Repository repository;
+	private Repository2 repository;
 	private int latestObjectHandle;
 	private int maxObjectHandle;
 	
@@ -177,7 +177,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		//this.immediateCallbacks = false; -- don't reinitialize this one, we want it to persist
 		
 		// Pub&Sub settings //
-		this.interestManager = new InterestManager( this );
+//MOVED	this.interestManager = new InterestManager( this );
 		
 		// Sync PointSetting //
 		this.syncPointManager = new SyncPointManager();
@@ -188,7 +188,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		this.restoreManager = new RestoreManager();
 		
 		// Instance Repository //
-		this.repository = new Repository( this );
+//		this.repository = new Repository( this );
 		this.latestObjectHandle = 0;
 		this.maxObjectHandle = 0;
 		
@@ -196,7 +196,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		this.ownershipManager = new OwnershipManager();
 		
 		// Region Store //
-		this.regionStore = new RegionStore( this );
+//		this.regionStore = new RegionStore( this );
 		this.latestRegionToken = 0;
 		this.maxRegionToken = 0;
 		
@@ -624,7 +624,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		return this.interestManager;
 	}
 	
-	public Repository getRepository()
+	public Repository2 getRepository()
 	{
 		return this.repository;
 	}

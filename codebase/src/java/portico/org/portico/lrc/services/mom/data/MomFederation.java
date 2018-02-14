@@ -27,7 +27,7 @@ import org.portico.lrc.compat.JEncodingHelpers;
 import org.portico.lrc.management.Federation;
 import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * Contains links between the {@link OCInstance} used to represent the federation in the federation

@@ -9,135 +9,190 @@
 # To make use of this file, put it in the directory that your federate is executed from, or set the
 # RTI_RID_FILE environment variable to point at wherever it is located.
 #
-
-# ===================================
-# 1. General Portico Logging Options
-# ===================================
-# (NOTE) Some sub-components have their own log settings. See the sections relaing to them for
-#        those particular properties.
-
-# (1.1) Portico Log Directory
-#        Specify the directory to put the Portico log-files into. This defaults to "logs" and
-#        if a relative path is used, it will be releative to the location of the process that
-#        executed Portico
+# -------------------------
+# Network Symbolic Names
+# -------------------------
+# For any place where an IP address or name could validly be entered, you can instead use a more
+# generic, symbolic string. When a symbolic name is used, Portico will substitute it for the first
+# address or NIC it can find that matches. The following symbolic names are available:
 #
-# portico.logdir = logs
-
-# (1.2) Portico Log Level
-#        Specify the level that Portico will log at. Valid values are: TRACE, DEBUG, INFO, WARN,
-#        ERROR, FATAL, OFF. The default value is "WARN".
-#
-# portico.loglevel = INFO
-
-# (1.3) Print FOM when federate Joins
-#        When a federate joins a federation, Portico can pretty-print the FOM data of that
-#        federation. If this is enabled, the FOM is logged to the INFO level (so make sure you
-#        have logging turned up high enough). By default this is disabled.
-#
-# portico.fom.print = disabled
-
-# (1.4) Logging by Handle/Name
-#        Making sense of log files can be difficult. To help make sense of this data, various bits
-#        of HLA information can be logged by their HLA handle or their name. For example, an HLA
-#        object class can be logged by its handle, or by its name.
-#
-#        Any items specified in logWithHandles are logged using their handles (and vice versa for
-#        logWithNames). The format of these properties is a comma-separated list containing any of
-#        the following identifiers (defaults specified in parentheses):
-#
-#        objectClass       (handle)
-#        attributeClass    (handle)
-#        interactionClass  (handle)
-#        parameterClass    (handle)
-#        objectInstance    (name)
-#        space             (handle)
-#        dimension         (handle)
-#        federate          (name)
-#
-#        (NOTE) You only have to specify the bits you want. If a value isn't specified in either
-#               list, it will assume its default value. If a value is specified in both lists, the
-#               logWithNames takes precedence.
-#
-# portico.logWithHandles=objectClass,attributeClass,interactionClass,parameterClass,space,dimension
-# portico.logWithNames=objectInstance,federate
+#  - LOOPBACK:   127.0.0.1
+#  - LINK_LOCAL: 169.254.1.0 - 169.254.254.255 inclusive
+#  - SITE_LOCAL: 10.0.0.0/8 (255.0.0.0), 172.16.0.0/12 (255.240.0.0), 192.168.0.0/16 (255.255.0.0)
+#  - GLOBAL:     Any address not in the above
 
 
-# ================================
-# 2. HLA Related RTI Properties
-# ================================
-# These settings relate to how the RTI works with regard to HLA operations
+# ====================================================
+#               Common Configuration
+# ====================================================
 
-# (2.1) Management Object Model
-#        This controls whether or not the MOM is enabled. By default it is turned on, but if you
-#        don't want it you can turn it off. Valid values are "enabled" and "disabled"
+# (C.1) Common Logging Properties
+#        Specify the log level and directory. Settings are common across RTI, LRC and Forwarder.
+#        You can also specify the log4j pattern that is used to format the log messages.
 #
-# portico.mom = enabled
+portico.logdir = logs
+portico.loglevel = INFO
+portico.logformat = %d{ABSOLUTE} %-5p %c: %m%n
 
-# (2.2) Save/Restore Data Files Directory
-#        This specifies the path to the directory where federate save/restore data files are stored.
-#        By default, this is the "savedata" directory relative to the directory that the federate
-#        was launched from. Any valid operating system path can be specified, as long as it is
-#        writeable by the operating system user under which the federate is executing
-#
-# portico.saveDirectory = ./savedata
-
-# (2.3) Unsupported Methods Throw Exceptions
-#        Portico does not support all the RTIambassador methods in all interface versions. To alert
-#        users to situations where a method is called that isn't support, Portico will log a warning
-#        and take no action. This is often a non-fatal action, but in some situations it may cause
-#        federates to stall or misbehave. As such, if this value is set to true, an RTIinternalError
-#        will be thrown when an unsupported method is called. By default, this is false.
-#
-# portico.unsupportedExceptions = false
-
-# (2.4) Object Names Negotiated With Federation
-#        When registering an object with a specific name, to ensure that name is unique, the
-#        federate much negotiate with the rest of the federation. This incurs a performance hit.
-#        By default, this negotiation is turned off. If you have problems with conflicting names,
-#        set this property to true. In the default mode (negotiation disabled) the RTI is not
-#        totally standards compliant, and conflicts can occur if federates try to register objects
-#        with the same name at the same time (if the requests are sufficiently spaced out in time,
-#        this problem shouldn't occur).
-#
-# portico.object.negotiateNames = false
-
-# (2.5) Unique Federate Names
-#        By default, Portico, like other RTIs, will ensure that all federates in a federation have
-#        unique names. However, in some situations this is not desirable (like running Portico with
-#        JSAF or VBS2). In this case, you can turn the unique name checking to false. When you do
-#        this, what happens is that when Portico sees a name conflict, rather than throwing an
-#        exception it will change the requested name from "name" to "name (handle)" thus making it
-#        unique. Default is true, set to false to turn unique name checking off.
-#
-# portico.uniqueFederateNames = true
+# Log-level for any JGroups connections
+portico.jgroups.loglevel = OFF
 
 
-# ================================
-# 3. Advanced Options
-# ================================
-# These really shouldn't be changed unless you really know what you want
+# ==================================================================================
+# ///  RTI Configuration  //////////////////////////////////////////////////////////
+# ==================================================================================
 
-# (3.1) Portico Communications Binding
-#        Defines the mechanism used by federates to communicate. Two valid options: jgroups, jvm.
+# (R.1) RTI Home Location
+#        The location of the RTI installation. Can be overridden by the env-var RTI_HOME.
 #
-#        jgroups: Use for LAN/WAN communications (default)
-#            jvm: Use when running many federates in separate threads within a single process.
-#
-# portico.connection = jgroups
+rti.home = ./
 
-# (3.2) LRC Tick Timeout
-#        When a federate calls tick() and there is no work to do, the LRC will wait for a period of
-#        time to allow work to arrive before it returns. This is designed to avoid a busy-looping
-#        situation where people are calling tick in a loop while waiting for some event.
-#
-#        The period of time the LRC will wait is specified by this value (in *MILLISECONDS*).
-#        DEFAULT = 5
-#
-#        (NOTE) This does not apply to the tick(min,max) call (in that case, the LRC will wait
-#               for at most "min" seconds for work to arrive).
-#
-# portico.lrc.tt = 5
 
+# (R.2) RTI Data Directory
+#        The location to write log files, federation save files and all other data to.
+#        While core RTI files are often installed into Program Files or other privileged
+#        areas on Linux, the data directory typically points to subfolder of a users home
+#        directory or some other place that is writable without administrative privileges.
+#
+#rti.data = ${user.home}/.portico     // Linux
+#rti.data = ${user.home}\Portico      // Windows
+
+
+# --------------------------------------
+#   Network Configuration
+# --------------------------------------
+# (R.3) RTI Network Connections
+#        Specify the names of all the connections we are using. These names have no relation to
+#        the type of connection, even if it appears otherwise. On start-up, the RTI will substitute
+#        the names to find more details properties.
+#
+#        The RTI will look for a set of properties under the name "rti.network.<name>.{property}"
+#        where "<name>" is substituted for each name in the connection list. The ".type" property
+#        is what defines the actual connection type. It can be one of the pre-defined types of
+#        "jvm", "multicast" or "unicast", or it can specified the fully qualified name of the class
+#        that implements the connection.
+#
+rti.network.connections = multicast, tcp, jvm
+
+
+# (R.4) JVM Network Connection Configuration
+#        This connection type has not properties.
+#
+rti.network.jvm.type = jvm
+
+
+# (R.5) Multicast Connection Configuration
+#
+#    Address: A valid multicast or broadcast group, or the symbolic name BROADCAST
+#       Port: Any valid port number
+#        NIC: The address or host name of the NIC we should use to send/receive traffic, or
+#             one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
+#
+rti.network.multicast.type    = multicast
+rti.network.multicast.address = 239.1.2.3
+rti.network.multicast.port    = 20913
+rti.network.multicast.nic     = SITE_LOCAL
+
+
+# (R.6) Unicast Network Connection
+#
+#       Port: The port number to listen on.
+#        NIC: A valid host name or IP address used by the NIC we should use to receive connections,
+#             or one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
+#
+rti.network.tcp.type = tcp-server
+rti.network.tcp.port = 52295
+rti.network.tcp.nic  = SITE_LOCAL
+
+
+# ==================================================================================
+# ///  LRC Configuration  //////////////////////////////////////////////////////////
+# ==================================================================================
+
+# --------------------------------------
+#   Network Configuration
+# --------------------------------------
+# (L.1) LRC Network Connections
+#        The same structure as for the RTI, except that only one name can be specified.
+#
+#lrc.network.connection = multicast
+lrc.network.connection = tcp
+
+
+# (L.2) JVM Connection Properties
+#        Only used if the JVM connection is specified.
+#        No configuration for the JVM connection beyond saying it is of type JVM
+#
+lrc.network.jvm.type = jvm
+
+# (L.3) Multicast Connection Properties
+#
+#        Only used if multicast is specified as the connection.
+#        Be sure to check the *NIC* you are binding with. You can use some of the
+#        symbolic short-cuts highlighted at the top of this config file.
+#
+#    Address: A valid multicast or broadcast group, or the symbolic name BROADCAST
+#       Port: Any valid port number
+#        NIC: The address or host name of the NIC we should use to send/receive traffic, or
+#             one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
+#
+lrc.network.multicast.type    = multicast
+lrc.network.multicast.address = 239.1.2.3
+lrc.network.multicast.port    = 20913
+lrc.network.multicast.nic     = SITE_LOCAL
+
+# (L.4) TCP Connection Properties
+#
+#        Only used if tcp is specified as the LRC connection.
+#        Be sure to fill out the address of the server and check your firewall for
+#        any connection blocking.
+#
+#    Address: The IP address or host name of the server
+#       Port: The port that the server is listening on
+#        NIC: The local NIC to use. Address or host name of the local NIC, or can use
+#             one of the symbolic names (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
+#
+lrc.network.tcp.type     = tcp-client
+lrc.network.tcp.address  = 192.168.0.10
+lrc.network.tcp.port     = 52295
+lrc.network.tcp.nic      = SITE_LOCAL
+
+# (L.5) TCP Connection Bundling Support
+#         If you are sending lots of smaller messages, higher overall throughput can be obtained by
+#         bundling them together into a fewer number of larger messages. However, doing so comes at
+#         the cost of latency. Messages are buffered until either the timeout period (milliseconds)
+#         is reached, or the total size of the messages exceeds the specified threshold. Bundling
+#         is DISABLED by default. For latency-critical tasks, disable it or reduce the max-timeout.
+#
+lrc.network.tcp.bundling = false
+lrc.network.tcp.bundling.maxSize = 64K
+lrc.network.tcp.bundling.maxTime = 20
+
+
+# ==================================================================================
+# ///  Forwarder Configuration  ////////////////////////////////////////////////////
+# ==================================================================================
+
+# --------------------------------------
+#   Network Configuration
+# --------------------------------------
+# (F.1) Forwarder Upstream Connection
+fwd.network.upstream.type    = tcp-client
+fwd.network.upstream.address = 192.168.0.10
+fwd.network.upstream.port    = 52295
+fwd.network.upstream.nic     = SITE_LOCAL
+
+# (F.2) Forwarder Downstream/Local Connection
+fwd.network.downstream.type    = multicast
+fwd.network.downstream.address = 239.1.2.3
+fwd.network.downstream.port    = 20913
+fwd.network.downstream.nic     = SITE_LOCAL
+
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+#                       Legacy Configuration Options                           #
+# //////////////////////////////////////////////////////////////////////////// #
 
 # =========================================
 # 4. JGroups Network Settings

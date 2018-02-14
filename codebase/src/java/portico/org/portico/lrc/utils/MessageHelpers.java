@@ -21,9 +21,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.portico.lrc.LRC;
-import org.portico.lrc.services.object.msg.SendInteraction;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 public class MessageHelpers
 {
@@ -162,6 +162,36 @@ public class MessageHelpers
 		}
 	}
 
+	/**
+	 * This method will serialize a generic object into a byte[] for sending over the network.
+	 * A standard ObjectOutputStream will be use for this serialization, however we will write
+	 * the structure in a format compatible with the various {@link #inflate(byte[], Class)}
+	 * methods of this class.
+	 * 
+	 * @param message The message object to deflate
+	 * @return A byte[] representation of the object
+	 */
+	public static byte[] deflate( Object message )
+	{
+		// create the output stream with the given size (or resizable if -1 is provided)
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+		// do the deflation
+		try
+		{
+			ObjectOutputStream oos = new ObjectOutputStream( baos );
+			oos.writeBoolean( false );
+			oos.writeObject( message );
+			
+			return baos.toByteArray();
+		}
+		catch( IOException ioex )
+		{
+			throw new RuntimeException( "couldn't convert object ["+
+			                            message.getClass()+"] into byte[]", ioex );
+		}
+	}
+	
 	/**
 	 * This method will take the given data and convert it into a Java object. After doing so,
 	 * it will attempt to cast the object to the given type before returning it.

@@ -17,6 +17,7 @@ package org.portico.lrc.services.ownership.msg;
 import java.util.Set;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * Message representing an attribute divestiture request. The request represents two particular
@@ -65,6 +66,12 @@ public class AttributeDivest extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.AttributeDivest;
+	}
+
 	public int getObjectHandle()
 	{
 		return objectHandle;

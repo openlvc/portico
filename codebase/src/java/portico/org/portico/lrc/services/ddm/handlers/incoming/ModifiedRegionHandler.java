@@ -19,9 +19,9 @@ import java.util.Map;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.model.RegionInstance;
 import org.portico.lrc.services.ddm.msg.ModifyRegion;
-import org.portico.lrc.services.object.data.RegionStore;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ddm.data.RegionStore;
 
 /**
  * Handles incoming notifications about the alteration of a regions extent values. Store the new

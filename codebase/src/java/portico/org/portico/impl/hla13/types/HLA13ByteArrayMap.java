@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
+import org.portico2.common.services.object.msg.UpdateAttributes.FilteredAttribute;
 
 /**
  * This class provides the common Map "functionality" required by the HLA 1.3 spec. Implementations

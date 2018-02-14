@@ -139,56 +139,63 @@ public class SynchronizedTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: (valid) testAchievedGroupSyncPoint() //
 	////////////////////////////////////////////////
-	@Test(dependsOnMethods="testAchievedSyncPoint")
+	@Test
 	public void testAchievedGroupSyncPoint()
 	{
 		// we need a third federate, so we can have two in the group but can exlucde one
 		TestFederate thirdFederate = new TestFederate( "thirdFederate", this );
 		thirdFederate.quickJoin();
 		
-		// announce the point, but for a specific group
-		defaultFederate.quickAnnounce( pointOne,
-		                               tag,
-		                               defaultFederate.federateHandle,
-		                               thirdFederate.federateHandle );
-		
-		// make sure it is announced in the first and third federates, but not the second
-		defaultFederate.fedamb.waitForSyncAnnounce( pointOne );
-		thirdFederate.fedamb.waitForSyncAnnounce( pointOne );
-		secondFederate.fedamb.waitForSyncAnnounceTimeout( pointOne ); // timeout
-		
 		try
 		{
-			// achieve the point in the first, but make sure it doesn't synchronize
-			defaultFederate.rtiamb.synchronizationPointAchieved( pointOne );
+    		// announce the point, but for a specific group
+    		defaultFederate.quickAnnounce( pointOne,
+    		                               tag,
+    		                               defaultFederate.federateHandle,
+    		                               thirdFederate.federateHandle );
+    		
+    		// make sure it is announced in the first and third federates, but not the second
+    		defaultFederate.fedamb.waitForSyncAnnounce( pointOne );
+    		thirdFederate.fedamb.waitForSyncAnnounce( pointOne );
+    		secondFederate.fedamb.waitForSyncAnnounceTimeout( pointOne ); // timeout
+    		
+    		try
+    		{
+    			// achieve the point in the first, but make sure it doesn't synchronize
+    			defaultFederate.rtiamb.synchronizationPointAchieved( pointOne );
+    		}
+    		catch( Exception e )
+    		{
+    			Assert.fail( "Unexpected exception in achieving sync point [" + pointOne + "]: " +
+    			             e.getMessage(), e );
+    		}
+    		
+    		// wait for everyont to synchronized, should timeout
+    		defaultFederate.fedamb.waitForSynchronizedTimeout( pointOne );
+    		thirdFederate.fedamb.waitForSynchronizedTimeout( pointOne );
+    		
+    		try
+    		{
+    			// achieve the point in the third, this should give up the synchronization
+    			thirdFederate.rtiamb.synchronizationPointAchieved( pointOne );
+    		}
+    		catch( Exception e )
+    		{
+    			Assert.fail( "Unexpected exception in achieving sync point [" + pointOne + "]: " +
+    			             e.getMessage(), e );
+    		}
+    		
+    		// wait for everyone to be synced up
+    		defaultFederate.fedamb.waitForSynchronized( pointOne );
+    		thirdFederate.fedamb.waitForSynchronized( pointOne );
+    		
 		}
-		catch( Exception e )
+		finally
 		{
-			Assert.fail( "Unexpected exception in achieving sync point [" + pointOne + "]: " +
-			             e.getMessage(), e );
+    		// resign the third federate (afterMethod won't do this for us)
+    		thirdFederate.quickResign();
+    		thirdFederate.quickDisconnect();
 		}
-		
-		// wait for everyont to synchronized, should timeout
-		defaultFederate.fedamb.waitForSynchronizedTimeout( pointOne );
-		thirdFederate.fedamb.waitForSynchronizedTimeout( pointOne );
-		
-		try
-		{
-			// achieve the point in the third, this should give up the synchronization
-			thirdFederate.rtiamb.synchronizationPointAchieved( pointOne );
-		}
-		catch( Exception e )
-		{
-			Assert.fail( "Unexpected exception in achieving sync point [" + pointOne + "]: " +
-			             e.getMessage(), e );
-		}
-		
-		// wait for everyone to be synced up
-		defaultFederate.fedamb.waitForSynchronized( pointOne );
-		thirdFederate.fedamb.waitForSynchronized( pointOne );
-		
-		// resign the third federate (afterMethod won't do this for us)
-		thirdFederate.quickResign();
 	}
 	
 	//////////////////////////////////////////////
@@ -198,7 +205,7 @@ public class SynchronizedTest extends Abstract1516eTest
 	 * Depends on other method so that we have validated that the raw HLA methods work and can
 	 * just call the quickXxx methods to expidite things.
 	 */
-	@Test(dependsOnMethods="testAchievedSyncPoint")
+	@Test
 	public void testSyncReleasedOnResign()
 	{
 		// register a sync point
@@ -226,7 +233,7 @@ public class SynchronizedTest extends Abstract1516eTest
 	 * Depends on other method so that we have validated that the raw HLA methods work and can
 	 * just call the quickXxx methods to expidite things.
 	 */
-	@Test(dependsOnMethods="testAchievedGroupSyncPoint")
+	@Test
 	public void testGroupSyncReleasedOnResign()
 	{
 		// we use a third federate to ensure that the group

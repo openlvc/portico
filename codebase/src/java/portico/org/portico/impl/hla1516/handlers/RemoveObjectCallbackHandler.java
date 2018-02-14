@@ -22,9 +22,9 @@ import org.portico.impl.hla1516.Impl1516Helper;
 import org.portico.impl.hla1516.types.DoubleTime;
 import org.portico.impl.hla1516.types.HLA1516ObjectInstanceHandle;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DeleteObject;
 
 /**
  * Generate removeObjectInstance() callbacks to a HLA 1.3 compliant federate ambassador

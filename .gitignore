@@ -15,6 +15,7 @@
 /eclipse-build
 /(*
 /cpp-*
+/ieee1516e-*
 
 # /.settings/
 /.settings/org.eclipse.mylyn.tasks.ui.prefs

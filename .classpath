@@ -7,9 +7,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="codebase/resources/test-data"/>
 	<classpathentry kind="lib" path="codebase/lib/asm/asm-3.1/asm-3.1.jar"/>
-	<classpathentry kind="lib" path="codebase/lib/testng/testng-5.12.1/testng-5.12.1.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/jgroups/jgroups-git/jgroups-4.0.10-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="codebase/resources/jars/portico.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/testng/testng-7.0.0/testng-7.0.0.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/testng/testng-7.0.0/jcommander-1.48.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-2.10.0/log4j-api-2.10.0.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-2.10.0/log4j-core-2.10.0.jar"/>
-	<classpathentry kind="lib" path="codebase/lib/jgroups/jgroups-git/jgroups-4.0.10-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>

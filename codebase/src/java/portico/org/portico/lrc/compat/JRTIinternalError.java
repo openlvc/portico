@@ -29,38 +29,47 @@ public class JRTIinternalError extends JException
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	/**
-     * Just create an empty exception
-     */
-    public JRTIinternalError()
-    {
-	    super();
-    }
+	 * Just create an empty exception
+	 */
+	public JRTIinternalError()
+	{
+		super();
+	}
 
-    /**
-     * @param message The message to create the exception with
-     */
-    public JRTIinternalError( String message )
-    {
-	    super( message );
-    }
+	/**
+	 * @param message The message to create the exception with
+	 */
+	public JRTIinternalError( String message )
+	{
+		super( message );
+	}
 
-    /**
-     * @param cause The cause of the exception
-     */
-    public JRTIinternalError( Throwable cause )
-    {
-	    super( cause );
-    }
+	/**
+	 * @param cause The cause of the exception
+	 */
+	public JRTIinternalError( Throwable cause )
+	{
+		super( cause );
+	}
 
-    /**
-     * @param message The message to create the exception with
-     * @param cause The cause of the exception
-     */
-    public JRTIinternalError( String message, Throwable cause )
-    {
-	    super( message, cause );
-    }
-    
+	/**
+	 * @param message The message to create the exception with
+	 * @param cause The cause of the exception
+	 */
+	public JRTIinternalError( String message, Throwable cause )
+	{
+		super( message, cause );
+	}
+
+	/**
+	 * @param formatString A format string to use for the message
+	 * @param objects Arguments to apply to the format string
+	 */
+	public JRTIinternalError( String formatString, Object... objects )
+	{
+		super( String.format( formatString, objects ) );
+	}
+
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------

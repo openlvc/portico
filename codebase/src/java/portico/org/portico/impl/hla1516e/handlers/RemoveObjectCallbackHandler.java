@@ -19,10 +19,11 @@ import hla.rti1516e.OrderType;
 import java.util.Map;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
+import org.portico.impl.hla1516e.handlers2.SupplementalInfo;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
-import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DeleteObject;
 
 /**
  * Generate removeObjectInstance() callbacks to a IEEE1516e compliant federate ambassador
@@ -61,7 +62,7 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 		double timestamp = request.getTimestamp();
 		
 		// generate the supplemental information
-		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
+		SupplementalInfo supplement = null;//new SupplementalInfo( request.getSourceFederate() );
 
 		// do the callback
 		if( request.isTimestamped() )

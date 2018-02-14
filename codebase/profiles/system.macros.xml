@@ -77,7 +77,7 @@
 	<!--                                 Macro: java-test                                  -->
 	<!-- ================================================================================= -->
 	<!-- bring in the testng task -->
-	<taskdef resource="testngtasks" classpath="${lib.dir}/testng/testng-5.12.1/testng-5.12.1.jar"/>
+	<taskdef resource="testngtasks" classpath="${lib.dir}/testng/testng-7.0.0/testng-7.0.0.jar"/>
 	
 	<!-- Define a default value for the TestNG groups that will control what test groups
 	     are and are not executed. By default, we provide "", which will run all tests. If

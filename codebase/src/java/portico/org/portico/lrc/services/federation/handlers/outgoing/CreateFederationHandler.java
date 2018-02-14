@@ -23,10 +23,10 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.CreateFederation;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

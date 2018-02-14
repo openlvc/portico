@@ -18,10 +18,10 @@ import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JTimeConstrainedAlreadyEnabled;
-import org.portico.lrc.services.time.data.TimeStatus;
-import org.portico.lrc.services.time.msg.EnableTimeConstrained;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.time.data.TimeStatus;
+import org.portico2.common.services.time.msg.EnableTimeConstrained;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

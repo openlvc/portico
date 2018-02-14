@@ -17,6 +17,7 @@ package org.portico.lrc.services.ddm.msg;
 import java.util.HashSet;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class AssociateRegion extends PorticoMessage
 {
@@ -52,6 +53,11 @@ public class AssociateRegion extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.AssociateRegion;
+	}
 
 	public int getRegionToken()
     {

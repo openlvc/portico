@@ -22,7 +22,7 @@ package org.portico.lrc.compat;
  * includes a method to get an RTIinternalError instance from it to save anyone doing any
  * conversion between it and RTI problems.
  */
-public class JException extends Exception
+public class JException extends RuntimeException
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES

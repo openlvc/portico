@@ -1,0 +1,119 @@
+/*
+ *   Copyright 2018 The Portico Project
+ *
+ *   This file is part of portico.
+ *
+ *   portico is free software; you can redistribute it and/or modify
+ *   it under the terms of the Common Developer and Distribution License (CDDL) 
+ *   as published by Sun Microsystems. For more information see the LICENSE file.
+ *   
+ *   Use of this software is strictly AT YOUR OWN RISK!!!
+ *   If something bad happens you do not have permission to come crying to me.
+ *   (that goes for your lawyer as well)
+ *
+ */
+package org.portico2.rti.services.object.incoming;
+
+import java.util.Map;
+import java.util.Set;
+
+import org.portico.lrc.compat.JConfigurationException;
+import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
+import org.portico.lrc.compat.JException;
+import org.portico.lrc.compat.JInvalidFederationTime;
+import org.portico.lrc.compat.JObjectNotKnown;
+import org.portico.lrc.model.OCInstance;
+import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.time.data.TimeStatus;
+import org.portico2.rti.federation.Federate;
+import org.portico2.rti.services.RTIMessageHandler;
+
+public class DeleteObjectHandler extends RTIMessageHandler
+{
+	//----------------------------------------------------------
+	//                    STATIC VARIABLES
+	//----------------------------------------------------------
+
+	//----------------------------------------------------------
+	//                   INSTANCE VARIABLES
+	//----------------------------------------------------------
+
+	//----------------------------------------------------------
+	//                      CONSTRUCTORS
+	//----------------------------------------------------------
+
+	//----------------------------------------------------------
+	//                    INSTANCE METHODS
+	//----------------------------------------------------------
+	@Override
+	public void configure( Map<String,Object> properties ) throws JConfigurationException
+	{
+		super.configure( properties );
+	}
+
+	@Override
+	public void process( MessageContext context ) throws JException
+	{
+		DeleteObject request = context.getRequest( DeleteObject.class, this );
+		int sourceFederate = request.getSourceFederate();
+		int objectHandle = request.getObjectHandle();
+
+		if( logger.isDebugEnabled() )
+		{
+			String timeStatus = request.isTimestamped() ? " @"+request.getTimestamp() : " (RO)";
+			logger.debug( "ATTEMPT Fedeate [%s] deleting object [%s] %s",
+			              moniker( sourceFederate ),
+			              objectMoniker(objectHandle),
+			              timeStatus );
+		}
+
+		// if this is a TSO message, check the time
+		if( request.isTimestamped() )
+		{
+			Federate federate = federation.getFederate( sourceFederate );
+			TimeStatus timeStatus = federate.getTimeStatus();
+			double time = request.getTimestamp();
+			// check that the time is greater than or equal to the current LBTS of this federate
+			if( time < timeStatus.getLbts() )
+			{
+				throw new JInvalidFederationTime( "Time [" + time + "] has already passed (lbts:" +
+				                                  timeStatus.getLbts() + ")" );
+			}
+		}
+		
+		// check that the object exists and that we own it
+		OCInstance instance = repository.getObject( objectHandle );
+		if( instance == null )
+		{
+			throw new JObjectNotKnown( "can't delete object ["+objectHandle+"]: unknown" );
+		}
+		else if( instance.isOwner(sourceFederate) == false )
+		{
+			throw new JDeletePrivilegeNotHeld( "can't delete object [" + objectHandle +
+			                                   "]: delete privilege not held" );
+		}
+		
+		// remove the object
+		repository.deleteObject( objectHandle );
+		context.success();
+		
+		// find the subscribers and tell them
+		DeleteObject copy = request.clone( DeleteObject.class );
+		Set<Integer> subscribers = interests.getAllSubscribers( instance.getDiscoveredType() );
+		queueManycast( copy, subscribers );
+		
+		if( logger.isInfoEnabled() )
+		{
+			String timeStatus = request.isTimestamped() ? " @"+request.getTimestamp() : " (RO)";
+			logger.debug( "SUCCESS Fedeate [%s] deleting object [%s] %s",
+			              moniker( sourceFederate ),
+			              objectMoniker(objectHandle),
+			              timeStatus );
+		}
+	}
+
+	//----------------------------------------------------------
+	//                     STATIC METHODS
+	//----------------------------------------------------------
+}

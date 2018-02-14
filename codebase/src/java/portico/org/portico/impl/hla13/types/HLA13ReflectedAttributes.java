@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
+import org.portico2.common.services.object.msg.UpdateAttributes.FilteredAttribute;
 
 /**
  * This class just wraps a {@link HLA13ByteArrayMap HLA13ByteArrayMap} and passes all the relevant

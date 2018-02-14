@@ -14,12 +14,9 @@
  */
 package hlaunit;
 
-import java.io.File;
-
-import org.portico.bindings.jgroups.Configuration;
-import org.portico.bindings.jvm.JVMConnection;
-import org.portico.lrc.PorticoConstants;
-import org.portico.utils.logging.Log4jConfigurator;
+import org.portico2.common.PorticoConstants;
+import org.portico2.common.logging.Log4jConfigurator;
+import org.portico2.common.network.jgroups.JGroupsConfiguration;
 import org.testng.Assert;
 
 public class CommonSetup
@@ -31,12 +28,13 @@ public class CommonSetup
 	public static final String TEST_ROOT_DIR = System.getProperty( "test.root.dir" );
 	
 	/**
-	 * The system property that specifies the binding that will be used for test federates. If
-	 * the value of the property is null, it is ignored. If it is one of the predefined values
-	 * (jvm or jsop), then the appropriate binding is used. If it is neither of these, the value
-	 * is taken to be the fully qualified name of the binding implementation to use. 
+	 * The system property that specifies the connection type that will be used for test federates.
+	 * If the value of the property is null, it is ignored. If it is one of the predefined values
+	 * (jvm, multicast, unicast), then the appropriate connection type is used. If it is neither
+	 * of these, the value is taken to be the fully qualified name of the IConnection
+	 * implementation to use. 
 	 */
-	public static final String BINDING_PROPERTY = "test.binding";
+	public static final String CONNECTION_PROPERTY = "test.connection";
 
 	/**
 	 * Which interface to tell JGroups to use. Can be: SITE_LOCAL, LINK_LOCAL, LOOPBACK, GLOBAL
@@ -85,73 +83,61 @@ public class CommonSetup
 				loglevel = "OFF";
 		
 		// set the global log level based off the given level above
-		System.setProperty( PorticoConstants.PROPERTY_PORTICO_LOG_LEVEL, loglevel );
-		System.setProperty( PorticoConstants.PROPERTY_CONTAINER_LOG_LEVEL, "FATAL" );
+		PorticoConstants.PORTICO_LOG_LEVEL = loglevel;
 		
-		/////////////////////////////////////////////////////////////////////////////
-		// set up the plugins directory, otherwise the handlers might not be found //
-		/////////////////////////////////////////////////////////////////////////////
-		File plugindir = new File( System.getProperty("user.dir") + "/build/java/portico/classes" );
-		System.setProperty( PorticoConstants.PROPERTY_PLUGIN_PATH, plugindir.getAbsolutePath() );
-		
+		//////////////////////////////////////////////////////////////////////////////
+		// do special environmental setup based on the connection type we are using //
+		//////////////////////////////////////////////////////////////////////////////
 		try
 		{
-			/////////////////////////////////////////////////////////////////
-			// do some environment setup based on the binding we are using //
-			/////////////////////////////////////////////////////////////////
-			String binding = System.getProperty( BINDING_PROPERTY, "jvm" );
-			if( binding.equals( "jvm" ) || binding == null )
+			// figure out what connection we are using, defaulting to JVM
+			String connection = System.getProperty( CONNECTION_PROPERTY, "jvm" );
+			if( connection == null || connection.equalsIgnoreCase("jvm") )
 			{
-				//////////////////
-				// BINDING: JVM //
-				//////////////////
-				// set the conneciton implementation that federates should use
-				System.setProperty( PorticoConstants.PROPERTY_CONNECTION,
-				                    JVMConnection.class.getCanonicalName() );
-				TIMEOUT = JVMConnection.CONNECTION_TIMEOUT;
-			}
-			else if( binding.equals("jgroups") )
-			{
-				JGROUPS_ACTIVE = true;
-				// set the system property that contains the connection implementation
-				System.setProperty( PorticoConstants.PROPERTY_CONNECTION,
-				                    "org.portico.bindings.jgroups.JGroupsConnection" );
+				//
+				// Connection: JVM
+				//
+				PorticoConstants.OVERRIDE_CONNECTION = "jvm";
 				TIMEOUT = 100;
-
-				// set the system property to reduce the jgroups GMS discovery timeout
-				// this can take a while and really slows the tests down, but seeing as
-				// we're running everything off the same machine, there is little worry
-				// about needing a bigger timeout to discover an active group
-				System.setProperty( Configuration.PROP_JGROUPS_GMS_TIMEOUT, "100" );
+			}
+			else if( connection.equalsIgnoreCase("multicast") )
+			{
+				//
+				// Connection: Multicast (JGroups)
+				//
+				PorticoConstants.OVERRIDE_CONNECTION = "multicast";
+				TIMEOUT = 100;
 				
+				// specify the join timeout
+				JGroupsConfiguration.DEFAULT_GMS_JOIN_TIMOUT = "100";
+
+				// specify the interface
 				String jgroupsInterface = System.getProperty( JGROUPS_INTERFACE );
 				if( jgroupsInterface != null )
 				{
 					System.out.println( "JGroups Interface: "+jgroupsInterface );
-					System.setProperty( "portico.jgroups.udp.bindAddress", jgroupsInterface );
+					JGroupsConfiguration.DEFAULT_INTERFACE = jgroupsInterface;
 				}
 			}
-			else if( binding.equals("ptalk") )
+			else if( connection.equalsIgnoreCase("unicast") )
 			{
-				System.setProperty( PorticoConstants.PROPERTY_CONNECTION,
-				                    "org.portico.bindings.ptalk.LrcConnection" );
+				//
+				// Connection: Unicast
+				//
+				PorticoConstants.OVERRIDE_CONNECTION = "unicast";
 			}
 			else
 			{
-				/////////////////////
-				// UNKNOWN BINDING //
-				/////////////////////
-				// a value has been set, but we don't recognise it, assume it is the fully
-				// qualified name of the binding class to use
-				System.setProperty( PorticoConstants.PROPERTY_CONNECTION, binding );
+				// Connection is not a pre-configured on. Assume it is the class name and use it
+				Assert.fail( "Unknown connection type: "+connection );
 			}
-
 		}
 		catch( Exception e )
 		{
 			// Couldn't create the RTI, fail the test
 			Assert.fail( "Error during test initialization: " + e.getMessage(), e );
-		}
+		}		
+		
 	}
 	
 	public static void commonAfterSuiteCleanup()

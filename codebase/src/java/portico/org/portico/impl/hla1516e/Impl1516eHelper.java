@@ -16,7 +16,10 @@ package org.portico.impl.hla1516e;
 
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateAmbassador;
+import hla.rti1516e.exceptions.AlreadyConnected;
 import hla.rti1516e.exceptions.CallNotAllowedFromWithinCallback;
+import hla.rti1516e.exceptions.ConnectionFailed;
+import hla.rti1516e.exceptions.FederateIsExecutionMember;
 import hla.rti1516e.exceptions.FederateNotExecutionMember;
 import hla.rti1516e.exceptions.InTimeAdvancingState;
 import hla.rti1516e.exceptions.InvalidLogicalTime;
@@ -26,27 +29,29 @@ import hla.rti1516e.exceptions.RequestForTimeConstrainedPending;
 import hla.rti1516e.exceptions.RequestForTimeRegulationPending;
 import hla.rti1516e.exceptions.RestoreInProgress;
 import hla.rti1516e.exceptions.SaveInProgress;
-import hla.rti1516e.exceptions.SynchronizationPointLabelNotAnnounced;
+
+import java.util.Properties;
 
 import org.apache.logging.log4j.Logger;
 
 import org.portico.impl.HLAVersion;
 import org.portico.impl.ISpecHelper;
-import org.portico.lrc.LRC;
-import org.portico.lrc.LRCState;
 import org.portico.lrc.compat.JConcurrentAccessAttempted;
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico.lrc.compat.JConnectionFailed;
 import org.portico.lrc.compat.JEnableTimeConstrainedPending;
 import org.portico.lrc.compat.JEnableTimeRegulationPending;
 import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JInvalidFederationTime;
 import org.portico.lrc.compat.JRestoreInProgress;
 import org.portico.lrc.compat.JSaveInProgress;
-import org.portico.lrc.compat.JSynchronizationLabelNotAnnounced;
 import org.portico.lrc.compat.JTimeAdvanceAlreadyInProgress;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.utils.messaging.MessageContext;
-
+import org.portico.utils.StringUtils;
+import org.portico2.common.configuration.RID;
+import org.portico2.common.messaging.MessageContext;
+import org.portico2.lrc.LRC;
+import org.portico2.lrc.LRCState;
 /**
  * This class helps provides helper methods to the {@link Rti1516eAmbassador} class and helps
  * bridge the gap between the Portico compatibility layer and the HLA 1516e interface. The basic
@@ -67,20 +72,29 @@ public class Impl1516eHelper implements ISpecHelper
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private LRC lrc;
-	private LRCState state;
-	private CallbackModel callbackModel;
+	private LRC lrc;                         // TODO done
+	private LRCState state;                  // TODO doing
+	private CallbackModel callbackModel;     // TODO doing
 	
-	private FederateAmbassador fedamb;
+	private FederateAmbassador federateAmbassador;
+
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 
 	public Impl1516eHelper() throws RTIinternalError
 	{
+		// all initialization done in initialize(), which is called from connect(...).
+	}
+	
+	//----------------------------------------------------------
+	//                    INSTANCE METHODS
+	//----------------------------------------------------------
+	private void initialize( Properties ridOverrides ) throws RTIinternalError
+	{
 		try
 		{
-			this.lrc = new LRC( this );
+			this.lrc = new LRC( this, RID.loadRid(ridOverrides) );
 			this.state = this.lrc.getState();
 			this.callbackModel = CallbackModel.HLA_EVOKED;
 		}
@@ -90,21 +104,100 @@ public class Impl1516eHelper implements ISpecHelper
 		}
 	}
 	
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	
 	////////////////////////////////////////////////////////////////////////////
 	///////////////////////////// Lifecyle Methods /////////////////////////////
 	////////////////////////////////////////////////////////////////////////////
-	public void connected( FederateAmbassador fedamb )
+	public void connect( FederateAmbassador federateAmbassador, CallbackModel callbackModel )
+		throws AlreadyConnected, ConnectionFailed, RTIinternalError
 	{
-		setFederateAmbassador( fedamb );
+		this.connect( federateAmbassador, callbackModel, null );
 	}
 
-	public void disconnected()
+	/**
+	 * Connect the LRC to the RTI. We take the given fedamb as a callback reference, along with
+	 * the given callback model. We can also optionally pass a string for the "local settings".
+	 * This string, if defined, should contain the name of a system property that we can load
+	 * a Properties file from and use as the basis to augment/override the RID.
+	 * 
+	 * @param federateAmbassador The fedamb to call the federate back on
+	 * @param callbackModel      The model to use for callbacks
+	 * @param localSettingsDesignator Null, or name of system property containing a Properties
+	 *                                object that has RID override values in it
+	 * @throws AlreadyConnected  We're already connected
+	 * @throws ConnectionFailed  We couldn't connect
+	 * @throws RTIinternalError  Something abnormal happened
+	 */
+	public void connect( FederateAmbassador federateAmbassador,
+	                     CallbackModel callbackModel,
+	                     String localSettingsDesignator )
+		throws AlreadyConnected, ConnectionFailed, RTIinternalError
 	{
-		setFederateAmbassador( null );
+		// if we don't have an LRC yet, initialize one
+		if( lrc == null )
+		{
+			Properties overrides = new Properties();
+			
+			// check to see if we have any standard overrides
+			String temp = System.getProperty( "lrc.overrides" );
+			if( temp != null )
+				overrides.putAll( StringUtils.propertiesFromString(temp) );
+			
+			// check to see if we have any local settings designated
+			if( localSettingsDesignator != null )
+				overrides.putAll( StringUtils.propertiesFromString(localSettingsDesignator) );
+
+			// initialize with overrides
+			this.initialize( overrides );
+		}
+		
+		// check to make sure we're not already connected
+		if( lrc.isConnected() )
+			throw new AlreadyConnected("");
+		
+		// connect the LRC
+		try
+		{
+			lrc.connect();
+		}
+		catch( JConnectionFailed cf )
+		{
+			throw new ConnectionFailed( cf.getMessage(), cf );
+		}
+
+		// set the callback model on the LRC approrpriately
+		this.callbackModel = callbackModel;
+		if( callbackModel == CallbackModel.HLA_EVOKED )
+			lrc.disableImmediateCallbackProcessing();
+		else if( callbackModel == CallbackModel.HLA_IMMEDIATE )
+			lrc.enableImmediateCallbackProcessing();
+	
+		// store the FederateAmbassador for now, we'll stick it on the join call shortly
+		this.federateAmbassador = federateAmbassador;
+	}
+	
+	public void disconnect() throws FederateIsExecutionMember, RTIinternalError
+	{
+		// make sure we're not currently involved in a federation
+		if( state.isJoined() )
+		{
+			throw new FederateIsExecutionMember( "Can't disconnect. Joined to federation ["+
+			                                     state.getFederationName()+"]" );
+		}
+		
+		// Tell the LRC to disconnect
+		try
+		{
+			lrc.disconnect();
+		}
+		finally
+		{
+    		// remove our federate ambassador reference to signal we're "disconnected" :P
+    		this.federateAmbassador = null;
+    		
+    		// turn off the immediate callback handler if we have to
+    		if( callbackModel == CallbackModel.HLA_IMMEDIATE )
+    			lrc.disableImmediateCallbackProcessing();
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
@@ -116,16 +209,6 @@ public class Impl1516eHelper implements ISpecHelper
 		return HLAVersion.IEEE1516e;
 	}
 	
-	public CallbackModel getCallbackModel()
-	{
-		return this.callbackModel;
-	}
-
-	public void setCallbackModel( CallbackModel callbackModel )
-	{
-		this.callbackModel = callbackModel;
-	}
-
 	public void processMessage( MessageContext context ) throws Exception
 	{
 		this.lrc.getOutgoingSink().process( context );
@@ -207,7 +290,7 @@ public class Impl1516eHelper implements ISpecHelper
 	 */
 	public void checkConnected() throws NotConnected
 	{
-		if( this.fedamb == null )
+		if( this.federateAmbassador == null )
 			throw new NotConnected( "Federate has not yet called connect()" );
 	}
 
@@ -329,42 +412,22 @@ public class Impl1516eHelper implements ISpecHelper
 		}
 	}
 	
-	/**
-	 * Checks to see if the given synchronization point label has been announced 
-	 */
-	public void checkSyncAnnounced( String label ) throws SynchronizationPointLabelNotAnnounced
-	{
-		try
-		{
-			state.checkSyncAnnounced( label );
-		}
-		catch( JSynchronizationLabelNotAnnounced na )
-		{
-			throw new SynchronizationPointLabelNotAnnounced( na.getMessage() );
-		}
-	}
-
 	////////////////////////////////////////////////////////////////////////////
 	///////////////////////////// Helper  Methods //////////////////////////////
 	////////////////////////////////////////////////////////////////////////////
 	public FederateAmbassador getFederateAmbassador()
 	{
-		return this.fedamb;
+		return this.federateAmbassador;
 	}
 	
-	public void setFederateAmbassador( FederateAmbassador fedamb )
-	{
-		this.fedamb = fedamb;
-	}
-
 	public Logger getLrcLogger()
 	{
-		return this.lrc.getLrcLogger();
+		return this.lrc.getLogger();
 	}
 	
 	protected void reinitializeLrc()
 	{
-		this.lrc.reinitialize();
+//		this.lrc.reinitialize();
 	}
 
 	//----------------------------------------------------------

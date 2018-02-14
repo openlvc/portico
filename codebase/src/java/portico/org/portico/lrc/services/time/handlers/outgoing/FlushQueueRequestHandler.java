@@ -17,10 +17,10 @@ package org.portico.lrc.services.time.handlers.outgoing;
 import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.time.msg.FlushQueueRequest;
-import org.portico.lrc.services.time.msg.TimeAdvanceGrant;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.time.msg.FlushQueueRequest;
+import org.portico2.common.services.time.msg.TimeAdvanceGrant;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

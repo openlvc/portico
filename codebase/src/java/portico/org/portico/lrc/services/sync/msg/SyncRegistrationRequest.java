@@ -17,6 +17,7 @@ package org.portico.lrc.services.sync.msg;
 import java.util.HashSet;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * This message represents a request to secure a synchronization point label for registeration
@@ -58,6 +59,11 @@ public class SyncRegistrationRequest extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.RegisterSyncPoint;
+	}
 
 	public String getLabel()
 	{

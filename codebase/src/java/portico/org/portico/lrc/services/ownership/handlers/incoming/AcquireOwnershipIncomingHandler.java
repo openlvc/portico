@@ -21,10 +21,10 @@ import java.util.Set;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.ownership.msg.AttributeAcquire;
 import org.portico.lrc.services.ownership.msg.AttributeRelease;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ownership.msg.AttributeAcquire;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

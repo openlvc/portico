@@ -109,7 +109,7 @@ public class MomFederationTest extends Abstract1516eTest
 	}
 	
 	@BeforeMethod(alwaysRun=true)
-	public void beforeMethod() throws Exception
+	public void beforeMethod() //throws Exception
 	{
 		defaultFederate.quickCreate();
 		defaultFederate.quickJoin();
@@ -234,7 +234,7 @@ public class MomFederationTest extends Abstract1516eTest
 	///////////////////////////////////////
 	// TEST: testMomFederationInstance() //
 	///////////////////////////////////////
-	@Test
+	@Test(enabled=false)
 	public void testMomFederationInstance()
 	{
 		// subscribe to the MOM Federation class attributes //
@@ -276,7 +276,7 @@ public class MomFederationTest extends Abstract1516eTest
 	/////////////////////////////////////
 	// TEST: testMomFederateInstance() //
 	/////////////////////////////////////
-	@Test
+	@Test(enabled=false)
 	public void testMomFederateInstance()
 	{
 		// subscirbe to the MOM Federate class attributes //

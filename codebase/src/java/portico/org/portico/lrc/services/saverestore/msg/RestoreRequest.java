@@ -15,6 +15,7 @@
 package org.portico.lrc.services.saverestore.msg;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class RestoreRequest extends PorticoMessage
 {
@@ -39,6 +40,11 @@ public class RestoreRequest extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.RestoreRequest;
+	}
 
 	public String getLabel()
 	{

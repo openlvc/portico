@@ -25,10 +25,10 @@ import org.portico.impl.hla1516.types.HLA1516AttributeHandleValueMap;
 import org.portico.impl.hla1516.types.HLA1516ObjectInstanceHandle;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
-import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.object.msg.UpdateAttributes.FilteredAttribute;
 
 /**
  * Generate reflectAttributeValues() callbacks to a IEEE1516 compliant federate ambassador

@@ -23,11 +23,11 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.RoleCall;
 import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.RoleCall;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
