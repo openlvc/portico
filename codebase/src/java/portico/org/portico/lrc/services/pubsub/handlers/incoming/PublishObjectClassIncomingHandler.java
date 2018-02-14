@@ -17,9 +17,9 @@ package org.portico.lrc.services.pubsub.handlers.incoming;
 import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.pubsub.msg.PublishObjectClass;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.pubsub.msg.PublishObjectClass;
 
 /**
  * Record the object class publication of remote federates. If we are the federate responsible

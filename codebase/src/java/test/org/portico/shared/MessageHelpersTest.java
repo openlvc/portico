@@ -20,9 +20,9 @@ import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.PCMetadata;
-import org.portico.lrc.services.federation.msg.CreateFederation;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.lrc.utils.MessageHelpers;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.common.services.federation.msg.DestroyFederation;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

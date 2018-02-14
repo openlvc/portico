@@ -20,9 +20,9 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
 import org.portico.lrc.compat.JObjectNotKnown;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DeleteObject;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

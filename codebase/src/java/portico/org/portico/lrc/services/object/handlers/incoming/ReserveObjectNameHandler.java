@@ -16,9 +16,9 @@ package org.portico.lrc.services.object.handlers.incoming;
 
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
-import org.portico.lrc.services.object.msg.ReserveObjectName;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.ReserveObjectName;
 
 /**
  * This handler takes care of incoming object name reservation requests. It just stores the

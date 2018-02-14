@@ -17,6 +17,7 @@ package org.portico.lrc.services.ownership.msg;
 import java.util.Set;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * Message representing the confirmation of divestiture for a bunch of attributes
@@ -47,6 +48,12 @@ public class DivestConfirmation extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.DivestConfirmation;
+	}
+
 	public int getObjectHandle()
 	{
 		return objectHandle;

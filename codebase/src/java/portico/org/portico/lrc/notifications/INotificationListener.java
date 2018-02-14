@@ -15,7 +15,7 @@
 package org.portico.lrc.notifications;
 
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.RoleCall;
+import org.portico2.common.services.federation.msg.RoleCall;
 
 /**
  * Throughout a federation, a number of interesting events can occur. This interface describes

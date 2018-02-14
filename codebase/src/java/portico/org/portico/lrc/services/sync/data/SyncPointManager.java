@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.portico.lrc.services.federation.msg.RoleCall;
 import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
 import org.portico.lrc.services.sync.data.SyncPoint.Status;
+import org.portico2.common.services.federation.msg.RoleCall;
 
 /**
  * This class manages all the record keeping about synchronization points. It takes care of

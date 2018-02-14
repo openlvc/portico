@@ -245,6 +245,7 @@ public class ExampleFederate
 		while( fedamb.isAnnounced == false )
 		{
 			rtiamb.evokeMultipleCallbacks( 0.1, 0.2 );
+			System.out.println( "Still waiting for announce" );
 		}
 
 		// WAIT FOR USER TO KICK US OFF

@@ -24,9 +24,9 @@ import org.portico.lrc.compat.JFederateOwnsAttributes;
 import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.ResignFederation;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

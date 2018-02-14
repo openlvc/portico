@@ -27,10 +27,10 @@ import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.management.Federate;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
-import org.portico.lrc.services.object.msg.DeleteObject;
-import org.portico.lrc.services.object.msg.DiscoverObject;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * The MOM manager takes care of all the MOM related tasks for the local federate. When the federate

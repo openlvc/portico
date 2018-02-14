@@ -86,7 +86,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testMomFederateInstanceLifecycle() //
 	//////////////////////////////////////////////
-	@Test
+	@Test(enabled=false)
 	public void testMomFederateInstanceLifecycle() throws Exception
 	{
 		// subscribe to the MOM information //
@@ -130,7 +130,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		defaultFederate.fedamb.waitForRORemoval( two.getHandle() );
 	}
 	
-	@Test
+	@Test(enabled=false)
 	public void testDisabledMom() throws Exception
 	{
 		// turn the mom off for new federations //

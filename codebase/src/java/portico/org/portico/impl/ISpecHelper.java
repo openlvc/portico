@@ -17,8 +17,8 @@ package org.portico.impl;
 import org.portico.lrc.LRC;
 
 /**
- * Practically a marker interface to help remove any tight-coupling with the implementations of a
- * specific HLA interface.
+ * Marker interface to help remove any tight-coupling between the RTI and Federate ambassador
+ * interfaces for a specific HLA version and the LRC infrastructure itself.
  * <p/>
  * Different HLA interfaces need to hold references to different sets of objects. So that a single
  * {@link LRC} can be used with any HLA interface type, each will hold a reference to an

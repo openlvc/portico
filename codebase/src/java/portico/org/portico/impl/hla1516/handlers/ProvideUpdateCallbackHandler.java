@@ -23,9 +23,9 @@ import org.portico.impl.hla1516.Impl1516Helper;
 import org.portico.impl.hla1516.types.HLA1516AttributeHandleSet;
 import org.portico.impl.hla1516.types.HLA1516ObjectInstanceHandle;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.object.msg.RequestObjectUpdate;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.RequestObjectUpdate;
 
 /**
  * Generate provideAttributeValueUpdate() callbacks to a IEEE1516 compliant federate ambassador

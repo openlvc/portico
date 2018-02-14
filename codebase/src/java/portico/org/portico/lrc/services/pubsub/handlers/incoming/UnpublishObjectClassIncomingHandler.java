@@ -22,9 +22,9 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.services.ownership.msg.AttributeDivest;
-import org.portico.lrc.services.pubsub.msg.UnpublishObjectClass;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.pubsub.msg.UnpublishObjectClass;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

@@ -20,9 +20,9 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
-import org.portico.lrc.services.object.msg.DiscoverObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DiscoverObject;
 
 /**
  * Handles the discovery of a new object instance. This handler will not generate a callback. That

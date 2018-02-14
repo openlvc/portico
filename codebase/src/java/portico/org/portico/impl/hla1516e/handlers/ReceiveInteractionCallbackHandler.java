@@ -22,11 +22,12 @@ import java.util.Map;
 import static org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory.*;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
+import org.portico.impl.hla1516e.handlers2.SupplementalInfo;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
-import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.SendInteraction;
 
 /**
  * Generate receiveInteraction() callbacks to a IEEE1516e compliant federate ambassador
@@ -69,7 +70,7 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 		HLA1516eParameterHandleValueMap received = new HLA1516eParameterHandleValueMap(parameters);
 		
 		// generate the Supplemental Information
-		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
+		SupplementalInfo supplement = null;//new SupplementalInfo( request.getSourceFederate() );
 		
 		// do the callback
 		if( request.isTimestamped() )

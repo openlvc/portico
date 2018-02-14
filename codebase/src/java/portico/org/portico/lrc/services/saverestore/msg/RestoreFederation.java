@@ -15,6 +15,7 @@
 package org.portico.lrc.services.saverestore.msg;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class RestoreFederation extends PorticoMessage
 {
@@ -52,6 +53,11 @@ public class RestoreFederation extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.RestoreComplete;
+	}
 
 	public String getLabel()
 	{

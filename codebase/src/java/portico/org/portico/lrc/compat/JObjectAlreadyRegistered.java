@@ -29,37 +29,46 @@ public class JObjectAlreadyRegistered extends JException
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	/**
-     * Just create an empty exception
-     */
-    public JObjectAlreadyRegistered()
-    {
-	    super();
-    }
+	 * Just create an empty exception
+	 */
+	public JObjectAlreadyRegistered()
+	{
+		super();
+	}
 
-    /**
-     * @param message The message to create the exception with
-     */
-    public JObjectAlreadyRegistered( String message )
-    {
-	    super( message );
-    }
+	/**
+	 * @param message The message to create the exception with
+	 */
+	public JObjectAlreadyRegistered( String message )
+	{
+		super( message );
+	}
 
-    /**
-     * @param cause The cause of the exception
-     */
-    public JObjectAlreadyRegistered( Throwable cause )
-    {
-	    super( cause );
-    }
+	/**
+	 * @param cause The cause of the exception
+	 */
+	public JObjectAlreadyRegistered( Throwable cause )
+	{
+		super( cause );
+	}
 
-    /**
-     * @param message The message to create the exception with
-     * @param cause The cause of the exception
-     */
-    public JObjectAlreadyRegistered( String message, Throwable cause )
-    {
-	    super( message, cause );
-    }
+	/**
+	 * @param message The message to create the exception with
+	 * @param cause The cause of the exception
+	 */
+	public JObjectAlreadyRegistered( String message, Throwable cause )
+	{
+		super( message, cause );
+	}
+
+	/**
+	 * @param formatString A format string to use for the message
+	 * @param objects Arguments to apply to the format string
+	 */
+	public JObjectAlreadyRegistered( String formatString, Object... objects )
+	{
+		super( String.format( formatString, objects ) );
+	}
     
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS

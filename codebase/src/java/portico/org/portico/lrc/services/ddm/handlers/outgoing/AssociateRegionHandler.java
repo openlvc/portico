@@ -26,9 +26,9 @@ import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.RegionInstance;
 import org.portico.lrc.services.ddm.msg.AssociateRegion;
 import org.portico.lrc.services.ddm.msg.UnassociateRegion;
-import org.portico.lrc.services.object.data.RegionStore;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ddm.data.RegionStore;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516"},

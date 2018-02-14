@@ -61,6 +61,11 @@ public class JFederateNotExecutionMember extends JException
 	    super( message, cause );
     }
     
+    public JFederateNotExecutionMember( String format, Object... objects )
+    {
+    	super( String.format(format,objects) );
+    }
+    
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------

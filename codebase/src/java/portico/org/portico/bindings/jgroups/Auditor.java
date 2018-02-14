@@ -31,12 +31,12 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.management.Federate;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.object.msg.DeleteObject;
-import org.portico.lrc.services.object.msg.DiscoverObject;
-import org.portico.lrc.services.object.msg.SendInteraction;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.utils.logging.Log4jConfigurator;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * This class is used to log metadata about incoming/outgoing messages so that

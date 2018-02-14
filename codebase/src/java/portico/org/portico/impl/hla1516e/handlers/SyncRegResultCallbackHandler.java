@@ -16,9 +16,9 @@ package org.portico.impl.hla1516e.handlers;
 
 import java.util.Map;
 
-import org.portico.lrc.services.sync.msg.RegisterSyncPointResult;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.RegisterSyncPointResult;
 
 import hla.rti1516e.SynchronizationPointFailureReason;
 

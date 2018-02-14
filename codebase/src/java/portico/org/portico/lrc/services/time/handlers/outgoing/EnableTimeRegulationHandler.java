@@ -20,10 +20,10 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JInvalidFederationTime;
 import org.portico.lrc.compat.JInvalidLookahead;
 import org.portico.lrc.compat.JTimeRegulationAlreadyEnabled;
-import org.portico.lrc.services.time.data.TimeStatus;
-import org.portico.lrc.services.time.msg.EnableTimeRegulation;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.time.data.TimeStatus;
+import org.portico2.common.services.time.msg.EnableTimeRegulation;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

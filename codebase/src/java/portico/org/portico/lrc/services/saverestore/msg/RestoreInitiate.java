@@ -15,6 +15,7 @@
 package org.portico.lrc.services.saverestore.msg;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * This message is what is delivered to federates once the LRC has completed its local state
@@ -47,6 +48,12 @@ public class RestoreInitiate extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.RestoreInitiate;
+	}
 
 	public String getLabel()
 	{

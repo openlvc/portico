@@ -29,20 +29,20 @@ import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.Space;
 import org.portico.lrc.notifications.NotificationManager;
 import org.portico.lrc.services.mom.data.MomManager;
-import org.portico.lrc.services.object.data.InterestManager;
-import org.portico.lrc.services.object.data.RegionStore;
-import org.portico.lrc.services.object.data.Repository;
-import org.portico.lrc.services.ownership.data.OwnershipManager;
 import org.portico.lrc.services.saverestore.data.RestoreManager;
 import org.portico.lrc.services.saverestore.data.SaveManager;
 import org.portico.lrc.services.sync.data.SyncPointManager;
-import org.portico.lrc.services.time.data.TimeManager;
-import org.portico.lrc.services.time.data.TimeStatus;
-import org.portico.lrc.services.time.msg.TimeAdvanceRequest;
 import org.portico.utils.messaging.AbstractMessageHandler;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico.utils.messaging.VetoException;
+import org.portico2.common.services.ddm.data.RegionStore;
+import org.portico2.common.services.ownership.data.OwnershipManager;
+import org.portico2.common.services.pubsub.data.InterestManager;
+import org.portico2.common.services.time.data.TimeStatus;
+import org.portico2.common.services.time.msg.TimeAdvanceRequest;
+import org.portico2.rti.services.object.data.Repository2;
+import org.portico2.rti.services.time.data.TimeManager;
 
 /**
  * The parent class for all LRC message handlers. During the {@link #initialize(Map)} method
@@ -65,7 +65,7 @@ public abstract class LRCMessageHandler extends AbstractMessageHandler
 	protected NotificationManager notificationManager;
 	protected InterestManager interests;
 	protected RegionStore regions;
-	protected Repository repository;
+	protected Repository2 repository;
 	protected OwnershipManager ownership;
 	protected TimeManager timeManager;
 	protected SyncPointManager syncManager;
@@ -215,7 +215,7 @@ public abstract class LRCMessageHandler extends AbstractMessageHandler
 	 */
 	protected <T extends PorticoMessage> T fill( T instance, int target )
 	{
-		instance.setTargetFederate( target );
+		instance.setTargetFederates( target );
 		return fill( instance );
 	}
 	

@@ -20,6 +20,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class CreateRegion extends PorticoMessage implements Externalizable
 {
@@ -57,6 +58,11 @@ public class CreateRegion extends PorticoMessage implements Externalizable
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.CreateRegion;
+	}
 
 	public int getSpaceHandle()
     {

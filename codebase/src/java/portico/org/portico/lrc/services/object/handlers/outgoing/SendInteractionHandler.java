@@ -27,9 +27,9 @@ import org.portico.lrc.compat.JRegionNotKnown;
 import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.RegionInstance;
 import org.portico.lrc.model.Space;
-import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.SendInteraction;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

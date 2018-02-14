@@ -106,25 +106,31 @@ public class ResignFederationTest extends Abstract1516eTest
 		defaultFederate.quickPublish( "ObjectRoot.A", "aa" );
 		int oHandle = defaultFederate.quickRegister( "ObjectRoot.A" );
 		
-		// join a second federate and make sure it discovers the instance
 		TestFederate otherFederate = new TestFederate( "otherFederate", this );
-		otherFederate.quickJoin();
-		otherFederate.quickSubscribe( "ObjectRoot.A", "aa" );
-		otherFederate.fedamb.waitForDiscovery( oHandle );
-		
-		// Test with vaild resign action: DELETE_OBJECTS //
 		try
 		{
-			defaultFederate.rtiamb.resignFederationExecution( ResignAction.DELETE_OBJECTS );
+    		// join a second federate and make sure it discovers the instance
+    		otherFederate.quickJoin();
+    		otherFederate.quickSubscribe( "ObjectRoot.A", "aa" );
+    		otherFederate.fedamb.waitForDiscovery( oHandle );
+    		
+    		// Test with vaild resign action: DELETE_OBJECTS //
+    		try
+    		{
+    			defaultFederate.rtiamb.resignFederationExecution( ResignAction.DELETE_OBJECTS );
+    		}
+    		catch( Exception e )
+    		{
+    			Assert.fail( "Failed while testing a valid resign (DELETE_OBJECTS)", e );
+    		}
+
+    		// make sure the object has been deleted
+    		otherFederate.fedamb.waitForRORemoval( oHandle );
 		}
-		catch( Exception e )
+		finally
 		{
-			Assert.fail( "Failed while testing a valid resign (DELETE_OBJECTS)", e );
+    		otherFederate.quickResign();
 		}
-		
-		// make sure the object has been deleted
-		otherFederate.fedamb.waitForRORemoval( oHandle );
-		otherFederate.quickResign();
 	}
 	
 	///////////////////////////////////////////////////////////

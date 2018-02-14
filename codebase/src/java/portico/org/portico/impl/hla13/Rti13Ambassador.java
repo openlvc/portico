@@ -22,6 +22,7 @@ import hla.rti.*;
 import hla.rti.jlc.RTIambassadorEx;
 
 import org.apache.logging.log4j.Logger;
+import org.portico.impl.HLAVersion;
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.DoubleTimeInterval;
 import org.portico.impl.hla13.types.HLA13AttributeHandleSet;
@@ -98,53 +99,53 @@ import org.portico.lrc.services.ddm.msg.CreateRegion;
 import org.portico.lrc.services.ddm.msg.DeleteRegion;
 import org.portico.lrc.services.ddm.msg.ModifyRegion;
 import org.portico.lrc.services.ddm.msg.UnassociateRegion;
-import org.portico.lrc.services.federation.msg.CreateFederation;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.ResignFederation;
-import org.portico.lrc.services.object.msg.DeleteObject;
-import org.portico.lrc.services.object.msg.LocalDelete;
-import org.portico.lrc.services.object.msg.RegisterObject;
-import org.portico.lrc.services.object.msg.RequestClassUpdate;
-import org.portico.lrc.services.object.msg.RequestObjectUpdate;
-import org.portico.lrc.services.object.msg.SendInteraction;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
-import org.portico.lrc.services.ownership.msg.AttributeAcquire;
 import org.portico.lrc.services.ownership.msg.AttributeDivest;
 import org.portico.lrc.services.ownership.msg.AttributeRelease;
 import org.portico.lrc.services.ownership.msg.CancelAcquire;
 import org.portico.lrc.services.ownership.msg.CancelDivest;
 import org.portico.lrc.services.ownership.msg.QueryOwnership;
-import org.portico.lrc.services.pubsub.msg.PublishInteractionClass;
-import org.portico.lrc.services.pubsub.msg.PublishObjectClass;
-import org.portico.lrc.services.pubsub.msg.SubscribeInteractionClass;
-import org.portico.lrc.services.pubsub.msg.SubscribeObjectClass;
-import org.portico.lrc.services.pubsub.msg.UnpublishInteractionClass;
-import org.portico.lrc.services.pubsub.msg.UnpublishObjectClass;
-import org.portico.lrc.services.pubsub.msg.UnsubscribeInteractionClass;
-import org.portico.lrc.services.pubsub.msg.UnsubscribeObjectClass;
 import org.portico.lrc.services.saverestore.msg.RestoreComplete;
 import org.portico.lrc.services.saverestore.msg.RestoreRequest;
 import org.portico.lrc.services.saverestore.msg.SaveBegun;
 import org.portico.lrc.services.saverestore.msg.SaveComplete;
 import org.portico.lrc.services.saverestore.msg.SaveRequest;
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
-import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
-import org.portico.lrc.services.time.msg.DisableAsynchronousDelivery;
-import org.portico.lrc.services.time.msg.DisableTimeConstrained;
-import org.portico.lrc.services.time.msg.DisableTimeRegulation;
-import org.portico.lrc.services.time.msg.EnableAsynchronousDelivery;
-import org.portico.lrc.services.time.msg.EnableTimeConstrained;
-import org.portico.lrc.services.time.msg.EnableTimeRegulation;
-import org.portico.lrc.services.time.msg.FlushQueueRequest;
-import org.portico.lrc.services.time.msg.ModifyLookahead;
-import org.portico.lrc.services.time.msg.NextEventRequest;
-import org.portico.lrc.services.time.msg.TimeAdvanceRequest;
 import org.portico.utils.messaging.ErrorResponse;
 import org.portico.utils.messaging.ExtendedSuccessMessage;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico.utils.messaging.ResponseMessage;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.common.services.federation.msg.DestroyFederation;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.ResignFederation;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.object.msg.LocalDelete;
+import org.portico2.common.services.object.msg.RegisterObject;
+import org.portico2.common.services.object.msg.RequestClassUpdate;
+import org.portico2.common.services.object.msg.RequestObjectUpdate;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.ownership.msg.AttributeAcquire;
+import org.portico2.common.services.pubsub.msg.PublishInteractionClass;
+import org.portico2.common.services.pubsub.msg.PublishObjectClass;
+import org.portico2.common.services.pubsub.msg.SubscribeInteractionClass;
+import org.portico2.common.services.pubsub.msg.SubscribeObjectClass;
+import org.portico2.common.services.pubsub.msg.UnpublishInteractionClass;
+import org.portico2.common.services.pubsub.msg.UnpublishObjectClass;
+import org.portico2.common.services.pubsub.msg.UnsubscribeInteractionClass;
+import org.portico2.common.services.pubsub.msg.UnsubscribeObjectClass;
+import org.portico2.common.services.sync.msg.RegisterSyncPoint;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
+import org.portico2.common.services.time.msg.DisableAsynchronousDelivery;
+import org.portico2.common.services.time.msg.DisableTimeConstrained;
+import org.portico2.common.services.time.msg.DisableTimeRegulation;
+import org.portico2.common.services.time.msg.EnableAsynchronousDelivery;
+import org.portico2.common.services.time.msg.EnableTimeConstrained;
+import org.portico2.common.services.time.msg.EnableTimeRegulation;
+import org.portico2.common.services.time.msg.FlushQueueRequest;
+import org.portico2.common.services.time.msg.ModifyLookahead;
+import org.portico2.common.services.time.msg.NextEventRequest;
+import org.portico2.common.services.time.msg.TimeAdvanceRequest;
 
 public class Rti13Ambassador implements RTIambassadorEx
 {
@@ -191,6 +192,7 @@ public class Rti13Ambassador implements RTIambassadorEx
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
 		CreateFederation request = new CreateFederation( executionName, fed );
+		request.setHlaVersion( HLAVersion.HLA13 );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -466,7 +468,7 @@ public class Rti13Ambassador implements RTIambassadorEx
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		SyncPointAnnouncement request = new SyncPointAnnouncement( label, tag );
+		RegisterSyncPoint request = new RegisterSyncPoint( label, tag );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -523,7 +525,7 @@ public class Rti13Ambassador implements RTIambassadorEx
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		SyncPointAnnouncement request = new SyncPointAnnouncement(label, tag, convertSet(syncset));
+		RegisterSyncPoint request = new RegisterSyncPoint(label, tag, convertSet(syncset));
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////

@@ -40,6 +40,7 @@
 	<property name="test.reports.dir"         location="${test.build.dir}/reports"/>
 
 	<property name="test.binding"             value="jvm"/>
+	<property name="test.connection"          value="jvm"/>
 	<property name="test.loglevel"            value="OFF"/>
 	<property name="test.fileLogLevel"        value="OFF"/>
 
@@ -70,7 +71,7 @@
 	<!-- These properties are set so that any information relating to a specific path
 	     for a library can be changed in a single spot. The properties should be used
 	     when defining paths and the like later in the build file -->
-	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
+	<property name="testng.dir"            location="${lib.dir}/testng/testng-7.0.0"/> <!-- update taskdef in macros -->
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-git"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-2.10.0"/>
 	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
@@ -220,7 +221,7 @@
 			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
 			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
 			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
-			<jvmarg value="-Dtest.binding=${test.binding}"/>
+			<jvmarg value="-Dtest.connection=${test.connection}"/>
 	     </java-test>
 	</target>
 

@@ -17,9 +17,9 @@ package org.portico.lrc.services.pubsub.handlers.outgoing;
 import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.pubsub.msg.UnsubscribeObjectClass;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.pubsub.msg.UnsubscribeObjectClass;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -42,11 +42,13 @@ public class UnsubscribeObjectClassHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
 	public void initialize( Map<String,Object> properties )
 	{
 		super.initialize( properties );
 	}
-	
+
+	@Override
 	public void process( MessageContext context ) throws Exception
 	{
 		// basic validity checks

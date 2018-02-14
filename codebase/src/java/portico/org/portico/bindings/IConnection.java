@@ -19,11 +19,11 @@ import java.util.Map;
 import org.portico.lrc.LRC;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.services.federation.msg.CreateFederation;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.common.services.federation.msg.DestroyFederation;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.ResignFederation;
 
 /**
  * The Portico communications infrastructure is abstracted from the rest of the framework so that

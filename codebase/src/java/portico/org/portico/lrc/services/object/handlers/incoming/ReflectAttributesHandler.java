@@ -22,11 +22,11 @@ import org.portico.lrc.compat.JObjectClassNotSubscribed;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.data.OCInterest;
-import org.portico.lrc.services.object.data.RegionGroup;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ddm.data.RegionGroup;
+import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.pubsub.data.OCInterest;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

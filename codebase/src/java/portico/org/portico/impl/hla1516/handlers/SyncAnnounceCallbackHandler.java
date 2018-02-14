@@ -18,9 +18,9 @@ import java.util.Map;
 
 import org.portico.impl.hla1516.Impl1516Helper;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.RegisterSyncPoint;
 
 /**
  * This handler generates IEEE1516 callbacks for synchronization point announcements.
@@ -29,7 +29,7 @@ import org.portico.utils.messaging.MessageHandler;
                 keywords="lrc1516",
                 sinks="incoming",
                 priority=3,
-                messages=SyncPointAnnouncement.class)
+                messages=RegisterSyncPoint.class)
 public class SyncAnnounceCallbackHandler extends LRCMessageHandler
 {
 	//----------------------------------------------------------
@@ -57,7 +57,7 @@ public class SyncAnnounceCallbackHandler extends LRCMessageHandler
 	
 	public void process( MessageContext context ) throws Exception
 	{
-		SyncPointAnnouncement request = context.getRequest( SyncPointAnnouncement.class, this );
+		RegisterSyncPoint request = context.getRequest( RegisterSyncPoint.class, this );
 		
 		// make sure we are in the announcement group
 		if( request.getFederateSet() != null &&

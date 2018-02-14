@@ -17,9 +17,9 @@ package org.portico.lrc.services.time.handlers.outgoing;
 import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.time.msg.NextEventRequest;
-import org.portico.lrc.services.time.msg.TimeAdvanceRequest;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.time.msg.NextEventRequest;
+import org.portico2.common.services.time.msg.TimeAdvanceRequest;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 

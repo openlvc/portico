@@ -18,7 +18,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
+import org.portico2.common.configuration.RID;
+import org.portico2.rti.RTI;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
 import hla.rti1516e.RtiFactoryFactory;
 import hla.rti1516e.encoding.EncoderFactory;
@@ -40,6 +46,8 @@ public abstract class Abstract1516eTest
 	protected EncoderFactory encoder;
 	protected TestFederate defaultFederate;
 
+	protected RTI rti;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -72,20 +80,57 @@ public abstract class Abstract1516eTest
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////// Setup/Cleanup Methods ///////////////////////////////
+	///  Setup / Cleanup Methods  ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
-	protected void beforeClass()
+	@BeforeClass(alwaysRun=true)
+	protected void commonBeforeClass()
 	{
+		// Create the RTI
+		this.rti = new RTI( RID.loadRid() );
+		
+		// Create the default federate
 		this.defaultFederate = new TestFederate( "defaultFederate", this );
+	}
+
+	@BeforeMethod(alwaysRun=true)
+	protected void commonBeforeMethod()
+	{
+		// Start the RTI
+		this.rti.startup();
+		
+		// Connect the default federate to the RTI
 		this.defaultFederate.quickConnect();
 	}
-	
-	protected void afterClass()
+
+	@AfterMethod(alwaysRun=true)
+	protected void commonAfterMethod()
 	{
+		// Disconnect the federate from the RTI
 		this.defaultFederate.quickDisconnect();
+		
+		// Shut the RTI down
+		this.rti.shutdown();
+	}
+
+	@AfterClass(alwaysRun=true)
+	protected void commonAfterClass()
+	{
+		// Make sure we kill off any active federates that are hanging around
 		TestFederate.killActiveFederates();
+		
+		// Shutdown again (just in case) and remove the RTI
+		this.rti.shutdown();
+		this.rti = null;
 	}
 	
+	// We put no-op methods here because many tests call up to these.
+	// We don't need them any more now that we put the annotations directly on the common methods
+	protected void beforeClass() {}
+	protected void afterClass() {}
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	///  Helper Methods  ////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 	protected void expectedException( Class<?>... expected )
 	{
 		// build a string with the name of the expected exception types

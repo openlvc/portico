@@ -19,9 +19,9 @@ import java.util.Set;
 
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
-import org.portico.lrc.services.ownership.msg.AttributeAcquire;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ownership.msg.AttributeAcquire;
 
 /**
  * Generates requestAttributeOwnershipRelease() callbacks.

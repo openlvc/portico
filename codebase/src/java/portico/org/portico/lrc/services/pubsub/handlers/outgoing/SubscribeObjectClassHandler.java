@@ -22,11 +22,11 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JObjectClassNotSubscribed;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
-import org.portico.lrc.services.object.msg.DiscoverObject;
-import org.portico.lrc.services.pubsub.msg.SubscribeObjectClass;
-import org.portico.lrc.services.pubsub.msg.UnsubscribeObjectClass;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.pubsub.msg.SubscribeObjectClass;
+import org.portico2.common.services.pubsub.msg.UnsubscribeObjectClass;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

@@ -19,8 +19,7 @@ import hlaunit.ieee1516e.common.Abstract1516eTest;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 @Test(sequential=true, groups={"PrivilegeToDeleteTest", "model"})
@@ -41,31 +40,19 @@ public class PrivilegeToDeleteTest extends Abstract1516eTest
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	@Override
-	@BeforeClass(alwaysRun=true)
-	public void beforeClass()
+	@BeforeMethod
+	public void beforeMethod()
 	{
-		super.beforeClass();
-
 		// create a federation that we can test with //
 		defaultFederate.quickCreate();
 		defaultFederate.quickJoin();
 	}
 	
-	@Override
-	@AfterClass(alwaysRun=true)
-	public void afterClass()
-	{
-		// destroy the federation that we are working in //
-		defaultFederate.quickDestroy();
-
-		super.afterClass();
-	}
-	
-	@AfterMethod(alwaysRun=true)
+	@AfterMethod
 	public void afterMethod()
 	{
 		defaultFederate.quickResign();
+		defaultFederate.quickDestroy();
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////

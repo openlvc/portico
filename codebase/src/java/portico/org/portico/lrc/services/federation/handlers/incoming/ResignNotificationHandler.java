@@ -22,15 +22,15 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.federation.msg.ResignFederation;
-import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.lrc.services.ownership.msg.AttributeDivest;
 import org.portico.lrc.services.saverestore.msg.RestoreComplete;
 import org.portico.lrc.services.saverestore.msg.SaveComplete;
 import org.portico.lrc.services.sync.data.SyncPoint;
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.ResignFederation;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
 
 /**
  * Handles incoming notifications of the resignation of a remote federate. This will remove the

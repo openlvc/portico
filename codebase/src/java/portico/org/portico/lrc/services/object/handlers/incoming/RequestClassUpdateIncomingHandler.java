@@ -25,11 +25,11 @@ import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.msg.RequestClassUpdate;
-import org.portico.lrc.services.object.msg.RequestObjectUpdate;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.RequestClassUpdate;
+import org.portico2.common.services.object.msg.RequestObjectUpdate;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

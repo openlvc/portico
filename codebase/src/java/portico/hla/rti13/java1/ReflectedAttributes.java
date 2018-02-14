@@ -19,7 +19,7 @@ import java.util.HashMap;
 import org.portico.impl.hla13.types.HLA13ReflectedAttributes;
 import org.portico.impl.hla13.types.Java1Region;
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
+import org.portico2.common.services.object.msg.UpdateAttributes.FilteredAttribute;
 
 public class ReflectedAttributes
 {

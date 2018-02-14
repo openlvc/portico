@@ -17,6 +17,7 @@ package org.portico.lrc.services.ownership.msg;
 import java.util.Set;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * This message signals that the given attributes of the given object handle have been released
@@ -50,6 +51,12 @@ public class AttributeRelease extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.AttributeRelease;
+	}
+
 	@Override
 	public boolean isImmediateProcessingRequired()
 	{

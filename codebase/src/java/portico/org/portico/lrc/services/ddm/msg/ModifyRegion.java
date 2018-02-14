@@ -21,6 +21,7 @@ import java.io.ObjectOutput;
 
 import org.portico.lrc.model.RegionInstance;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class ModifyRegion extends PorticoMessage implements Externalizable
 {
@@ -52,6 +53,11 @@ public class ModifyRegion extends PorticoMessage implements Externalizable
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.ModifyRegion;
+	}
 
 	public RegionInstance getRegion()
     {

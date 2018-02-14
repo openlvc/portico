@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.portico.impl.hla13.types.HLA13AttributeHandleSet;
-import org.portico.lrc.services.ownership.msg.AttributeAcquire;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ownership.msg.AttributeAcquire;
 
 /**
  * Generates requestAttributeOwnershipRelease() callbacks.

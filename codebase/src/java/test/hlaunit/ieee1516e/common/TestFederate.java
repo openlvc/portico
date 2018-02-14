@@ -1767,7 +1767,7 @@ public class TestFederate
 	{
 		for( TestFederate federate : ACTIVE_FEDERATES )
 		{
-			((Rti1516eAmbassador)federate.rtiamb).getHelper().getLrc().stopLrc();
+			((Rti1516eAmbassador)federate.rtiamb).getHelper().getLrc().disconnect();
 		}
 		
 		ACTIVE_FEDERATES.clear();
