@@ -362,7 +362,7 @@ public class OCMetadata implements Serializable
 			// there is nothing higher to check, ensure that we're not talking about privToDelete,
 			// if we haven't found it yet it might because we've got the wrong HLA version
 			if( name != null &&
-				(name.equals("privilegeToDelete") || name.equals("HLAprivilegeToDelete")) )
+				(name.equals("privilegeToDelete") || name.equals("HLAprivilegeToDeleteObject")) )
 			{
 				return this.model.getPrivilegeToDelete();
 			}

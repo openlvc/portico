@@ -310,7 +310,7 @@ public class ObjectModel implements Serializable
 		{
 			// make sure we aren't talking privilegeToDelete
 			if( attributeName.equals("privilegeToDelete") ||
-				attributeName.equals("HLAprivilegeToDelete") )
+				attributeName.equals("HLAprivilegeToDeleteObject") )
 			{
 				return this.ocroot.getDeclaredAttribute( this.privilegeToDelete );
 			}
