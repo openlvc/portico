@@ -36,7 +36,7 @@ void TestQuickCreate::tearDown()
 
 void TestQuickCreate::testTestQuickCreate()
 {
-	CPPUNIT_ASSERT_EQUAL(0, 0); 
+	CPPUNIT_ASSERT_EQUAL(1, 1); 
 }
 
  

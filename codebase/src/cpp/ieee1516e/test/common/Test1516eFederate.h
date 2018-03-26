@@ -34,7 +34,7 @@ class Test1516eFederate
 
 public:
 
-	RTIambassador *rtiamb;
+	RTIambassadorEx *rtiamb;
 	Test1516eFedAmb *fedamb;
 	FederateHandle federateHandle;
 	wstring name;
@@ -56,6 +56,7 @@ public:
 	/////////////////////////////////////////
 	void quickCreate();
 	void quickCreate(const wstring& federationName);
+	void quickCreate(const wstring& federationName, const wstring& FOMPath); 
 	void quickConnect();
 	FederateHandle quickJoin();
 	FederateHandle quickJoin(const wstring& federationName);

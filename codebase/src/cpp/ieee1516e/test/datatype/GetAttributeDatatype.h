@@ -15,11 +15,18 @@ public:
 	//----------------------------------------------------------
 private:
 	Test1516eFederate *defaultFederate; 
-	ObjectInstanceHandle theObject;
+	ObjectInstanceHandle AObject;
+	ObjectInstanceHandle BObject;
 	VariableLengthData tag;
 
-	ObjectClassHandle sodeObject;
-	AttributeHandle   flavor; 
+	ObjectClassHandle testAClassHandle;
+	ObjectClassHandle testCClassHandle;
+
+	AttributeHandle   testBasicAttributeHandle; 	
+	AttributeHandle   testSimpleAttributeHandle;
+	AttributeHandle   testEnumAttributeHandle;
+	AttributeHandle   testFixedAttributeHandle;
+	AttributeHandle   testNAAttributeHandle;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -37,13 +44,20 @@ public:
 
 protected:
 	void testGetBasicType();
-	 
+	void testGetSimpleType();
+	void testGetEnumeratedType();
+	void testGetFixedRecordType();
+	void testGetNAType();
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 	CPPUNIT_TEST_SUITE(GetAttributeDatatype);
 	CPPUNIT_TEST(testGetBasicType);
+	CPPUNIT_TEST(testGetSimpleType);
+	CPPUNIT_TEST(testGetEnumeratedType);
+	CPPUNIT_TEST(testGetFixedRecordType); 
+	CPPUNIT_TEST(testGetNAType);
 	CPPUNIT_TEST_SUITE_END();
 };
 

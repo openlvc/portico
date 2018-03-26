@@ -13,7 +13,7 @@ Test1516eFederate::Test1516eFederate(const wstring& name)
 
 	// create the RTIambassador
 	RTIambassadorFactory factory = RTIambassadorFactory();
-	this->rtiamb = factory.createRTIambassador().release();
+	this->rtiamb = factory.createRTIambassadorEx().release();
 
 	federateHandle = FederateHandle(); 
 
@@ -59,6 +59,22 @@ void Test1516eFederate::quickCreate(const wstring& federationName)
 	{
 		wcout << L"Didn't create federation, it already existed" << endl;
 	} 
+	catch (Exception &e)
+	{
+		killTest(e, "quickCreate()");
+	}
+}
+
+void Test1516eFederate::quickCreate(const wstring& federationName, const wstring& fomPath)
+{
+	try
+	{
+		rtiamb->createFederationExecution(federationName, fomPath);
+	}
+	catch (FederationExecutionAlreadyExists& exists)
+	{
+		wcout << L"Didn't create federation, it already existed" << endl;
+	}
 	catch (Exception &e)
 	{
 		killTest(e, "quickCreate()");
