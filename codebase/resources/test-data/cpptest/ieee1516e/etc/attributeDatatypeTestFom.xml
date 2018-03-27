@@ -1,0 +1,375 @@
+<?xml version="1.0"?>
+<!--DOCTYPE objectModel SYSTEM "HLA.dtd"-->
+<objectModel
+    DTDversion="1516.2"
+    name="TEST-FOM"
+    type="FOM"
+    version="1.0"
+    date="2006/7/15"
+    purpose="Blah"
+    appDomain="Blah"
+    sponsor="Blah"
+    pocName="Blah Blah"
+    pocOrg="Blah Blah"
+    pocPhone="1234 5678"
+    pocEmail="nobody@example.com">
+    <objects>
+        <objectClass name="HLAobjectRoot" sharing="Neither">
+            <attribute
+                name="HLAprivilegeToDeleteObject"
+                dataType="NA"
+                updateType="NA"
+                updateCondition="NA"
+                ownership="NoTransfer"
+                sharing="Neither"
+                dimensions="NA"
+                transportation="HLAreliable"
+                order="TimeStamp"/>
+            <objectClass name="A" sharing="Subscribe" semantics="NA" >
+                <attribute
+                    name="aa"
+                    dataType="HLAinteger32BE"
+                    updateType="Conditional"
+                    updateCondition="NA"
+                    ownership="NoTransfer"
+                    sharing="PublishSubscribe"
+                    dimensions="NA"
+                    transportation="HLAreliable"
+                    order="TimeStamp"
+                    semantics="NA" />
+                <attribute
+                    name="ab"
+                    dataType="HLAinteger32BE"
+                    updateType="Conditional"
+                    updateCondition="NA"
+                    ownership="NoTransfer"
+                    sharing="PublishSubscribe"
+                    dimensions="NA"
+                    transportation="HLAreliable"
+                    order="TimeStamp"
+                    semantics="NA" />
+                <attribute
+                    name="ac"
+                    dataType="HLAinteger32BE"
+                    updateType="Conditional"
+                    updateCondition="NA"
+                    ownership="NoTransfer"
+                    sharing="PublishSubscribe"
+                    dimensions="NA"
+                    transportation="HLAreliable"
+                    order="TimeStamp"
+                    semantics="NA" />
+                <objectClass name="B" sharing="PublishSubscribe" semantics="NA">
+					<attribute
+						name="ba"
+						dataType="HLAinteger32BE"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+					<attribute
+						name="bb"
+						dataType="HLAinteger32BE"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+					<attribute
+						name="bc"
+						dataType="HLAinteger32BE"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+                </objectClass>
+                <objectClass name="C" sharing="PublishSubscribe" semantics="NA">
+					<attribute
+						name="ca"
+						dataType="testEnumerator"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+					<attribute
+						name="cb"
+						dataType="HLAunicodeChar"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+					<attribute
+						name="cc"
+						dataType="ExampleStruct"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+                    <attribute
+						name="cd"
+						dataType="NA"
+						updateType="Conditional"
+						updateCondition="NA"
+						ownership="NoTransfer"
+						sharing="PublishSubscribe"
+						dimensions="NA"
+						transportation="HLAreliable"
+						order="TimeStamp"
+						semantics="NA" />
+                </objectClass>
+            </objectClass>
+			<objectClass name="BestEffortTest" sharing="PublishSubscribe" semantics="NA">
+				<attribute
+					name="blah"
+					dataType="HLAinteger32BE"
+					updateType="Conditional"
+					updateCondition="NA"
+					ownership="NoTransfer"
+					sharing="PublishSubscribe"
+					dimensions="NA"
+					transportation="HLAbestEffort"
+					order="TimeStamp"
+					semantics="NA" />
+			</objectClass>
+        </objectClass>
+    </objects>
+    <interactions>
+        <interactionClass name="HLAinteractionRoot"
+                          sharing="PublishSubscribe"
+                          dimensions="NA"
+                          transportation="HLAreliable"
+                          order="Receive">
+            <interactionClass name="X"
+                              sharing="PublishSubscribe"
+                              dimensions="NA"
+                              transportation="HLAreliable"
+                              order="TimeStamp"
+                              semantics="NA" >
+                <parameter name="xa" dataType="HLAinteger32BE" semantics="NA" />
+                <parameter name="xb" dataType="HLAinteger32BE" semantics="NA" />
+                <parameter name="xc" dataType="HLAinteger32BE" semantics="NA" />
+
+				<interactionClass name="Y"
+								  sharing="PublishSubscribe"
+								  dimensions="NA"
+								  transportation="HLAreliable"
+								  order="TimeStamp"
+								  semantics="NA" >
+					<parameter name="ya" dataType="HLAinteger32BE" semantics="NA" />
+					<parameter name="yb" dataType="HLAinteger32BE" semantics="NA" />
+					<parameter name="yc" dataType="HLAinteger32BE" semantics="NA" />
+				</interactionClass>
+            </interactionClass>
+        </interactionClass>
+    </interactions>
+    <dimensions>
+    </dimensions>
+    <time>
+        <timeStamp dataType="HLAfloat64BE" semantics="Time in seconds"/>
+        <lookahead dataType="HLAfloat64BE" semantics="Time in seconds"/>
+    </time>
+    <tags>
+    </tags>
+    <synchronizations>
+        <synchronization label="StartTest" dataType="NA" semantics="NA" />
+        <synchronization label="EndTest"   dataType="NA" semantics="NA" />
+    </synchronizations>
+    <transportations>
+        <transportation
+            name="HLAreliable"
+            description="Provide reliable delivery of data in the sense that TCP/IP
+                delivers its data reliably" />
+        <transportation
+            name="HLAbestEffort"
+            description="Make an effort to deliver data in the sense that UDP provides
+                best-effort delivery" />
+    </transportations>
+    <switches autoProvide="Disabled"
+        conveyRegionDesignatorSets="Disabled"
+        attributeScopeAdvisory="Disabled"
+        attributeRelevanceAdvisory="Disabled"
+        objectClassRelevanceAdvisory="Disabled"
+        interactionRelevanceAdvisory="Disabled"
+        serviceReporting="Disabled"/>
+    <dataTypes>
+        <basicDataRepresentations>
+            <basicData
+                name="HLAinteger16BE"
+                size="16"
+                interpretation="Integer in the range [-2^15, 2^15 - 1]"
+                endian="Big"
+                encoding="16-bit two's complement signed integer. The most significant bit contains the sign."/>
+            <basicData
+                name="HLAinteger32BE"
+                size="32"
+                interpretation="Integer in the range [-2^31, 2^31 - 1]"
+                endian="Big"
+                encoding="32-bit two's complement signed integer. The most significant bit contains the sign."/>
+            <basicData
+                name="HLAinteger64BE"
+                size="64"
+                interpretation="Integer in the range [-2^63, 2^63 - 1]"
+                endian="Big"
+                encoding="64-bit two's complement signed integer. The most significant bit contains the sign."/>
+            <basicData
+                name="HLAfloat32BE"
+                size="32"
+                interpretation="Single-precision floating-point number"
+                endian="Big"
+                encoding="32-bit IEEE normalized single-precision format (see IEEE Std. 754-1985)."/>
+            <basicData
+                name="HLAfloat64BE"
+                size="64"
+                interpretation="Double-precision floating-point number"
+                endian="Big"
+                encoding="64-bit IEEE normalized double-precision format (see IEEE Std. 754-1985)."/>
+            <basicData
+                name="HLAoctetPairBE"
+                size="16"
+                interpretation="16-bit value"
+                endian="Big"
+                encoding="Assumed to be portable among hardware devices."/>
+            <basicData
+                name="HLAinteger16LE"
+                size="16"
+                interpretation="Integer in the range [-2^15, 2^15 - 1]"
+                endian="Little"
+                encoding="16-bit two's complement signed integer. The most significant bit contains the sign."/>
+            <basicData
+                name="HLAinteger32LE"
+                size="32"
+                interpretation="Integer in the range [-2^31, 2^31 - 1]"
+                endian="Little"
+                encoding="32-bit two's complement signed integer. The most significant bit contains the sign."/>
+            <basicData
+                name="HLAinteger64LE"
+                size="64"
+                interpretation="Integer in the range [-2^63, 2^63 - 1]"
+                endian="Little"
+                encoding="64-bit two's complement signed integer. The most significant bit contains the sign."/>
+            <basicData
+                name="HLAfloat32LE"
+                size="32"
+                interpretation="Single-precision floating-point number"
+                endian="Little"
+                encoding="32-bit IEEE normalized single-precision format (see IEEE Std. 754-1985)"/>
+            <basicData
+                name="HLAfloat64LE"
+                size="64"
+                interpretation="Double-precision floating-point number"
+                endian="Little"
+                encoding="64-bit IEEE normalized double-precision format (see IEEE Std. 754-1985)."/>
+            <basicData
+                name="HLAoctetPairLE"
+                size="16"
+                interpretation="16-bit value"
+                endian="Little"
+                encoding="Assumed to be portable among hardware devices."/>
+            <basicData
+                name="HLAoctet"
+                size="8"
+                interpretation="8-bit value"
+                endian="Big"
+                encoding="Assumed to be portable among hardware devices."/>
+        </basicDataRepresentations>
+        <simpleDataTypes>
+            <simpleData name="HLAASCIIchar"
+                        representation="HLAoctet"
+                        units="NA"
+                        resolution="NA"
+                        accuracy="NA"
+                        semantics="Standard ASCII character (see ANSI Std. X3.4-1986)." />
+            <simpleData name="HLAunicodeChar"
+                        representation="HLAoctetPairBE"
+                        units="NA"
+                        resolution="NA"
+                        accuracy="NA"
+                        semantics="Unicode UTF-16 character" />
+        </simpleDataTypes>
+        <enumeratedDataTypes>
+            <enumeratedData name="HLAboolean"
+                            representation="HLAinteger32BE"
+                            semantics="Standard boolean type." >
+                <enumerator name="HLAfalse" values="0"/>
+                <enumerator name="HLAtrue"  values="1"/>
+            </enumeratedData>
+            <enumeratedData name="testEnumerator"
+                            representation="HLAinteger32BE"
+                            semantics="Standard boolean type." >
+                <enumerator name="ea" values="0"/>
+                <enumerator name="eb"  values="1"/>
+                <enumerator name="ec"  values="2"/>
+                <enumerator name="ed"  values="3"/>
+            </enumeratedData>
+        </enumeratedDataTypes>
+        <arrayDataTypes>
+            <arrayData name="HLAASCIIstring"
+                       dataType="HLAASCIIchar"
+                       cardinality="Dynamic"
+                       encoding="HLAvariableArray"
+                       semantics="ASCII string representation." />
+            <arrayData name="HLAunicodeString"
+                       dataType="HLAunicodeChar"
+                       cardinality="Dynamic"
+                       encoding="HLAvariableArray"
+                       semantics="Unicode string representation." />
+        </arrayDataTypes>
+        <fixedRecordDataTypes>
+            <fixedRecordData name="ExampleStruct" encoding="FixedRecord" semantics="NA" >
+                <field name="FieldOne" dataType="HLAinteger32BE" semantics="NA" />
+                <field name="FieldTwo" dataType="HLAboolean" semantics="NA" />
+                <field name="FieldThree" dataType="HLAfloat64BE" semantics="NA" />
+            </fixedRecordData>
+        </fixedRecordDataTypes>
+        <variantRecordDataTypes>
+            <variantRecordData>
+                <name>testVariantType</name>
+                <discriminant>ValIndex</discriminant>
+                <dataType>testEnumerator</dataType>
+                <alternative>
+                    <enumerator>ea</enumerator>
+                    <name>firstValue</name>
+                    <dataType>HLAinteger32BE</dataType>
+                    <semantics>Semantics for the ea value of this alternate</semantics>
+                </alternative>
+                <alternative>
+                    <enumerator>[eb .. ed]</enumerator>
+                    <name>otherValues</name>
+                    <dataType>HLAinteger32BE</dataType>
+                    <semantics>Semantics for the other values of this alternate</semantics>
+                </alternative>
+                <alternative>
+                    <enumerator>HLAother</enumerator>
+                    <name>Other</name>
+                    <dataType>HLAtoken</dataType>
+                    <semantics>All others</semantics>
+                </alternative>
+                <encoding>HLAvariantRecord</encoding>
+                <semantics>Datatype for testing the variant record</semantics>
+            </variantRecordData>
+        </variantRecordDataTypes>
+    </dataTypes>
+</objectModel>
