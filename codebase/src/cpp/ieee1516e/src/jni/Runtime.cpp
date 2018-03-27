@@ -300,8 +300,10 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
  * (Library Path)
  *   * System path
  *   * $RTI_HOME\bin
- *   * $JAVA_HOME\jre\lib\i386\client  (32-bit JRE)
- *   * $JAVA_HOME\jre\lib\amd64\server (64-bit JRE)
+ *   * $JAVA_HOME\jre\bin\client  (32-bit JRE)
+ *   * $JAVA_HOME\jre\bin\server (64-bit JRE)
+ *   * $JAVA_HOME\jre\lib\i386\client  (Pre-Java8 32-bit JRE)
+ *   * $JAVA_HOME\jre\lib\amd64\server (Pre Java8 64-bit JRE)
  * 
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
@@ -351,6 +353,12 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
 	            << rtihome << "\\bin\\"
+#ifdef VC14
+				<< "vc14"
+#endif
+#ifdef VC12
+				<< "vc12"
+#endif
 #ifdef VC11
 	            << "vc11"
 #endif
@@ -365,8 +373,10 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 #endif
 
 #ifdef _WIN32
+	            << jrelocation << "\\bin\\client;"
 	            << jrelocation << "\\lib\\i386\\client";
 #else
+	            << jrelocation << "\\bin\\server;";
 	            << jrelocation << "\\lib\\amd64\\server";
 #endif	
 
@@ -463,7 +473,11 @@ string Runtime::getMode() throw( RTIinternalError )
  */
 string Runtime::getCompiler() throw( RTIinternalError )
 {
-#ifdef VC11
+#ifdef VC14
+	return string("-Dportico.cpp.compiler=vc14");
+#elif defined VC12
+	return string("-Dportico.cpp.compiler=vc12");
+#elif defined VC11
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );

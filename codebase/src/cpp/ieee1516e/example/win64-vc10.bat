@@ -48,7 +48,7 @@ goto finish
 ############################################
 :execute
 SHIFT
-set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\bin\vc10;%PATH%
+set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\jre\lib\amd64\server;%RTI_HOME%\bin\vc10;%PATH%
 main %1 %2 %3 %4 %5 %6 %7 %8 %9
 goto finish
 
