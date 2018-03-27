@@ -169,9 +169,9 @@ void GetAttributeDatatype::testGetNAType()
 		if (basicType == nullptr)
 		{
 			failTest("Datatype returned null");
-			CPPUNIT_ASSERT_EQUAL(1, 1);
+			CPPUNIT_ASSERT_EQUAL(1, 0);
 		}
-		CPPUNIT_ASSERT_EQUAL(1, 0);
+		CPPUNIT_ASSERT_EQUAL(1, 1);
 	}
 	catch (Exception& e)
 	{
