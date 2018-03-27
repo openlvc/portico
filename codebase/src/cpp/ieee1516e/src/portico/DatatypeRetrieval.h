@@ -191,17 +191,6 @@ public:
 	IDatatype* getVariantRecordType( pugi::xml_node dataNode );
 
 	/**
-	* Create a NaType from information stored in the FOM
-	* @param dataNode The XML node that contains the information required
-	*				   to build the NaType.
-	* @return The pointer to the datatype requested.
-	* @see DatatypeClass
-	* @see IDatatype
-	* @see NaType
-	*/
-	IDatatype* getNaType( pugi::xml_node dataNode );
-
-	/**
 	* Get the XML FOM node that contains all the information on the 
 	* requested datatype.
 	* @note An RTIinternalError is thrown if the FOM contains multiple items 

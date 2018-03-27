@@ -42,8 +42,8 @@ bool DatatypeRetrieval::isInitialized()
 	return this->initialized;
 }
 
-IDatatype* DatatypeRetrieval::getParameterDatatype(string dataTypeName )
-{	 
+IDatatype* DatatypeRetrieval::getParameterDatatype(string dataTypeName)
+{
 	return getDatatype(dataTypeName);
 }
 
@@ -52,44 +52,47 @@ IDatatype* DatatypeRetrieval::getAttributeDatatype(string dataTypeName)
 	return getDatatype(dataTypeName);
 }
 
-IDatatype* DatatypeRetrieval::getDatatype(string dataTypeName )
-{ 
+IDatatype* DatatypeRetrieval::getDatatype(string dataTypeName)
+{
 	IDatatype* datatype = nullptr;
-	 
+
 	// If it hasn't been cached then create it and cache it.
 	if (this->typeCache.find(dataTypeName) == this->typeCache.end())
 	{
-		// create and cache it
-		pugi::xml_node typeNode = getDatatypeNode(dataTypeName);
-		string classTypeName = typeNode.name();
+		if (dataTypeName == "NA")
+		{
+			datatype = new NaType();
+		}
+		else
+		{
+			// create and cache it
+			pugi::xml_node typeNode = getDatatypeNode(dataTypeName);
+			string classTypeName = typeNode.name();
 
-		if (classTypeName == DatatypeRetrieval::BASIC)
-		{
-			datatype = getBasicType(typeNode);
-		}
-		else if (classTypeName == DatatypeRetrieval::SIMPLE)
-		{
-			datatype = getSimpleType(typeNode);
-		}
-		else if (classTypeName == DatatypeRetrieval::ENUMERATED)
-		{
-			datatype = getEnumeratedType(typeNode);
-		}
-		else if (classTypeName == DatatypeRetrieval::ARRAY)
-		{
-			datatype = getArrayType(typeNode);
-		}
-		else if (classTypeName == DatatypeRetrieval::FIXED)
-		{
-			datatype = getFixedRecordType(typeNode);
-		}
-		else if (classTypeName == DatatypeRetrieval::VARIANT)
-		{
-			datatype = getVariantRecordType(typeNode);
-		}
-		else if (classTypeName == DatatypeRetrieval::NA)
-		{
-			datatype = getNaType(typeNode);
+			if (classTypeName == DatatypeRetrieval::BASIC)
+			{
+				datatype = getBasicType(typeNode);
+			}
+			else if (classTypeName == DatatypeRetrieval::SIMPLE)
+			{
+				datatype = getSimpleType(typeNode);
+			}
+			else if (classTypeName == DatatypeRetrieval::ENUMERATED)
+			{
+				datatype = getEnumeratedType(typeNode);
+			}
+			else if (classTypeName == DatatypeRetrieval::ARRAY)
+			{
+				datatype = getArrayType(typeNode);
+			}
+			else if (classTypeName == DatatypeRetrieval::FIXED)
+			{
+				datatype = getFixedRecordType(typeNode);
+			}
+			else if (classTypeName == DatatypeRetrieval::VARIANT)
+			{
+				datatype = getVariantRecordType(typeNode);
+			}
 		}
 
 		// cache it
@@ -98,18 +101,18 @@ IDatatype* DatatypeRetrieval::getDatatype(string dataTypeName )
 	else
 	{
 		// Get from cache using handle as key. 
-		datatype = this->typeCache[dataTypeName];		
+		datatype = this->typeCache[dataTypeName];
 	}
-	                   
+
 	return datatype;
 }
 
- 
 
- 
+
+
 IDatatype* DatatypeRetrieval::getBasicType(pugi::xml_node dataNode)
 {
- 
+
 	// Get the parameters from the node
 	string typeName = dataNode.attribute("name").as_string();
 	int size = dataNode.attribute("size").as_int();
@@ -119,12 +122,12 @@ IDatatype* DatatypeRetrieval::getBasicType(pugi::xml_node dataNode)
 
 	// Create and cache the new BasicType
 	return new BasicType(typeName, size, end);
- 
+
 }
 
 IDatatype* DatatypeRetrieval::getSimpleType(pugi::xml_node dataNode)
 {
-	
+
 	// Get the parameters from the node
 	string typeName = dataNode.attribute("name").as_string();
 	string representation = dataNode.attribute("representation").as_string();
@@ -135,24 +138,24 @@ IDatatype* DatatypeRetrieval::getSimpleType(pugi::xml_node dataNode)
 }
 
 IDatatype* DatatypeRetrieval::getEnumeratedType(pugi::xml_node dataNode)
-{ 
+{
 	std::list<Enumerator*> enumerators;
- 
+
 	string name = dataNode.attribute("name").as_string();
 	string representation = dataNode.attribute("representation").as_string();
 
 	// get type from attribute chain
 	IDatatype* basicType = getAttributeDatatype(representation);
-	
+
 	for (pugi::xml_node enumerations = dataNode.first_child(); enumerations; enumerations = enumerations.next_sibling("enumerator"))
 	{
 		string enumerationName = enumerations.attribute("name").as_string();
 		string enumerationValue = enumerations.attribute("values").as_string();
-		
+
 		//add to enumerator list
 		enumerators.push_back(createEnumeratorAndCache(enumerationName, enumerationValue));
 	}
-	
+
 	// Create and cache the new BasicType
 	return new EnumeratedType(name, basicType, enumerators);
 }
@@ -172,7 +175,7 @@ Enumerator* DatatypeRetrieval::createEnumeratorAndCache(string name, string valu
 IDatatype* DatatypeRetrieval::getArrayType(pugi::xml_node dataNode)
 {
 	std::list<Dimension> dimensionList;
- 
+
 	string name = dataNode.attribute("name").as_string();
 	string representation = dataNode.attribute("dataType").as_string();
 
@@ -182,9 +185,9 @@ IDatatype* DatatypeRetrieval::getArrayType(pugi::xml_node dataNode)
 	for (pugi::xml_node dimensions = dataNode.first_child(); dimensions; dimensions = dimensions.next_sibling("cardinality"))
 	{
 		int lowerBounds = Dimension::CARDINALITY_DYNAMIC;
-		int upperBounds = Dimension::CARDINALITY_DYNAMIC; 
+		int upperBounds = Dimension::CARDINALITY_DYNAMIC;
 		string cardinality = dimensions.text().as_string();
-			
+
 		if (cardinality != "Dynamic")
 		{
 			// check to see if we have the  '..' delimiter specifying bounds	
@@ -202,20 +205,20 @@ IDatatype* DatatypeRetrieval::getArrayType(pugi::xml_node dataNode)
 			{
 				lowerBounds = dimensions.text().as_int();
 			}
-		}						
-		
+		}
+
 		dimensionList.push_back(Dimension(lowerBounds, upperBounds));
 	}
- 
+
 	// create the datatype
 	return new ArrayType(name, dataType, dimensionList);
 }
 
 IDatatype* DatatypeRetrieval::getFixedRecordType(pugi::xml_node dataNode)
-{	
+{
 	std::list<Field> fieldList;
 
-	string name = dataNode.attribute("name").as_string(); 
+	string name = dataNode.attribute("name").as_string();
 
 	// Get all the fields in this fixed record type
 	for (pugi::xml_node fields = dataNode.first_child(); fields; fields = fields.next_sibling("field"))
@@ -234,7 +237,7 @@ IDatatype* DatatypeRetrieval::getFixedRecordType(pugi::xml_node dataNode)
 
 IDatatype* DatatypeRetrieval::getVariantRecordType(pugi::xml_node dataNode)
 {
-	std::list<Alternative> alternativesList;	
+	std::list<Alternative> alternativesList;
 
 	string name = dataNode.attribute("name").as_string();
 	string discriminantName = dataNode.attribute("discriminant").as_string();
@@ -257,7 +260,7 @@ IDatatype* DatatypeRetrieval::getVariantRecordType(pugi::xml_node dataNode)
 
 			// If the enumerator is not cached create the parent enumerated type then grab it.
 			if (this->enumeratorCache.find(enumeratorName) == this->enumeratorCache.end())
-			{ 
+			{
 				// Init the parent enumerated type for this enumerator
 				if (!initEnumeratedTypeByEnumerator(enumeratorName))
 				{
@@ -267,7 +270,7 @@ IDatatype* DatatypeRetrieval::getVariantRecordType(pugi::xml_node dataNode)
 
 			// probably should check if it was created rather than just assume it all worked great... probably
 			enumeratorList.push_back(this->enumeratorCache[enumeratorName]);
-		}	
+		}
 
 		alternativesList.push_back(Alternative(alternativeName, alternativeDatatype, enumeratorList));
 	}
@@ -276,23 +279,18 @@ IDatatype* DatatypeRetrieval::getVariantRecordType(pugi::xml_node dataNode)
 	return new VariantRecordType(name, discriminantName, discriminantDatatype, alternativesList);
 }
 
-IDatatype* DatatypeRetrieval::getNaType(pugi::xml_node dataNode)
-{
-	return new NaType();
-}
-
 bool DatatypeRetrieval::initEnumeratedTypeByEnumerator(string name)
 {
 	string queryString = "//enumerator[@name ='" + name + "']";
 	pugi::xpath_node_set nodeSet = this->fomxml.select_nodes(queryString.c_str());
 
-	if (nodeSet.size() > 1 )
+	if (nodeSet.size() > 1)
 	{
 		//throw RTIinternalError(L"Enumerator name clash");
 		return false;
 	}
 	else if (nodeSet.size() == 0)
-	{		
+	{
 		return false;
 	}
 
@@ -301,22 +299,22 @@ bool DatatypeRetrieval::initEnumeratedTypeByEnumerator(string name)
 	pugi::xml_node enumeratorParent = enumeratorNode.parent();
 
 	// Create the parent Enumerated type (this will cache it for use later)
-	IDatatype* enumeratedType = getAttributeDatatype( enumeratorParent.attribute("name").as_string() );
+	IDatatype* enumeratedType = getAttributeDatatype(enumeratorParent.attribute("name").as_string());
 
 	return true;
 }
 
 pugi::xml_node DatatypeRetrieval::getDatatypeNode(string name)
-{	 
+{
 	string queryString = "//*[@name ='" + name + "']";
 	pugi::xpath_node_set nodeSet = this->fomxml.select_nodes(queryString.c_str());
-	
+
 	if (nodeSet.size() > 1)
 	{
 		throw RTIinternalError(L"Name clash, more than type exists with the same name. ");
 	}
-	 
-	return nodeSet[0].node(); 
+
+	return nodeSet[0].node();
 }
 
 PORTICO1516E_NS_END
