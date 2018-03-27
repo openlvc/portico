@@ -22,8 +22,12 @@ import java.util.HashSet;
 import java.util.HashMap;
 
 import org.portico.impl.HLAVersion;
+import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.model.datatype.DatatypeHelpers;
 import org.portico.lrc.model.datatype.IDatatype;
+import org.portico.lrc.model.datatype.linker.DatatypePlaceholder;
+import org.portico.lrc.model.datatype.linker.Linker;
+import org.portico.lrc.model.datatype.linker.LinkerException;
 
 /**
  * This class represents a HLA FOM. It contains a set of object and interaction classes (routing
@@ -124,6 +128,10 @@ public class ObjectModel implements Serializable
 	 */
 	public void addDatatype( IDatatype datatype )
 	{
+		// Placeholder types are not allowed to be inserted directly into the ObjectModel
+		if( datatype instanceof DatatypePlaceholder )
+			throw new IllegalArgumentException( "datatype is a placeholder" );
+		
 		String name = datatype.getName().toLowerCase();
 		
 		// make sure we're not locked and that the datatype doesn't already exist
@@ -862,6 +870,70 @@ public class ObjectModel implements Serializable
 		// lock the model again //
 		if( wasLocked )
 			model.lock();
+	}
+	
+	/**
+	 * Resolves dependencies between datatypes, attributes and parameters on a fully merged 
+	 * {@link ObjectModel}.
+	 * <p/>
+	 * At parse time, there is no guarantee that attribute and parameter datatypes exist in the 
+	 * {@link ObjectModel} as the dependent datatype may have been declared later in the FOM, or in 
+	 * another FOM module altogether.
+	 * <p/>
+	 * As such a {@link DatatypePlaceholder} is inserted instead to indicate that the datatype needs
+	 * to be resolve once all FOM modules have been imported.
+	 * <p/>
+	 * This method iterates over the {@link ObjectModel} and resolves all 
+	 * {@link DatatypePlaceholder} instances to their concrete representation.
+	 * <p/>
+	 * <b>Note:</b> This method should only be called once all FOM modules have been merged and
+	 * the Standard MIM has been inserted.
+	 * 
+	 * @param model the ObjectModel whose datatype dependencies require resolving
+	 * @throws JInconsistentFDD if a concrete datatype representation can not be resolved for a
+	 *                          placeholder symbol.
+	 */
+	public static void resolveSymbols( ObjectModel model ) throws JInconsistentFDD
+	{
+		boolean wasLocked = model.locked;
+		if( wasLocked )
+			model.unlock();
+		
+		try
+		{
+			Linker linker = new Linker();
+			Set<IDatatype> datatypes = model.getDatatypes();
+			linker.addCandidates( datatypes );
+			
+			// Link datatypes
+			for( IDatatype type : datatypes )
+				linker.linkType( type );
+			
+			// Link attribute datatypes
+			for( OCMetadata objectClass : model.getAllObjectClasses() )
+			{
+				for( ACMetadata attributeClass : objectClass.getDeclaredAttributes() )
+					linker.linkAttribute( attributeClass );
+			}
+			
+			// Link parameter datatypes
+			for( ICMetadata interactionClass : model.getAllInteractionClasses() )
+			{
+				for( PCMetadata parameterClass : interactionClass.getDeclaredParameters() )
+					linker.linkParameter( parameterClass );
+			}
+		}
+		catch( LinkerException le )
+		{
+			throw new JInconsistentFDD( le );
+		}
+		finally
+		{
+			// lock the model again //
+			if( wasLocked )
+				model.lock();
+		}
+		
 	}
 	
 }
