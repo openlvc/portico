@@ -376,7 +376,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	            << jrelocation << "\\bin\\client;"
 	            << jrelocation << "\\lib\\i386\\client";
 #else
-	            << jrelocation << "\\bin\\server;";
+	            << jrelocation << "\\bin\\server;"
 	            << jrelocation << "\\lib\\amd64\\server";
 #endif	
 
