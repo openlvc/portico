@@ -77,9 +77,6 @@ public class CreateFederationHandler extends LRCMessageHandler
 		// look up MOM handles without using names (thus support cross spec-version naming schemes).
 		ObjectModel.mommify( combinedFOM );
 
-		// Now that all datatypes have been finalized, we can link the placeholder symbols
-		ObjectModel.resolveSymbols( combinedFOM );
-		
 		// we have our grand unified FOM!
 		request.setModel( combinedFOM );
 		
@@ -113,7 +110,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 	//		foms.add( 0, FomParser.parse(mim) );
 	//	}
 	//}
-	
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

@@ -23,7 +23,6 @@ import static org.testng.Assert.*;
 
 import org.portico.impl.hla1516e.fomparser.FOM;
 import org.portico.lrc.compat.JErrorReadingFED;
-import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.ModelMerger;
@@ -43,6 +42,7 @@ import org.portico.lrc.model.datatype.IDatatype;
 import org.portico.lrc.model.datatype.IEnumerator;
 import org.portico.lrc.model.datatype.SimpleType;
 import org.portico.lrc.model.datatype.VariantRecordType;
+import org.portico.utils.fom.FomParser;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -105,42 +105,6 @@ public class Hla1516eFomParserTest
 		this.invalidIntBadOrder     = ClassLoader.getSystemResource( "fom/ieee1516e/testfom-undefinedInteractionOrder.xml" );
 	}
 	
-	/**
-	 * Mimics the 1516e object model parsing process.
-	 * <ol>
-	 *  <li>All fed files are parsed individually into ObjectModel instances</li>
-	 *  <li>All ObjectModel instances are merged to create a combined model</li>
-	 *  <li>The standard MIM is inserted into the combined model</li>
-	 *  <li>All datatype placeholder symbols are resolved to their concrete representation</li>
-	 * </ol>
-	 * 
-	 * @param urls the urls of the fed files to parse
-	 * @return the combined object model
-	 * @throws Exception if there was an error parsing the fed files, or compiling the combined
-	 *                   ObjectModel
-	 */
-	private ObjectModel parse( URL... urls ) throws Exception
-	{
-		// Parse all individual FOMs
-		List<ObjectModel> foms = new ArrayList<ObjectModel>( urls.length );
-		for( URL url : urls )
-		{
-			ObjectModel fom = FOM.parseFOM( url );
-			foms.add( fom );
-		}
-		
-		// Merge all foms together
-		ObjectModel combined = ModelMerger.merge( foms );
-		
-		// Insert standard MIM
-		ObjectModel.mommify( combined );
-		
-		// Resolve all placeholders
-		ObjectModel.resolveSymbols( combined );
-		
-		return combined;
-	}
-	
 	////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////// Valid FOM Test Methods //////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +116,7 @@ public class Hla1516eFomParserTest
 	{
 		try
 		{
-			parse( this.validFom );
+			FOM.parseFOM( this.validFom );
 		}
 		catch( Exception e )
 		{
@@ -168,7 +132,11 @@ public class Hla1516eFomParserTest
 	{
 		try
 		{
-			parse( this.validFomModule, this.validFomModuleNoInteractions );
+			List<ObjectModel> foms = new ArrayList<ObjectModel>();
+			foms.add( FomParser.parse(this.validFomModule) );
+			foms.add( FomParser.parse(this.validFomModuleNoInteractions) );
+			
+			ObjectModel combinedFOM = ModelMerger.merge( foms );
 		}
 		catch( Exception e )
 		{
@@ -177,7 +145,10 @@ public class Hla1516eFomParserTest
 		
 		try
 		{
-			parse( this.validFomModuleNoInteractions, this.validFomModule );
+			List<ObjectModel> foms = new ArrayList<ObjectModel>();
+			foms.add( FomParser.parse(this.validFomModuleNoInteractions) );
+			foms.add( FomParser.parse(this.validFomModule) );
+			ObjectModel combinedFOM = ModelMerger.merge( foms );
 		}
 		catch( Exception e )
 		{
@@ -193,7 +164,10 @@ public class Hla1516eFomParserTest
 	{
 		try
 		{
-			parse( this.validFomModuleNoObjects, this.validFomModule );
+			List<ObjectModel> foms = new ArrayList<ObjectModel>();
+			foms.add( FomParser.parse(this.validFomModuleNoObjects) );
+			foms.add( FomParser.parse(this.validFomModule) );
+			ObjectModel combinedFOM = ModelMerger.merge( foms );
 		}
 		catch( Exception e )
 		{
@@ -207,7 +181,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/datatypes.xml");
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			IDatatype type = model.getDatatype( "UnsignedShort" );
 			Assert.assertNotNull( type );
@@ -238,7 +212,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/datatypes.xml");
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			//
 			// Type with standard basicData representation
@@ -293,7 +267,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/datatypes.xml");
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			IDatatype datatype = model.getDatatype( "WaiterTasks" );
 			Assert.assertNotNull( datatype );
@@ -350,7 +324,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/datatypes.xml");
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			//
 			// Array with single dimension, fixed cardinality
@@ -510,7 +484,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/datatypes.xml");
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			//
 			// Fixed Record with several fields
@@ -549,7 +523,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/datatypes.xml");
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			//
 			// Variant Record with several alternatives
@@ -625,7 +599,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource( "fom/ieee1516e/datatypes/datatypes.xml" );
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			int objectHandle = model.getObjectClassHandle( "ObjectOne" );
 			
@@ -657,7 +631,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource( "fom/ieee1516e/datatypes/datatypes.xml" );
-			ObjectModel model = parse( url );
+			ObjectModel model = FOM.parseFOM( url );
 			
 			ICMetadata interaction = model.getInteractionClass( "InteractionOne" );
 			
@@ -692,7 +666,7 @@ public class Hla1516eFomParserTest
 //		// testfom-nospaces.fed
 //		try
 //		{
-//			parse( this.validWithoutSpaces );
+//			FOM.parseFOM( this.validWithoutSpaces );
 //		}
 //		catch( Exception e )
 //		{
@@ -712,7 +686,7 @@ public class Hla1516eFomParserTest
 //		// testfom-unbalanced.fed
 //		try
 //		{
-//			parse( this.invalidUnbalanced );
+//			FOM.parseFOM( this.invalidUnbalanced );
 //			Assert.fail( "Was expecting exception parsing invalid fom (unbalanced parenthesis)" );
 //		}
 //		catch( JErrorReadingFED error )
@@ -733,7 +707,7 @@ public class Hla1516eFomParserTest
 //		// testfom-badcomment.fed
 //		try
 //		{
-//			parse( this.invalidBadComment );
+//			FOM.parseFOM( this.invalidBadComment );
 //			Assert.fail( "Was expecting exception parsing invalid fom (bad comment)" );
 //		}
 //		catch( JErrorReadingFED error )
@@ -754,7 +728,7 @@ public class Hla1516eFomParserTest
 //		// testfom-randomtext.fed
 //		try
 //		{
-//			parse( this.invalidRandomText );
+//			FOM.parseFOM( this.invalidRandomText );
 //			Assert.fail( "Was expecting exception parsing invalid fom (random text)" );
 //		}
 //		catch( JErrorReadingFED error )
@@ -775,7 +749,7 @@ public class Hla1516eFomParserTest
 //		// testfom-undefinedAttributeSpace.fed
 //		try
 //		{
-//			parse( this.invalidAttBadSpace );
+//			FOM.parseFOM( this.invalidAttBadSpace );
 //			Assert.fail( "Was expecting exception parsing invalid fom (undefined space - att)" );
 //		}
 //		catch( JErrorReadingFED error )
@@ -796,7 +770,7 @@ public class Hla1516eFomParserTest
 		// testfom-undefinedAttributeTransport.fed
 		try
 		{
-			parse( this.invalidAttBadTransport );
+			FOM.parseFOM( this.invalidAttBadTransport );
 
 			// NOTE Made the 1516e parser more tolerant to FOM errors by allowing
 			//      it to accept missing order children and apply defaults. As such,
@@ -821,7 +795,7 @@ public class Hla1516eFomParserTest
 		// testfom-undefinedAttributeOrder.fed
 		try
 		{
-			parse( this.invalidAttBadOrder );
+			FOM.parseFOM( this.invalidAttBadOrder );
 
 			// NOTE Made the 1516e parser more tolerant to FOM errors by allowing
 			//      it to accept missing order children and apply defaults. As such,
@@ -845,7 +819,7 @@ public class Hla1516eFomParserTest
 //		// testfom-undefinedInteractionSpace.fed
 //		try
 //		{
-//			parse( this.invalidIntBadSpace );
+//			FOM.parseFOM( this.invalidIntBadSpace );
 //			Assert.fail( "Was expecting exception parsing invalid fom (undefined space - int)" );
 //		}
 //		catch( JErrorReadingFED error )
@@ -866,7 +840,7 @@ public class Hla1516eFomParserTest
 		// testfom-undefinedInteractionTransport.fed
 		try
 		{
-			parse( this.invalidIntBadTransport );
+			FOM.parseFOM( this.invalidIntBadTransport );
 
 			// NOTE Made the 1516e parser more tolerant to FOM errors by allowing
 			//      it to accept missing order children and apply defaults. As such,
@@ -891,7 +865,7 @@ public class Hla1516eFomParserTest
 		// testfom-undefinedInteractionOrder.fed
 		try
 		{
-			parse( this.invalidIntBadOrder );
+			FOM.parseFOM( this.invalidIntBadOrder );
 			
 			// NOTE Made the 1516e parser more tolerant to FOM errors by allowing
 			//      it to accept missing order children and apply defaults. As such,
@@ -915,7 +889,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/basicNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (basicData missing name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -934,7 +908,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/basicNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (basicData empty name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -953,7 +927,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/basicSizeMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (basicData missing size)" );
 		}
 		catch( JErrorReadingFED error )
@@ -972,7 +946,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/basicSizeEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (basicData empty size)" );
 		}
 		catch( JErrorReadingFED error )
@@ -991,7 +965,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/basicSizeNonNumeric.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (basicData non-numeric size)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1010,7 +984,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/basicSizeNegative.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (basicData negative size)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1029,7 +1003,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/simpleNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData missing name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1048,7 +1022,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/simpleNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData empty name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1067,7 +1041,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/simpleRepresentationMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData missing representation)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1086,7 +1060,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/simpleRepresentationEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData empty representation)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1105,10 +1079,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/simpleRepresentationDoesntExist.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData representation doesn't exist)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1124,10 +1098,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/simpleRepresentationNotABasicType.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData representation not basicData)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1143,7 +1117,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData missing name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1162,7 +1136,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData empty name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1181,7 +1155,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayDatatypeMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData missing datatype)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1200,7 +1174,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayDatatypeEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData empty datatype)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1219,11 +1193,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayDatatypeDoesntExist.xml");
-			ObjectModel model = parse( url );
-			
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData datatype doesn't exist)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1239,7 +1212,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayCardinalityMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData missing cardinality)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1258,7 +1231,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayCardinalityEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData empty cardinality)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1277,7 +1250,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayCardinalityNonNumeric.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData non-numeric cardinality)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1296,7 +1269,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/arrayCardinalityNegative.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (arrayData negative cardinality)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1315,7 +1288,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData missing name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1334,7 +1307,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData empty name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1353,7 +1326,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedRepresentationMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData missing representation)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1372,7 +1345,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedRepresentationEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData empty representation)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1391,10 +1364,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedRepresentationDoesntExist.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData representation doesn't exist)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1410,10 +1383,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedRepresentationNotABasicType.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData representation not basicData)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1429,7 +1402,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedNoEnumerators.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData missing enumerators)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1448,7 +1421,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedEnumeratorNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData missing enumerator name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1467,7 +1440,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedEnumeratorNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (enumeratedData empty enumerator name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1486,7 +1459,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedEnumeratorValueMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData missing enumerator value)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1505,7 +1478,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedEnumeratorValueEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData empty enumerator value)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1524,7 +1497,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/enumeratedEnumeratorValueNonNumeric.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (simpleData non-numeric enumerator value)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1543,7 +1516,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord missing name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1562,7 +1535,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord empty name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1581,7 +1554,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordFieldNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord missing field name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1600,7 +1573,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordFieldNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord empty field name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1619,7 +1592,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordFieldDatatypeMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord missing datatype name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1638,7 +1611,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordFieldDatatypeEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord empty datatype name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1657,10 +1630,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/fixedRecordFieldDatatypeDoesntExist.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (fixedRecord empty datatype doesn't exist)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1676,7 +1649,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeEnumeratorMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord missing alternative enumerator)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1695,7 +1668,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeEnumeratorEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord empty alternative enumerator)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1714,10 +1687,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeEnumeratorDoesntExist.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord non-existant alternative enumerator)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}
@@ -1733,7 +1706,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeNameMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord missing alternative name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1752,7 +1725,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeNameEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord empty alternative name)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1771,7 +1744,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeDatatypeMissing.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord missing alternative datatype)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1790,7 +1763,7 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeDatatypeEmpty.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord empty alternative datatype)" );
 		}
 		catch( JErrorReadingFED error )
@@ -1809,10 +1782,10 @@ public class Hla1516eFomParserTest
 		try
 		{
 			URL url = ClassLoader.getSystemResource("fom/ieee1516e/datatypes/variantRecordAlternativeDatatypeDoesntExist.xml");
-			parse( url );
+			FOM.parseFOM( url );
 			Assert.fail( "Was expecting exception parsing invalid fom (variantRecord non-existant alternative datatype)" );
 		}
-		catch( JInconsistentFDD error )
+		catch( JErrorReadingFED error )
 		{
 			// Pass: expected this exception
 		}

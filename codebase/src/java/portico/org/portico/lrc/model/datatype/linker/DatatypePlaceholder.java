@@ -14,8 +14,6 @@
  */
 package org.portico.lrc.model.datatype.linker;
 
-import java.io.Serializable;
-
 import org.portico.lrc.model.datatype.DatatypeClass;
 import org.portico.lrc.model.datatype.IDatatype;
 
@@ -31,13 +29,12 @@ import org.portico.lrc.model.datatype.IDatatype;
  * 
  * @see Linker
  */
-public class DatatypePlaceholder implements IDatatype, Serializable
+public class DatatypePlaceholder implements IDatatype
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final long serialVersionUID = 3112252018924L;
-	
+
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------

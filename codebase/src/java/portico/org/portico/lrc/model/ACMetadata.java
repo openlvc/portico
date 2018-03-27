@@ -81,11 +81,6 @@ public class ACMetadata implements Serializable
 		return this.datatype;
 	}
 	
-	public void setDatatype( IDatatype datatype )
-	{
-		this.datatype = datatype;
-	}
-	
 	public int getHandle()
 	{
 		return this.handle;
