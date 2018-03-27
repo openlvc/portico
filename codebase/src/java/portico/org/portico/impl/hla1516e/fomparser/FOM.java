@@ -32,7 +32,8 @@ import org.portico.lrc.model.Order;
 import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.model.Transport;
 import org.portico.lrc.model.datatype.IDatatype;
-import org.portico.lrc.model.datatype.linker.DatatypePlaceholder;
+import org.portico.lrc.model.datatype.linker.Linker;
+import org.portico.lrc.model.datatype.linker.LinkerException;
 import org.portico.utils.fom.FedHelpers;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,12 +68,6 @@ public class FOM
 	 * The main FOM parser processing method. This takes the root element of a FOM document and
 	 * parses it into an {@link ObjectModel} that is returned. If the parser is malformatted in
 	 * any way, a {@link JConfigurationException} is thrown.
-	 * <p/>
-	 * <b>Note:</b> Datatypes, Attributes and Parameters in the returned FOM will contain 
-	 * placeholder symbols as the datatypes that they refer to may be declared in another FOM 
-	 * module. Once all modules have been merged into a combined FOM, call 
-	 * {@link ObjectModel#resolveSymbols(ObjectModel)} to resolve all placeholder datatypes to their
-	 * concrete representation
 	 */
 	public ObjectModel process( Element element ) throws JErrorReadingFED
 	{
@@ -153,15 +148,25 @@ public class FOM
 			throw new JErrorReadingFED( jce );
 		}
 		
-		// Add types
+		// Link and add types
+		Linker linker = new Linker();
+		linker.addCandidates( fom.getDatatypes() );
+		linker.addCandidates( fedTypes );
+		
 		for( IDatatype fedType : fedTypes )
 		{
-			// We used to link datatypes here on the assumption that FOM modules were 
-			// self-contained. However it appears that is not the reality, and that modules can
-			// reference datatypes that are only declared in other modules.
-			//
-			// As such we datatypes regardless of whether they contain placeholder symbols, and
-			// resolve them once all modules have been merged
+			try
+			{
+				linker.linkType( fedType );
+			}
+			catch( LinkerException le )
+			{
+				throw new JErrorReadingFED( "Could not resolve dependency of " + 
+				                            fedType.getDatatypeClass() + " " + 
+				                            fedType.getName(),
+				                            le );
+			}
+			
 			fom.addDatatype( fedType );
 		}
 	}
@@ -246,11 +251,15 @@ public class FOM
 		for( Element attributeElement : attributes )
 		{
 			String attributeName = FedHelpers.getChildValue( attributeElement, "name" );
-			
-			// All attribute datatypes are initially created as placeholders, and resolved once
-			// all FOM modules have been merged and the standard MIM has been inserted
 			String datatypeName = FedHelpers.getChildValue( attributeElement, "dataType" );
-			IDatatype datatype = new DatatypePlaceholder( datatypeName );
+			IDatatype datatype = theModel.getDatatype( datatypeName );
+			if( datatype == null )
+			{
+				String message = String.format( "attribute %s references unknown datatype %s",
+				                                attributeName,
+				                                datatypeName );
+				throw new JConfigurationException( message );
+			}
 			
 			ACMetadata attribute = fom.newAttribute( attributeName, datatype );
 
@@ -383,11 +392,15 @@ public class FOM
 		for( Element parameterElement : parameters )
 		{
 			String parameterName = FedHelpers.getChildValue( parameterElement, "name" );
-			
-			// All parameter datatypes are initially created as placeholders, and resolved once
-			// all FOM modules have been merged and the standard MIM has been inserted
 			String datatypeName = FedHelpers.getChildValue( parameterElement, "dataType" );
-			IDatatype datatype = new DatatypePlaceholder( datatypeName );
+			IDatatype datatype = theModel.getDatatype( datatypeName );
+			if( datatype == null )
+			{
+				String message = String.format( "parameter %s references unknown datatype %s",
+				                                parameterName,
+				                                datatypeName );
+				throw new JConfigurationException( message );
+			}
 			
 			PCMetadata parameter = fom.newParameter( parameterName, datatype );
 			clazz.addParameter( parameter );

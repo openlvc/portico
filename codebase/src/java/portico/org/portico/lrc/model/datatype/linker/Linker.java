@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico.lrc.model.ACMetadata;
-import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.model.datatype.Alternative;
 import org.portico.lrc.model.datatype.ArrayType;
 import org.portico.lrc.model.datatype.BasicType;
@@ -181,7 +179,7 @@ public class Linker
 	 * then no action is performed on the type.
 	 * 
 	 * @param type The type to link
-	 * @throws LinkerException if the <code>type</code> contains {@link DatatypePlaceholder} references
+	 * @throws LinkerException if the <code>code</code> contains {@link DatatypePlaceholder} references
 	 *                         that can not be resolved
 	 */
 	public void linkType( IDatatype type ) throws LinkerException
@@ -288,44 +286,6 @@ public class Linker
 			{
 				// No action required
 				break;
-			}
-		}
-	}
-	
-	public void linkAttribute( ACMetadata attribute ) throws LinkerException
-	{
-		IDatatype datatype = attribute.getDatatype(); 
-		if( datatype instanceof DatatypePlaceholder )
-		{
-			try
-			{
-				IDatatype resolved = resolve( datatype );
-				attribute.setDatatype( resolved );
-			}
-			catch( LinkerException le )
-			{
-				// Rethrow the exception, but prefix the message with the attribute name
-				throw new LinkerException( "Attribute " + attribute.getName() + " " + le.getMessage(), 
-				                           le );
-			}
-		}
-	}
-	
-	public void linkParameter( PCMetadata parameter ) throws LinkerException
-	{
-		IDatatype datatype = parameter.getDatatype();
-		if( datatype instanceof DatatypePlaceholder )
-		{
-			try
-			{
-				IDatatype resolved = resolve( datatype );
-				parameter.setDatatype( resolved );
-			}
-			catch( LinkerException le )
-			{
-				// Rethrow the exception, but prefix the message with the parameter name
-				throw new LinkerException( "Parameter " + parameter.getName() + " " + le.getMessage(), 
-				                           le );
 			}
 		}
 	}

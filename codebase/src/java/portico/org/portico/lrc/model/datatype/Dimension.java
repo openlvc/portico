@@ -144,13 +144,8 @@ public class Dimension implements Serializable
 				// Dynamic cardinality token
 				dimensions.add( Dimension.DYNAMIC );
 			}
-			else if( (tokenTrimmed.startsWith( "(" ) && tokenTrimmed.endsWith(")")) ||
-			         (tokenTrimmed.startsWith( "[" ) && tokenTrimmed.endsWith("]")) )
+			else if( tokenTrimmed.startsWith( "(" ) && tokenTrimmed.endsWith(")") )
 			{
-				// Note for above: From my understanding the standard only says that parentheses
-				// can be used for a cardinality range. The RPRv2 FOM uses square brackets however
-				// so I've added that as an exception
-				
 				// Cardinality range
 				String rangeString = tokenTrimmed.substring( 1, tokenTrimmed.length() - 1 );
 				String[] rangeTokens = rangeString.split( "\\.\\." );

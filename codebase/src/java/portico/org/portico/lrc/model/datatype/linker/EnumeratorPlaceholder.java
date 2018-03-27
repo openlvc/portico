@@ -14,8 +14,6 @@
  */
 package org.portico.lrc.model.datatype.linker;
 
-import java.io.Serializable;
-
 import org.portico.lrc.model.datatype.Alternative;
 import org.portico.lrc.model.datatype.EnumeratedType;
 import org.portico.lrc.model.datatype.IEnumerator;
@@ -26,12 +24,11 @@ import org.portico.lrc.model.datatype.IEnumerator;
  * such we are unable to tell if the Alternative's enumerator field contains a valid enumerator 
  * value. 
  */
-public class EnumeratorPlaceholder implements IEnumerator, Serializable
+public class EnumeratorPlaceholder implements IEnumerator
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final long serialVersionUID = 3112252018924L;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
