@@ -302,6 +302,8 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
  *   * $RTI_HOME\bin
  *   * $JAVA_HOME\jre\bin\client  (32-bit JRE)
  *   * $JAVA_HOME\jre\bin\server (64-bit JRE)
+ *   * $JAVA_HOME\jre\lib\i386\client  (Pre-Java8 32-bit JRE)
+ *   * $JAVA_HOME\jre\lib\amd64\server (Pre Java8 64-bit JRE)
  * 
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
@@ -371,9 +373,11 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 #endif
 
 #ifdef _WIN32
-	            << jrelocation << "\\bin\\client";
+	            << jrelocation << "\\bin\\client;"
+	            << jrelocation << "\\lib\\i386\\client";
 #else
-	            << jrelocation << "\\bin\\server";
+	            << jrelocation << "\\bin\\server;";
+	            << jrelocation << "\\lib\\amd64\\server";
 #endif	
 
 	paths.second = libraryPath.str();
