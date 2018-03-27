@@ -25,7 +25,7 @@ GetAttributeDatatype::~GetAttributeDatatype()
 void GetAttributeDatatype::setUp()
 { 
 	this->defaultFederate->quickConnect();
-	this->defaultFederate->quickCreate(L"HLA_datatype_tests", L"complete/etc/datatypeTestFom.xml");
+	this->defaultFederate->quickCreate(L"HLA_datatype_tests", L"complete/etc/attributeDatatypeTestFom.xml");
 	this->defaultFederate->quickJoin(L"HLA_datatype_tests");
 
 	// Get class handles
@@ -42,7 +42,7 @@ void GetAttributeDatatype::setUp()
 	// Fixed 
 	this->testFixedAttributeHandle = this->defaultFederate->rtiamb->getAttributeHandle(this->testCClassHandle, L"cc");	
 	// NA 
-	this->testNAAttributeHandle = this->defaultFederate->rtiamb->getAttributeHandle(this->testCClassHandle, L"ca");
+	this->testNAAttributeHandle = this->defaultFederate->rtiamb->getAttributeHandle(this->testCClassHandle, L"cd");
 
 
 
@@ -169,14 +169,14 @@ void GetAttributeDatatype::testGetNAType()
 		if (basicType == nullptr)
 		{
 			failTest("Datatype returned null");
-			CPPUNIT_ASSERT_EQUAL(0, 0);
+			CPPUNIT_ASSERT_EQUAL(1, 1);
 		}
-		CPPUNIT_ASSERT_EQUAL(0, 1);
+		CPPUNIT_ASSERT_EQUAL(1, 0);
 	}
 	catch (Exception& e)
 	{
 		failTest("Unexpected exception publishing object class: %s", e.what());
-		CPPUNIT_ASSERT_EQUAL(0, 1);
+		CPPUNIT_ASSERT_EQUAL(1, 0);
 	} 
 }
 
