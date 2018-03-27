@@ -40,7 +40,7 @@ goto finish
 ############################################
 :compile
 echo Compiling example federate
-cl /I"%RTI_HOME%\include\ieee1516e" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc10\librti1516e.lib" "%RTI_HOME%\lib\vc10\libfedtime1516e.lib"
+cl /I"%RTI_HOME%\include\ieee1516e" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc14\librti1516e64.lib" "%RTI_HOME%\lib\vc14\libfedtime1516e64.lib"
 goto finish
 
 ############################################
@@ -48,12 +48,12 @@ goto finish
 ############################################
 :execute
 SHIFT
-set PATH=%RTI_HOME%\jre\bin\client;%RTI_HOME%\jre\lib\i386\client;%RTI_HOME%\bin\vc10;%PATH%
+set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\jre\lib\amd64\server;%RTI_HOME%\bin\vc14;%PATH%
 main %1 %2 %3 %4 %5 %6 %7 %8 %9
 goto finish
 
 
 :usage
-echo usage: win32-vc10.bat [compile] [clean] [execute [federate-name]]
+echo usage: win64-vc14.bat [compile] [clean] [execute [federate-name]]
 
 :finish
