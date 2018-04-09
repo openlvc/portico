@@ -77,7 +77,9 @@ public class Mom
 		ObjectInstancesRegistered(32),
 		ObjectInstancesDiscovered(33),
 		TimeGrantedTime(34),
-		TimeAdvancingTime(35);
+		TimeAdvancingTime(35),
+		ConveyRegionDesignatorSets(36),     // Belongs to Federate in 1516e
+		ConveyProducingFederate(37); // not in 1.3
 		
 		public final int handle;
 		private Federate( int handle )
@@ -104,20 +106,20 @@ public class Mom
 	/** Same solution as for Federate above, see that comment for my thoughts */
 	public enum Federation
 	{
-		FederationName(36),
-		FederatesInFederation(37),
-		RtiVersion(38),
-		MimDesignator(39),              // 1516e
-		FomModuleDesignatorList(40),    // 1516e
-		CurrentFdd(41),                 // 1516e
-		FedID(42),
-		TimeImplementationName(43),     // 1516e
-		LastSaveName(44),
-		LastSaveTime(45),
-		NextSaveName(46),
-		NextSaveTime(47),
-		AutoProvide(48),                // not in 1.3
-		ConveyRegionDesignatorSets(49); // not in 1.3
+		FederationName(38),
+		FederatesInFederation(39),
+		RtiVersion(40),
+		MimDesignator(41),              // 1516e
+		FomModuleDesignatorList(42),    // 1516e
+		CurrentFdd(43),                 // 1516e
+		FedID(44),
+		TimeImplementationName(45),     // 1516e
+		LastSaveName(46),
+		LastSaveTime(47),
+		NextSaveName(48),
+		NextSaveTime(49),
+		AutoProvide(50),                // not in 1.3
+		ConveyRegionDesignatorSets(51); // Belongs to Federation in 1516
 		
 		public final int handle;
 		private Federation( int handle )
@@ -241,6 +243,7 @@ public class Mom
 		federation1516Attributes.put( "HLAautoProvide", Federation.AutoProvide );
 		federation1516Attributes.put( "HLAconveyRegionDesignatorSets", Federation.ConveyRegionDesignatorSets );
 		
+		
 		// HLA 1516-Evolved //
 		federate1516eAttributes.put( "HLAfederateHandle", Federate.FederateHandle );
 		federate1516eAttributes.put( "HLAfederateName", Federate.FederateName );
@@ -272,6 +275,8 @@ public class Mom
 		federate1516eAttributes.put( "HLAobjectInstancesDiscovered", Federate.ObjectInstancesDiscovered );
 		federate1516eAttributes.put( "HLAtimeGrantedTime", Federate.TimeGrantedTime );
 		federate1516eAttributes.put( "HLAtimeAdvancingTime", Federate.TimeAdvancingTime );
+		federate1516eAttributes.put( "HLAconveyRegionDesignatorSets", Federate.ConveyRegionDesignatorSets );
+		federate1516eAttributes.put( "HLAconveyProducingFederate", Federate.ConveyProducingFederate );
 
 		federation1516eAttributes.put( "HLAfederationName", Federation.FederationName );
 		federation1516eAttributes.put( "HLAfederatesInFederation", Federation.FederatesInFederation );
@@ -654,10 +659,11 @@ public class Mom
 		                                    Federation.AutoProvide.handle );
 		federation.addAttribute( autoProv );
 		
+		// 1516 Federation level ConveyRegionDesignatorSets (Belongs to Federate in 1516e)
 		ACMetadata crds = newAttribute( "HLAconveyRegionDesignatorSets",
 		                                hlaSwitch,
 		                                Federation.ConveyRegionDesignatorSets.handle );
-		federation.addAttribute( crds );
+		federate.addAttribute( crds );
 		
 		//////////////////////////////////////
 		// patch the manager into the model //
@@ -731,8 +737,8 @@ public class Mom
 		federate.addAttribute( newAttribute("HLAobjectInstancesDiscovered",hlaCount,Federate.ObjectInstancesDiscovered.handle) );
 		federate.addAttribute( newAttribute("HLAtimeGrantedTime",hlaMsec,Federate.TimeGrantedTime.handle) );
 		federate.addAttribute( newAttribute("HLAtimeAdvancingTime",hlaMsec,Federate.TimeAdvancingTime.handle) );
-		federate.addAttribute( newAttribute("HLAconveyRegionDesignatorSets",hlaSwitch,498) );
-		federate.addAttribute( newAttribute("HLAconveyProducingFederate",hlaSwitch,499) );
+		federate.addAttribute( newAttribute("HLAconveyRegionDesignatorSets",hlaSwitch,Federate.ConveyRegionDesignatorSets.handle) );
+		federate.addAttribute( newAttribute("HLAconveyProducingFederate",hlaSwitch,Federate.ConveyProducingFederate.handle) );
 
 		///////////////////////////////////////////////////////////////
 		///////////////// create the federation class /////////////////
