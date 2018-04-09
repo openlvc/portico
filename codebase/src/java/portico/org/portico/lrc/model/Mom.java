@@ -663,7 +663,7 @@ public class Mom
 		ACMetadata crds = newAttribute( "HLAconveyRegionDesignatorSets",
 		                                hlaSwitch,
 		                                Federation.ConveyRegionDesignatorSets.handle );
-		federate.addAttribute( crds );
+		federation.addAttribute( crds );
 		
 		//////////////////////////////////////
 		// patch the manager into the model //
