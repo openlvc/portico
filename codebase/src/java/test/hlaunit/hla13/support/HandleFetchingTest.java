@@ -160,7 +160,7 @@ public class HandleFetchingTest extends Abstract13Test
 			int orB13 = defaultFederate.rtiamb.getObjectClassHandle( "ObjectRoot.A.B" );
 			// check for priv to delete
 			int p13   = defaultFederate.rtiamb.getAttributeHandle( "privilegeToDelete", orB13 );
-			int p1516 = defaultFederate.rtiamb.getAttributeHandle( "HLAprivilegeToDelete", orB13 );
+			int p1516 = defaultFederate.rtiamb.getAttributeHandle( "HLAprivilegeToDeleteObject", orB13 );
 			Assert.assertEquals( p13, p1516, "privToDelete handles differ from 1.3 to 1516" );
 			
 			// check the 1516 handles and ensure they are the same as 1.3

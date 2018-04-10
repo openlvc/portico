@@ -83,7 +83,7 @@ public class PrivilegeToDeleteTest extends Abstract1516Test
 		try
 		{
 			ObjectClassHandle oRoot = defaultFederate.rtiamb.getObjectClassHandle( "ObjectRoot" );
-			defaultFederate.rtiamb.getAttributeHandle( oRoot, "HLAprivilegeToDelete" );
+			defaultFederate.rtiamb.getAttributeHandle( oRoot, "HLAprivilegeToDeleteObject" );
 		}
 		catch( Exception e )
 		{

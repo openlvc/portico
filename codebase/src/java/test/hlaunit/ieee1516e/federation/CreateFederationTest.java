@@ -578,10 +578,10 @@ public class CreateFederationTest extends Abstract1516eTest
 	{
 		defaultFederate.quickCreateWithModules( "resources/test-data/fom/ieee1516e/rpr/RPR-FOM2D18.xml" );
 		defaultFederate.quickJoin();
-		int handle = defaultFederate.quickACHandle( "HLAobjectRoot", "HLAprivilegeToDelete" );
+		int handle = defaultFederate.quickACHandle( "HLAobjectRoot", "HLAprivilegeToDeleteObject" );
 		
 		// make sure that we have a valid handle for privilegeToDelete
-		Assert.assertNotSame( handle, -1, "HLAprivilegeToDelete is not present in HLAobjectRoot" );
+		Assert.assertNotSame( handle, -1, "HLAprivilegeToDeleteObject is not present in HLAobjectRoot" );
 	}
 
 	
