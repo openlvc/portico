@@ -336,6 +336,12 @@ public class MomFederate
 				case TimeAdvancingTime:
 					attributes.put( attributeHandle, getTimeAdvancingTime(version) );
 					break;
+				case ConveyRegionDesignatorSets:
+					attributes.put( attributeHandle, notYetSupported(version,"ConveyRegionDesignatorSets") );
+					break;
+				case ConveyProducingFederate:
+					attributes.put( attributeHandle,  notYetSupported(version,"ConveyProducingFederate") );
+					break;
 				default:
 					break; // ignore
 			}
