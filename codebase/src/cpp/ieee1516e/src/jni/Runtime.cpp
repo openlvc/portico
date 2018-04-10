@@ -354,10 +354,17 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	            << string(systemPath) << ";"
 	            << rtihome << "\\bin\\"
 #ifdef VC14
+<<<<<<< HEAD
 				<< "vc14"
 #endif
 #ifdef VC12
 				<< "vc12"
+=======
+	            << "vc14"
+#endif
+#ifdef VC12
+	            << "vc12"
+>>>>>>> bff4065... Add interface to enable attribute/parameter datatype queries
 #endif
 #ifdef VC11
 	            << "vc11"
@@ -463,6 +470,8 @@ string Runtime::getMode() throw( RTIinternalError )
 {
 #ifdef DEBUG
 	return string("-Dportico.cpp.mode=debug");
+#elif _DEBUG
+	return string("-Dportico.cpp.mode=debug");
 #else
 	return string("-Dportico.cpp.mode=release");
 #endif
@@ -474,10 +483,10 @@ string Runtime::getMode() throw( RTIinternalError )
 string Runtime::getCompiler() throw( RTIinternalError )
 {
 #ifdef VC14
-	return string("-Dportico.cpp.compiler=vc14");
-#elif defined VC12
-	return string("-Dportico.cpp.compiler=vc12");
-#elif defined VC11
+	return string( "-Dportico.cpp.compiler=vc14" );
+#elif defined(VC12)
+	return string( "-Dportico.cpp.compiler=vc12" );
+#elif defined(VC11)
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );

@@ -89,6 +89,21 @@
                             <order>TimeStamp</order>
                             <semantics>Flavor of soda</semantics>
                         </attribute>
+						<attribute>
+							<name>NumberCups</name>
+							<dataType>DrinkCount</dataType>
+							<updateType>Conditional</updateType>
+							<updateCondition>Customer request</updateCondition>
+							<ownership>NoTransfer</ownership>
+							<sharing>PublishSubscribe</sharing>
+							<dimensions>
+								<dimension>SodaFlavor</dimension>
+								<dimension>BarQuantity</dimension>
+							</dimensions>
+							<transportation>HLAreliable</transportation>
+							<order>TimeStamp</order>
+							<semantics>Number of Cups</semantics>
+						</attribute>
                     </objectClass>
                 </objectClass>
             </objectClass>
