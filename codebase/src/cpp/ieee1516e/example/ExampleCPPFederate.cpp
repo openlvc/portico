@@ -19,12 +19,12 @@
 
 #include "ExampleFedAmb.h"
 #include "ExampleCPPFederate.h" 
-#include "RTI/portico/types/BasicType.h"
-#include "RTI/portico/types/EnumeratedType.h"
-#include "RTI/portico/types/SimpleType.h"
-#include "RTI/portico/types/ArrayType.h"
-#include "RTI/portico/types/FixedRecordType.h"
-#include "RTI/portico/types/VariantRecordType.h"
+#include "portico/types/BasicType.h"
+#include "portico/types/EnumeratedType.h"
+#include "portico/types/SimpleType.h"
+#include "portico/types/ArrayType.h"
+#include "portico/types/FixedRecordType.h"
+#include "portico/types/VariantRecordType.h"
 #include <string>
 
 #if __linux__
@@ -209,7 +209,7 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	if (simpleTypeTest->getDatatypeClass() == DatatypeClass::SIMPLE)
 	{
 		st = dynamic_cast<SimpleType*>(simpleTypeTest);
-		cout << "Simple Type Name is .... " << st->getName() << endl; 
+		wcout << "Simple Type Name is .... " << st->getName() << endl; 
 	}
 
 
@@ -222,14 +222,14 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	if (enumTypeTest->getDatatypeClass() == DatatypeClass::ENUMERATED)
 	{
 		et = dynamic_cast<EnumeratedType*>(enumTypeTest);
-		cout << "NAME is .... " << et->getName() << endl;
+		wcout << "NAME is .... " << et->getName() << endl;
 
 		std::list<Enumerator*> enums = et->getEnumerators();
 
 		std::list<Enumerator*>::iterator itr = enums.begin();
 		while (itr != enums.end())
 		{
-			cout << "Flavour is .... " << (*itr)->getName() << " - Value is: " << (*itr)->getValue() <<endl;
+			wcout << "Flavour is .... " << (*itr)->getName() << " - Value is: " << (*itr)->getValue() <<endl;
 			itr++;
 		}
 	}
@@ -243,7 +243,7 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	if (fixRecTypeTest->getDatatypeClass() == DatatypeClass::FIXEDRECORD)
 	{
 		ft = dynamic_cast<FixedRecordType*>(fixRecTypeTest);
-		cout << "Fixed Type Name is .... " << ft->getName() << endl; 
+		wcout << "Fixed Type Name is .... " << ft->getName() << endl; 
 	}
 
 	//
@@ -254,7 +254,7 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	if (variantTypeTest->getDatatypeClass() == DatatypeClass::VARIANTRECORD)
 	{
 		vt = dynamic_cast<VariantRecordType*>(variantTypeTest);
-		cout << "Variant Type Name is .... " << vt->getName() << endl;
+		wcout << "Variant Type Name is .... " << vt->getName() << endl;
 	}
 	
 
@@ -264,14 +264,14 @@ void ExampleCPPFederate::runFederate( std::wstring federateName )
 	if (enumTypeTest2->getDatatypeClass() == DatatypeClass::ENUMERATED)
 	{
 		et2 = dynamic_cast<EnumeratedType*>(enumTypeTest2);
-		cout << "parameter NAME is .... " << et->getName() << endl;
+		wcout << "parameter NAME is .... " << et->getName() << endl;
 
 		std::list<Enumerator*> enums = et2->getEnumerators();
 
 		std::list<Enumerator*>::iterator itr = enums.begin();
 		while (itr != enums.end())
 		{
-			cout << "Parameter Flavour is .... " << (*itr)->getName() << " - Value is: " << (*itr)->getValue() << endl;
+			wcout << "Parameter Flavour is .... " << (*itr)->getName() << " - Value is: " << (*itr)->getValue() << endl;
 			itr++;
 		}
 	}

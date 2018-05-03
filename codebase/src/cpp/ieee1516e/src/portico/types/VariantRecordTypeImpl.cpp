@@ -1,9 +1,9 @@
-#include "RTI/portico/types/VariantRecordType.h"   
+#include "portico/types/VariantRecordType.h"   
  
-VariantRecordType::VariantRecordType(const std::string& name,
-        const std::string& discriminantName,
+VariantRecordType::VariantRecordType(const std::wstring& name,
+        const std::wstring& discriminantName,
         IDatatype* discriminantDatatype,
-        std::list<Alternative>  alternatives)
+        const std::list<Alternative>&  alternatives)
 {
     this->name = name;
     this->discriminantName = discriminantName;
@@ -16,7 +16,7 @@ VariantRecordType::~VariantRecordType()
 
 }
 
-std::string VariantRecordType::getDiscriminateName() const
+std::wstring VariantRecordType::getDiscriminateName() const
 {
     return this->discriminantName;
 }
@@ -31,12 +31,12 @@ std::list<Alternative> VariantRecordType::getAlternatives() const
     return this->alternatives;
 }
 
-std::string VariantRecordType::getName() const
+std::wstring VariantRecordType::getName() const
 {
     return this->name;
 }
 
-DatatypeClass VariantRecordType::getDatatypeClass()
+DatatypeClass VariantRecordType::getDatatypeClass() const
 {
     return DatatypeClass::VARIANTRECORD;
 }

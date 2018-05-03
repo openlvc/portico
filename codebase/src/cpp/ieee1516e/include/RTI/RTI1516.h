@@ -57,7 +57,6 @@ namespace rti1516e
 // The files containing the RTI Ambassdor and Federate Ambassador service calls
 #include <RTI/FederateAmbassador.h>
 #include <RTI/RTIambassador.h>
-#include <RTI/portico/RTIambassadorEx.h>
 
 // The file containing the RTI Ambassador Factory.
 #include <RTI/RTIambassadorFactory.h>

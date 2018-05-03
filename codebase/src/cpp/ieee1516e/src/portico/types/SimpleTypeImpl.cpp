@@ -1,31 +1,31 @@
 #pragma once
 
-#include "RTI/portico/types/SimpleType.h"
+#include "portico/types/SimpleType.h"
 
 
-SimpleType::SimpleType(const std::string& name, IDatatype *representation)
+SimpleType::SimpleType(const std::wstring& name, IDatatype *representation)
 {
-    this->name = name;
-    this->representation = representation;
+	this->name = name;
+	this->representation = representation;
 }
 
 SimpleType::~SimpleType()
 {
 }
 
-std::string SimpleType::getName() const
+std::wstring SimpleType::getName() const
 {
 	return this->name;
 }
 
-DatatypeClass SimpleType::getDatatypeClass()
+DatatypeClass SimpleType::getDatatypeClass() const
 {
 	return DatatypeClass::SIMPLE;
 }
 
 IDatatype* SimpleType::getRepresentation()
 {
-    return this;       
+	return this;       
 }
 
  

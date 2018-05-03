@@ -1,4 +1,4 @@
-#include "RTI/portico/types/Dimension.h"
+#include "portico/types/Dimension.h"
 
 
 Dimension::Dimension(int cardinality) 
@@ -18,17 +18,17 @@ Dimension::~Dimension()
 
 }
 
-int Dimension::getCardinalityLowerBound()
+int Dimension::getCardinalityLowerBound() const
 {
     return this->lowerCardinality;
 }
 
-int Dimension::getCardinalityUpperBound()
+int Dimension::getCardinalityUpperBound() const
 {
     return this->upperCardinality;
 }
 
-bool Dimension::isCardinalityDynamic()
+bool Dimension::isCardinalityDynamic() const
 {
     return this->lowerCardinality == CARDINALITY_DYNAMIC;
 }

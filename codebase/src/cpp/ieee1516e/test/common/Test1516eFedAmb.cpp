@@ -334,3 +334,4 @@ void Test1516eFedAmb::removeObjectInstance( ObjectInstanceHandle theObject,
 {
 	removeObjectInstance( theObject, tag, sentOrder, theTime, receivedOrder, theRemoveInfo );
 }
+

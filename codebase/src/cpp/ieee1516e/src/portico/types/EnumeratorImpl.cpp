@@ -1,10 +1,10 @@
 #pragma once
 
-#include "RTI/portico/types/Enumerator.h"
-#include "RTI/portico/types/Endianness.h"  
+#include "portico/types/Enumerator.h"
+#include "portico/types/Endianness.h"  
 
  
-Enumerator::Enumerator(const std::string& name, const std::string& value){
+Enumerator::Enumerator(const std::wstring& name, const std::wstring& value){
     this->name = name;
     this->value = value;
 }
@@ -21,12 +21,12 @@ bool Enumerator::operator==(const Enumerator& other)
 }
 
  
-std::string Enumerator::getName() const
+std::wstring Enumerator::getName() const
 {
     return this->name;
 }
 
-std::string Enumerator::getValue()
+std::wstring Enumerator::getValue() const
 {
     return this->value;
 }

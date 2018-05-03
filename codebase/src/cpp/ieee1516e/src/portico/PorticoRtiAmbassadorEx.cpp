@@ -1,5 +1,5 @@
 #include "rtiamb/PorticoRtiAmbassador.h"
-#include "RTI/portico/types/BasicType.h"
+#include "portico/types/BasicType.h"
 #include "portico/DatatypeRetrieval.h"
 #include "jni/JniUtils.h"
 
@@ -29,7 +29,7 @@ PORTICO1516E_NS_START
 														 attributeHandle);
 	 
 		// Create the string set from the 
-		string className =  JniUtils::toString(jnienv, info);
+		std::wstring className =  JniUtils::toWideString(jnienv, info);
 		
 		// If the datatype retriever has not had it's FOM initialized, do it.
 		if (!this->datatypeRetriever->isInitialized())
@@ -63,7 +63,7 @@ PORTICO1516E_NS_START
 			parameterHandle);
 
 		// Create the string set from the 
-		string className = JniUtils::toString(jnienv, info);
+		std::wstring className = JniUtils::toWideString(jnienv, info);
 
 		// If the datatype retriever has not had it's FOM initialized, do it.
 		if (!this->datatypeRetriever->isInitialized())

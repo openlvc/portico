@@ -1,9 +1,9 @@
 #pragma once
 
-#include "RTI/portico/types/BasicType.h"   
+#include "portico/types/BasicType.h"   
 
  
-BasicType::BasicType(const std::string& name, int size, Endianness endianness)
+BasicType::BasicType(const std::wstring& name, int size, Endianness endianness)
 {
     this->name = name;
     this->size = size;
@@ -15,17 +15,17 @@ BasicType::~BasicType()
 }
 
 
-Endianness BasicType::getEndianness()
+Endianness BasicType::getEndianness() const
 {
 	return this->endianness;
 }
  
-std::string BasicType::getName() const
+std::wstring BasicType::getName() const
 {
 	return this->name;
 }
  
-DatatypeClass BasicType::getDatatypeClass()
+DatatypeClass BasicType::getDatatypeClass() const
 {
 	return DatatypeClass::BASIC;
 }

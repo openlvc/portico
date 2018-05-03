@@ -53,7 +53,7 @@
 	#define OS_WINDOWS
     #define WIN32_LEAN_AND_MEAN
 
-	// determine the platform 
+	// determine the platform
 	#if _WIN64
 		#define ARCH_AMD64
 	#elif _WIN32
@@ -161,6 +161,9 @@ typedef double Float64;
 //////////////////////////////////////////
 ///////// Portico Releated Items /////////
 //////////////////////////////////////////
+
+// Portico RTI Ambassador Ex (EXTREME)
+#include <portico/RTIambassadorEx.h>
 
 // java native interface
 #include "jni.h"

@@ -1,6 +1,6 @@
-#include "RTI/portico/types/Alternative.h" 
+#include "portico/types/Alternative.h" 
  
-Alternative::Alternative(const std::string& name, IDatatype* datatype, std::list<Enumerator*> enumerators)
+Alternative::Alternative(const std::wstring& name, IDatatype* datatype, const std::list<Enumerator*>& enumerators)
 {
     this->name = name;
     this->datatype = datatype;
@@ -12,17 +12,17 @@ Alternative::~Alternative()
 
 }
 
-IDatatype* Alternative::getDatatype()
+IDatatype* Alternative::getDatatype() const
 {
     return this->datatype;
 }
 
-std::list<Enumerator*>& Alternative::getEnumerators()
+std::list<Enumerator*> Alternative::getEnumerators() const
 {
     return this->enumerators;
 }
 
-std::string Alternative::getName() const
+std::wstring Alternative::getName() const
 {
     return this->name;
 }

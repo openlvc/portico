@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RTI/portico/types/NaType.h"   
+#include "portico/types/NaType.h"   
 
  
 NaType::NaType()
@@ -8,12 +8,12 @@ NaType::NaType()
 NaType::~NaType()
 {}
  
-std::string NaType::getName() const
+std::wstring NaType::getName() const
 {
-    return "NA";
+    return L"NA";
 }
  
-DatatypeClass NaType::getDatatypeClass()
+DatatypeClass NaType::getDatatypeClass() const
 {
 	return DatatypeClass::NA;
 }

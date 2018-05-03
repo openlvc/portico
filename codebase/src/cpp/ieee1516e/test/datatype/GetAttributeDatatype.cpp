@@ -1,9 +1,9 @@
 #include "GetAttributeDatatype.h"
-#include <RTI/portico/types/BasicType.h>
-#include <RTI/portico/types/SimpleType.h>
-#include <RTI/portico/types/EnumeratedType.h>
-#include <RTI/portico/types/FixedRecordType.h>
-#include <RTI/portico/types/NaType.h>
+#include <portico/types/BasicType.h>
+#include <portico/types/SimpleType.h>
+#include <portico/types/EnumeratedType.h>
+#include <portico/types/FixedRecordType.h>
+#include <portico/types/NaType.h>
 
 
 // Register test suite with the global repository

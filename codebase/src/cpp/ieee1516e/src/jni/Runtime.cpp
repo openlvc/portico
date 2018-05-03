@@ -354,17 +354,10 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	            << string(systemPath) << ";"
 	            << rtihome << "\\bin\\"
 #ifdef VC14
-<<<<<<< HEAD
 				<< "vc14"
 #endif
 #ifdef VC12
 				<< "vc12"
-=======
-	            << "vc14"
-#endif
-#ifdef VC12
-	            << "vc12"
->>>>>>> bff4065... Add interface to enable attribute/parameter datatype queries
 #endif
 #ifdef VC11
 	            << "vc11"

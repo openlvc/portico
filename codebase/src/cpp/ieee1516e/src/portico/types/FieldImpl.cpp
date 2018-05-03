@@ -1,10 +1,10 @@
-#include "RTI/portico/types/Field.h"   
+#include "portico/types/Field.h"   
  
 
  
-Field::Field(const std::string& name, IDatatype* datatype)
+Field::Field(const std::wstring& name, IDatatype* datatype)
 {
-    this->name = name;
+	this->name = name;
 	this->datatype = datatype;
 }
 
@@ -13,7 +13,7 @@ Field::~Field()
     
 }
 
-std::string Field::getName() const
+std::wstring Field::getName() const
 {
     return this->name;
 }
@@ -23,9 +23,9 @@ IDatatype* Field::getDatatype()
     return this->datatype;
 }
 
-bool Field::operator==(const Field& other)
+bool Field::operator==(const Field& other) const
 {
-    return this->name == other.name && this->datatype == other.datatype;
+    return name == other.name &&  datatype->getDatatypeClass() == other.datatype->getDatatypeClass();
 }
 
  

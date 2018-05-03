@@ -17,7 +17,9 @@
 namespace rti1516e
 {
    class RTIambassador;
+   class RTIambassadorEx;
 }
+
 
 namespace std
 {

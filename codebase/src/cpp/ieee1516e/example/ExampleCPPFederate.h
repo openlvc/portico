@@ -17,6 +17,8 @@
 
 #include "ExampleFedAmb.h"
 #include "RTI/RTI1516.h"
+#include "portico/RTIambassadorEx.h"
+
 using namespace rti1516e;
 using namespace std;
 
@@ -69,3 +71,4 @@ class ExampleCPPFederate
 };
 
 #endif /*EXAMPLECPPFEDERATE_H_*/
+

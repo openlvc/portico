@@ -1,15 +1,15 @@
 
-#include "RTI/portico/types/EnumeratedType.h"  
+#include "portico/types/EnumeratedType.h"  
 #include <string>
 
-EnumeratedType::EnumeratedType(const std::string& name, IDatatype* representation, std::list<std::string> enumerators)
+EnumeratedType::EnumeratedType(const std::wstring& name, IDatatype* representation, const std::list<std::wstring>& enumerators)
 {
     this->name = name;
     this->representation = representation;
     this->createEnumeratorsFromNames(enumerators);
 }
 
-EnumeratedType::EnumeratedType(const std::string& name, IDatatype* representation, std::list<Enumerator*> enumerators)
+EnumeratedType::EnumeratedType(const std::wstring& name, IDatatype* representation, const std::list<Enumerator*>& enumerators)
 {
     this->name = name;
     this->representation = representation;
@@ -21,12 +21,12 @@ EnumeratedType::~EnumeratedType()
 
 }
 
-IDatatype* EnumeratedType::getRepresentation()
+IDatatype* EnumeratedType::getRepresentation() const
 {
     return this->representation;
 }
 
-std::list<Enumerator*>& EnumeratedType::getEnumerators()
+std::list<Enumerator*> EnumeratedType::getEnumerators() const
 {
     return this->enumerators;
 }
@@ -37,26 +37,25 @@ bool EnumeratedType::operator == (const EnumeratedType& other)
      
 }
 
-std::list<Enumerator*> EnumeratedType::createEnumeratorsFromNames(const std::list<std::string>& constants)
+std::list<Enumerator*> EnumeratedType::createEnumeratorsFromNames(const std::list<std::wstring>& constants)
 { 
     std::list<Enumerator*> enumeratorList = std::list<Enumerator*>();
-    std::list<std::string>::const_iterator itr = constants.begin();
+    std::list<std::wstring>::const_iterator itr = constants.begin();
     unsigned value = 0;
     for (itr ; itr != constants.end(); itr++)
     {
-        enumeratorList.push_back(new Enumerator(*itr, std::to_string(static_cast<long long>(value))));
-        value++;
+        enumeratorList.push_back(new Enumerator(*itr, std::to_wstring(static_cast<long long>(value++))));
     }
 
     return enumeratorList;
 }
 
-std::string EnumeratedType::getName() const
+std::wstring EnumeratedType::getName() const
 {
     return this->name;
 }
  
-DatatypeClass EnumeratedType::getDatatypeClass()
+DatatypeClass EnumeratedType::getDatatypeClass() const
 {
     return DatatypeClass::ENUMERATED;
 }

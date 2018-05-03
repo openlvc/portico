@@ -14,7 +14,7 @@
  */
 #include "common.h"
 #include "rtiamb/PorticoRtiAmbassador.h" 
-#include "RTI/portico/RTIambassadorEx.h"
+#include "portico/RTIambassadorEx.h"
 
 IEEE1516E_NS_START
 
