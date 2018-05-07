@@ -956,24 +956,59 @@ public class InterestManager implements SaveRestoreTarget
 	public Set<Integer> getAllSubscribers( OCMetadata objectClass )
 	{
 		HashSet<Integer> set = new HashSet<>();
-		OCInterest interest = sObjects.get( objectClass );
-		if( interest == null )
+
+		OCMetadata currentClass = objectClass;
+		while( currentClass != null )
 		{
-			// FIXME
-			return set;
+			OCInterest interest = sObjects.get( currentClass );
+			if( interest != null )
+				set.addAll( interest.getFederates() );
+
+			currentClass = currentClass.getParent();
 		}
 		
-		if( objectClass.getParent() != null )
+		return set;
+	}
+	
+	/**
+	 * Return the set of all federates that have some subscription interest in the given class,
+	 * and the exact type that they are interested in. It might not be the explicit type passed,
+	 * but rather one of its parents, so we need to be clear about what specifically the interest
+	 * is and check all the way up the hierarchy.
+	 * <p/>
+	 * The returned map will contain the handle of the federate with the interest and the
+	 * <i>most specific</i> class they are interested in.
+	 * 
+	 * @param initialClass The class to start checking for federates with a subscription interest
+	 * @return A map of all federates with an interest in this class, or a parent class, and the
+	 *         specific class they are interested in.
+	 */
+	public Map<Integer,OCMetadata> getAllSubscribersWithTypes( OCMetadata initialClass )
+	{
+		HashMap<Integer,OCMetadata> map = new HashMap<>();
+		
+		// get the interest information for thi
+		OCMetadata currentClass = initialClass;
+		while( currentClass != null )
 		{
-			set.addAll( interest.getFederates() );
-			set.addAll( getAllSubscribers(objectClass.getParent()) );
-			return set;
+			// find if there is any interest in this class directly
+			OCInterest currentInterest = sObjects.get( currentClass );
+			if( currentInterest != null )
+			{
+				for( int federateHandle : currentInterest.getFederates() )
+				{
+					// only register a federate's interest if it isn't already stored.
+					// if it is stored, it means they're interested in a more specific class
+					if( map.containsKey(federateHandle) == false )
+						map.put( federateHandle, currentClass );
+				}
+			}
+
+			// skip to the parent class
+			currentClass = currentClass.getParent();
 		}
-		else
-		{
-			set.addAll( interest.getFederates() );
-			return interest.getFederates();
-		}
+		
+		return map;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////

@@ -22,12 +22,12 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JObjectClassNotPublished;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DiscoverObject;
 import org.portico2.common.services.object.msg.RegisterObject;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class RegisterObjectHandler extends RTIMessageHandler
 {
@@ -68,17 +68,24 @@ public class RegisterObjectHandler extends RTIMessageHandler
 			              objectName );
 		}
 
+		//
+		// Step 1. Perform Checks
+		//
 		// Check to make sure that the federate publishes the class
 		OCMetadata objectClass = checkPublished( federateHandle, classHandle );
 		
 		// Get the set of attributes this federate publishes
 		Set<Integer> published = interests.getPublishedAttributes( federateHandle, classHandle );
 		
+		//
+		// Step 2. Create the object and return key information
+		//
 		// Create and store a new object instance
-		OCInstance newInstance = repository.createObject( federateHandle,
-		                                                  objectClass,
-		                                                  objectName,
-		                                                  published ); // published attributes
+		ROCInstance newInstance = repository.createObject( objectClass,
+		                                                   objectName,
+		                                                   federateHandle,
+		                                                   published ); // published attributes
+		repository.addObject( newInstance );
 
 		// TODO Region Support
 
@@ -95,12 +102,19 @@ public class RegisterObjectHandler extends RTIMessageHandler
 			              icMoniker(classHandle),
 			              objectName );
 		}
-		
-		// Create the discovery callback which we will queue for all subscribers
-		DiscoverObject discovery = fill( new DiscoverObject(newInstance), federateHandle );
-		Set<Integer> subscribers = interests.getAllSubscribers( objectClass );
-		subscribers.remove( federateHandle ); // remove the one who created the object
-		super.queueManycast( discovery, subscribers );
+
+		//
+		// Step 3. Notify federates with a subscription interest
+		//
+		Map<Integer,OCMetadata> subscriptions = interests.getAllSubscribersWithTypes( objectClass );
+		for( Integer subscriberHandle : subscriptions.keySet() )
+		{
+			newInstance.discover( subscriberHandle, subscriptions.get(subscriberHandle) );
+		}
+
+		DiscoverObject discover = fill( new DiscoverObject(newInstance), federateHandle );
+		subscriptions.remove( federateHandle ); // don't need to notify the one who created it
+		super.queueManycast( discover, subscriptions.keySet() );
 	}
 
 	/**

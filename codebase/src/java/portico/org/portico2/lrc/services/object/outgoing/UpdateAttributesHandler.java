@@ -22,11 +22,11 @@ import org.portico.lrc.compat.JAttributeNotOwned;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LACInstance;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class UpdateAttributesHandler extends LRCMessageHandler
 {
@@ -77,7 +77,7 @@ public class UpdateAttributesHandler extends LRCMessageHandler
 			lrcState.checkValidTime( request.getTimestamp() );
 		
 		// fetch the OCInstance that this update concerns
-		OCInstance instance = repository.getObject( objectHandle );
+		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 			throw new JObjectNotKnown( "unknown object: " + objectHandle );
 		
@@ -85,7 +85,7 @@ public class UpdateAttributesHandler extends LRCMessageHandler
 		int federateHandle = lrcState.getFederateHandle();
 		for( Integer attributeHandle : attributes.keySet() )
 		{
-			ACInstance attributeInstance = instance.getAttribute( attributeHandle );
+			LACInstance attributeInstance = instance.getAttribute( attributeHandle );
 			if( attributeInstance == null )
 			{
 				// the attribute doesn't exist

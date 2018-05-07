@@ -28,13 +28,13 @@ import org.portico.lrc.compat.JFederateOwnsAttributes;
 import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JObjectClassNotPublished;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.services.ownership.msg.AttributesUnavailable;
 import org.portico.lrc.services.ownership.msg.OwnershipAcquired;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.ownership.msg.AttributeAcquire;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.RACInstance;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class AcquireOwnershipHandler extends RTIMessageHandler
 {
@@ -72,12 +72,12 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 		// TODO
 		
 		// Do some basic checks on the request
-		Set<ACInstance> instances = validateRequest( federate, objectHandle, attributes );
+		Set<RACInstance> instances = validateRequest( federate, objectHandle, attributes );
 		
 		// Split the attributes into owned and unowned
-		Set<ACInstance> owned   = new HashSet<>();
-		Set<ACInstance> unowned = new HashSet<>();
-		for( ACInstance temp : instances )
+		Set<RACInstance> owned   = new HashSet<>();
+		Set<RACInstance> unowned = new HashSet<>();
+		for( RACInstance temp : instances )
 		{
 			if( temp.isUnowned() || temp.isOwnedByRti() )
 				unowned.add( temp );
@@ -118,13 +118,13 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 	 * @param objectHandle   The handle of the object the request is for
 	 * @param unowned        The set of attributes that are meant to be unowned.
 	 */
-	private synchronized void acquireUnowned( int federateHandle, int objectHandle, Set<ACInstance> unowned )
+	private synchronized void acquireUnowned( int federateHandle, int objectHandle, Set<RACInstance> unowned )
 	{
 		Set<Integer> acquired = new HashSet<>();
 		Set<Integer> failed   = new HashSet<>();
 
 		// do the ownership acquisition
-		for( ACInstance attribute : unowned )
+		for( RACInstance attribute : unowned )
 		{
 			if( attribute.isUnowned() || attribute.isOwnedByRti() )
 			{
@@ -170,11 +170,11 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 	 * @param objectHandle   The handle of the object that the request is for
 	 * @param attributes     The set of attributes being requested
 	 */
-	private synchronized void requestDivest( int federateHandle, int objectHandle, Set<ACInstance> attributes )
+	private synchronized void requestDivest( int federateHandle, int objectHandle, Set<RACInstance> attributes )
 	{
 		// Split the attributes out into their respective owners
 		Map<Integer,Set<Integer>> splitByOwner = new HashMap<>();
-		for( ACInstance attribute : attributes )
+		for( RACInstance attribute : attributes )
 		{
 			int owner = attribute.getOwner();
 			if( splitByOwner.containsKey(owner) )
@@ -215,7 +215,7 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 	 * @param objectHandle   Handle of the object the action was requested for
 	 * @param attributes     Set of attributes that are not available
 	 */
-	private void sendFailure( int federateHandle, int objectHandle, Set<ACInstance> attributes )
+	private void sendFailure( int federateHandle, int objectHandle, Set<RACInstance> attributes )
 	{
 		AttributesUnavailable notice = new AttributesUnavailable( objectHandle,
 		                                                          instancesToHandles(attributes) );
@@ -233,10 +233,10 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////// Helper Methods /////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
-	private final Set<Integer> instancesToHandles( Set<ACInstance> instances )
+	private final Set<Integer> instancesToHandles( Set<RACInstance> instances )
 	{
 		HashSet<Integer> set = new HashSet<Integer>();
-		for( ACInstance instance : instances )
+		for( RACInstance instance : instances )
 			set.add( instance.getHandle() );
 		
 		return set;
@@ -253,9 +253,9 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 	 * @param attributes         Set of handles the request is for
 	 * @return                   Set of {@link ACInstance}s that the handles represent
 	 */
-	private Set<ACInstance> validateRequest( int requestingFederate,
-	                                         int objectHandle,
-	                                         Set<Integer> attributes )
+	private Set<RACInstance> validateRequest( int requestingFederate,
+	                                          int objectHandle,
+	                                          Set<Integer> attributes )
 		throws JAttributeNotDefined,
 		       JFederateOwnsAttributes,
 		       JAttributeNotPublished,
@@ -264,7 +264,7 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 		       JObjectNotKnown
 	{
 		// Make sure the object exists
-		OCInstance instance = repository.getObject( objectHandle );
+		ROCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
 			throw new JObjectNotKnown( "Can't aquire attributes of object "+
@@ -273,10 +273,10 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 
 		// Make sure that every attribute requested exists, is published by the requester and
 		// isn't already owned by them
-		Set<ACInstance> instances = new HashSet<>();
+		Set<RACInstance> instances = new HashSet<>();
 		for( Integer requestedAttribute : attributes )
 		{
-			ACInstance attributeInstance = instance.getAttribute( requestedAttribute );
+			RACInstance attributeInstance = instance.getAttribute( requestedAttribute );
 			// does the attribute exist?
 			if( attributeInstance == null )
 			{
@@ -316,9 +316,9 @@ public class AcquireOwnershipHandler extends RTIMessageHandler
 	 * 
 	 * @param requestedAttributes The attributes that have been requested for acquisition.
 	 */
-	private void filterOutUnavailable( Set<ACInstance> requestedAttributes )
+	private void filterOutUnavailable( Set<RACInstance> requestedAttributes )
 	{
-		Iterator<ACInstance> iterator = requestedAttributes.iterator();
+		Iterator<RACInstance> iterator = requestedAttributes.iterator();
 		while( iterator.hasNext() )
 		{
 			if( iterator.next().isUnowned() == false )

@@ -96,7 +96,7 @@ public class MomManager implements SaveRestoreTarget
 			return;
 		
 		// create the object for the federation and store it away as an undiscovered object
-		OCInstance momFederation = getFederationClass().newInstance( PorticoConstants.RTI_HANDLE );
+		OCInstance momFederation = getFederationClass().REMOVE_newInstance( PorticoConstants.RTI_HANDLE );
 		this.momFederation = new MomFederation( lrcState.getFederation(), momFederation, logger );
 		momFederation.setHandle( 0 ); // handle for MOM federation object, same as RTI fed handle
 		momFederation.setName( "MOM.Federation("+lrcState.getFederationName()+")" );
@@ -130,7 +130,7 @@ public class MomManager implements SaveRestoreTarget
 			return;
 		
 		// create the object for the Federate and queeu up a discovery
-		OCInstance ocInstance = getFederateClass().newInstance( PorticoConstants.RTI_HANDLE );
+		OCInstance ocInstance = getFederateClass().REMOVE_newInstance( PorticoConstants.RTI_HANDLE );
 		ocInstance.setHandle( lrcState.getMomFederateObjectHandle(federate.getFederateHandle()) );
 		ocInstance.setName( "MOM.Federate("+federate.getFederateName()+")" );
 

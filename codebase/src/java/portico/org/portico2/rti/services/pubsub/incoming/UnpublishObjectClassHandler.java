@@ -20,10 +20,10 @@ import java.util.Set;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JOwnershipAcquisitionPending;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.pubsub.msg.UnpublishObjectClass;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class UnpublishObjectClassHandler extends RTIMessageHandler
 {
@@ -92,9 +92,13 @@ public class UnpublishObjectClassHandler extends RTIMessageHandler
 	private void checkOwnershipAcquisitions( int federateHandle, int classHandle )
 		throws JOwnershipAcquisitionPending
 	{
-		for( OCInstance instance : repository.getAllInstances() )
+		for( ROCInstance instance : repository.getAllInstances() )
 		{
-			if( instance.getDiscoveredClassHandle() != classHandle )
+			// FIXME I just changed this from getDiscoveredClassHandle() to get*REGISTERED*...
+			//       as part of the split of OCInstance into ROCInstance and LOCInstance.
+			//       Need to revisit this particular ownership edge case to ensure it still
+			//       makes sense.
+			if( instance.getRegisteredClassHandle() != classHandle )
 				continue;
 			
 			Set<Integer> set = ownership.getAttributesUnderAcquisitionRequest( instance.getHandle(),

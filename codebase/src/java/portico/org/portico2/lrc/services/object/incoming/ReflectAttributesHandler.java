@@ -20,14 +20,14 @@ import java.util.Set;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectClassNotSubscribed;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.RegionInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.ddm.data.RegionGroup;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 import org.portico2.common.services.pubsub.data.OCInterest;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LACInstance;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class ReflectAttributesHandler extends LRCMessageHandler
 {
@@ -74,7 +74,7 @@ public class ReflectAttributesHandler extends LRCMessageHandler
 		}
 
 		// find the instance, we can't reflect values for an instance we haven't discovered
-		OCInstance instance = repository.getObject( objectHandle );
+		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
 			logger.debug( "DISCARD reflection for object [%s]: object unknown", objectMoniker(objectHandle) );
@@ -110,7 +110,7 @@ public class ReflectAttributesHandler extends LRCMessageHandler
 	 * those that are interesting locally. If there are none of interest, an empty set will be
 	 * returned.
 	 */
-	private void filter( OCInstance instance, UpdateAttributes request ) throws JException
+	private void filter( LOCInstance instance, UpdateAttributes request ) throws JException
 	{
 		request.clearFilteredAttributes();
 
@@ -147,7 +147,7 @@ public class ReflectAttributesHandler extends LRCMessageHandler
 			}
 			
 			// is the reflected attribute using DDM? if not, we can skip the rest of this
-			ACInstance reflectedAttribute = instance.getAttribute( reflectedHandle );
+			LACInstance reflectedAttribute = instance.getAttribute( reflectedHandle );
 			if( reflectedAttribute.getRegion() == null )
 			{
 				request.addFilteredAttribute( reflectedHandle, raw.get(reflectedHandle), null );

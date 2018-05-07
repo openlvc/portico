@@ -25,11 +25,11 @@ import org.portico.lrc.compat.JFederateOwnsAttributes;
 import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JObjectClassNotPublished;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.ownership.msg.AttributeAcquire;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LACInstance;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 /**
  * This handler processes requests to acquire attributes, be it through direct solicitation (in
@@ -117,7 +117,7 @@ public class AcquireOwnershipHandler extends LRCMessageHandler
 	{
 		// make sure we have discovered the object, it's not enough for it to just
 		// exist, we have to know about it
-		OCInstance instance = repository.getObject( objectHandle );
+		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
 			throw new JObjectNotKnown( "can't aquire attributes of object "+
@@ -138,7 +138,7 @@ public class AcquireOwnershipHandler extends LRCMessageHandler
 		// make sure all the attributes are valid and that we don't already own them
 		for( Integer expected : attributes )
 		{
-			ACInstance attributeInstance = instance.getAttribute( expected );
+			LACInstance attributeInstance = instance.getAttribute( expected );
 			if( attributeInstance == null )
 			{
 				throw new JAttributeNotDefined( "can't aquire attribute "+acMoniker(expected)+

@@ -22,11 +22,11 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JObjectClassNotPublished;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.RegisterObject;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class RegisterObjectHandler extends LRCMessageHandler
 {
@@ -89,11 +89,11 @@ public class RegisterObjectHandler extends LRCMessageHandler
 		// Create and populate the instance
 		int federateHandle = federateHandle();
 		Set<Integer> published = interests.getPublishedAttributes( federateHandle, classHandle );
-		OCInstance instance = repository.newInstance( federateHandle,
-		                                              objectClass,
-		                                              givenHandle,
-		                                              givenName,
-		                                              published );
+		LOCInstance instance = repository.createObject( objectClass,
+		                                                givenHandle,
+		                                                givenName,
+		                                                federateHandle,
+		                                                published );
 
 		// Store the instance
 		repository.addObject( instance );

@@ -16,13 +16,18 @@ package org.portico2.rti.services.pubsub.incoming;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
+import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.OCMetadata;
 import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.services.object.msg.DiscoverObject;
 import org.portico2.common.services.pubsub.msg.SubscribeObjectClass;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class SubscribeObjectClassHandler extends RTIMessageHandler
 {
@@ -67,6 +72,10 @@ public class SubscribeObjectClassHandler extends RTIMessageHandler
 
 		if( attributes.isEmpty() )
 			throw new JRTIinternalError( "Subscription attribute set is empty - this should have been fixed in the LRC" );
+		
+		OCMetadata classType = fom().getObjectClass( classHandle );
+		if( classType == null )
+			throw new JObjectClassNotDefined( "No known class for handle: "+classHandle );
 
 		// Store the interest information -- regionToken is NULL_HANDLE for non-ddm requests
 		interests.subscribeObjectClass( federateHandle, classHandle, attributes, regionToken );
@@ -84,54 +93,36 @@ public class SubscribeObjectClassHandler extends RTIMessageHandler
 		//////////////////////////////////////////////////
 		//  Discover Check   /////////////////////////////
 		//////////////////////////////////////////////////
-		// After we subscribe to a class, it may mean that we can now discover more
-		// instances than we previously knew about. This check burns through all the
-		// known objects to see if there are any for which discovery notifications
-		// should now be sent.
+		// After a federate newly subscribes to a class, there may be existing objects that
+		// they can now also discover. Loop through and find any, generating DiscoverObject
+		// callbacks as appropriate
+		Set<ROCInstance> instances = repository.getAllInstancesAssignableFrom( classType );
+		instances = instances.stream()
+		                     .filter( instance -> instance.hasDiscovered(federateHandle) == false )
+		                     .collect( Collectors.toSet() );
 		
-		
-// TODO
-//		// see if there are any objects we can discover now that we subscribe to this class
-//		Map<OCInstance,OCMetadata> discoverable = getDiscoverableData( federateHandle );
-//		for( OCInstance instance : discoverable.keySet() )
-//		{
-//			// generate a discover object callback
-//			OCMetadata discoveredType = discoverable.get( instance );
-//			instance.setDiscoveredType( discoveredType );
-//			DiscoverObject discover = new DiscoverObject( instance );
-//			discover.setClassHandle( discoveredType.getHandle() );
-//			discover.setSourceFederate( instance.getOwner() );
-//			lrcState.getQueue().offer( discover );
-//			if( logger.isDebugEnabled() )
-//			{
-//				logger.debug( "Queued Discover callback for instance ["+
-//				              objectMoniker(instance.getHandle())+
-//				              "] after subscription to class ["+ocMoniker(classHandle)+"]" );
-//			}
-//		}
+		for( ROCInstance instance : instances )
+		{
+			// have we already discovered this one?
+			if( instance.hasDiscovered(federateHandle) )
+				continue;
+			
+			// this one is new to us, register the discovery and queue a callback
+			instance.discover( federateHandle, classType );
+			DiscoverObject discover = new DiscoverObject( instance );
+			discover.setClassHandle( classType.getHandle() );
+			super.queueUnicast( discover, federateHandle );
+			if( logger.isDebugEnabled() )
+			{
+				logger.debug( "Queued Discover callback. Federate [%s] discovered instance [%s] (type=%s, discoveredAs=%s)",
+				              moniker(federateHandle),
+				              objectMoniker(instance.getHandle()),
+				              ocMoniker(instance.getRegisteredClassHandle()),
+				              ocMoniker(classHandle) );
+			}
+		}
 	}
 	
-//	/**
-//	 * Loop through all the undiscovered objects we have registered and see if any of them could
-//	 * be discovered if we were subscribed to the given initial object class handle. This will also
-//	 * take into account child classes of the given initial class when making the determination.
-//	 * The method will return a map with each of the instances that can now be discovered, along
-//	 * with the object class they can be discovered as.
-//	 */
-//	private Map<OCInstance,OCMetadata> getDiscoverableData( int federate )
-//	{
-//		Map<OCInstance,OCMetadata> data = new HashMap<OCInstance,OCMetadata>();
-//		for( OCInstance instance : repository.getAllUndiscoveredInstances(federateHandle) )
-//		{
-//			OCMetadata discoverableType = interests.getDiscoveryType( federate,
-//			                                                          instance.getRegisteredClassHandle() );
-//			if( discoverableType != null )
-//				data.put( instance, discoverableType );
-//		}
-//
-//		return data;
-//	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

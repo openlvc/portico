@@ -18,11 +18,11 @@ import java.util.Map;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DiscoverObject;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class DiscoverObjectHandler extends LRCMessageHandler
 {
@@ -58,8 +58,6 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 		int federateHandle = notice.getSourceFederate();
 		int objectHandle = notice.getObjectHandle();
 		int classHandle = notice.getClassHandle();
-		int[] ownedAttributes = notice.getOwnedAttributes();
-		int[][] regionTokens = notice.getRegionTokens();
 		
 		if( logger.isDebugEnabled() )
 		{
@@ -85,11 +83,11 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 		// check the subscription data to see if we are actually interested
 		// in this object class or not
 		OCMetadata registeredType = getObjectClass( classHandle );
-		OCMetadata discoveryType = interests.getDiscoveryType( lrcState.getFederateHandle(),
-		                                                       classHandle );
+		OCMetadata discoveredType = interests.getDiscoveryType( lrcState.getFederateHandle(),
+		                                                        classHandle );
 		
 		// do we have a discovery interest?
-		if( discoveryType == null )
+		if( discoveredType == null )
 		{
 			logger.debug( "DISCARD Discovery of object (not subscribed): object="+
 			              objectMoniker(objectHandle) );
@@ -97,18 +95,15 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 		}
 
 		// we don't already know about it, create and return it
-		OCInstance newInstance = repository.newInstance( federateHandle,
-		                                                 registeredType,
-		                                                 discoveryType,
-		                                                 objectHandle,
-		                                                 notice.getObjectName(),
-		                                                 ownedAttributes,
-		                                                 regionTokens );
+		LOCInstance newInstance = repository.createObject( registeredType,
+		                                                   discoveredType,
+		                                                   objectHandle,
+		                                                   notice.getObjectName() );
 
 		repository.addObject( newInstance );
 
 		// replace the class that the object is of in the notice with the class we discovered it as
-		notice.setClassHandle( discoveryType.getHandle() );
+		notice.setClassHandle( discoveredType.getHandle() );
 		context.success();
 		
 		if( logger.isInfoEnabled() )
@@ -116,7 +111,7 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 			logger.info( "DISCOVER object: object=%s, registeredAs=%s, discoveredAs=%s",
 			             objectMoniker(objectHandle),
 			             ocMoniker(classHandle),
-			             ocMoniker(discoveryType) );
+			             ocMoniker(discoveredType) );
 		}
 
 	}
