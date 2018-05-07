@@ -99,7 +99,6 @@ import org.portico.lrc.compat.JTimeRegulationAlreadyEnabled;
 import org.portico.lrc.compat.JTimeRegulationWasNotEnabled;
 import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.ICMetadata;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.ownership.msg.AttributeDivest;
@@ -146,6 +145,7 @@ import org.portico2.common.services.time.msg.ModifyLookahead;
 import org.portico2.common.services.time.msg.NextEventRequest;
 import org.portico2.common.services.time.msg.QueryGalt;
 import org.portico2.common.services.time.msg.TimeAdvanceRequest;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 /**
  * The Portico implementation of the IEEE 1516-2010 (HLA Evolved) RTIambassador class.
@@ -1910,7 +1910,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		{
 			// everything went fine!
 			ExtendedSuccessResponse success = (ExtendedSuccessResponse)response;
-			OCInstance instance = (OCInstance)success.getResult();
+			LOCInstance instance = (LOCInstance)success.getResult();
 			return new HLA1516eHandle( instance.getHandle() );
 		}
 		else
@@ -1978,7 +1978,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		{
 			// everything went fine!
 			ExtendedSuccessResponse success = (ExtendedSuccessResponse)response;
-			OCInstance instance = (OCInstance)success.getResult();
+			LOCInstance instance = (LOCInstance)success.getResult();
 			return new HLA1516eHandle( instance.getHandle() );
 		}
 		else

@@ -15,19 +15,18 @@
 package org.portico2.rti.services.object.incoming;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JInvalidFederationTime;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DeleteObject;
 import org.portico2.common.services.time.data.TimeStatus;
 import org.portico2.rti.federation.Federate;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class DeleteObjectHandler extends RTIMessageHandler
 {
@@ -83,7 +82,7 @@ public class DeleteObjectHandler extends RTIMessageHandler
 		}
 		
 		// check that the object exists and that we own it
-		OCInstance instance = repository.getObject( objectHandle );
+		ROCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
 			throw new JObjectNotKnown( "can't delete object ["+objectHandle+"]: unknown" );
@@ -98,10 +97,9 @@ public class DeleteObjectHandler extends RTIMessageHandler
 		repository.deleteObject( objectHandle );
 		context.success();
 		
-		// find the subscribers and tell them
+		// find the federates that know about this object and tell them
 		DeleteObject copy = request.clone( DeleteObject.class );
-		Set<Integer> subscribers = interests.getAllSubscribers( instance.getDiscoveredType() );
-		queueManycast( copy, subscribers );
+		queueManycast( copy, instance.getDiscoverers() );
 		
 		if( logger.isInfoEnabled() )
 		{

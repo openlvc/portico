@@ -508,6 +508,21 @@ public class ObjectModel implements Serializable
 		return this.privilegeToDelete;
 	}
 
+	/**
+	 * This method will get the ACMetadata for the privilege to delete attribute. As the standards
+	 * board changed the name of the attribute from 1.3 to 1516 (for no other good reason than
+	 * to cause everyone pain), this method will take version into account. A user should
+	 * <b>NEVER</b> try and get privilegeToDelete or HLAprivilegeToDeleteObject by name from
+	 * wihin a handler (or any part of the RTI).
+	 *
+	 * @return The metadata type for the privilege to delete attribute or null if there is
+	 *         currently no object root set.
+	 */
+	public ACMetadata getPrivileteToDeleteMetaClass()
+	{
+		return ocroot.getDeclaredAttribute( this.privilegeToDelete );
+	}
+
 	/////////////////////////////////////////////////////////////
 	////////////////// InteractionClass Methods /////////////////
 	/////////////////////////////////////////////////////////////

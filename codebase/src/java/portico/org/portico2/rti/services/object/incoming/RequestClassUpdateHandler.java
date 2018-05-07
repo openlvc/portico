@@ -21,14 +21,14 @@ import java.util.Set;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.RegionInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.RequestClassUpdate;
 import org.portico2.common.services.object.msg.RequestObjectUpdate;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.RACInstance;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class RequestClassUpdateHandler extends RTIMessageHandler
 {
@@ -96,10 +96,10 @@ public class RequestClassUpdateHandler extends RTIMessageHandler
 	private void processClass( int classHandle, Set<Integer> requested, RegionInstance region )
 	{
 		// Find all the objects of this class
-		Set<OCInstance> objects = repository.getAllInstances( classHandle );
+		Set<ROCInstance> objects = repository.getAllInstances( classHandle );
 
 		// For each object, find the set of attributes that are owned by independent federates
-		for( OCInstance object : objects )
+		for( ROCInstance object : objects )
 		{
 			// Somewhere to associate attributes with owners
 			Map<Integer,Set<Integer>> ownermap = new HashMap<>();
@@ -107,7 +107,7 @@ public class RequestClassUpdateHandler extends RTIMessageHandler
 			for( int attributeHandle : requested )
 			{
 				// Get the attribute information for the requested handle
-				ACInstance attribute = object.getAttribute( attributeHandle );
+				RACInstance attribute = object.getAttribute( attributeHandle );
 
 				// If DDM is used, make sure that the attribute is associated with a region
 				// and that the region overlaps with the provided region

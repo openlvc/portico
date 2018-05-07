@@ -98,7 +98,7 @@ public class RegisterObjectHandler extends LRCMessageHandler
 		                                                           classHandle );
 		
 		//FIXME Hangover from refactor
-		OCInstance instance = repository.newInstance( 666, objectClass, objectName, published );
+		OCInstance instance = null; //repository.newInstance( 666, objectClass, objectName, published );
 		
 		///////////////////////////////////////////
 		// run the ddm checks and apply ddm data //

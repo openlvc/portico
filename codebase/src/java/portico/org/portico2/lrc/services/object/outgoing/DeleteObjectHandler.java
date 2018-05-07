@@ -20,10 +20,10 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DeleteObject;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class DeleteObjectHandler extends LRCMessageHandler
 {
@@ -70,7 +70,7 @@ public class DeleteObjectHandler extends LRCMessageHandler
 			lrcState.checkValidTime( request.getTimestamp() );
 		
 		// check that the object exists and that we own it
-		OCInstance instance = repository.getObject( objectHandle );
+		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
 			throw new JObjectNotKnown( "Can't delete object ["+objectHandle+"]: unknown" );

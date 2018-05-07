@@ -20,11 +20,10 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JFederateOwnsAttributes;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.services.object.msg.DiscoverObject;
 import org.portico2.common.services.object.msg.LocalDelete;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class LocalDeleteObjectHandler extends LRCMessageHandler
 {
@@ -64,7 +63,7 @@ public class LocalDeleteObjectHandler extends LRCMessageHandler
 			logger.debug( "ATTEMPT *Local* Delete object ["+objectMoniker(objectHandle)+"]" );
 
 		// check that the object exists and that we own it
-		OCInstance instance = repository.getObject( objectHandle );
+		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 			throw new JObjectNotKnown( "Can't delete object ["+objectHandle+"]: unknown" );
 		
@@ -83,11 +82,11 @@ public class LocalDeleteObjectHandler extends LRCMessageHandler
 			logger.info( "SUCCESS *Locally* Deleted object ["+objectMoniker(objectHandle)+"]" );
 		
 		// do a rediscovery check
-		if( logger.isDebugEnabled() )
-			logger.debug( "Queuing a false discovery notification to trigger rediscovery test" );
-		DiscoverObject discover = fill( new DiscoverObject(instance) );
-		discover.setRediscoveryCheck( true );
-		lrcQueue.offer( discover );
+//		if( logger.isDebugEnabled() )
+//			logger.debug( "Queuing a false discovery notification to trigger rediscovery test" );
+//		DiscoverObject discover = fill( new DiscoverObject(instance) );
+//		discover.setRediscoveryCheck( true );
+//		lrcQueue.offer( discover );
 	}
 
 	//----------------------------------------------------------

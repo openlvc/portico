@@ -88,15 +88,36 @@ public class OCMetadata implements Serializable
 		
 		return null;
 	}
+
+	/**
+	 * Return true if this type is a child type of the given class. If it is, it means that
+	 * this type can be used as a more generic version of the given class.
+	 * 
+	 * @param other The class we want to know whether instances of this class could be assigned to
+	 * @return True if this class is a parent of the given class, false otherwise
+	 */
+	public boolean isAssignableTo( OCMetadata other )
+	{
+		OCMetadata current = this;
+		while( current != null )
+		{
+			if( current == other )
+				return true;
+			else
+				current = current.getParent();
+		}
+		
+		return false;
+	}
 	
 	/**
 	 * Creates a new instance of this type with an {@link ACInstance} for each attribute. The
 	 * returned instance <i>will not have a handle or a name</i>. The owner of each and every
 	 * attribute will be set to the handle of the creating federate.
 	 */
-	public OCInstance newInstance( int creatingFederate )
+	public OCInstance REMOVE_newInstance( int creatingFederate )
 	{
-		return newInstance( creatingFederate, null );
+		return REMOVE_newInstance( creatingFederate, null );
 	}
 	
 	/**
@@ -115,7 +136,7 @@ public class OCMetadata implements Serializable
 	 *              attempting to set the ownership flag) it will be skipped, but no error will
 	 *              be raised.
 	 */
-	public OCInstance newInstance( int creatingFederate, Set<Integer> publishedAttributes )
+	public OCInstance REMOVE_newInstance( int creatingFederate, Set<Integer> publishedAttributes )
 	{
 		// check the given published attributes, if it is null, set it to a new empty
 		// set (which will tell the later parts of the method to associate ownership of
@@ -234,6 +255,11 @@ public class OCMetadata implements Serializable
 			// return the complete set
 			return inherited;
 		}
+	}
+
+	public ACMetadata getPrivilegeToDelete()
+	{
+		return model.getPrivileteToDeleteMetaClass();
 	}
 	
 	/**

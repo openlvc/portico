@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JObjectAlreadyRegistered;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico2.common.services.ddm.data.RegionStore;
 
@@ -41,9 +40,9 @@ public class Repository
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private AtomicInteger nextObjectHandle;
-	private Map<Integer,OCInstance> objectsByHandle;
-	private Map<String,OCInstance>  objectsByName;
-	private Map<String,Integer>     reservedNames;
+	private Map<Integer,ROCInstance> objectsByHandle;
+	private Map<String,ROCInstance>  objectsByName;
+	private Map<String,Integer>      reservedNames;
 	
 	private RegionStore regionStore;
 
@@ -82,27 +81,33 @@ public class Repository
 	 * @throws JRTIinternalError If this registration pushes the federate past the max number of
 	 *                           objects it is allowed to register
 	 */
-	public synchronized OCInstance createObject( int federateHandle,
-	                                             OCMetadata objectClass,
-	                                             String objectName,
-	                                             Set<Integer> publishedAttributes )
-		throws JRTIinternalError
+	public synchronized ROCInstance createObject( OCMetadata objectClass,
+	                                              String objectName,
+	                                              int ownerHandle,
+	                                              Set<Integer> publishedAttributes )
 	{
-		// get the next available handle
-		OCInstance newInstance = objectClass.newInstance( federateHandle, publishedAttributes );
-		newInstance.setHandle( nextObjectHandle.incrementAndGet() );
+		// generate the handle and name
+		int objectHandle = nextObjectHandle.incrementAndGet();
 		if( objectName == null )
-			objectName = "HLA" + newInstance.getHandle();
+			objectName = "HLA"+objectHandle;
 		else if( objectsByName.containsKey(objectName) )
 			throw new JObjectAlreadyRegistered( objectName+" in use" );
-			
-		newInstance.setName( objectName );
-		newInstance.setDiscoveredType( objectClass );
-		newInstance.setRegisteredType( objectClass );
-		this.storeObject( newInstance );
-		return newInstance;
+		
+		// create the new instance for the object
+		ROCInstance object = new ROCInstance( objectClass,
+		                                      objectHandle,
+		                                      objectName,
+		                                      ownerHandle,
+		                                      publishedAttributes );
+		
+		return object;
 	}
 
+	public synchronized void addObject( ROCInstance instance )
+	{
+		this.storeObject( instance );
+	}
+	
 	/**
 	 * Removes and returns the object with the given handle from the repository. If there is no
 	 * object with the given handle, null is returned.
@@ -110,21 +115,21 @@ public class Repository
 	 * @param instanceHandle The handle of the object to remove
 	 * @return The object that was removed, or null if we couldn't find such an object
 	 */
-	public synchronized OCInstance deleteObject( int instanceHandle )
+	public synchronized ROCInstance deleteObject( int instanceHandle )
 	{
-		OCInstance removed = objectsByHandle.remove( instanceHandle );
+		ROCInstance removed = objectsByHandle.remove( instanceHandle );
 		if( removed != null )
 			objectsByName.remove( removed.getName() );
 		
 		return removed;
 	}
 
-	public OCInstance getObject( int handle )
+	public ROCInstance getObject( int handle )
 	{
 		return objectsByHandle.get( handle );
 	}
 
-	public OCInstance getObject( String name )
+	public ROCInstance getObject( String name )
 	{
 		return objectsByName.get( name );
 	}
@@ -132,21 +137,40 @@ public class Repository
 	/**
 	 * @return A collection of all the object in the repository. 
 	 */
-	public Collection <OCInstance> getAllInstances()
+	public Collection <ROCInstance> getAllInstances()
 	{
 		return objectsByHandle.values();
 	}
 
 	/**
-	 * @return A set of all the {@link OCInstance} types in the repository that are explicitly
+	 * @return A set of all the {@link ROCInstance} types in the repository that are explicitly
 	 *         registered with the given class handle (_NOT_ any parent of the type).
 	 */
-	public Set<OCInstance> getAllInstances( int classHandle )
+	public Set<ROCInstance> getAllInstances( int classHandle )
 	{
-		HashSet<OCInstance> objects = new HashSet<OCInstance>();
-		for( OCInstance instance : objectsByHandle.values() )
+		HashSet<ROCInstance> objects = new HashSet<>();
+		for( ROCInstance instance : objectsByHandle.values() )
 		{
 			if( instance.getRegisteredClassHandle() == classHandle )
+				objects.add( instance );
+		}
+		
+		return objects;
+	}
+
+	/**
+	 * Returns a set of all {@link ROCInstance}s that are either explicitly of the given class,
+	 * or are "assignable" to it (that is, are a subclass of).
+	 * 
+	 * @param initialClass Find all instances that are types (or subtypes) of this class
+	 * @return The set of all instances that are types (or subtypes) of the given class
+	 */
+	public Set<ROCInstance> getAllInstancesAssignableFrom( OCMetadata initialClass )
+	{
+		HashSet<ROCInstance> objects = new HashSet<>();
+		for( ROCInstance instance : objectsByHandle.values() )
+		{
+			if( instance.getRegisteredType().isAssignableTo(initialClass) )
 				objects.add( instance );
 		}
 		
@@ -202,7 +226,7 @@ public class Repository
 	//////////////////////////////////////////////////////////////////////////////////////////
 	/// Private Helper Methods  //////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
-	private synchronized void storeObject( OCInstance instance )
+	private synchronized void storeObject( ROCInstance instance )
 	{
 		this.objectsByHandle.put( instance.getHandle(), instance );
 		this.objectsByName.put( instance.getName(), instance );

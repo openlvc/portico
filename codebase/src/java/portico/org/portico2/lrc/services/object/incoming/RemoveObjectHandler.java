@@ -18,10 +18,10 @@ import java.util.Map;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DeleteObject;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class RemoveObjectHandler extends LRCMessageHandler
 {
@@ -62,7 +62,7 @@ public class RemoveObjectHandler extends LRCMessageHandler
 		}
 
 		// remove the object
-		OCInstance objectInstance = repository.deleteObject( objectHandle );
+		LOCInstance objectInstance = repository.deleteObject( objectHandle );
 		if( objectInstance != null && objectInstance.isDiscovered() )
 		{
 			// we had discovered the object, let request through to the callback handler

@@ -22,11 +22,11 @@ import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectNotKnown;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.RequestObjectUpdate;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.services.object.data.LACInstance;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 public class RequestObjectUpdateHandler extends LRCMessageHandler
 {
@@ -71,7 +71,7 @@ public class RequestObjectUpdateHandler extends LRCMessageHandler
 		}
 		
 		// make sure we have discovered the object
-		OCInstance instance = repository.getObject( objectHandle );
+		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 			throw new JObjectNotKnown( "Can't request update, unknown object: handle="+objectHandle );
 
@@ -80,7 +80,7 @@ public class RequestObjectUpdateHandler extends LRCMessageHandler
 		for( Integer attributeHandle : attributeHandles )
 		{
 			// get the attribute
-			ACInstance attribute = instance.getAttribute( attributeHandle );
+			LACInstance attribute = instance.getAttribute( attributeHandle );
 			if( attribute == null )
 			{
 				throw new JAttributeNotDefined( "attribute: " +attributeHandle+

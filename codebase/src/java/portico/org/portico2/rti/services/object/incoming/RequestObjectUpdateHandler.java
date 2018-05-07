@@ -23,11 +23,11 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectNotKnown;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.OCInstance;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.RequestObjectUpdate;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.object.data.RACInstance;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 public class RequestObjectUpdateHandler extends RTIMessageHandler
 {
@@ -67,7 +67,7 @@ public class RequestObjectUpdateHandler extends RTIMessageHandler
 		}
 
 		// find the local copy of the object
-		OCInstance instance = repository.getObject( objectHandle );
+		ROCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
 			// we don't know the instance, don't do anything
@@ -86,13 +86,13 @@ public class RequestObjectUpdateHandler extends RTIMessageHandler
 		context.success();
 	}
 	
-	private Map<Integer,HashSet<Integer>> findOwners( OCInstance objectInstance, Set<Integer> attributeHandles )
+	private Map<Integer,HashSet<Integer>> findOwners( ROCInstance objectInstance, Set<Integer> attributeHandles )
 	{
 		Map<Integer,HashSet<Integer>> owners = new HashMap<>();
 		
 		for( int attributeHandle : attributeHandles )
 		{
-			ACInstance attributeInstance = objectInstance.getAttribute( attributeHandle );
+			RACInstance attributeInstance = objectInstance.getAttribute( attributeHandle );
 			if( attributeInstance == null )
 			{
 				throw new JRTIinternalError( "Update requested for undefined attribute [class=%s, attribute=%s]",

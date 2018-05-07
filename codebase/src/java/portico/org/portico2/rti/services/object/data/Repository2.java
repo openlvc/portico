@@ -24,13 +24,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.portico.lrc.LRCState;
 import org.portico.lrc.PorticoConstants;
-import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
-import org.portico.lrc.model.RegionInstance;
 import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
 import org.portico2.common.services.ddm.data.RegionStore;
 
@@ -303,92 +299,6 @@ public class Repository2 implements SaveRestoreTarget
 	///////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// Object Creation Methods /////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Create a new {@link OCInstance}, populate it with the given data and return it. This method
-	 * will generate a new object handle (using {@link LRCState#nextObjectHandle()}) and will assign
-	 * it to the instance. For each of the given attributes in <code>publishedAttributes</code> it
-	 * will assign the local federate (idenfieid by {@link LRCState#getFederateHandle()}) as the
-	 * owner. The others will be left as having no owner.
-	 * <p/>
-	 * If the given name is <code>null</code>, a new name will be auto generated for the object.
-	 * If the given name is NOT <code>null</code>, that name will be used for the object. This
-	 * means it is the responsibility of the caller to ensure that the name is free and available
-	 * for use within the federation.
-	 * 
-	 * @throws JRTIinternalError If this registration pushes the federate past the max number of
-	 *                           objects it is allowed to register
-	 */
-	public OCInstance newInstance( int federateHandle,
-	                               OCMetadata objectClass,
-	                               String objectName,
-	                               Set<Integer> publishedAttributes )
-		throws JRTIinternalError
-	{
-		// get the next available handle
-		OCInstance newInstance = objectClass.newInstance( federateHandle, publishedAttributes );
-		newInstance.setHandle( nextObjectHandle.incrementAndGet() );
-		if( objectName == null )
-			objectName = "HLA" + newInstance.getHandle();
-		newInstance.setName( objectName );
-		newInstance.setDiscoveredType( objectClass );
-		newInstance.setRegisteredType( objectClass );
-		return newInstance;
-	}
-	
-	/**
-	 * This method is much like {@link #newInstance(OCMetadata, String, Set)} except that it is
-	 * geared towards remote federates discovering an object rather than the local federate
-	 * registering one. A new {@link OCInstance} will be created and have its name and handle set
-	 * to the given values. For each of the attribute handles in the <code>ownedAttributes</code>
-	 * array, this method will set the owner of those attributes to the value given in the first
-	 * parameter (<code>owningFederate</code>).
-	 * 
-	 * @param owningFederate The federate who is the creator of this object
-	 * @param registeredType The ACTUAL type the object was registered as
-	 * @param discoveredType The type the object has been discovered as
-	 * @param objectHandle The handle for the object
-	 * @param objectName The name for the object
-	 * @param ownedAttributes The attributes that are owned by the creating federate (those that
-	 *                        the creating federate published.
-	 * @param regionTokens The regions tokens that are associated with each particular attribute
-	 */
-	public OCInstance newInstance( int owningFederate,
-	                               OCMetadata registeredType,
-	                               OCMetadata discoveredType,
-	                               int objectHandle,
-	                               String objectName,
-	                               int[] ownedAttributes,
-	                               int[][] regionTokens )
-	{
-		HashSet<Integer> publishedSet = new HashSet<Integer>();
-		for( int handle : ownedAttributes )
-			publishedSet.add( handle );
-		
-		OCInstance newInstance = registeredType.newInstance( owningFederate, publishedSet );
-		newInstance.setHandle( objectHandle );
-		newInstance.setName( objectName );
-		newInstance.setRegisteredType( registeredType );
-		newInstance.setDiscoveredType( discoveredType );
-
-		// set up the region information
-		for( int i = 0; i < regionTokens.length; i++ )
-		{
-			int attributeHandle = regionTokens[i][0];
-			int regionToken = regionTokens[i][1];
-			
-			// because we might have discovered the object at a higher class than it actually
-			// is (due to subscription), there might be some attributes that are in the region
-			// token array that are not in our instance, in that case, just skip them
-			ACInstance attributeInstance = newInstance.getAttribute( attributeHandle );
-			if( attributeInstance == null )
-				continue;
-			
-			RegionInstance region = regionStore.getRegion( regionToken );
-			attributeInstance.setRegion( region );
-		}
-		
-		return newInstance;
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////// Methods for Name Registration Handling /////////////////////////
