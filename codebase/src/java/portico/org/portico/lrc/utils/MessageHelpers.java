@@ -249,7 +249,7 @@ public class MessageHelpers
 		}
 		catch( Exception e )
 		{
-			throw new RuntimeException( "couldn't convert byte[] into PorticoMessage", e );
+			throw new RuntimeException( "couldn't convert byte[] into "+expectedType.getSimpleName(), e );
 		}		
 	}
 	

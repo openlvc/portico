@@ -187,7 +187,8 @@ public class ExampleFederate
 		// connect
 		log( "Connecting..." );
 		fedamb = new ExampleFederateAmbassador( this );
-		rtiamb.connect( fedamb, CallbackModel.HLA_EVOKED );
+		rtiamb.connect( fedamb, CallbackModel.HLA_IMMEDIATE );
+		//rtiamb.connect( fedamb, CallbackModel.HLA_EVOKED );
 
 		//////////////////////////////
 		// 3. create the federation //
@@ -531,7 +532,7 @@ public class ExampleFederate
 		// LRC to start delivering callbacks to the federate
 		while( fedamb.isAdvancing )
 		{
-			rtiamb.evokeMultipleCallbacks( 0.1, 0.2 );
+			rtiamb.evokeMultipleCallbacks( 0.0001, 0.2 );
 		}
 	}
 

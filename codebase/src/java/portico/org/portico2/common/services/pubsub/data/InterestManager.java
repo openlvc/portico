@@ -148,12 +148,12 @@ public class InterestManager implements SaveRestoreTarget
 	 * @param regionToken    Token for the region to associate with the registration. If you don't
 	 *                       want to both with DDM stuff, pass {@link PorticoConstants#NULL_HANDLE}
 	 */
-	private void register( Map<OCMetadata,OCInterest> map,
-	                       String action,
-	                       int federateHandle,
-	                       int classHandle,
-	                       Set<Integer> attributes,
-	                       int regionToken )
+	private synchronized void register( Map<OCMetadata,OCInterest> map,
+	                                    String action,
+	                                    int federateHandle,
+	                                    int classHandle,
+	                                    Set<Integer> attributes,
+	                                    int regionToken )
 		throws JObjectClassNotDefined,
 		       JAttributeNotDefined,
 		       JRegionNotKnown,
@@ -256,11 +256,11 @@ public class InterestManager implements SaveRestoreTarget
 	 * @param regionToken    Token for the region to associate with the registration. If you don't
 	 *                       want to both with DDM stuff, pass {@link PorticoConstants#NULL_HANDLE}
 	 */
-	private void unregister( Map<OCMetadata,OCInterest> map,
-	                         String action,
-	                         int federateHandle,
-	                         int classHandle,
-	                         int regionToken )
+	private synchronized void unregister( Map<OCMetadata,OCInterest> map,
+	                                      String action,
+	                                      int federateHandle,
+	                                      int classHandle,
+	                                      int regionToken )
 		throws JObjectClassNotDefined,
 		       JRegionNotKnown,
 		       NoRegistration
@@ -337,12 +337,12 @@ public class InterestManager implements SaveRestoreTarget
 	 * @param regionToken    Token for the region to associate with the registration. If you don't
 	 *                       want to both with DDM stuff, pass {@link PorticoConstants#NULL_HANDLE}
 	 */
-	private void unregister( Map<OCMetadata,OCInterest> map,
-	                         String action,
-	                         int federateHandle,
-	                         int classHandle,
-	                         Set<Integer> attributes,
-	                         int regionToken )
+	private synchronized void unregister( Map<OCMetadata,OCInterest> map,
+	                                      String action,
+	                                      int federateHandle,
+	                                      int classHandle,
+	                                      Set<Integer> attributes,
+	                                      int regionToken )
 		throws JObjectClassNotDefined,
 		       JRegionNotKnown,
 		       NoRegistration
@@ -483,11 +483,11 @@ public class InterestManager implements SaveRestoreTarget
 	 * @param regionToken    Token for the region to associate with the registration. If you don't
 	 *                       want to both with DDM stuff, pass {@link PorticoConstants#NULL_HANDLE}
 	 */
-	private void register( Map<ICMetadata,ICInterest> map,
-	                       String action,
-	                       int federateHandle,
-	                       int classHandle,
-	                       int regionToken )
+	private synchronized void register( Map<ICMetadata,ICInterest> map,
+	                                    String action,
+	                                    int federateHandle,
+	                                    int classHandle,
+	                                    int regionToken )
 		throws JInteractionClassNotDefined,
 		       JRegionNotKnown,
 		       JInvalidRegionContext,
@@ -568,11 +568,11 @@ public class InterestManager implements SaveRestoreTarget
 	 * @param regionToken    Token for the region to associate with the registration. If you don't
 	 *                       want to both with DDM stuff, pass {@link PorticoConstants#NULL_HANDLE}.
 	 */
-	private void unregisterInteraction( Map<ICMetadata,ICInterest> map,
-	                                    String action,
-	                                    int federateHandle,
-	                                    int classHandle,
-	                                    int regionToken )
+	private synchronized void unregisterInteraction( Map<ICMetadata,ICInterest> map,
+	                                                 String action,
+	                                                 int federateHandle,
+	                                                 int classHandle,
+	                                                 int regionToken )
 		throws JInteractionClassNotDefined,
 		       JRegionNotKnown,
 		       NoRegistration
