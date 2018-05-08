@@ -17,6 +17,7 @@ package org.portico2.common.network.tcp;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -126,15 +127,31 @@ public class TcpChannel
 	{
 		if( this.isConnected == false )
 			return;
+		
+		// Set the connection status to off - when we close the socket it will
+		// notify the app listener that the channel disconnected, and as such,
+		// we'll end up back in here in a different thread. Let's just set the
+		// connected status to false now to prevent other people trying to
+		// repeat the process
+		this.isConnected = false;
 
+		// Close the input stream off, which will break the thread out of its listening daze
+		// and start its clean-up process
+		try
+		{
+			this.instream.close();
+		}
+		catch( IOException ioex )
+		{
+			logger.error( "Exception while closing TCP Channel streams: "+ioex.getMessage(), ioex );
+		}
+		
 		// Stop the receiver from taking any more messages
 		this.receiver.interrupt();
 		exceptionlessThreadJoin( receiver );
 
 		// Stop the bundler from processing any more connections
 		this.bundler.stopBundler();
-		
-		this.isConnected = false;
 	}
 	
 	/**
@@ -365,6 +382,11 @@ public class TcpChannel
 					// process the given payload (individual message or bundle) 
 					receive( header, 0, payload );
     			}
+			}
+			catch( EOFException eof )
+			{
+				// The connection has been killed
+				appListener.disconnected( eof );
 			}
 			catch( IOException ioe )
 			{
