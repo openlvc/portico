@@ -75,6 +75,8 @@ public class RTI
 		// Bootstrap
 		//
 		// initialize the logging framework
+		this.rid.getLog4jConfiguration().setFileName( "rtiexec.log" );
+		this.rid.getLog4jConfiguration().turnFileOn();
 		Log4jConfigurator.activate( this.rid.getLog4jConfiguration() );
 		this.logger = LogManager.getFormatterLogger( "portico.rti" );
 
