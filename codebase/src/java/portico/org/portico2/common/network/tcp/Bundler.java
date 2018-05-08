@@ -28,6 +28,7 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.StringUtils;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.ResponseMessage;
 
 /**
  * The Bundler class handles the buffering and flushing of a series of bytes to a
@@ -285,6 +286,16 @@ public class Bundler
 			              portico.getType(),
 			              StringUtils.sourceHandleToString(portico),
 			              StringUtils.targetHandleToString(portico),
+			              payload.length );
+		}
+		else if( type == Type.CONTROL_RESP )
+		{
+			ResponseMessage response = MessageHelpers.inflate( payload, ResponseMessage.class );
+			logger.trace( "(outgoing) type=%s (id=%d), success=%s, result=%s, size=%d",
+			              type,
+			              requestId,
+			              ""+response.isSuccess(),
+			              response.getResult(),
 			              payload.length );
 		}
 		else

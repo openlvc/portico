@@ -131,15 +131,15 @@ public class RegisterObjectHandler extends RTIMessageHandler
 		if( oMetadata == null )
 		{
 			// there is no such object class, ObjectClassNotDefined
-			throw new JObjectClassNotDefined( "class [" + classHandle + "] not in FOM" );
+			throw new JObjectClassNotDefined( "class ["+classHandle+"] not in FOM" );
 		}
 
 		// validate that we are a publisher of this class
-		if( interests.isObjectClassPublished( federateHandle, classHandle ) == false )
+		if( interests.isObjectClassPublished(federateHandle,classHandle) == false )
 		{
 			// we are not a publisher
-			throw new JObjectClassNotPublished( "class [" + classHandle + "] not published by [" +
-			                                    moniker(federateHandle) + "]" );
+			throw new JObjectClassNotPublished( "class ["+classHandle+"] not published by [" +
+			                                    moniker(federateHandle)+"]" );
 		}
 
 		return oMetadata;
