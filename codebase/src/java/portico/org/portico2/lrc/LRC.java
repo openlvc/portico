@@ -58,7 +58,7 @@ public class LRC
 	protected MessageSink outgoing;
 	
 	// Network Infrastructure //
-	private LrcConnection connection2;
+	private LRCConnection connection2;
 	
 	// State Information //
 	private ISpecHelper specHelper; // contains hlaVersion
@@ -154,7 +154,7 @@ public class LRC
 
 		// initialize the connection - but only if we haven't done so before
 		if( connection2 == null )
-			connection2 = new LrcConnection( this, configuration.getConnectionConfiguration() );
+			connection2 = new LRCConnection( this, configuration.getConnectionConfiguration() );
 		
 		// initialize the messaging framework
 		LRCHandlerRegistry.loadHandlers( this );
@@ -547,7 +547,7 @@ public class LRC
 		return this.specHelper.getHlaVersion();
 	}
 	
-	public LrcConnection getConnection()
+	public LRCConnection getConnection()
 	{
 		return this.connection2;
 	}

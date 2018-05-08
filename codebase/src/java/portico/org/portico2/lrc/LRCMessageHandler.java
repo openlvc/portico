@@ -49,7 +49,7 @@ public abstract class LRCMessageHandler implements IMessageHandler
 	protected LRCState lrcState;
 	protected LRCMessageQueue lrcQueue; // incoming message queue
 	protected Logger logger;
-	protected LrcConnection connection;
+	protected LRCConnection connection;
 	
 	protected InterestManager interests;
 	protected Repository repository;
