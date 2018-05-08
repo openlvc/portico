@@ -141,23 +141,16 @@ public class Bundler
 	
 	public void stopBundler()
 	{
+		// NOTE: Disabling - we can't tell if the connection is open or not.
+		//                   If we are stopping because of a disconnection then
+		//                   flushing will trigger an exception (duh, connection closed).
 		// flush whatever we have in the pipes currently
-		lock.lock();
-		try
-		{
-			logger.trace( "Flushing "+queuedMessages+" stored messages" );
-			flushCondition.signalAll();
-			returnCondition.await( 2000, TimeUnit.MILLISECONDS );
-		}
-		catch( InterruptedException ie )
-		{
-			// ignore - what would we do anyway!?
-		}
-		finally
-		{
-			lock.unlock();
-		}
-		
+		//logger.trace( "Flushing "+queuedMessages+" stored messages" );
+		//flush();
+		if( queuedMessages > 0 )
+			logger.warn( "Shutting down bundler with %d messages still queued", queuedMessages );
+
+		// kill the sender thread
 		try
 		{
 			logger.trace( "Shutting down bundler sending thread" );

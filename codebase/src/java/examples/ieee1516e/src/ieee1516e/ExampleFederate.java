@@ -337,6 +337,18 @@ public class ExampleFederate
 		{
 			log( "Didn't destroy federation, federates still joined" );
 		}
+		
+		// disconnect
+		try
+		{
+			rtiamb.disconnect();
+			log( "Disconnected" );
+		}
+		catch( Exception e )
+		{
+			log( "Exception while disconnecting" );
+			e.printStackTrace();
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
