@@ -27,7 +27,7 @@ import org.portico2.common.network.ConnectionFactory;
 import org.portico2.common.network.IConnection;
 import org.portico2.common.network.IMessageReceiver;
 
-public class LrcConnection implements IMessageReceiver
+public class LRCConnection implements IMessageReceiver
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -43,7 +43,7 @@ public class LrcConnection implements IMessageReceiver
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public LrcConnection( LRC lrc, ConnectionConfiguration configuration ) throws JConfigurationException
+	public LRCConnection( LRC lrc, ConnectionConfiguration configuration ) throws JConfigurationException
 	{
 		this.lrc = lrc;
 		this.configuration = configuration;
