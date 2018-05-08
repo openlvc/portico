@@ -187,8 +187,8 @@ public class ExampleFederate
 		// connect
 		log( "Connecting..." );
 		fedamb = new ExampleFederateAmbassador( this );
-		rtiamb.connect( fedamb, CallbackModel.HLA_IMMEDIATE );
-		//rtiamb.connect( fedamb, CallbackModel.HLA_EVOKED );
+		rtiamb.connect( fedamb, CallbackModel.HLA_IMMEDIATE );  // deliver callbacks as soon as they arrive
+		//rtiamb.connect( fedamb, CallbackModel.HLA_EVOKED );   // deliver callbacks when we call evoke
 
 		//////////////////////////////
 		// 3. create the federation //
