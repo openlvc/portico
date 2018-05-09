@@ -123,12 +123,12 @@ RegionHandle PorticoRtiAmbassador::decodeRegionHandle( const VariableLengthData&
 /////////////////////////////////////////////////////////////////////////////////
 IDatatype* PorticoRtiAmbassador::getAttributeDatatype( ObjectClassHandle whichClass,
                                                        AttributeHandle theHandle)
-	throw( InteractionParameterNotDefined,
-           InvalidParameterHandle,
-           InvalidInteractionClassHandle,
-           FederateNotExecutionMember,
-           NotConnected,
-           RTIinternalError )
+	throw ( AttributeNotDefined,
+			InvalidAttributeHandle,
+			InvalidObjectClassHandle,
+			FederateNotExecutionMember,
+			NotConnected,
+			RTIinternalError )
 {
 
 	JNIEnv* jnienv = this->javarti->getJniEnvironment();

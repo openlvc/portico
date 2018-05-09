@@ -449,7 +449,15 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	string jrelocation = string(rtihome).append( "/jre" );
 	string temp = string(jrelocation).append( "/bin/java" );
 	if( pathExists(temp) == false )
-		throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	{
+		logger->debug( "No JRE found at RTI_HOME, falling back to JAVA_HOME" );
+		const char* javahome = getenv( "JAVA_HOME" );
+		jrelocation = string(javahome).append( "/jre" );
+		temp = string(jrelocation).append( "/bin/java" );
+		
+		if( pathExists(temp) == false )
+			throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	}
 
 	// Create our system path
 	stringstream libraryPath;

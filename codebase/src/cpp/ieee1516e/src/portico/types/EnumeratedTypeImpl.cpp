@@ -60,5 +60,6 @@ std::wstring EnumeratedType::getName() const
  
 DatatypeClass EnumeratedType::getDatatypeClass() const
 {
-    return DatatypeClass::ENUMERATED;
+    return DATATYPE_ENUMERATED;
 }
+

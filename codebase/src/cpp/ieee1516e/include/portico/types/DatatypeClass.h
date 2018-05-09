@@ -26,36 +26,36 @@ namespace portico1516e
 		/**
 		 * Underpinning of all OMT datatypes
 		 */
-		BASIC,
+		DATATYPE_BASIC,
 
 		/**
 		 * Simple, scalar data items
 		 */
-		SIMPLE,
+		DATATYPE_SIMPLE,
 
 		/**
 		 * Data elements that can take on a finite discrete set of possible values
 		 */
-		ENUMERATED,
+		DATATYPE_ENUMERATED,
 
 		/**
 		 * Indexed homogenous collections of datatypes
 		 */
-		ARRAY,
+		DATATYPE_ARRAY,
 
 		/**
 		 * Heterogeneous collections of types
 		 */
-		FIXEDRECORD,
+		DATATYPE_FIXEDRECORD,
 
 		/**
 		 * Discriminated unions of types
 		 */
-		VARIANTRECORD,
+		DATATYPE_VARIANTRECORD,
 
 		/**
 		 * NA type (supports privilegeToDelete in 1516)
 		 */
-		NA
+		DATATYPE_NA
 	};
 }

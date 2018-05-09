@@ -12,8 +12,7 @@
 *   (that goes for your lawyer as well)
 *
 */
-#ifndef TEST1516EFEDERATE_H_
-#define TEST1516EFEDERATE_H_
+#pragma once
 
 #include "Test1516eFedAmb.h"
 #include "common.h" 
@@ -95,7 +94,7 @@ class Test1516eFederate
 		ObjectInstanceHandle quickRegister(ObjectClassHandle classHandle);
 		ObjectInstanceHandle quickRegister(ObjectClassHandle classHandle, const wstring& objectName);
 		ObjectInstanceHandle quickRegister(const wstring& className);
-		ObjectInstanceHandle quickRegister(const wstring& className, const const wstring& objectName);
+		ObjectInstanceHandle quickRegister(const wstring& className, const wstring& objectName);
 		void                 quickRegisterFail(ObjectClassHandle classHandle);
 		void                 quickDelete(ObjectInstanceHandle objectHandle, VariableLengthData tag);
 
@@ -157,6 +156,4 @@ class Test1516eFederate
 		void killTest(Exception &e, const char* activeMethod);
 		void killTest(const char *format, ...);
 };
-
-#endif  TEST1516EFEDERATE_H_ 
 

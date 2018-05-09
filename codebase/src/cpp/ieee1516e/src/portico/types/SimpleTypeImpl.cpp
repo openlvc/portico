@@ -41,12 +41,11 @@ std::wstring SimpleType::getName() const
 
 DatatypeClass SimpleType::getDatatypeClass() const
 {
-	return DatatypeClass::SIMPLE;
+	return DATATYPE_SIMPLE;
 }
 
 IDatatype* SimpleType::getRepresentation()
 {
 	return this->representation;       
 }
-
  

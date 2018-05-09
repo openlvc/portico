@@ -49,4 +49,3 @@ std::wstring Enumerator::getValue() const
     return this->value;
 }
 
-

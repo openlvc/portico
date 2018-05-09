@@ -53,3 +53,4 @@ bool Dimension::isCardinalityDynamic() const
 {
     return this->lowerCardinality == CARDINALITY_DYNAMIC;
 }
+

@@ -51,5 +51,6 @@ std::wstring FixedRecordType::getName() const
 
 DatatypeClass FixedRecordType::getDatatypeClass() const
 {
-    return DatatypeClass::FIXEDRECORD;
+    return DATATYPE_FIXEDRECORD;
 }
+

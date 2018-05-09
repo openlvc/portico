@@ -39,5 +39,6 @@ std::wstring NaType::getName() const
  
 DatatypeClass NaType::getDatatypeClass() const
 {
-	return DatatypeClass::NA;
+	return DATATYPE_NA;
 }
+

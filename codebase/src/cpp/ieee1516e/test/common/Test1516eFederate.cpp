@@ -235,10 +235,9 @@ void Test1516eFederate::quickAnnounce(const wstring& label, std::vector<Federate
 {
 	// convert the handle set
 	FederateHandleSet handleSet = FederateHandleSet();
-	std::vector<FederateHandle>::iterator itr = federates.begin();
-	va_list args;
+	std::vector<FederateHandle>::iterator itr;
 	 
-	for (itr; itr != federates.end(); itr++)
+	for( itr = federates.begin(); itr != federates.end(); itr++ )
 	{
 		handleSet.insert((*itr));
 	}
@@ -274,9 +273,9 @@ void Test1516eFederate::quickPublish(ObjectClassHandle objectClass, std::vector<
 {
 	// convert the handle set
 	AttributeHandleSet handleSet = AttributeHandleSet();
-	std::vector<AttributeHandle>::iterator itr = attributes.begin();
+	std::vector<AttributeHandle>::iterator itr;
 
-	for (itr; itr != attributes.end(); itr++)
+	for( itr = attributes.begin() ; itr != attributes.end() ; itr++ )
 	{
 		handleSet.insert((*itr));
 	}
@@ -297,9 +296,9 @@ void Test1516eFederate::quickPublish(const wstring& objectClass, std::vector<std
 	ObjectClassHandle classHandle = rtiamb->getObjectClassHandle(objectClass);
 	AttributeHandleSet attributeHandles = AttributeHandleSet();
 
-	std::vector<std::wstring>::iterator itr = attributeNames.begin();
+	std::vector<std::wstring>::iterator itr;
 
-	for (itr; itr != attributeNames.end(); itr++)
+	for( itr = attributeNames.begin() ; itr != attributeNames.end() ; itr++ )
 	{
 		AttributeHandle handle = rtiamb->getAttributeHandle(classHandle, (*itr));
 		attributeHandles.insert(handle);
@@ -320,9 +319,9 @@ void Test1516eFederate::quickSubscribe(ObjectClassHandle objectClass, std::vecto
 {
 	// convert the handle set
 	AttributeHandleSet handleSet = AttributeHandleSet();
-	std::vector<AttributeHandle>::iterator itr = attributes.begin();
+	std::vector<AttributeHandle>::iterator itr;
 
-	for (itr; itr != attributes.end(); itr++)
+	for( itr = attributes.begin() ; itr != attributes.end() ; itr++ )
 	{
 		handleSet.insert((*itr));
 	}
@@ -344,9 +343,9 @@ void Test1516eFederate::quickSubscribe(const wstring&  objectClass, std::vector<
 	ObjectClassHandle classHandle = rtiamb->getObjectClassHandle(objectClass);
 	AttributeHandleSet attributeHandles = AttributeHandleSet();
 
-	std::vector<std::wstring>::iterator itr = attributeNames.begin();
+	std::vector<std::wstring>::iterator itr;
 
-	for (itr; itr != attributeNames.end(); itr++)
+	for( itr = attributeNames.begin() ; itr != attributeNames.end() ; itr++ )
 	{
 		AttributeHandle handle = rtiamb->getAttributeHandle(classHandle, (*itr));
 		attributeHandles.insert(handle);
@@ -482,7 +481,7 @@ ObjectInstanceHandle Test1516eFederate::quickRegister(const wstring& className)
 	}
 }
 
-ObjectInstanceHandle Test1516eFederate::quickRegister(const wstring& className, const const wstring& objectName)
+ObjectInstanceHandle Test1516eFederate::quickRegister(const wstring& className, const wstring& objectName)
 {
 	// resolve the handle before the request
 	ObjectClassHandle classHandle = rtiamb->getObjectClassHandle(className);
@@ -563,17 +562,16 @@ void Test1516eFederate::quickReflect(ObjectInstanceHandle objectHandle,
 	ObjectClassHandle classHandle = rtiamb->getKnownObjectClassHandle(objectHandle); 
 	AttributeHandleValueMap valueMap = AttributeHandleValueMap();
 
-	std::vector<std::wstring>::iterator itr = attributeNames.begin();
-
-	for (itr; itr != attributeNames.end(); itr++)
+	std::vector<std::wstring>::iterator itr;
+	for( itr = attributeNames.begin() ; itr != attributeNames.end() ; itr++ )
 	{
 		// Get the attribute handle
 		AttributeHandle handle = rtiamb->getAttributeHandle(classHandle, (*itr));
 
 		// Create a dummy value based off the names of the attributes
-		char demoValue[32];
-		sprintf(demoValue, "%s", (*itr).c_str());
-		VariableLengthData demoData((void*)demoValue, strlen(demoValue)+1);
+		wchar_t demoValue[32];
+		swprintf( demoValue, 32, L"%s", (*itr).c_str() );
+		VariableLengthData demoData((void*)demoValue, wcslen(demoValue)+1);
 
 		// Add the attribute value in the the attribute value map.
 		valueMap[handle] = demoData;
@@ -650,18 +648,18 @@ void Test1516eFederate::quickSend(InteractionClassHandle classHandle,
 	//////////////////////
 	// get the interaction class name for the class handle (so.
 
-	std::vector<std::wstring>::iterator itr = parameterNames.begin();
+	std::vector<std::wstring>::iterator itr;
 	ParameterHandleValueMap valueMap = ParameterHandleValueMap();
 
-	for (itr; itr != parameterNames.end(); itr++)
+	for( itr = parameterNames.begin() ; itr != parameterNames.end() ; itr++ )
 	{
 		// Get the attribute handle
 		ParameterHandle handle = rtiamb->getParameterHandle(classHandle, (*itr));
 
 		// Create a dummy value based off the names of the attributes
-		char demoValue[32];
-		sprintf(demoValue, "%s", (*itr).c_str());
-		VariableLengthData demoData((void*)demoValue, strlen(demoValue) + 1);
+		wchar_t demoValue[32];
+		swprintf( demoValue, 32, L"%s", (*itr).c_str() );
+		VariableLengthData demoData((void*)demoValue, wcslen(demoValue) + 1);
 
 		// Add the attribute value in the the attribute value map.
 		valueMap[handle] = demoData;
@@ -692,18 +690,18 @@ void Test1516eFederate::quickSend(InteractionClassHandle classHandle,
 	//////////////////////
 	// get the interaction class name for the class handle (so
 	//std::wstring classHandle = rtiamb->getInteractionClassName(classHandle);
-	std::vector<std::wstring>::iterator itr = parameterNames.begin();
+	std::vector<std::wstring>::iterator itr;
 	ParameterHandleValueMap valueMap = ParameterHandleValueMap();
 
-	for (itr; itr != parameterNames.end(); itr++)
+	for( itr = parameterNames.begin() ; itr != parameterNames.end() ; itr++ )
 	{
 		// Get the attribute handle
 		ParameterHandle handle = rtiamb->getParameterHandle(classHandle, (*itr));
 
 		// Create a dummy value based off the names of the attributes
-		char demoValue[32];
-		sprintf(demoValue, "%s", (*itr).c_str());
-		VariableLengthData demoData((void*)demoValue, strlen(demoValue) + 1);
+		wchar_t demoValue[32];
+		swprintf( demoValue, 32, L"%s", (*itr).c_str() );
+		VariableLengthData demoData((void*)demoValue, wcslen(demoValue) + 1);
 
 		// Add the attribute value in the the attribute value map.
 		valueMap[handle] = demoData;

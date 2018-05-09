@@ -46,5 +46,6 @@ std::wstring BasicType::getName() const
  
 DatatypeClass BasicType::getDatatypeClass() const
 {
-	return DatatypeClass::BASIC;
+	return DATATYPE_BASIC;
 }
+

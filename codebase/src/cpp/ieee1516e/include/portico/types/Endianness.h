@@ -23,7 +23,7 @@ namespace portico1516e
 	 */
 	enum RTI_EXPORT Endianness
 	{
-		LITTLE,
-		BIG
+		ENDIANNESS_LITTLE,
+		ENDIANNESS_BIG
 	};
 }

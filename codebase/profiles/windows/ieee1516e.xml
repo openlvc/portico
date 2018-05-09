@@ -86,6 +86,29 @@
 		<compile-ieee1516e compiler="vc14" arch="amd64" build="release"/>
 	</target>
 	
+	<!-- ==================================== -->
+	<!--         HLA 1516e Test Suite         -->
+	<!-- ==================================== -->
+	<target name="test.compile" depends="compile.vc14" if="vc14.amd64.debug">
+		<cpptask compiler="vc14"
+		         outfile="testieee1516e"
+		         workdir="${testieee1516e.build.dir}"
+		         outdir="${testieee1516e.complete.dir}"
+		         type="executable"
+			     arch="amd64"
+		         compilerArgs="${compiler.args.debug}"
+		         linkerArgs="/DEBUG">
+			<fileset dir="${ieee1516e.test.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${ieee1516e.complete.dir}/vc14" libs="rti1516e64d,fedtime1516e64d"/>
+			<library path="${cppunit.dir}/win32/vc14" libs="cppunit_64d"/>
+		</cpptask>
+	</target>
+
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2013 (vc12) Compile Targets             -->
 	<!-- ================================================================= -->
@@ -112,29 +135,6 @@
 		<compile-ieee1516e compiler="vc10" arch="x86" build="release"/>
 		<compile-ieee1516e compiler="vc10" arch="amd64" build="debug"/>
 		<compile-ieee1516e compiler="vc10" arch="amd64" build="release"/>
-	</target>
-
-	<!-- ==================================== -->
-	<!--         HLA 1516e Test Suite         -->
-	<!-- ==================================== -->
-	<target name="test.compile" depends="compile.vc14" if="vc14.amd64.debug">
-		<cpptask compiler="vc14"
-		         outfile="testieee1516e"
-		         workdir="${testieee1516e.build.dir}"
-		         outdir="${testieee1516e.complete.dir}"
-		         type="executable"
-			     arch="amd64"
-		         compilerArgs="${compiler.args.debug}"
-		         linkerArgs="/DEBUG">
-			<fileset dir="${ieee1516e.test.src.dir}" includes="**/*.cpp"/>
-			<includepath path="${ieee1516e.include.dir}"/>
-			<includepath path="${ieee1516e.src.dir}/hla/time"/>
-			<includepath path="${cppunit.include}"/>
-			<define name="RTI_USES_STD_FSTREAM"/>
-			<define name="DEBUG"/>
-			<library path="${ieee1516e.complete.dir}/vc14" libs="rti1516e64d,fedtime1516e64d"/>
-			<library path="${cppunit.dir}/win32/vc14" libs="cppunit_64d"/>
-		</cpptask>
 	</target>
 	
 	<!-- ================================================================= -->

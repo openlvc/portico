@@ -49,4 +49,3 @@ bool Field::operator==( const Field& other ) const
 		   datatype->getDatatypeClass() == other.datatype->getDatatypeClass();
 }
 
- 

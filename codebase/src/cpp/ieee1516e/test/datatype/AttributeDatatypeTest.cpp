@@ -63,7 +63,7 @@ void AttributeDatatypeTest::testGetSimpleType()
 	IDatatype* datatype = rtiamb->getAttributeDatatype( simpleClass, simpleAttribute );
 	CPPUNIT_ASSERT( datatype );
 	CPPUNIT_ASSERT( datatype->getName() == L"Angle" );
-	CPPUNIT_ASSERT( datatype->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( datatype->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	SimpleType* asSimple = dynamic_cast<SimpleType*>( datatype );
 	CPPUNIT_ASSERT( asSimple );
@@ -71,7 +71,7 @@ void AttributeDatatypeTest::testGetSimpleType()
 	IDatatype* representation = asSimple->getRepresentation();
 	CPPUNIT_ASSERT( representation );
 	CPPUNIT_ASSERT( representation->getName() == L"HLAfloat32BE" );
-	CPPUNIT_ASSERT( representation->getDatatypeClass() == BASIC );
+	CPPUNIT_ASSERT( representation->getDatatypeClass() == DATATYPE_BASIC );
 }
 
 void AttributeDatatypeTest::testGetEnumeratedType()
@@ -85,7 +85,7 @@ void AttributeDatatypeTest::testGetEnumeratedType()
 	IDatatype* datatype = rtiamb->getAttributeDatatype( enumeratedClass, enumeratedAttribute );
 	CPPUNIT_ASSERT( datatype );
 	CPPUNIT_ASSERT( datatype->getName() == L"ActiveSonarScanPatternEnum16" );
-	CPPUNIT_ASSERT( datatype->getDatatypeClass() == ENUMERATED );
+	CPPUNIT_ASSERT( datatype->getDatatypeClass() == DATATYPE_ENUMERATED );
 
 	EnumeratedType* asEnumerated = dynamic_cast<EnumeratedType*>( datatype );
 	CPPUNIT_ASSERT( asEnumerated );
@@ -93,7 +93,7 @@ void AttributeDatatypeTest::testGetEnumeratedType()
 	IDatatype* representation = asEnumerated->getRepresentation();
 	CPPUNIT_ASSERT( representation );
 	CPPUNIT_ASSERT( representation->getName() == L"HLAinteger16BE" );
-	CPPUNIT_ASSERT( representation->getDatatypeClass() == BASIC );
+	CPPUNIT_ASSERT( representation->getDatatypeClass() == DATATYPE_BASIC );
 
 	list<Enumerator> enumerators = asEnumerated->getEnumerators();
 	CPPUNIT_ASSERT( enumerators.size() == 6 );
@@ -135,7 +135,7 @@ void AttributeDatatypeTest::testGetArrayTypeDynamic()
 	IDatatype* datatype = rtiamb->getAttributeDatatype( arrayClass, arrayAttribute );
 	CPPUNIT_ASSERT( datatype );
 	CPPUNIT_ASSERT( datatype->getName() == L"ArticulatedParameterArray" );
-	CPPUNIT_ASSERT( datatype->getDatatypeClass() == ARRAY );
+	CPPUNIT_ASSERT( datatype->getDatatypeClass() == DATATYPE_ARRAY );
 
 	ArrayType* asArray = dynamic_cast<ArrayType*>( datatype );
 	CPPUNIT_ASSERT( asArray );
@@ -154,7 +154,7 @@ void AttributeDatatypeTest::testGetArrayTypeDynamic()
 	IDatatype* representation = asArray->getDatatype();
 	CPPUNIT_ASSERT( representation );
 	CPPUNIT_ASSERT( representation->getName() == L"ArticulatedParameterStruct" );
-	CPPUNIT_ASSERT( representation->getDatatypeClass() == FIXEDRECORD );
+	CPPUNIT_ASSERT( representation->getDatatypeClass() == DATATYPE_FIXEDRECORD );
 }
 
 void AttributeDatatypeTest::testGetArrayTypeFixed()
@@ -202,7 +202,7 @@ void AttributeDatatypeTest::testGetArrayTypeFixed()
 	IDatatype* representation = asArray->getDatatype();
 	CPPUNIT_ASSERT( representation );
 	CPPUNIT_ASSERT( representation->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( representation->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( representation->getDatatypeClass() == DATATYPE_SIMPLE );
 }
 
 void AttributeDatatypeTest::testGetFixedRecordType()
@@ -216,7 +216,7 @@ void AttributeDatatypeTest::testGetFixedRecordType()
 	IDatatype* datatype = rtiamb->getAttributeDatatype( fixedClass, fixedAttribute );
 	CPPUNIT_ASSERT( datatype );
 	CPPUNIT_ASSERT( datatype->getName() == L"EntityTypeStruct" );
-	CPPUNIT_ASSERT( datatype->getDatatypeClass() == FIXEDRECORD );
+	CPPUNIT_ASSERT( datatype->getDatatypeClass() == DATATYPE_FIXEDRECORD );
 
 	FixedRecordType* asFixed = dynamic_cast<FixedRecordType*>( datatype );
 	list<Field> fields = asFixed->getFields();
@@ -228,43 +228,43 @@ void AttributeDatatypeTest::testGetFixedRecordType()
 	IDatatype* fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"EntityKind" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	field = *it++;
 	fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"Domain" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	field = *it++;
 	fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"CountryCode" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"unsignedInt16" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	field = *it++;
 	fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"Category" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	field = *it++;
 	fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"Subcategory" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	field = *it++;
 	fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"Specific" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 
 	field = *it++;
 	fieldType = field.getDatatype();
 	CPPUNIT_ASSERT( field.getName() == L"Extra" );
 	CPPUNIT_ASSERT( fieldType->getName() == L"HLAbyte" );
-	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == SIMPLE );
+	CPPUNIT_ASSERT( fieldType->getDatatypeClass() == DATATYPE_SIMPLE );
 }
 
 void AttributeDatatypeTest::testGetVariantRecordType()
@@ -284,7 +284,7 @@ void AttributeDatatypeTest::testGetVariantRecordType()
 	IDatatype* arrayDatatype = asArray->getDatatype();
 	CPPUNIT_ASSERT( arrayDatatype );
 	CPPUNIT_ASSERT( arrayDatatype->getName() == L"AntennaPatternStruct" );
-	CPPUNIT_ASSERT( arrayDatatype->getDatatypeClass() == VARIANTRECORD );
+	CPPUNIT_ASSERT( arrayDatatype->getDatatypeClass() == DATATYPE_VARIANTRECORD );
 
 	VariantRecordType* asVariant = dynamic_cast<VariantRecordType*>( arrayDatatype );
 	IDatatype* discriminantType = asVariant->getDiscriminantDatatype();
@@ -292,7 +292,7 @@ void AttributeDatatypeTest::testGetVariantRecordType()
 	CPPUNIT_ASSERT( asVariant->getDiscriminantName() == L"AntennaPatternType" );
 	CPPUNIT_ASSERT( discriminantType );
 	CPPUNIT_ASSERT( discriminantType->getName() == L"AntennaPatternTypeEnum32" );
-	CPPUNIT_ASSERT( discriminantType->getDatatypeClass() == ENUMERATED );
+	CPPUNIT_ASSERT( discriminantType->getDatatypeClass() == DATATYPE_ENUMERATED );
 
 	list<Alternative> alternatives = asVariant->getAlternatives();
 	list<Alternative>::iterator it = alternatives.begin();
@@ -329,6 +329,6 @@ void AttributeDatatypeTest::testGetNAType()
 
 	IDatatype* datatype = rtiamb->getAttributeDatatype( naClass, naAttribute );
 	CPPUNIT_ASSERT( datatype );
-	CPPUNIT_ASSERT( datatype->getDatatypeClass() == NA );
+	CPPUNIT_ASSERT( datatype->getDatatypeClass() == DATATYPE_NA );
 }
 

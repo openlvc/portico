@@ -13,6 +13,8 @@
  */
 #include "DatatypeRetrieval.h"
 
+#include <sstream>
+
 #include "jni/JniUtils.h"
 #include "portico/types/BasicType.h"
 #include "portico/types/EnumeratedType.h"
@@ -64,7 +66,7 @@ void DatatypeRetrieval::initialize() throw( RTIinternalError )
 	pugi::xml_parse_result result = this->fomxml.load_string( fomString.c_str() );
 
 	// If the FOM was parsed set initialized to true, otherwise throw an exception
-	if( result.status == pugi::xml_parse_status::status_ok )
+	if( result.status == pugi::status_ok )
 		this->initialized = true;
 	else
 		throw RTIinternalError( L"The FOM could not be parsed. Please check FOM is correct." );
@@ -76,7 +78,7 @@ IDatatype* DatatypeRetrieval::getDatatype( const std::wstring& name )
 	if( !isInitialized() )
 		this->initialize();
 
-	IDatatype* datatype = nullptr;
+	IDatatype* datatype = 0;
 	std::wstring nameLower = StringUtils::toLower( name );
 	
 
@@ -101,9 +103,9 @@ IDatatype* DatatypeRetrieval::getDatatype( const std::wstring& name )
 			else if( datatypeClassName == DatatypeRetrieval::ARRAY )
 				datatype = createArrayType( typeNode );
 			else if( datatypeClassName == DatatypeRetrieval::FIXED )
-				datatype = createFixedRecordType(typeNode);
+				datatype = createFixedRecordType( typeNode );
 			else if( datatypeClassName == DatatypeRetrieval::VARIANT )
-				datatype = createVariantRecordType(typeNode);
+				datatype = createVariantRecordType( typeNode );
 		}
 
 		// cache it
@@ -126,7 +128,7 @@ IDatatype* DatatypeRetrieval::createBasicType( const pugi::xml_node& node )
 	int size = node.attribute( L"size" ).as_int();
 
 	std::wstring endiannessString = node.attribute( L"endianness" ).as_string();
-	Endianness end = endiannessString == L"LITTLE" ? Endianness::LITTLE : Endianness::BIG;
+	Endianness end = endiannessString == L"LITTLE" ? ENDIANNESS_LITTLE : ENDIANNESS_BIG;
 	
 	return new BasicType( typeName, size, end );
 
@@ -200,8 +202,9 @@ IDatatype* DatatypeRetrieval::createArrayType( const pugi::xml_node& node )
 				std::wstring delimiter = L"..";
 				std::wstring lowerBoundString = cardinality.substr( 0, cardinality.find(delimiter) );
 				std::wstring upperBoundString = cardinality.substr( 1, cardinality.find(delimiter) );
-				lowerBounds = stoi( lowerBoundString );
-				upperBounds = stoi( upperBoundString );
+
+				std::wstringstream( lowerBoundString ) >> lowerBounds;
+				std::wstringstream( upperBoundString ) >> upperBounds;
 			}
 			else // its just an integer
 			{
@@ -313,6 +316,7 @@ Enumerator DatatypeRetrieval::getEnumeratorByName( const EnumeratedType* enumera
 }
 
 pugi::xml_node DatatypeRetrieval::getDatatypeNode( const std::wstring& name )
+	 throw( RTIinternalError )
 {
 	// Search Basic Types
 	std::wstring queryString = L"/objectModel/dataTypes/basicDataRepresentations/basicData[@name='" + name + L"']";

@@ -83,5 +83,6 @@ std::wstring ArrayType::getName() const
 
 DatatypeClass ArrayType::getDatatypeClass() const
 {
-    return DatatypeClass::ARRAY;
+    return DATATYPE_ARRAY;
 }
+

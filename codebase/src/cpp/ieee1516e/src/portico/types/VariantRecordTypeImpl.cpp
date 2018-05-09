@@ -60,6 +60,6 @@ std::wstring VariantRecordType::getName() const
 
 DatatypeClass VariantRecordType::getDatatypeClass() const
 {
-    return DatatypeClass::VARIANTRECORD;
+    return DATATYPE_VARIANTRECORD;
 }
  
