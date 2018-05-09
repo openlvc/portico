@@ -19,7 +19,7 @@
 */
 void failTest(const char *format, ...)
 {
-	// start the var-arg stuff 
+	// start the var-arg stuff
 	va_list args;
 	va_start(args, format);
 
@@ -57,12 +57,14 @@ void failTestMissingException(const char *expectedException, const char* action)
 void failTestWrongException(const char *expected, rti1516e::Exception &actual, const char *action)
 {
 	char buffer[4096];
+
+	// NOTE actual.what() is a wide string and will need to be converted to a narrow wstring
+	// to be used
+
 	sprintf(buffer,
 		"(wrongException) Wrong exception received while %s: expected [%s], received[%s]\n",
 		action,
 		expected,
-		actual.what());
+		"FIXME");
 	CPPUNIT_FAIL(buffer);
 }
-
-

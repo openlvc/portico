@@ -2,20 +2,20 @@
 #include <iostream>
 #include "RTI/time/HLAfloat64Interval.h"
 #include "RTI/time/HLAfloat64Time.h"
- 
+
 //Test1516eFederate::SIMPLE_NAME = L"Test1516eFederate";
- 
+
 
 Test1516eFederate::Test1516eFederate(const wstring& name)
 {
 	// store the federate name (make sure it is a copy so that we can delete it when we want)
-	this->name = name; 
+	this->name = name;
 
 	// create the RTIambassador
 	RTIambassadorFactory factory = RTIambassadorFactory();
 	this->rtiamb = dynamic_cast<RTIambassadorEx*>( factory.createRTIambassador().release() );
 
-	federateHandle = FederateHandle(); 
+	federateHandle = FederateHandle();
 
 
 	// give some default values to the existing vars
@@ -28,7 +28,7 @@ Test1516eFederate::~Test1516eFederate()
 	if (this->fedamb != NULL)
 	{
 		delete this->fedamb;
-	}		
+	}
 }
 
 
@@ -39,7 +39,7 @@ const wstring& Test1516eFederate::getFederateName()
 {
 	return this->name;
 }
- 
+
 
 /////////////////////////////////////////
 ///// federation management helpers /////
@@ -58,7 +58,7 @@ void Test1516eFederate::quickCreate(const wstring& federationName)
 	catch (FederationExecutionAlreadyExists& exists)
 	{
 		wcout << L"Didn't create federation, it already existed" << endl;
-	} 
+	}
 	catch (Exception &e)
 	{
 		killTest(e, "quickCreate()");
@@ -127,7 +127,7 @@ FederateHandle Test1516eFederate::quickJoin()
 
 FederateHandle Test1516eFederate::quickJoin(const wstring& federationName)
 {
-	
+
 	// try and join the federation
 	try
 	{
@@ -220,7 +220,7 @@ void Test1516eFederate::quickAnnounce(const wstring& label, VariableLengthData t
 	{
 		tag = VariableLengthData((void*)"NA", 2);
 	}
- 
+
 	try
 	{
 		rtiamb->registerFederationSynchronizationPoint(label, tag);
@@ -236,16 +236,16 @@ void Test1516eFederate::quickAnnounce(const wstring& label, std::vector<Federate
 	// convert the handle set
 	FederateHandleSet handleSet = FederateHandleSet();
 	std::vector<FederateHandle>::iterator itr;
-	 
+
 	for( itr = federates.begin(); itr != federates.end(); itr++ )
 	{
 		handleSet.insert((*itr));
 	}
-	 
+
 	try
 	{
 		VariableLengthData tag((void*)"", 1);
-		rtiamb->registerFederationSynchronizationPoint(label, tag, handleSet);		
+		rtiamb->registerFederationSynchronizationPoint(label, tag, handleSet);
 	}
 	catch (Exception &e)
 	{
@@ -292,7 +292,7 @@ void Test1516eFederate::quickPublish(ObjectClassHandle objectClass, std::vector<
 
 void Test1516eFederate::quickPublish(const wstring& objectClass, std::vector<std::wstring> attributeNames)
 {
-	// resolve the handle for the class 
+	// resolve the handle for the class
 	ObjectClassHandle classHandle = rtiamb->getObjectClassHandle(objectClass);
 	AttributeHandleSet attributeHandles = AttributeHandleSet();
 
@@ -339,7 +339,7 @@ void Test1516eFederate::quickSubscribe(ObjectClassHandle objectClass, std::vecto
 
 void Test1516eFederate::quickSubscribe(const wstring&  objectClass, std::vector<std::wstring> attributeNames)
 {
-	// resolve the handle for the class 
+	// resolve the handle for the class
 	ObjectClassHandle classHandle = rtiamb->getObjectClassHandle(objectClass);
 	AttributeHandleSet attributeHandles = AttributeHandleSet();
 
@@ -503,7 +503,10 @@ void  Test1516eFederate::quickRegisterFail(ObjectClassHandle classHandle)
 	{
 		rtiamb->registerObjectInstance(classHandle);
 		// FAIL THE TEST, shouldn't get here if there is an exception as expected
-		killTest("Was expecting registration of class [%s] would fail", classHandle);
+
+    // NOTE classHandle is an opaque type in 1516e and cannot be passed
+    // as a vararg
+		killTest("Was expecting registration of class [%s] would fail", "fixme");
 	}
 	catch (Exception &e)
 	{
@@ -518,7 +521,7 @@ void Test1516eFederate::quickDelete(ObjectInstanceHandle objectHandle, VariableL
 	{
 		tag = VariableLengthData((void*)"NA", 2);
 	}
-		
+
 
 	try
 	{
@@ -559,7 +562,7 @@ void Test1516eFederate::quickReflect(ObjectInstanceHandle objectHandle,
 	std::vector<std::wstring> attributeNames)
 {
 
-	ObjectClassHandle classHandle = rtiamb->getKnownObjectClassHandle(objectHandle); 
+	ObjectClassHandle classHandle = rtiamb->getKnownObjectClassHandle(objectHandle);
 	AttributeHandleValueMap valueMap = AttributeHandleValueMap();
 
 	std::vector<std::wstring>::iterator itr;
@@ -819,7 +822,7 @@ void   Test1516eFederate::quickDisableAsync()
 
 void Test1516eFederate::quickEnableRegulating(double lookahead)
 {
-	auto_ptr<HLAfloat64Interval> interval(new HLAfloat64Interval(lookahead)); 
+	auto_ptr<HLAfloat64Interval> interval(new HLAfloat64Interval(lookahead));
 
 	try
 	{
@@ -853,7 +856,7 @@ void  Test1516eFederate::quickEnableRegulatingRequest(double lookahead)
 void Test1516eFederate::quickDisableRegulating()
 {
 	try
-	{ 
+	{
 		rtiamb->disableTimeRegulation();
 		fedamb->isRegulating = false;
 	}
@@ -867,7 +870,7 @@ double Test1516eFederate::quickQueryLookahead()
 {
 
 	return fedamb->federateLookahead;
- 
+
 }
 
 void   Test1516eFederate::quickModifyLookahead(double newLookahead)
@@ -1025,7 +1028,7 @@ void Test1516eFederate::killTest(Exception &e, const char* activeMethod)
 
 void Test1516eFederate::killTest(const char *format, ...)
 {
-	//// start the var-arg stuff 
+	//// start the var-arg stuff
 	//va_list args;
 	//va_start(args, format);
 
@@ -1040,5 +1043,3 @@ void Test1516eFederate::killTest(const char *format, ...)
 	//// kill the test
 	//CPPUNIT_FAIL(buffer);
 }
- 
- 
