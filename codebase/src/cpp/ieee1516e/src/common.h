@@ -162,9 +162,6 @@ typedef double Float64;
 ///////// Portico Releated Items /////////
 //////////////////////////////////////////
 
-// Portico RTI Ambassador Ex (EXTREME)
-#include <portico/RTIambassadorEx.h>
-
 // java native interface
 #include "jni.h"
 
@@ -172,7 +169,5 @@ typedef double Float64;
 #define PORTICO1516E_NS portico1516e
 #define PORTICO1516E_NS_START namespace PORTICO1516E_NS {
 #define PORTICO1516E_NS_END };
-
-
 
 #endif /*PORTICO_CPP_HLA1516E_COMMON_H_*/

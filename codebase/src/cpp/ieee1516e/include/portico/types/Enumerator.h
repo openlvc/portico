@@ -14,71 +14,67 @@
  */
 #pragma once
 
-#include "portico/types/Endianness.h"
 #include <string>
+#include "RTI/SpecificConfig.h"
 
-/**
- * Stores the name and value of an enumerator used by the Enumerated type.
- * @see EnumeratedType
- * @see VariantRecordType
- */
-class Enumerator
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * Describes a possible value of an {@link EnumeratedType}.
+	 *
+	 * @see EnumeratedType
+	 * @see VariantRecordType
+	 */
+	class RTI_EXPORT Enumerator
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring name;
-		std::wstring value;
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring name;
+			std::wstring value;
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for BasicType with specified name, size and endianness
-		 *
-		 * @param name the name of this enumerator
-		 * @param value the value of this enumerator
-		 */
-		Enumerator(const std::wstring& name, const std::wstring& value);
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for BasicType with specified name, size and endianness
+			 *
+			 * @param name the name of the enumerator constant
+			 * @param value the plain text value of the enumerator value, as it appears in the FOM
+			 */
+			Enumerator( const std::wstring& name, const std::wstring& value );
 
-		virtual ~Enumerator();
+			virtual ~Enumerator();
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Check to see if two Enumerators are equal..
-		 *
-		 * @return True if they are equal, otherwise false.
-		 */
-		virtual bool operator==(const Enumerator& other);
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Check to see if two Enumerators are equal.
+			 *
+			 * @return <code>true</code> if they are equal, otherwise <code>false</code>.
+			 */
+			virtual bool operator==(const Enumerator& other) const;
 
-		/**
-		 * Returns the name of this datatype.
-		 * @return The name of this datatype as a string.
-		 */
-		virtual std::wstring getName() const;
+			/**
+			 * @return the name of this enumerator constant.
+			 */
+			virtual std::wstring getName() const;
 
-		/**
-		 * Returns the FOM datatype class of this datatype (e.g. Basic, Simple, Enumerated, Array,
-		 * FixedRecord or Variant).
-		 *
-		 * @return the DatatypeClass of this record.
-		 * @see DatatypeClass.
-		 */
-		virtual std::wstring getValue() const;
+			/**
+			 * @return the value of this enumerator constant
+			 */
+			virtual std::wstring getValue() const;
 
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
- 
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

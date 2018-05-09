@@ -819,7 +819,6 @@ public class ObjectModel implements Serializable
 			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");	
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");			
 			transformer.transform(new DOMSource(xml), new StreamResult(writer));
-			
 		}
 		catch(Exception e)
 		{

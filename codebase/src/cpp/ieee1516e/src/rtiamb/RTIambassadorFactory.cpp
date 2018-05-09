@@ -37,11 +37,6 @@ std::auto_ptr<RTIambassador> RTIambassadorFactory::createRTIambassador() throw( 
 	return auto_ptr<RTIambassador>( new PORTICO1516E_NS::PorticoRtiAmbassador() );
 }
 
-std::auto_ptr<RTIambassadorEx> RTIambassadorFactory::createRTIambassadorEx() throw( RTIinternalError )
-{
-	return auto_ptr<RTIambassadorEx>( new PORTICO1516E_NS::PorticoRtiAmbassador() );
-}
-
 //------------------------------------------------------------------------------------------
 //                                      STATIC METHODS
 //------------------------------------------------------------------------------------------

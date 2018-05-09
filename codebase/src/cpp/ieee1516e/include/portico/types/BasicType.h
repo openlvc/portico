@@ -17,64 +17,64 @@
 #include "portico/IDatatype.h"
 #include "portico/types/Endianness.h"
 
- /**
-  * This class contains metadata about a FOM Basic data type.
-  * <p/>
-  * Basic data types represent primitive data types in the FOM and are often the building blocks
-  * of more complex data types.
-  */
-class BasicType : public virtual IDatatype
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * This class contains metadata about a FOM Basic data type.
+	 * <p/>
+	 * Basic data types represent primitive data types in the FOM and are often the building 
+	 * blocks of more complex data types.
+	 */
+	class RTI_EXPORT BasicType : public virtual IDatatype
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring   name;        /// The name of this datatype
-		int	           size;        /// The size of this datatype
-		Endianness     endianness;  /// The endianness of this datatype
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring   name;        /// The name of this datatype
+			int            size;        /// The size of this datatype
+			Endianness     endianness;  /// The endianness of this datatype
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for BasicType with specified name, size and endianness
-		 *
-		 * @param name the name of this data type
-		 * @param size the size of this data type in bits
-		 * @param endianness the byte ordering of this data type
-		 */
-		BasicType(const std::wstring& name, int size, Endianness endianness);
-		virtual ~BasicType();
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for BasicType with specified name, size and endianness
+			 *
+			 * @param name the name of this data type
+			 * @param size the size of this data type in bits
+			 * @param endianness the byte ordering of this data type
+			 */
+			BasicType( const std::wstring& name, int size, Endianness endianness );
+			virtual ~BasicType();
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * @return the size of this datatype, in bits
+			 */
+			int getSize() const;
 
-		/**
-		 * Get the endianness of thei datatype.
-		 *
-		 * @return otherBasicDataType A basic data type to compare to
-		 */
-		virtual Endianness getEndianness() const;
+			/**
+			 * @return the endianness of this datatype
+			 */
+			Endianness getEndianness() const;
 
-		/////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////// Datatype Interface ////////////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////
- 
-		virtual std::wstring getName() const;
- 
-		virtual DatatypeClass getDatatypeClass() const;
+			/////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////// Datatype Interface ////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////
+			virtual std::wstring getName() const;
+			virtual DatatypeClass getDatatypeClass() const;
 
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

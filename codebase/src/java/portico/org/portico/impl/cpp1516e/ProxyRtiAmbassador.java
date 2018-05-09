@@ -2178,53 +2178,51 @@ public class ProxyRtiAmbassador
 		}
 	}
 	
-	public String getAttributeDatatype(int classHandle, int attributeHandle)
+	public String getAttributeDatatype( int classHandle, int attributeHandle )
 	{
-		String info =  "" ;
+		String name =  "" ;
 		
-		ObjectClassHandle newObjectClassHandle = (ObjectClassHandle)new HLA1516eHandle(classHandle);
-		AttributeHandle newAttributeHandle = new HLA1516eHandle(attributeHandle);
+		ObjectClassHandle newObjectClassHandle = new HLA1516eHandle( classHandle );
+		AttributeHandle newAttributeHandle = new HLA1516eHandle( attributeHandle );
 		try
 		{
-			IDatatype type = rtiamb.getAttributeDatatype( newObjectClassHandle, newAttributeHandle );
-			info = type.getName() ;
-			 
+			IDatatype type = rtiamb.getAttributeDatatype( newObjectClassHandle, 
+			                                              newAttributeHandle );
+			name = type.getName() ;
 		}
-		catch(Exception e)
+		catch( Exception e )
 		{
 			ExceptionManager.pushException( this.id, e );
-			return info;
 		}
 		
-		return info;
+		return name;
 		 
 	}
  
-	public String getParameterDatatype(int classHandle, int attributeHandle)
+	public String getParameterDatatype( int classHandle, int parameterHandle )
 	{
-		String info = "";
+		String name = "";
 		
-		InteractionClassHandle newInteractionClassHandle = (InteractionClassHandle)new HLA1516eHandle(classHandle);
-		ParameterHandle newAttributeHandle = new HLA1516eHandle(attributeHandle);
+		InteractionClassHandle newInteractionClassHandle = new HLA1516eHandle( classHandle );
+		ParameterHandle newParameterHandle = new HLA1516eHandle( parameterHandle );
 		
 		try
 		{
-			IDatatype type = rtiamb.getParameterDatatype( newInteractionClassHandle, newAttributeHandle );
-			info = type.getName();
+			IDatatype type = rtiamb.getParameterDatatype( newInteractionClassHandle, 
+			                                              newParameterHandle );
+			name = type.getName();
 			 
 		}
-		catch(Exception e)
+		catch( Exception e )
 		{
 			ExceptionManager.pushException( this.id, e );
-			return info;
 		}
 		
-		return info;
+		return name;
 	}
 	
 	public String getFom()
 	{
- 
 		return rtiamb.getFOM().toXmlDocument();
 	}
 	

@@ -12,91 +12,92 @@
  *   (that goes for your lawyer as well)
  *
  */
- #pragma once
+#pragma once
 
-#include "portico//IDatatype.h"
-#include "portico//types/Alternative.h"
 #include <list>
+#include "portico/IDatatype.h"
+#include "portico/types/Alternative.h"
 
-/**
- * This class contains metadata about a FOM Simple data type.
- * <p/>
- * A variant record datatype represents a discriminated union of types.
- * @see Alternative
- */
-class VariantRecordType : public virtual IDatatype
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * This class contains metadata about a FOM Variant data type.
+	 * <p/>
+	 * A variant record datatype represents a discriminated union of types.
+	 *
+	 * @see Alternative
+	 */
+	class RTI_EXPORT VariantRecordType : public virtual IDatatype
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
 	
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring            name;		            /// The name of this datatype
-		IDatatype*              discriminantDatatype;	/// The descriminant Datatype
-		std::wstring            discriminantName;       /// The descriminant datatype name
-		std::list<Alternative>  alternatives;			/// @see Alternative
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for VariantRecordType
-		 *
-		 * @param name the name of this data type
-		 * @param discriminantName the name of the descriminant datatype
-		 * @param discriminantDatatype a descriminant Datatype from the DataClassType enumerations.
-		 * @param alternatives the alternative datatypes
-		 */	
-		VariantRecordType(const std::wstring& name,
-		                  const std::wstring& discriminantName,
-		                  IDatatype* discriminantDatatype,
-		                  const std::list<Alternative>&  alternatives);
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring            name;                   /// The name of this datatype
+			IDatatype*              discriminantDatatype;   /// The discriminant Datatype
+			std::wstring            discriminantName;       /// The discriminant datatype name
+			std::list<Alternative>  alternatives;           /// @see Alternative
 
-		virtual ~VariantRecordType();
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for VariantRecordType
+			 *
+			 * @param name the name of this data type
+			 * @param discriminantName the name of the discriminantor
+			 * @param discriminantDatatype the EnumeratedType that acts as the discriminator
+			 * @param alternatives the alternative records based on the discriminant value
+			 */	
+			VariantRecordType(const std::wstring& name,
+							  const std::wstring& discriminantName,
+							  IDatatype* discriminantDatatype,
+							  const std::list<Alternative>&  alternatives);
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Get the descriminate datatype name.
-		 *
-		 * @return the discriminant name as a string
-		 */
-		virtual std::wstring getDiscriminateName() const;
+			virtual ~VariantRecordType();
 
-		/**
-		 * Get the descriminate datatype.
-		 *
-		 * @note It is the caller's responsibility to clean up and manage the
-		 *       returned datatype pointer.
-		 *
-		 * @return the discriminant datatype
-		 */
-		virtual IDatatype* getDiscriminateDatatype() const;
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Returns the name of the discriminant.
+			 * <p/>
+			 * <b>Note:</b> The name does not represent the name of the disciminant datatype, 
+			 * rather a semantic name for the discriminant itself.
+			 * 
+			 * @return the name of the discriminant. This value 
+			 */
+			std::wstring getDiscriminantName() const;
 
-		/**
-		 * Get the Alternate.
-		 *
-		 * @return the the Alternate for this variant record
-		 */
-		virtual std::list<Alternative> getAlternatives() const;
+			/**
+			 * Returns the {@link EnumeratedDatatype} that acts as the discriminant
+			 * <p/>
+			 * <b>Memory Management</b> the pointer returned by this function points to the 
+			 * internal LRC datatype cache and should not be deleted by the user.
+			 *
+			 * @return the discriminant datatype
+			 */
+			IDatatype* getDiscriminantDatatype() const;
 
+			/**
+			 * @returns all Alternative records for this variant type
+			 */
+			std::list<Alternative> getAlternatives() const;
 
-		/////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////// Datatype Interface ////////////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////// Datatype Interface ////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////
+			virtual std::wstring getName() const;
+			virtual DatatypeClass getDatatypeClass() const;
 
-		virtual std::wstring getName() const;
-
-		virtual DatatypeClass getDatatypeClass() const;
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

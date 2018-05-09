@@ -14,71 +14,71 @@
  */
 #pragma once
 
-#include "portico/types/Field.h"
 #include "portico/IDatatype.h"
+#include "portico/types/Field.h"
 
-/**
- * Stores the name and datatype of a field used in the FixedRecordType
- * @see FixedRecordType
- */
-class Field
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * Stores metadata of a {@link FixedRecordType} field
+	 *
+	 * @see FixedRecordType
+	 */
+	class RTI_EXPORT Field
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring  name;
-		IDatatype*    datatype;
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for Field with specified name, and Datatype.
-		 *
-		 * @param name the name of this enumerator
-		 * @param value the value of this enumerator
-		 */
-		Field(const std::wstring& name, IDatatype* datatype);
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring  name;
+			IDatatype*    datatype;
 
-		virtual ~Field();
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for Field with specified name, and Datatype.
+			 *
+			 * @param name the name of this enumerator
+			 * @param value the value of this enumerator
+			 */
+			Field( const std::wstring& name, IDatatype* datatype );
+			virtual ~Field();
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Returns the name of this datatype.
-		 * @return The name of this datatype as a string.
-		 */
-		virtual std::wstring getName() const;
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * @return the name of this datatype.
+			 */
+			std::wstring getName() const;
 
-		/**
-		 * Returns the datatype class of this field.
-		 *
-		 * @note It is the caller's responsibility to clean up and manage the
-		 *       returned datatype pointer.
-		 *
-		 * @return the Datatype of this record.
-		 * @see DatatypeClass.
-		 */
-		virtual IDatatype* getDatatype();
+			/**
+			 * Returns the datatype class of this field.
+			 * <p/>
+			 * <b>Memory Management</b> the pointer returned by this function points to the 
+			 * internal LRC datatype cache and should not be deleted by the user.
+			 *
+			 * @return the Datatype of this record.
+			 * @see DatatypeClass.
+			 */
+			IDatatype* getDatatype() const;
 
-		/**
-		 * Check to see if two Field objects are equal.
-		 *
-		 * @return True if they are equal, otherwise false.
-		 */
-		virtual bool operator==(const Field& other) const;
+			/**
+			 * Check to see if two Field objects are equal.
+			 *
+			 * @return <code>true</code> if they are equal, otherwise <code>false</code>
+			 */
+			bool operator==( const Field& other ) const;
 
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
- 
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

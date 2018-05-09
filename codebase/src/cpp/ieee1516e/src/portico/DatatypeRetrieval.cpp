@@ -1,7 +1,29 @@
+/*
+ *   Copyright 2018 The Portico Project
+ *
+ *   This file is part of portico.
+ *
+ *   portico is free software; you can redistribute it and/or modify
+ *   it under the terms of the Common Developer and Distribution License (CDDL)
+ *   as published by Sun Microsystems. For more information see the LICENSE file.
+ *
+ *   Use of this software is strictly AT YOUR OWN RISK!!!
+ *   If something bad happens you do not have permission to come crying to me.
+ *   (that goes for your lawyer as well)
+ */
 #include "DatatypeRetrieval.h"
-#include "utils\StringUtils.h"
 
-PORTICO1516E_NS_START
+#include "jni/JniUtils.h"
+#include "portico/types/BasicType.h"
+#include "portico/types/EnumeratedType.h"
+#include "portico/types/SimpleType.h"
+#include "portico/types/ArrayType.h"
+#include "portico/types/FixedRecordType.h"
+#include "portico/types/VariantRecordType.h"
+#include "portico/types/NaType.h"
+#include "utils/StringUtils.h"
+
+using namespace PORTICO1516E_NS;
 
 const std::wstring DatatypeRetrieval::BASIC =      L"basicData";
 const std::wstring DatatypeRetrieval::SIMPLE =     L"simpleData";
@@ -11,30 +33,17 @@ const std::wstring DatatypeRetrieval::FIXED =      L"fixedRecordData";
 const std::wstring DatatypeRetrieval::VARIANT =    L"variantRecordData";
 const std::wstring DatatypeRetrieval::NA =         L"NA";
 
-DatatypeRetrieval::DatatypeRetrieval()
+DatatypeRetrieval::DatatypeRetrieval( JavaRTI* javarti )
 {
 	// We store this so we can decide if we want to update 
-	// the FOM at runtime. 
+	// the FOM at runtime.
 	this->initialized = false;
+	this->javarti = javarti;
 }
 
 DatatypeRetrieval::~DatatypeRetrieval()
-{}
-
-void DatatypeRetrieval::initialize(std::wstring fomString)
 {
-	std::wstring xmlIn =  fomString;
-	pugi::xml_parse_result result = this->fomxml.load_string(xmlIn.c_str());
 
-	// The FOM was parsed set initialized ot true.
-	if (result.status == pugi::xml_parse_status::status_ok)
-	{
-		this->initialized = true;
-	}
-	else{
-		// throw error that FOM could not be parsed
-		throw RTIinternalError(L"The FOM could not be parsed. Please check FOM is correct.");
-	}
 }
 
 bool DatatypeRetrieval::isInitialized()
@@ -42,276 +51,304 @@ bool DatatypeRetrieval::isInitialized()
 	return this->initialized;
 }
 
-IDatatype* DatatypeRetrieval::getParameterDatatype(std::wstring dataTypeName)
+
+void DatatypeRetrieval::initialize() throw( RTIinternalError )
 {
-	return getDatatype(dataTypeName);
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
+	// call the method and convert to a string		
+	jstring jFomString = (jstring)jnienv->CallObjectMethod( javarti->jproxy, javarti->GET_FOM );
+	this->javarti->exceptionCheck();
+
+	wstring fomString = JniUtils::toWideString( jnienv, jFomString );
+	pugi::xml_parse_result result = this->fomxml.load_string( fomString.c_str() );
+
+	// If the FOM was parsed set initialized to true, otherwise throw an exception
+	if( result.status == pugi::xml_parse_status::status_ok )
+		this->initialized = true;
+	else
+		throw RTIinternalError( L"The FOM could not be parsed. Please check FOM is correct." );
 }
 
-IDatatype* DatatypeRetrieval::getAttributeDatatype(std::wstring dataTypeName)
+IDatatype* DatatypeRetrieval::getDatatype( const std::wstring& name )
+	throw( RTIinternalError )
 {
-	return getDatatype(dataTypeName);
-}
+	if( !isInitialized() )
+		this->initialize();
 
-IDatatype* DatatypeRetrieval::getDatatype(std::wstring dataTypeName)
-{
 	IDatatype* datatype = nullptr;
+	std::wstring nameLower = StringUtils::toLower( name );
+	
 
 	// If it hasn't been cached then create it and cache it.
-	if (this->typeCache.find(dataTypeName) == this->typeCache.end())
+	if( this->typeCache.find(nameLower) == this->typeCache.end() )
 	{
-		if (dataTypeName == L"NA")
+		if( nameLower == L"na" )
 		{
 			datatype = new NaType();
 		}
 		else
-		{
-			// create and cache it
-			pugi::xml_node typeNode = getDatatypeNode(dataTypeName);
-			std::wstring classTypeName = typeNode.name();
+		{ 
+			pugi::xml_node typeNode = getDatatypeNode( name );
+			std::wstring datatypeClassName = typeNode.name();
 
-			if (classTypeName == DatatypeRetrieval::BASIC)
-			{
-				datatype = getBasicType(typeNode);
-			}
-			else if (classTypeName == DatatypeRetrieval::SIMPLE)
-			{
-				datatype = getSimpleType(typeNode);
-			}
-			else if (classTypeName == DatatypeRetrieval::ENUMERATED)
-			{
-				datatype = getEnumeratedType(typeNode);
-			}
-			else if (classTypeName == DatatypeRetrieval::ARRAY)
-			{
-				datatype = getArrayType(typeNode);
-			}
-			else if (classTypeName == DatatypeRetrieval::FIXED)
-			{
-				datatype = getFixedRecordType(typeNode);
-			}
-			else if (classTypeName == DatatypeRetrieval::VARIANT)
-			{
-				datatype = getVariantRecordType(typeNode);
-			}
+			if( datatypeClassName == DatatypeRetrieval::BASIC )
+				datatype = createBasicType( typeNode );
+			else if( datatypeClassName == DatatypeRetrieval::SIMPLE )
+				datatype = createSimpleType( typeNode );
+			else if( datatypeClassName == DatatypeRetrieval::ENUMERATED )
+				datatype = createEnumeratedType( typeNode );
+			else if( datatypeClassName == DatatypeRetrieval::ARRAY )
+				datatype = createArrayType( typeNode );
+			else if( datatypeClassName == DatatypeRetrieval::FIXED )
+				datatype = createFixedRecordType(typeNode);
+			else if( datatypeClassName == DatatypeRetrieval::VARIANT )
+				datatype = createVariantRecordType(typeNode);
 		}
 
 		// cache it
-		this->typeCache[dataTypeName] = datatype;
+		this->typeCache[nameLower] = datatype;
 	}
 	else
 	{
 		// Get from cache using handle as key. 
-		datatype = this->typeCache[dataTypeName];
+		datatype = this->typeCache[nameLower];
 	}
 
 	return datatype;
 }
 
-IDatatype* DatatypeRetrieval::getBasicType(pugi::xml_node dataNode)
+IDatatype* DatatypeRetrieval::createBasicType( const pugi::xml_node& node )
+	throw( RTIinternalError )
 {
+	// Get the attributes from the node
+	std::wstring typeName = node.attribute( L"name" ).as_string();
+	int size = node.attribute( L"size" ).as_int();
 
-	// Get the parameters from the node
-	std::wstring typeName = dataNode.attribute(L"name").as_string();
-	int size = dataNode.attribute(L"size").as_int();
-
-	std::wstring endiannessString = dataNode.attribute(L"endianness").as_string();
+	std::wstring endiannessString = node.attribute( L"endianness" ).as_string();
 	Endianness end = endiannessString == L"LITTLE" ? Endianness::LITTLE : Endianness::BIG;
-
-	// Create and cache the new BasicType
-	return new BasicType(typeName, size, end);
+	
+	return new BasicType( typeName, size, end );
 
 }
 
-IDatatype* DatatypeRetrieval::getSimpleType(pugi::xml_node dataNode)
+IDatatype* DatatypeRetrieval::createSimpleType( const pugi::xml_node& node )
+	throw( RTIinternalError )
 {
+	std::wstring typeName = node.attribute( L"name" ).as_string();
+	std::wstring representation = node.attribute( L"representation" ).as_string();
+	IDatatype* basicType = getDatatype( representation );
 
-	// Get the parameters from the node
-	std::wstring typeName = dataNode.attribute(L"name").as_string();
-	std::wstring representation = dataNode.attribute(L"representation").as_string();
-	IDatatype* basicType = getAttributeDatatype(representation);
-
-	// Create and cache the new BasicType
-	return new SimpleType(typeName, basicType);
+	return new SimpleType( typeName, basicType );
 }
 
-IDatatype* DatatypeRetrieval::getEnumeratedType(pugi::xml_node dataNode)
+IDatatype* DatatypeRetrieval::createEnumeratedType( const pugi::xml_node& node )
+	throw( RTIinternalError )
 {
-	std::list<Enumerator*> enumerators;
+	std::list<Enumerator> enumerators;
 
-	std::wstring name = dataNode.attribute(L"name").as_string();
-	std::wstring representation = dataNode.attribute(L"representation").as_string();
+	std::wstring name = node.attribute( L"name" ).as_string();
+	std::wstring representation = node.attribute( L"representation" ).as_string();
 
 	// get type from attribute chain
-	IDatatype* basicType = getAttributeDatatype(representation);
+	IDatatype* basicType = getDatatype( representation );
 
-	for (pugi::xml_node enumerations = dataNode.first_child(); enumerations; enumerations = enumerations.next_sibling(L"enumerator"))
+	pugi::xpath_node_set enumeratorResults = node.select_nodes( L"./enumerator" );
+	pugi::xpath_node_set::iterator resultIt = enumeratorResults.begin();
+	while( resultIt != enumeratorResults.end() )
 	{
-		std::wstring enumerationName = enumerations.attribute(L"name").as_string();
-		std::wstring enumerationValue = enumerations.attribute(L"values").as_string();
+		const pugi::xpath_node& enumResult = *resultIt++;
+		const pugi::xml_node& enumerator = enumResult.node();
+		std::wstring enumeratorName = enumerator.attribute( L"name" ).as_string();
+		std::wstring enumeratorValue = enumerator.attribute( L"values" ).as_string();
 
 		//add to enumerator list
-		enumerators.push_back(createEnumeratorAndCache(enumerationName, enumerationValue));
+		enumerators.push_back( Enumerator(enumeratorName, enumeratorValue) );
 	}
-
-	// Create and cache the new BasicType
-	return new EnumeratedType(name, basicType, enumerators);
+	
+	return new EnumeratedType( name, basicType, enumerators );
 }
 
-Enumerator* DatatypeRetrieval::createEnumeratorAndCache(std::wstring name, std::wstring value)
-{
-	std::wstring enumerationName = name;
-	std::wstring enumerationValue = value;
-	Enumerator* enumerator = new Enumerator(enumerationName, enumerationValue);
-
-	// Cache the enumerator for use with the variant record type
-	this->enumeratorCache[enumerationName] = enumerator;
-
-	return enumerator;
-}
-
-IDatatype* DatatypeRetrieval::getArrayType(pugi::xml_node dataNode)
+IDatatype* DatatypeRetrieval::createArrayType( const pugi::xml_node& node )
+	throw( RTIinternalError )
 {
 	std::list<Dimension> dimensionList;
 
-	std::wstring name = dataNode.attribute(L"name").as_string();
-	std::wstring representation = dataNode.attribute(L"dataType").as_string();
+	std::wstring name = node.attribute( L"name" ).as_string();
+	std::wstring representation = node.attribute( L"dataType" ).as_string();
 
 	//get rep from name
-	IDatatype* dataType = getAttributeDatatype(representation);
+	IDatatype* datatype = getDatatype( representation );
 
-	for (pugi::xml_node dimensions = dataNode.first_child(); dimensions; dimensions = dimensions.next_sibling(L"cardinality"))
+	pugi::xpath_node_set cardinalityResults = node.select_nodes( L"./cardinality" );
+	pugi::xpath_node_set::iterator resultIt = cardinalityResults.begin();
+	while( resultIt != cardinalityResults.end() )
 	{
+		const pugi::xpath_node& cardinalityResult = *resultIt++;
+		const pugi::xml_node& dimension = cardinalityResult.node();
+
 		int lowerBounds = Dimension::CARDINALITY_DYNAMIC;
 		int upperBounds = Dimension::CARDINALITY_DYNAMIC;
-		std::wstring cardinality = dimensions.text().as_string();
+		std::wstring cardinality = dimension.text().as_string();
 
-		if (cardinality != L"Dynamic")
+		if( cardinality != L"Dynamic" )
 		{
 			// check to see if we have the  '..' delimiter specifying bounds	
-			if (cardinality.find(L"..") != std::wstring::npos)
+			if( cardinality.find(L"..") != std::wstring::npos )
 			{
 				// get upper and lower bounds 
 				std::wstring delimiter = L"..";
-				std::wstring lowerBoundString = cardinality.substr(0, cardinality.find(delimiter));
-				std::wstring upperBoundString = cardinality.substr(1, cardinality.find(delimiter));
-				lowerBounds = stoi(lowerBoundString);
-				upperBounds = stoi(upperBoundString);
-
+				std::wstring lowerBoundString = cardinality.substr( 0, cardinality.find(delimiter) );
+				std::wstring upperBoundString = cardinality.substr( 1, cardinality.find(delimiter) );
+				lowerBounds = stoi( lowerBoundString );
+				upperBounds = stoi( upperBoundString );
 			}
 			else // its just an integer
 			{
-				lowerBounds = dimensions.text().as_int();
+				lowerBounds = dimension.text().as_int();
+				upperBounds = lowerBounds;
 			}
 		}
 
-		dimensionList.push_back(Dimension(lowerBounds, upperBounds));
+		dimensionList.push_back( Dimension(lowerBounds, upperBounds) );
 	}
 
 	// create the datatype
-	return new ArrayType(name, dataType, dimensionList);
+	return new ArrayType( name, datatype, dimensionList );
 }
 
-IDatatype* DatatypeRetrieval::getFixedRecordType(pugi::xml_node dataNode)
+IDatatype* DatatypeRetrieval::createFixedRecordType( const pugi::xml_node& node )
+	throw( RTIinternalError )
 {
 	std::list<Field> fieldList;
 
-	std:wstring name = dataNode.attribute(L"name").as_string();
+	std::wstring name = node.attribute( L"name" ).as_string();
 
 	// Get all the fields in this fixed record type
-	for (pugi::xml_node fields = dataNode.first_child(); fields; fields = fields.next_sibling(L"field"))
+	pugi::xpath_node_set fieldResults = node.select_nodes( L"./field" );
+	pugi::xpath_node_set::iterator resultIt = fieldResults.begin();
+	while( resultIt != fieldResults.end() )
 	{
-		std::wstring representation =  fields.attribute(L"dataType").as_string();
-		std::wstring fieldName = fields.attribute(L"name").as_string();
+		const pugi::xpath_node& fieldResult = *resultIt++;
+		const pugi::xml_node& field = fieldResult.node();
+
+		std::wstring representation = field.attribute( L"dataType" ).as_string();
+		std::wstring fieldName = field.attribute( L"name" ).as_string();
 
 		// get type from attribute chain
-		IDatatype* datatype = getAttributeDatatype(representation);
+		IDatatype* datatype = getDatatype( representation );
 
-		fieldList.push_back(Field(fieldName, datatype));
+		fieldList.push_back( Field(fieldName, datatype) );
 	}
 
 	return new FixedRecordType(name, fieldList);
 }
 
-IDatatype* DatatypeRetrieval::getVariantRecordType(pugi::xml_node dataNode)
+IDatatype* DatatypeRetrieval::createVariantRecordType( const pugi::xml_node& node )
+	throw( RTIinternalError )
 {
 	std::list<Alternative> alternativesList;
 
-	std::wstring name = dataNode.attribute(L"name").as_string();
-	std::wstring discriminantName = dataNode.attribute(L"discriminant").as_string();
-	std::wstring discriminantDatatypeRepresentation = dataNode.attribute(L"dataType").as_string();
+	std::wstring name = node.attribute( L"name" ).as_string();
+	std::wstring discriminantName = node.attribute( L"discriminant" ).as_string();
+	std::wstring discriminantDatatypeName = node.attribute( L"dataType").as_string();
 
-	IDatatype* discriminantDatatype = getAttributeDatatype(discriminantDatatypeRepresentation);
+	IDatatype* discriminantDatatype = getDatatype( discriminantDatatypeName );
+	EnumeratedType* discriminantAsEnum = dynamic_cast<EnumeratedType*>( discriminantDatatype );
 
 	// Get all the alternatives in this fixed record type
-	for (pugi::xml_node alternatives = dataNode.first_child(); alternatives; alternatives = alternatives.next_sibling(L"alternative"))
+	pugi::xpath_node_set alternativeResults = node.select_nodes( L"./alternative" );
+	pugi::xpath_node_set::iterator alternativeIt = alternativeResults.begin();
+	while( alternativeIt != alternativeResults.end() )
 	{
-		std::wstring alternativeName = alternatives.attribute(L"name").as_string();
-		std::wstring alternativeDatatypeRepresentation = alternatives.attribute(L"dataType").as_string();
-		IDatatype* alternativeDatatype = getAttributeDatatype(alternativeDatatypeRepresentation);
-		std::list<Enumerator*> enumeratorList;
+		const pugi::xpath_node& alternativeResult = *alternativeIt++;
+		const pugi::xml_node& alternativeNode = alternativeResult.node();
+
+		std::wstring alternativeName = alternativeNode.attribute(L"name").as_string();
+		std::wstring alternativeDatatypeName = alternativeNode.attribute( L"dataType" ).as_string();
+		IDatatype* alternativeDatatype = getDatatype( alternativeDatatypeName );
+		std::list<Enumerator> enumeratorList;
 
 		// Get the enums for the alternatives
-		for (pugi::xml_node enumerators = alternatives.first_child(); enumerators; enumerators = enumerators.next_sibling(L"enumerator"))
+		pugi::xpath_node_set enumeratorResults = alternativeNode.select_nodes( L"./enumerator" );
+		pugi::xpath_node_set::iterator enumeratorIt = enumeratorResults.begin();
+		while(enumeratorIt != enumeratorResults.end() )
 		{
-			std::wstring enumeratorName = enumerators.text().as_string();
+			const pugi::xpath_node& enumeratorResult = *enumeratorIt++;
+			const pugi::xml_node& enumeratorNode = enumeratorResult.node();
+			std::wstring enumeratorName = enumeratorNode.text().as_string();
 
-			// If the enumerator is not cached create the parent enumerated type then grab it.
-			if (this->enumeratorCache.find(enumeratorName) == this->enumeratorCache.end())
-			{
-				// Init the parent enumerated type for this enumerator
-				if (!initEnumeratedTypeByEnumerator(enumeratorName))
-				{
-					createEnumeratorAndCache(enumeratorName, L"");
-				}
-			}
-
-			// probably should check if it was created rather than just assume it all worked great... probably
-			enumeratorList.push_back(this->enumeratorCache[enumeratorName]);
+			Enumerator enumerator = this->getEnumeratorByName( discriminantAsEnum, 
+			                                                   enumeratorName );
+			enumeratorList.push_back( enumerator );
 		}
 
-		alternativesList.push_back(Alternative(alternativeName, alternativeDatatype, enumeratorList));
+		Alternative alternative( alternativeName, alternativeDatatype, enumeratorList );
+		alternativesList.push_back( alternative );
 	}
 
-
-	return new VariantRecordType(name, discriminantName, discriminantDatatype, alternativesList);
+	return new VariantRecordType( name, 
+	                              discriminantName, 
+	                              discriminantDatatype,
+	                              alternativesList );
 }
 
-bool DatatypeRetrieval::initEnumeratedTypeByEnumerator(std::wstring name)
+Enumerator DatatypeRetrieval::getEnumeratorByName( const EnumeratedType* enumeration,
+                                                   const std::wstring& name)
+	throw( RTIinternalError )
 {
-	std::wstring queryString = L"//enumerator[@name ='" + name + L"']";
-	pugi::xpath_node_set nodeSet = this->fomxml.select_nodes(queryString.c_str());
+	if( !enumeration )
+		throw RTIinternalError( L"null enumeration" );
 
-	if (nodeSet.size() > 1)
+	std::list<Enumerator> enumerators = enumeration->getEnumerators();
+	std::list<Enumerator>::iterator it = enumerators.begin();
+	while( it != enumerators.end() )
 	{
-		throw RTIinternalError(L"Enumerator name clash. All enumerator types should have unique names.");
-		return false;
-	}
-	else if (nodeSet.size() == 0)
-	{
-		return false;
+		const Enumerator& enumerator = *it++;
+		if (enumerator.getName() == name)
+			return enumerator;
 	}
 
-	// Get the parent enumerated datatype by child name value
-	pugi::xml_node enumeratorNode = nodeSet[0].node();
-	pugi::xml_node enumeratorParent = enumeratorNode.parent();
-
-	// Create the parent Enumerated type (this will cache it for use later)
-	IDatatype* enumeratedType = getAttributeDatatype(enumeratorParent.attribute(L"name").as_string());
-
-	return true;
+	throw RTIinternalError( enumeration->getName() + L"has no enumerator named " + name );
 }
 
-pugi::xml_node DatatypeRetrieval::getDatatypeNode(std::wstring name)
+pugi::xml_node DatatypeRetrieval::getDatatypeNode( const std::wstring& name )
 {
-	std::wstring queryString = L"//*[@name ='" + name + L"']";
-	pugi::xpath_node_set nodeSet = this->fomxml.select_nodes(queryString.c_str());
+	// Search Basic Types
+	std::wstring queryString = L"/objectModel/dataTypes/basicDataRepresentations/basicData[@name='" + name + L"']";
+	pugi::xpath_node_set nodeSet = this->fomxml.select_nodes( queryString.c_str() );
+	if( nodeSet.size() != 0 )
+		return nodeSet[0].node();
 
-	if (nodeSet.size() > 1)
-	{
-		throw RTIinternalError(L"Name clash, more than type exists with the same name. ");
-	}
+	// Search Simple Types
+	queryString = L"/objectModel/dataTypes/simpleDataTypes/simpleData[@name='" + name + L"']";
+	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
+	if( nodeSet.size() != 0 )
+		return nodeSet[0].node();
 
-	return nodeSet[0].node();
+	// Search Enumerated Types
+	queryString = L"/objectModel/dataTypes/enumeratedDataTypes/enumeratedData[@name='" + name + L"']";
+	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
+	if( nodeSet.size() != 0 )
+		return nodeSet[0].node();
+
+	// Search Array Types
+	queryString = L"/objectModel/dataTypes/arrayDataTypes/arrayData[@name='" + name + L"']";
+	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
+	if( nodeSet.size() != 0 )
+		return nodeSet[0].node();
+
+	// Fixed Record Types
+	queryString = L"/objectModel/dataTypes/fixedRecordDataTypes/fixedRecordData[@name='" + name + L"']";
+	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
+	if( nodeSet.size() != 0 )
+		return nodeSet[0].node();
+
+	// Variant Record Types
+	queryString = L"/objectModel/dataTypes/variantRecordDataTypes/variantRecordData[@name='" + name + L"']";
+	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
+	if( nodeSet.size() != 0 )
+		return nodeSet[0].node();
+
+	throw RTIinternalError( L"Invalid datatype " + name );
 }
-
-PORTICO1516E_NS_END

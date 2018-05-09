@@ -18,7 +18,8 @@
 #include "common.h"
 #include "jni/Runtime.h"
 #include "jni/JavaRTI.h"
-#include "../portico/DatatypeRetrieval.h"
+#include "portico/DatatypeRetrieval.h"
+#include "portico/RTIambassadorEx.h"
 
 PORTICO1516E_NS_START
 
@@ -27,7 +28,6 @@ class PorticoRtiAmbassador : public RTIambassadorEx
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private:
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -1601,17 +1601,9 @@ class PorticoRtiAmbassador : public RTIambassadorEx
 				    NotConnected,
 				    RTIinternalError);
 
-		std::wstring getFom()
-			throw ( NotConnected,
-				    RTIinternalError);
-
-	private:
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public:
-
 };
 
 PORTICO1516E_NS_END

@@ -58,7 +58,7 @@ void failTestWrongException(const char *expected, rti1516e::Exception &actual, c
 {
 	char buffer[4096];
 	sprintf(buffer,
-		"(wrongException) Wrong exception received while %s: expected [%s], received[%s]\n%s",
+		"(wrongException) Wrong exception received while %s: expected [%s], received[%s]\n",
 		action,
 		expected,
 		actual.what());

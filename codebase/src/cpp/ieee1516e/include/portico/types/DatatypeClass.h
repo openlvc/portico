@@ -14,37 +14,48 @@
  */
 #pragma once
 
-/**
-* Represents the discrete datatypes that can be specified in the FOM.
-*/
-enum DatatypeClass
+#include "RTI/SpecificConfig.h"
+
+namespace portico1516e
 {
 	/**
-	 * Underpinning of all OMT datatypes
-	 */
-	BASIC,
-	/**
-	 * Simple, scalar data items
-	 */
-	SIMPLE,
-	/**
-	 * Data elements that can take on a finite discrete set of possible values
-	 */
-	ENUMERATED,
-	/**
-	 * Indexed homogenous collections of datatypes
-	 */
-	ARRAY,
-	/**
-	 * Heterogeneous collections of types
-	 */
-	FIXEDRECORD,
-	/**
-	 * Discriminated unions of types
-	 */
-	VARIANTRECORD,
-	/**
-	 * NA type (supports HLAprivelegeToDelete in 1516)
-	 */
-	NA
-};
+	* Represents the discrete datatypes that can be specified in the FOM.
+	*/
+	enum RTI_EXPORT DatatypeClass
+	{
+		/**
+		 * Underpinning of all OMT datatypes
+		 */
+		BASIC,
+
+		/**
+		 * Simple, scalar data items
+		 */
+		SIMPLE,
+
+		/**
+		 * Data elements that can take on a finite discrete set of possible values
+		 */
+		ENUMERATED,
+
+		/**
+		 * Indexed homogenous collections of datatypes
+		 */
+		ARRAY,
+
+		/**
+		 * Heterogeneous collections of types
+		 */
+		FIXEDRECORD,
+
+		/**
+		 * Discriminated unions of types
+		 */
+		VARIANTRECORD,
+
+		/**
+		 * NA type (supports privilegeToDelete in 1516)
+		 */
+		NA
+	};
+}

@@ -1,40 +1,38 @@
-#include "TestQuickCreate.h"
-
+#include "QuickCreateTest.h"
 
 // Register test suite with the global repository
-CPPUNIT_TEST_SUITE_REGISTRATION(TestQuickCreate);
-CPPUNIT_TEST_SUITE_NAMED_REGISTRATION(TestQuickCreate, "testQuickCreateCHECK");
+CPPUNIT_TEST_SUITE_REGISTRATION(QuickCreateTest);
 
- 
-
-TestQuickCreate::TestQuickCreate()
+QuickCreateTest::QuickCreateTest()
 {
 	this->defaultFederate = new Test1516eFederate(L"defaultFederate"); 
+	this->listenerFederate = 0;
 	this->tag = VariableLengthData((void*)"", 1); 
 }
 
-TestQuickCreate::~TestQuickCreate()
+QuickCreateTest::~QuickCreateTest()
 {
-	delete this->defaultFederate;
-	delete this->listenerFederate;
+	if( this->defaultFederate )
+		delete this->defaultFederate;
+	if( this->listenerFederate )
+		delete this->listenerFederate;
 }
  
-void TestQuickCreate::setUp()
+void QuickCreateTest::setUp()
 {
 	this->defaultFederate->quickConnect();
 	this->defaultFederate->quickCreate();
 	this->defaultFederate->quickJoin(); 
 }
 
-void TestQuickCreate::tearDown()
+void QuickCreateTest::tearDown()
 {
-	 
 	this->defaultFederate->quickResign();
 	this->defaultFederate->quickDestroy();
 	this->defaultFederate->quickDisconnect();
 }
 
-void TestQuickCreate::testTestQuickCreate()
+void QuickCreateTest::testQuickCreate()
 {
 	CPPUNIT_ASSERT_EQUAL(1, 1); 
 }

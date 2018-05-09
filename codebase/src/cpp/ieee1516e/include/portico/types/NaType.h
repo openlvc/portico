@@ -16,47 +16,50 @@
 
 #include "portico/IDatatype.h"
 
- /**
- * This class contains metadata about a FOM NA type.
- * <p/>
- * NA types will only have a type of NA and a name stored in teh metadata.
- */
-class NaType : public virtual IDatatype
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * This is a special system datatype that represents:
+	 * <ol>
+	 *  <li>
+	 *      A placeholder for a datatype in an Object Model that does not support datatypes (e.g.
+	 *      HLA 1.3).
+	 *  </li>
+	 *  <li>
+	 *      Valid places in the FOM where NA can be listed as a datatype (e.g. privilegeToDelete in
+	 *      1516, {@link Alternative} datatypes).
+	 *  </li>
+	 * </ol>
+	 */
+	class RTI_EXPORT NaType : public virtual IDatatype
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
+	
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			NaType();
+			virtual ~NaType();
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		* Constructor for NaType with specified name, size and endianness
-		*/
-		NaType( );
-		virtual ~NaType();
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////// Datatype Interface ////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////
+			virtual std::wstring getName() const;
+			virtual DatatypeClass getDatatypeClass() const;
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////// Datatype Interface ////////////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////
-
-		virtual std::wstring getName() const;
-
-		virtual DatatypeClass getDatatypeClass() const;
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

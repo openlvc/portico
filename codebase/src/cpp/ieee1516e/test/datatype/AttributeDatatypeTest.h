@@ -2,10 +2,9 @@
 
 #include "../common/common.h"
 #include "../common/Test1516eFederate.h"
-class TestQuickCreate : public CppUnit::TestFixture
-{
-public:
 
+class AttributeDatatypeTest : public CppUnit::TestFixture
+{
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
@@ -13,35 +12,43 @@ public:
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-private:
-	Test1516eFederate *defaultFederate;
-	Test1516eFederate *listenerFederate;
-	ObjectInstanceHandle theObject;
-	VariableLengthData tag;
+	private:
+		Test1516eFederate *defaultFederate;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-public:
-	TestQuickCreate();
-	virtual ~TestQuickCreate();
+	public:
+		AttributeDatatypeTest();
+		virtual ~AttributeDatatypeTest();
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-public:
-	void setUp();
-	void tearDown();
+	public:
+		void setUp();
+		void tearDown();
 
-protected:
-	void testTestQuickCreate();
-	 
+	protected:
+		void testGetSimpleType();
+		void testGetEnumeratedType();
+		void testGetArrayTypeDynamic();
+		void testGetArrayTypeFixed();
+		void testGetFixedRecordType();
+		void testGetVariantRecordType();
+		void testGetNAType();
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	CPPUNIT_TEST_SUITE(TestQuickCreate);
-	CPPUNIT_TEST(testTestQuickCreate);
+	CPPUNIT_TEST_SUITE(AttributeDatatypeTest);
+		CPPUNIT_TEST(testGetSimpleType);
+		CPPUNIT_TEST(testGetEnumeratedType);
+		CPPUNIT_TEST(testGetArrayTypeDynamic);
+		CPPUNIT_TEST(testGetArrayTypeFixed);
+		CPPUNIT_TEST(testGetFixedRecordType); 
+		CPPUNIT_TEST(testGetVariantRecordType); 
+		CPPUNIT_TEST(testGetNAType);
 	CPPUNIT_TEST_SUITE_END();
 };
 

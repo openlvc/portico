@@ -14,70 +14,76 @@
  */
 #pragma once
 
-/**
-* Describes a dimension of an ArrayType.
-* @see ArrayType
-*/
-class Dimension {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	public:
-		/// The cardinality of the dynamic dimension type
-		const static int CARDINALITY_DYNAMIC = -1;
+#include "RTI/SpecificConfig.h"
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		int lowerCardinality; /// The lower bound of a ranged simension
-		int upperCardinality; /// The upper bounds of a ranged dimension
+namespace portico1516e
+{
+	/**
+	 * Describes a dimension of an {@link ArrayType}.
+	 *
+	 * @see ArrayType
+	 */
+	class RTI_EXPORT Dimension
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
+		public:
+			/// Represents a dynamic dimension cardinality
+			const static int CARDINALITY_DYNAMIC = -1;
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:	
-		/**
-		 * Create a dimension with the specified cardinaliy.
-		 * @param cardinality the size of this dimension.
-		 * @note If the size is -1 this represents a dynamic dimension
-		 */
-		Dimension(int cardinality);
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			int lowerCardinality; /// The lower bound of a ranged dimension
+			int upperCardinality; /// The upper bounds of a ranged dimension
 
-		/**
-		 * Create a dimension with the specified cardinaliy range.
-		 * @param cardinality the size of this dimension.
-		 * @note If the size is -1 this represents a dynamic dimension
-		 */
-		Dimension(int lower, int upper);
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:	
+			/**
+			 * Create a dimension with the specified cardinality.
+			 *
+			 * @param cardinality the size of this dimension, or 
+			 *        {@link CARDINALITY_DYNAMIC} if the dimension should have dynamic 
+			 *        cardinality
+			 */
+			Dimension( int cardinality );
 
-		virtual ~Dimension();
+			/**
+			 * Create a dimension with the specified cardinality range.
+			 *
+			 * @param lower the bound of this dimension's cardinality
+			 * @param upper the upper bound of this dimension's cardinality
+			 */
+			Dimension( int lower, int upper );
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Get the lower bounds of a range cardinaliy.
-		 * @return the lower bound or the size of this dimension.
-		 */
-		virtual int getCardinalityLowerBound() const;
+			virtual ~Dimension();
 
-		/**
-		 * Get the upper bounds of a range cardinaliy.
-		 * @return the lower bound or the size of this dimension.
-		 */
-		virtual int getCardinalityUpperBound() const;
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * @return the lower bound of this dimension's cardinality.
+			 */
+			int getCardinalityLowerBound() const;
 
-		/**
-		 * Check to see if this dimension is dynamic.
-		 * @return True if the dimension is dynamic, otherwise false.
-		 */
-		virtual bool isCardinalityDynamic() const;	
+			/**
+			 * @return the upper bound of this dimension's cardinality.
+			 */
+			int getCardinalityUpperBound() const;
+
+			/**
+			 * @return <code>true</code> if the dimension has dynamic cardinality, otherwise 
+			 *         <code>false</code>
+			 */
+			bool isCardinalityDynamic() const;	
 		 
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

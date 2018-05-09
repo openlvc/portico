@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2018 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -14,22 +14,18 @@
  */
 #pragma once
 
-#include "jni/JavaRTI.h"
-#include "../../../../lib/pugixml/include/pugixml.hpp"
 #include <string>
-
-#include "portico\types\BasicType.h"
-#include "portico\types\EnumeratedType.h"
-#include "portico\types\SimpleType.h"
-#include "portico\types\ArrayType.h"
-#include "portico\types\FixedRecordType.h"
-#include "portico\types\VariantRecordType.h"
-#include "portico\types\NaType.h"
+#include "common.h"
+#include "jni/JavaRTI.h"
+#include "portico/IDatatype.h"
+#include "portico/types/Enumerator.h"
+#include "pugixml.hpp"
 
 PORTICO1516E_NS_START
 
 
 class JavaRTI; /// forward declaration of JavaRTI to resolve circular-dependency
+class EnumeratedType;
 
 /**
  * This is the class that handles all of the grunt work for retrieving datatype
@@ -59,72 +55,44 @@ class DatatypeRetrieval
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
-		pugi::xml_document fomxml;						/// Hold the FOM in xml data structure.
-		bool initialized;								/// True if the FOM has been initialized.
-		std::map<std::wstring, IDatatype*> typeCache;			/// Stores the cache of all retrieved datatypes
-		std::map<std::wstring, Enumerator*> enumeratorCache;	/// Stores the cache of all recieved enumerators
+		pugi::xml_document fomxml;                      /// Holds the FOM in xml data structure.
+		bool initialized;                               /// True if the FOM has been initialized.
+		std::map<std::wstring, IDatatype*> typeCache;   /// Stores the cache of all retrieved datatypes
+		JavaRTI* javarti;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
-		DatatypeRetrieval();
-		~DatatypeRetrieval();
+		DatatypeRetrieval( JavaRTI* javarti );
+		virtual ~DatatypeRetrieval();
+
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	public:
-		/***
-		 * Initialize the FOM xml object for the datatype retrieval object.
-		 * @param The fom object in xml as a widestring
-		 * @note An RTIinternalError is thrown if the FOM cannot be parsed.
-		 */
-		void initialize(std::wstring fomString);
-
 		/**
-		 * Check to see if the FOM has been initialized.
-		 * @return True if the fom has been initialized, otherwise false.
+		 * @return <code>true</code> if the FOM has been initialized, otherwise false.
 		 */
 		bool isInitialized();
 
 		/**
-		 * Get the parameter datatype given the name of a datatype.
-		 * @param dataTypeName The name of the class being requested.
-		 * @return The pointer to the datatype requested.
+		 * Returns the datatype defined in the Object Model under the specified name.
+		 *
+		 * @param name The name of the datatype being requested.
+		 * @return The requested datatype
+		 *
+		 * @see IDatatype
 		 */
-		IDatatype* getParameterDatatype(std::wstring dataTypeName);
-
-		/**
-		 * Get the attribute datatype given the name of a datatype.
-		 * @param dataTypeName The name of the class being requested.
-		 * @return The pointer to the datatype requested.
-		 */
-		IDatatype* getAttributeDatatype(std::wstring dataTypeName);
+		IDatatype* getDatatype( const std::wstring& name ) throw( RTIinternalError );
 
 	private:
 		/**
-		 * Using the FOM get the datatypeClass for the datatype with classTypeName.
-		 * @param classTypeName The name of the class the type is being requested for.
-		 * @return The datatypeClass of the requested class.
-		 * @see DatatypeClass
-		 */
-		DatatypeClass getDatatypeClassFromName(wstring classTypeName);
-
-		/**
-		 * Get a datatype given the name of a class. This is shared by both
-		 * parameter and attribute requests.
-		 * @param dataTypeName The name of the class being requested.
-		 * @return The pointer to the datatype requested.
-		 * @see DatatypeClass
-		 * @see IDatatype
-		 * @see BasicType
-		 * @see SimpleType
-		 * @see ArrayType
-		 * @see EnumeratedType
-		 * @see FixedRecordType
-		 * @see VariantRecordType
-		 */
-		IDatatype* getDatatype(std::wstring dataTypeName);
+		 * Initializes datatype retrieval object.
+		 *
+		 * @throws RTIinternalError if the current federation's FOM cannot be parsed.
+		  */
+		void initialize() throw( RTIinternalError );
 
 		/**
 		 * Create a BasicType from information stored in the FOM
@@ -135,7 +103,7 @@ class DatatypeRetrieval
 		 * @see IDatatype
 		 * @see BasicType
 		*/
-		IDatatype* getBasicType(pugi::xml_node dataNode);
+		IDatatype* createBasicType( const pugi::xml_node& dataNode ) throw( RTIinternalError );
 
 		/**
 		 * Create a SimpleType from information stored in the FOM
@@ -146,7 +114,7 @@ class DatatypeRetrieval
 		 * @see IDatatype
 		 * @see SimpleType
 		 */
-		IDatatype* getSimpleType(pugi::xml_node dataNode);
+		IDatatype* createSimpleType( const pugi::xml_node& dataNode ) throw( RTIinternalError );
 
 		/**
 		 * Create a EnumeratedType from information stored in the FOM
@@ -157,7 +125,7 @@ class DatatypeRetrieval
 		 * @see IDatatype
 		 * @see EnumeratedType
 		 */
-		IDatatype* getEnumeratedType(pugi::xml_node dataNode);
+		IDatatype* createEnumeratedType( const pugi::xml_node& dataNode ) throw( RTIinternalError );
 
 		/**
 		 * Create a ArrayType from information stored in the FOM
@@ -168,7 +136,7 @@ class DatatypeRetrieval
 		 * @see IDatatype
 		 * @see ArrayType
 		 */
-		IDatatype* getArrayType(pugi::xml_node dataNode);
+		IDatatype* createArrayType( const pugi::xml_node& dataNode ) throw( RTIinternalError );
 
 		/**
 		 * Create a FixedRecordType from information stored in the FOM
@@ -179,7 +147,7 @@ class DatatypeRetrieval
 		 * @see IDatatype
 		 * @see FixedRecordType
 		 */
-		IDatatype* getFixedRecordType(pugi::xml_node dataNode);
+		IDatatype* createFixedRecordType( const pugi::xml_node& dataNode ) throw( RTIinternalError );
 
 		/**
 		 * Create a VariantRecordType from information stored in the FOM
@@ -190,41 +158,35 @@ class DatatypeRetrieval
 		 * @see IDatatype
 		 * @see VariantRecordType
 		 */
-		IDatatype* getVariantRecordType(pugi::xml_node dataNode);
-
-
-		/**
-		 * Get the XML FOM node that contains all the information on the
-		 * requested datatype.
-		 * @note An RTIinternalError is thrown if the FOM contains multiple items
-		 *       with the same name.
-		 * @param name The name of the class being requested.
-		 * @return The XML FOM node for the datatype requested.
-		 */
-		pugi::xml_node getDatatypeNode(std::wstring name);
+		IDatatype* createVariantRecordType( const pugi::xml_node& dataNode ) throw( RTIinternalError );
 
 		/**
-		 * Create and cache an enumeratedType given the name of one of it's
-		 * child enumerations.
-		 * @param name The name of the enumerator that we want the parent created.
-		 * @return True if we initialized the parent type, otherwise false..
+		 * Returns the enumerator of the specified EnumeratedType whose name matches 
+		 * the provided name
+		 *
+		 * @param enumeration the EnumeratedType to search
+		 * @param name the name of the enumerator to return
+		 * @return the Enumerator whose name matches the query
+		 * @throw RTIinternalError if no enumerator with the specified name can be found
 		 */
-		bool initEnumeratedTypeByEnumerator(std::wstring name);
+		Enumerator getEnumeratorByName( const EnumeratedType* enumeration,
+		                                const std::wstring& name ) 
+			throw( RTIinternalError );
 
 		/**
-		 * Create and cache an enumerator for use in VariantRecordTypes.
-		 * @param name The name of the enumerator.
-		 * @param value The value of the enumerator.
-		 * @return True if we initialized the parent type, otherwise false..
+		 * Returns the XML FOM node that contains all the information on the datatype with the 
+		 * specified name
+		 * 
+		 * @param name The name of the datatype
+		 * @return The XML FOM node for the datatype requested, or an empty node if no node exists 
+		 *         for the requested name
+		 * @throw RTIinternalError if the FOM contains datatypes items with the same name.
 		 */
-		Enumerator* createEnumeratorAndCache(std::wstring name, std::wstring value);
+		pugi::xml_node getDatatypeNode( const std::wstring& name ) throw( RTIinternalError );
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public:
-
 };
 
 PORTICO1516E_NS_END
-

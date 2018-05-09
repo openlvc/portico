@@ -11,19 +11,20 @@
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\main.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.cpp" />
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFederate.cpp" />
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\GetAttributeDatatype.cpp" />
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestQuickCreate.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\AttributeDatatypeTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\QuickCreateTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\common.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.h" />
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFederate.h" />
-    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\GetAttributeDatatype.h" />
-    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestQuickCreate.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\AttributeDatatypeTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\QuickCreateTest.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DD895E90-BAA3-49EB-93FB-D59A37F70EB5}</ProjectGuid>
     <RootNamespace>test</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -40,8 +41,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2013\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2013\intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2015\output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2015\intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -53,7 +54,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)..\..\..\..\lib\cppunit\cppunit-1.12.1\win32\vc14;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)..\..\..\..\lib\cppunit\cppunit-1.12.1\win32\vc14;$(SolutionDir)..\..\..\build\cpp\visualstudio\2015\output\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>cppunit_64d.lib;librti1516e64d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>

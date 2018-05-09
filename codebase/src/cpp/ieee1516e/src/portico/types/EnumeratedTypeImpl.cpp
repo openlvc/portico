@@ -1,15 +1,27 @@
-
+/*
+ *   Copyright 2018 The Portico Project
+ *
+ *   This file is part of portico.
+ *
+ *   portico is free software; you can redistribute it and/or modify
+ *   it under the terms of the Common Developer and Distribution License (CDDL)
+ *   as published by Sun Microsystems. For more information see the LICENSE file.
+ *
+ *   Use of this software is strictly AT YOUR OWN RISK!!!
+ *   If something bad happens you do not have permission to come crying to me.
+ *   (that goes for your lawyer as well)
+ */
+#include "common.h"
 #include "portico/types/EnumeratedType.h"  
-#include <string>
 
-EnumeratedType::EnumeratedType(const std::wstring& name, IDatatype* representation, const std::list<std::wstring>& enumerators)
-{
-    this->name = name;
-    this->representation = representation;
-    this->createEnumeratorsFromNames(enumerators);
-}
+using namespace PORTICO1516E_NS;
 
-EnumeratedType::EnumeratedType(const std::wstring& name, IDatatype* representation, const std::list<Enumerator*>& enumerators)
+//------------------------------------------------------------------------------------------
+//                                       CONSTRUCTORS                                       
+//------------------------------------------------------------------------------------------
+EnumeratedType::EnumeratedType( const std::wstring& name, 
+                                IDatatype* representation, 
+                                const std::list<Enumerator>& enumerators )
 {
     this->name = name;
     this->representation = representation;
@@ -21,33 +33,24 @@ EnumeratedType::~EnumeratedType()
 
 }
 
+//------------------------------------------------------------------------------------------
+//                                     INSTANCE METHODS
+//------------------------------------------------------------------------------------------
 IDatatype* EnumeratedType::getRepresentation() const
 {
     return this->representation;
 }
 
-std::list<Enumerator*> EnumeratedType::getEnumerators() const
+std::list<Enumerator> EnumeratedType::getEnumerators() const
 {
     return this->enumerators;
 }
 
-bool EnumeratedType::operator == (const EnumeratedType& other)
+bool EnumeratedType::operator==( const EnumeratedType& other ) const
 {
-    return this->name == other.name && this->representation == other.representation;
+    return this->name == other.name && 
+	       this->representation == other.representation;
      
-}
-
-std::list<Enumerator*> EnumeratedType::createEnumeratorsFromNames(const std::list<std::wstring>& constants)
-{ 
-    std::list<Enumerator*> enumeratorList = std::list<Enumerator*>();
-    std::list<std::wstring>::const_iterator itr = constants.begin();
-    unsigned value = 0;
-    for (itr ; itr != constants.end(); itr++)
-    {
-        enumeratorList.push_back(new Enumerator(*itr, std::to_wstring(static_cast<long long>(value++))));
-    }
-
-    return enumeratorList;
 }
 
 std::wstring EnumeratedType::getName() const
@@ -59,5 +62,3 @@ DatatypeClass EnumeratedType::getDatatypeClass() const
 {
     return DatatypeClass::ENUMERATED;
 }
-
- 

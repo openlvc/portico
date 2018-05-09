@@ -341,7 +341,15 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	string jrelocation = string(rtihome).append( "\\jre" );
 	string temp = string(jrelocation).append( "\\bin\\java.exe" );
 	if( pathExists(temp) == false )
-		throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	{
+		logger->debug( "No JRE found at RTI_HOME, falling back to JAVA_HOME" );
+		const char* javahome = getenv( "JAVA_HOME" );
+		jrelocation = string(javahome).append( "\\jre" );
+		temp = string(jrelocation).append( "\\bin\\java.exe" );
+		
+		if( pathExists(temp) == false )
+			throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	}
 
 	// Get the system path so we can ensure it is on our library path
 	const char *systemPath = getenv( "PATH" );
@@ -497,11 +505,7 @@ string Runtime::getCompiler() throw( RTIinternalError )
  */
 string Runtime::getHlaVersion() throw( RTIinternalError )
 {
-#ifdef BUILDING_DLC
-	return string( "-Dportico.cpp.hlaversion=dlc13" );
-#else
-	return string( "-Dportico.cpp.hlaversion=hla13" );
-#endif
+	return string( "-Dportico.cpp.hlaversion=ieee1516e" );
 }
 
 /*

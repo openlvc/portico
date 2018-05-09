@@ -18,29 +18,32 @@
 #include "RTI/SpecificConfig.h"
 #include <string>
 
-/**
- * Common interface for all FOM datatypes.
- */
-class RTI_EXPORT IDatatype
+namespace portico1516e
 {
- 	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public: 
-		virtual ~IDatatype(){}
+	/**
+	 * Common interface for all FOM datatypes.
+	 */
+	class RTI_EXPORT IDatatype
+	{
+ 		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public: 
+			virtual ~IDatatype(){}
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Returns the name of this datatype.
-		 */
-		virtual std::wstring getName() const = 0;
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * @return the name of this datatype.
+			 */
+			virtual std::wstring getName() const = 0;
 
-		/**
-		 * Returns the FOM datatype class of this datatype (e.g. Basic, Simple, Enumerated, Array,
-		 * Fixed Record or Variant).
-		 */
-		virtual DatatypeClass getDatatypeClass() const = 0;
-};
+			/**
+			 * @return the FOM datatype class of this datatype (e.g. Basic, Simple, Enumerated, Array,
+			 *         Fixed Record or Variant).
+			 */
+			virtual DatatypeClass getDatatypeClass() const = 0;
+	};
+}

@@ -180,4 +180,3 @@ class ExampleFedAmb : public NullFederateAmbassador
 };
 
 #endif /*EXAMPLEFEDAMB_H_*/
-

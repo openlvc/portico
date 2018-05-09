@@ -34,6 +34,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ieee1516eFedTime", "ieee151
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ieee1516eTest", "ieee1516eTest\ieee1516eTest.vcxproj", "{DD895E90-BAA3-49EB-93FB-D59A37F70EB5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7DCB9DFF-9100-4495-AA75-52C96028AA70} = {7DCB9DFF-9100-4495-AA75-52C96028AA70}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

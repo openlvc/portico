@@ -17,66 +17,64 @@
 #include "portico/IDatatype.h"
 #include "portico/types/BasicType.h"
 
-/**
- * This class contains metadata about a FOM Simple data type.
- *
- * A simple type describes a simple, scalar data item
- */
-class SimpleType : public virtual IDatatype
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * This class contains metadata about a FOM Simple data type.
+	 *
+	 * A simple type describes a simple, scalar data item
+	 */
+	class RTI_EXPORT SimpleType : public virtual IDatatype
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
+		private:
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring  name;				/// The name of this datatype
-		IDatatype*    representation;	/// BasicType or DatatypePlaceholder only
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring  name;				/// The name of this datatype
+			IDatatype*    representation;	/// BasicType only
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for SimpleType with specified name and representation
-		 *
-		 * @param name the name of this data type
-		 * @param representation // BasicType or DatatypePlaceholder only
-		 */
-		SimpleType(const std::wstring& name, IDatatype *representation);
-		virtual ~SimpleType();
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for SimpleType with specified name and representation
+			 *
+			 * @param name the name of this data type
+			 * @param representation the BasicDatatype that this simple type represents
+			 */
+			SimpleType( const std::wstring& name, IDatatype *representation );
+			virtual ~SimpleType();
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Returns the FOM datatype class of this datatype (e.g. Basic, Simple, Enumerated, Array,
-		 * FixedRecord or Variant).
-		 *
-		 * @note It is the caller's responsibility to clean up and manage the
-		 *       returned datatype pointer.
-		 *
-		 * @return The BasicType of this datatype representation.
-		 * @see BasicType.
-		 */
-		virtual IDatatype* getRepresentation();
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Returns the {@link BasicDatatype} that this datatype represents
+			 *
+			 * <b>Memory Management</b> the pointer returned by this function points to the 
+			 * internal LRC datatype cache and should not be deleted by the caller.
+			 *
+			 * @return The {@link BasicType} representation of this datatype
+			 *
+			 * @see BasicType.
+			 */
+			IDatatype* getRepresentation();
 
+			//////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////// Datatype Interface /////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////////////////
+			virtual std::wstring getName() const;
+			virtual DatatypeClass getDatatypeClass() const;
 
-		//////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////// Datatype Interface /////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////
-
-		virtual std::wstring getName() const;
-
-		virtual DatatypeClass getDatatypeClass() const;
-
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

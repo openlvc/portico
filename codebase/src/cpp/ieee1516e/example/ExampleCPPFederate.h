@@ -17,8 +17,6 @@
 
 #include "ExampleFedAmb.h"
 #include "RTI/RTI1516.h"
-#include "portico/RTIambassadorEx.h"
-
 using namespace rti1516e;
 using namespace std;
 
@@ -27,27 +25,14 @@ using namespace std;
 class ExampleCPPFederate
 {
 	public:
-		RTIambassadorEx *rtiamb;
+		RTIambassador *rtiamb;
 		ExampleFedAmb *fedamb;
 
 		// fom handles //
-
-
-		// ATTRIBTE TESTS
-		// enumerated type tester
-		ObjectClassHandle      sodaHandle; 
+		ObjectClassHandle      sodaHandle;
+		AttributeHandle        numberOfCupsHandle;
 		AttributeHandle        flavourHandle;
-		// simple type tester
-		ObjectClassHandle      employee;
-		AttributeHandle        payRate; // dollar rate
-		// array type tester 
-		// fixed record type
-		AttributeHandle        AddressBook; // AddressType : employee
-		// variant record
-		ObjectClassHandle      waiter; // 
-		AttributeHandle        efficiency; // waiter value
 
-		// PARAMETER TESTS
 		InteractionClassHandle rootBeerServedHandle;
 		ParameterHandle        rootBeerCheckHandle;
 
@@ -71,4 +56,3 @@ class ExampleCPPFederate
 };
 
 #endif /*EXAMPLECPPFEDERATE_H_*/
-

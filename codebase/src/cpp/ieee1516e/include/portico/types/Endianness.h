@@ -14,11 +14,16 @@
  */
 #pragma once
 
-/**
- * Describes the byte ordering of {@link BasicType} datatypes.
- */
-enum Endianness
+#include "RTI/SpecificConfig.h"
+
+namespace portico1516e
 {
-	LITTLE,
-	BIG
-};
+	/**
+	 * Describes the byte ordering of {@link BasicType} datatypes.
+	 */
+	enum RTI_EXPORT Endianness
+	{
+		LITTLE,
+		BIG
+	};
+}

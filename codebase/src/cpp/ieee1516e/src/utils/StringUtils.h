@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2018 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -12,8 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-#ifndef STRINGUTILS_H_
-#define STRINGUTILS_H_
+#pragma once
 
 #include "common.h"
 
@@ -27,33 +26,27 @@ class StringUtils
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private:
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private:
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public:
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	public:
-
-	private:
-
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 	public:
-		static std::wstring toWideString( std::string shortString );
-		static std::string toShortString( std::wstring wideString );
+		static std::wstring toWideString( const std::string& narrowString );
+		static std::string toNarrowString( const std::wstring& wideString );
+
+		static std::wstring toLower( const std::wstring& string );
 };
 
 PORTICO1516E_NS_END
-
-#endif /* STRINGUTILS_H_ */

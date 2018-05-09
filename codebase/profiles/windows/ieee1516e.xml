@@ -36,12 +36,17 @@
 
 	<!-- source -->
 	<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>
+	<property name="ieee1516e.test.src.dir"    location="${cpp.src.dir}/ieee1516e/test"/>
 	<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>
 	<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>
 
 	<!-- build -->
 	<property name="ieee1516e.build.dir"       location="${build.dir}/cpp/win32/ieee1516e"/>
 	<property name="ieee1516e.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
+	
+	<!-- test build -->
+	<property name="testieee1516e.build.dir"          location="${build.dir}/cpp/win32/testieee1516e"/>
+	<property name="testieee1516e.complete.dir"       location="${testieee1516e.build.dir}/complete"/>
 
 	<!-- =========================================================== -->
 	<!--                     Project Libraries                       -->
@@ -109,6 +114,29 @@
 		<compile-ieee1516e compiler="vc10" arch="amd64" build="release"/>
 	</target>
 
+	<!-- ==================================== -->
+	<!--         HLA 1516e Test Suite         -->
+	<!-- ==================================== -->
+	<target name="test.compile" depends="compile.vc14" if="vc14.amd64.debug">
+		<cpptask compiler="vc14"
+		         outfile="testieee1516e"
+		         workdir="${testieee1516e.build.dir}"
+		         outdir="${testieee1516e.complete.dir}"
+		         type="executable"
+			     arch="amd64"
+		         compilerArgs="${compiler.args.debug}"
+		         linkerArgs="/DEBUG">
+			<fileset dir="${ieee1516e.test.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${ieee1516e.complete.dir}/vc14" libs="rti1516e64d,fedtime1516e64d"/>
+			<library path="${cppunit.dir}/win32/vc14" libs="cppunit_64d"/>
+		</cpptask>
+	</target>
+	
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2008 (vc9) Compile Targets              -->
 	<!-- ================================================================= -->
@@ -161,8 +189,37 @@
 	<!-- ================================================================================= -->
 
 	<!-- Not implemented for IEEE-1516e Inteface -->
-	<target name="test" extensionOf="cpp.test" unless="build.release">
-		<echo>No unit test suite for the C++ IEEE-1516e Interface</echo>
+	<target name="test" extensionOf="cpp.test" depends="java.sandbox,test.compile" unless="build.release">
+		<!-- 1. copy the testing resources into test dir (RID file etc...) -->
+		<copy todir="${testieee1516e.complete.dir}">
+			<fileset dir="${resources.testdata.dir}/cpptest/ieee1516e" includes="**/*"/>
+			<filterset begintoken="[" endtoken="]">
+				<filter token="jarfile" value="${sandbox.lib.dir}/portico.jar"/>
+			</filterset>
+		</copy>
+		<echo>Copied testing resources to ${testieee1516e.complete.dir}</echo>
+
+		<!-- 2. run the actual test application -->
+		<exec dir="${testieee1516e.complete.dir}"
+		      executable="${testieee1516e.complete.dir}/testieee1516e.exe"
+		      failonerror="false"
+		      failifexecutionfails="false"
+		      resultproperty="testieee1516e.result">
+			<arg value="${testieee1516e.complete.dir}/test-results.xml"/>
+			<env key="RTI_HOME" path="${sandbox.dir}"/><!-- required, but we set the env up properly anyway -->
+			<env key="PATH" path="${ieee1516e.complete.dir}/vc14;${jdk.home.win64}/jre/bin/server"/>
+			<env key="PORTICO_DEBUG" value="OFF"/>
+			<env key="CLASSPATH" path="${sandbox.lib.dir}\portico.jar"/>
+			<env key="PORTICO_JNICHECK" value="true"/>
+			<env key="TEST.GROUP" value="${test.group}"/>
+		</exec>
+
+		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
+		<echo>Generating the Unit Test Report</echo>
+		<cppunit-report result="${testieee1516e.result}"
+		                xmlfile="${testieee1516e.complete.dir}/test-results.xml"
+		                xslfile="${testieee1516e.complete.dir}/xsl/results.xsl"
+		                outfile="${testieee1516e.complete.dir}/test-results.html"/>
 	</target>
 
 	<!-- ================================================================================= -->

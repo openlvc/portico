@@ -359,9 +359,6 @@
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.cpp">
       <Filter>Source Files\datatypes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\PorticoRtiAmbassadorEx.cpp">
-      <Filter>Source Files\datatypes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\AlternativeImpl.cpp">
       <Filter>Source Files\datatypes</Filter>
     </ClCompile>
@@ -372,9 +369,6 @@
       <Filter>Source Files\datatypes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\DimensionImpl.cpp">
-      <Filter>Source Files\datatypes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\Endianness.cpp">
       <Filter>Source Files\datatypes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratedTypeImpl.cpp">

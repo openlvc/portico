@@ -1,4 +1,4 @@
- #include "Test1516eFederate.h"
+#include "Test1516eFederate.h"
 #include <iostream>
 #include "RTI/time/HLAfloat64Interval.h"
 #include "RTI/time/HLAfloat64Time.h"
@@ -13,7 +13,7 @@ Test1516eFederate::Test1516eFederate(const wstring& name)
 
 	// create the RTIambassador
 	RTIambassadorFactory factory = RTIambassadorFactory();
-	this->rtiamb = factory.createRTIambassadorEx().release();
+	this->rtiamb = dynamic_cast<RTIambassadorEx*>( factory.createRTIambassador().release() );
 
 	federateHandle = FederateHandle(); 
 
@@ -53,7 +53,7 @@ void Test1516eFederate::quickCreate(const wstring& federationName)
 {
 	try
 	{
-		rtiamb->createFederationExecution(federationName, L"complete/etc/testfom.xml");
+		rtiamb->createFederationExecution(federationName, L"etc/testfom.xml");
 	}
 	catch (FederationExecutionAlreadyExists& exists)
 	{

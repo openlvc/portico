@@ -18,71 +18,77 @@
 #include "portico/types/Enumerator.h"
 #include <list>
 
-/**
- * Represents one particular form that a VariantRecordType may assume.
- * @see VariantRecordType
- */
-class Alternative
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * Represents one particular form that a VariantRecordType may assume.
+	 *
+	 * @see VariantRecordType
+	 */
+	class RTI_EXPORT Alternative
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring           name;          /// The name of this datatype
-		IDatatype*             datatype;      /// The size of this datatype
-		std::list<Enumerator*> enumerators;   /// The enumerators that this type is valid for
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring           name;          /// The name of this datatype
+			IDatatype*             datatype;      /// The datatype that the alternative will store
+			std::list<Enumerator>  enumerators;   /// The enumerators that this type is valid for
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for an Alternative with specified name, datatype and enumerator collection.
-		 *
-		 * @param name The name of the alternative
-		 * @param datatype The datatype that the alternative will store
-		 * @param enumerators The collection of discriminant enumerators that this type is valid for
-		 */
-		Alternative(const std::wstring& name, IDatatype* datatype, const std::list<Enumerator*>& enumerators);
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for an Alternative with specified name, datatype and enumerator 
+			 * collection.
+			 *
+			 * @param name The name of the alternative
+			 * @param datatype The datatype that the alternative will store
+			 * @param enumerators The collection of discriminant enumerators that this type 
+			 *                    is valid for
+			 */
+			Alternative( const std::wstring& name, 
+						 IDatatype* datatype, 
+						 const std::list<Enumerator>& enumerators);
 
-		virtual ~Alternative();
+			virtual ~Alternative();
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Get the IDatatype associated with this array.
-		 *
-		 * @note It is the caller's responsibility to clean up and manage the
-		 *       returned datatype pointer.
-		 *
-		 * @return The IDatatype associated with this ArrayType.
-		 * @see IDatatype
-		 */
-		virtual IDatatype* getDatatype() const;
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Returns the IDatatype associated with this alternative.
+			 * <p/>
+			 * <b>Memory Management</b> the pointer returned by this function points to the 
+			 * internal LRC datatype cache and should not be deleted by the user.
+			 *
+			 * @return The IDatatype associated with this Alternative.
+			 * @see IDatatype
+			 */
+			IDatatype* getDatatype() const;
 
-		/**
-		 * Get the list of Enumerator objects associated with this Alternative object.
-		 * @return A set of Enumerators associated with this Alternative.
-		 * @see Enumerator
-		 */
-		virtual std::list<Enumerator*> getEnumerators() const;
+			/**
+			 * Returns the list of Enumerators associated with this Alternative object.
+			 *
+			 * @return the Enumerators associated with this Alternative.
+			 *
+			 * @see Enumerator
+			 */
+			std::list<Enumerator> getEnumerators() const;
 
-		/**
-		 * Returns the name of this datatype.
-		 * @return The name of this datatype as a string.
-		 */
-		virtual std::wstring getName() const;
+			/**
+			 * @return the name of this datatype.
+			 */
+			std::wstring getName() const;
 
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}

@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2018 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -17,39 +17,25 @@
 #include "RTI/RTIambassador.h"
 #include "portico/IDatatype.h"
 
-namespace rti1516e
+namespace portico1516e
 {
 	/**
 	 * This interface houses custom extensions to the standard IEEE-1516 (2010) interface
-	 * that are currently only supported by the Portico RTI. Any RTIambassador
-	 * instance returned from the RtiFactory by Portico will support this extensions
-	 * interface.
+	 * that are currently only supported by the Portico RTI.
 	 * <p/>
+	 * You can access functionality defined at the RTIambassadorEx by casting the return
+	 * value of {@link RTIambassadorFactory#createRTIambassador()} to RTIambassadorEx.
 	 *
-	 * @note It is the caller's responsibility to clean up and manage the
-	 *		 returned datatype pointer.
-	 *
-	 * This interface is currently only supported by the Portico RTI.
-	 * @see RtiFactory
 	 * @see RTIambassador
+	 * @see RTIambassadorFactory
 	 */
-	class RTI_EXPORT RTIambassadorEx : public virtual RTIambassador {
-		//----------------------------------------------------------
-		//                    STATIC VARIABLES
-		//----------------------------------------------------------
-		private:
-
-		//----------------------------------------------------------
-		//                   INSTANCE VARIABLES
-		//----------------------------------------------------------
-		private:
-
+	class RTI_EXPORT RTIambassadorEx : public virtual rti1516e::RTIambassador 
+	{
 		//----------------------------------------------------------
 		//                      CONSTRUCTORS
 		//----------------------------------------------------------
 		public:
-			RTIambassadorEx();
-			virtual ~RTIambassadorEx();
+			virtual ~RTIambassadorEx() {};
 
 		//----------------------------------------------------------
 		//                    INSTANCE METHODS
@@ -62,59 +48,42 @@ namespace rti1516e
 			 * You can then cast the return value to the corresponding implementation (e.g.
 			 * {@link BasicType}, {@link SimpleType}, {@link EnumeratedType}, {@link ArrayType},
 			 * {@link FixedRecordType}, or {@link VariantRecordType}).
-			 *
-			 * @note It is the caller's responsibility to clean up and manage the
-			 *       returned datatype pointer.
+			 * <p/>
+			 * <b>Memory Management</b> the pointer returned by this function points to the internal
+			 * LRC datatype cache and should not be deleted by the user.
 			 *
 			 * @see IDatatype
 			 */
-			virtual IDatatype* getAttributeDatatype( ObjectClassHandle whichClass,
-													 AttributeHandle theHandle )
-				throw (
-					AttributeNotDefined,
-					InvalidAttributeHandle,
-					InvalidObjectClassHandle,
-					FederateNotExecutionMember,
-					NotConnected,
-					RTIinternalError ) = 0 ;
+			virtual IDatatype* getAttributeDatatype( rti1516e::ObjectClassHandle whichClass,
+			                                         rti1516e::AttributeHandle theHandle )
+				throw ( rti1516e::AttributeNotDefined,
+				        rti1516e::InvalidAttributeHandle,
+				        rti1516e::InvalidObjectClassHandle,
+				        rti1516e::FederateNotExecutionMember,
+				        rti1516e::NotConnected,
+				        rti1516e::RTIinternalError ) = 0 ;
 
 			/**
 			 * Returns the datatype of the specified Parameter.
 			 * <p/>
-			 * To determine the specific class of the datatype call {@link IDatatype#getDatatypeClass()}.
-			 * You can then cast the return value to the corresponding implementation (e.g.
-			 * {@link BasicType}, {@link SimpleType}, {@link EnumeratedType}, {@link ArrayType},
-			 * {@link FixedRecordType}, or {@link VariantRecordType}).
-			 *
-			 * @note It is the caller's responsibility to clean up and manage the
-			 *       returned datatype pointer.
+			 * To determine the specific class of the datatype call 
+			 * {@link IDatatype#getDatatypeClass()}. You can then cast the return value to the 
+			 * corresponding implementation (e.g. {@link BasicType}, {@link SimpleType}, 
+			 * {@link EnumeratedType}, {@link ArrayType}, {@link FixedRecordType}, or 
+			 * {@link VariantRecordType}).
+			 * <p/>
+			 * <b>Memory Management</b> the pointer returned by this function points to the internal
+			 * LRC datatype cache and should not be deleted by the user.
 			 *
 			 * @see IDatatype
 			 */
-			virtual IDatatype* getParameterDatatype( InteractionClassHandle whichClass,
-													 ParameterHandle theHandle )
-				throw (
-					InteractionParameterNotDefined,
-					InvalidParameterHandle,
-					InvalidInteractionClassHandle,
-					FederateNotExecutionMember,
-					NotConnected,
-					RTIinternalError ) = 0;
-
-			/**
-			 * Return an in-memory representation of the unified Federation Object Model as an
-			 * XML encoded string. Currently, this contains only the datatype block modules.
-			 * @note The complete FOM will be added at a later stage.
-			 * @return The dataType block from the FOM as an XML encoded string.
-			 */
-			virtual std::wstring getFom()
-				throw (
-					NotConnected,
-					RTIinternalError) = 0;
-
-		//----------------------------------------------------------
-		//                     STATIC METHODS
-		//----------------------------------------------------------
-		public:
+			virtual IDatatype* getParameterDatatype( rti1516e::InteractionClassHandle whichClass,
+			                                         rti1516e::ParameterHandle theHandle )
+				throw ( rti1516e::InteractionParameterNotDefined,
+				        rti1516e::InvalidParameterHandle,
+				        rti1516e::InvalidInteractionClassHandle,
+				        rti1516e::FederateNotExecutionMember,
+				        rti1516e::NotConnected,
+				        rti1516e::RTIinternalError ) = 0;
 	};
 }

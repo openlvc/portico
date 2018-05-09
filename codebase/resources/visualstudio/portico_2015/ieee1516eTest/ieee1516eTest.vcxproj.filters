@@ -33,9 +33,6 @@
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\main.cpp">
       <Filter>Header Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\GetAttributeDatatype.cpp">
-      <Filter>Source Files\datatype</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
@@ -45,8 +42,11 @@
     <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\common.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestQuickCreate.cpp">
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\QuickCreateTest.cpp">
       <Filter>Source Files\parse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\AttributeDatatypeTest.cpp">
+      <Filter>Source Files\datatype</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,14 +56,14 @@
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\GetAttributeDatatype.h">
-      <Filter>Header Files\datatype</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\common.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\TestQuickCreate.h">
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\QuickCreateTest.h">
       <Filter>Header Files\parse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\AttributeDatatypeTest.h">
+      <Filter>Header Files\datatype</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,76 +14,74 @@
  */
 #pragma once
 
+#include <list>
 #include "portico/IDatatype.h"
 #include "portico/types/Field.h"
-#include <list>
 
-/**
- * This class contains metadata about a FOM Fixed Record data type.
- * <p/>
- * An fixed record type is a heterogeneous collections of types. Fixed record types contain named
- * fields that are of other types, allowing users to build "structures of data structures".
- * @see Field
- */
-class FixedRecordType : public virtual IDatatype
+namespace portico1516e
 {
-	//----------------------------------------------------------
-	//                    STATIC VARIABLES
-	//----------------------------------------------------------
-	private:
+	/**
+	 * This class contains metadata about a FOM Fixed Record data type.
+	 * <p/>
+	 * A fixed record type is a heterogeneous collections of types. Fixed record types contain named
+	 * fields that are of other types, allowing users to build "structures of data structures".
+	 *
+	 * @see Field
+	 */
+	class RTI_EXPORT FixedRecordType : public virtual IDatatype
+	{
+		//----------------------------------------------------------
+		//                    STATIC VARIABLES
+		//----------------------------------------------------------
+		private:
 
-	//----------------------------------------------------------
-	//                   INSTANCE VARIABLES
-	//----------------------------------------------------------
-	private:
-		std::wstring      name;   /// The name of this datatype
-		std::list<Field>  fields; /// The fileds that make up the record.
+		//----------------------------------------------------------
+		//                   INSTANCE VARIABLES
+		//----------------------------------------------------------
+		private:
+			std::wstring      name;   /// The name of this datatype
+			std::list<Field>  fields; /// The fields that make up the record.
 
-	//----------------------------------------------------------
-	//                      CONSTRUCTORS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Constructor for a fixed record with an arbitrary number of fields
-		 *
-		 * @param name the name of the fixed record type
-		 * @param fields the ordered list of fields that this fixed record type will contain
-		 */
-		FixedRecordType(const std::wstring& name, const std::list<Field>& fields);
+		//----------------------------------------------------------
+		//                      CONSTRUCTORS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * Constructor for a fixed record with an arbitrary number of fields
+			 *
+			 * @param name the name of the fixed record type
+			 * @param fields the ordered list of fields that this fixed record type will contain
+			 */
+			FixedRecordType( const std::wstring& name, const std::list<Field>& fields );
 
-		virtual ~FixedRecordType();
+			virtual ~FixedRecordType();
 
-	//----------------------------------------------------------
-	//                    INSTANCE METHODS
-	//----------------------------------------------------------
-	public:
-		/**
-		 * Get the list of fields this FixedRecordType contains.
-		 *
-		 * @return The list of fields of this FixedRecordType contains.
-		 * @see IDatatype
-		 * @see Field
-		 */
-		virtual std::list<Field> getFields() const;
+		//----------------------------------------------------------
+		//                    INSTANCE METHODS
+		//----------------------------------------------------------
+		public:
+			/**
+			 * @return The list of fields of this FixedRecordType contains.
+			 *
+			 * @see Field
+			 */
+			std::list<Field> getFields() const;
 
-		/**
-		 * Check to see if two FixedRecordTypes are equal.
-		 *
-		 * @return True if they are equal, otherwise false.
-		 */
-		virtual bool operator==(const FixedRecordType& other) const;
+			/**
+			 * Check to see if two FixedRecordTypes are equal.
+			 *
+			 * @return <code>true</code> if they are equal, otherwise <code>false</code>.
+			 */
+			bool operator==( const FixedRecordType& other ) const;
 
-		/////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////// Datatype Interface ////////////////////////////////
-		/////////////////////////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////// Datatype Interface ////////////////////////////////
+			/////////////////////////////////////////////////////////////////////////////////////
+			virtual std::wstring getName() const;
+			virtual DatatypeClass getDatatypeClass() const;
 
-		virtual std::wstring getName() const;
-
-		virtual DatatypeClass getDatatypeClass() const;
-
-	//----------------------------------------------------------
-	//                     STATIC METHODS
-	//----------------------------------------------------------
-	public:
-
-};
+		//----------------------------------------------------------
+		//                     STATIC METHODS
+		//----------------------------------------------------------
+	};
+}
