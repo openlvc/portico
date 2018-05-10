@@ -138,14 +138,6 @@ public class MessageHelpers
 		{
 			ObjectOutputStream oos = new ObjectOutputStream( baos );
 			
-			// write the header:
-			// 
-			// [message_type, federation, source, target]
-			oos.writeShort( message.getType().getId() );
-			oos.writeInt( message.getTargetFederation() );
-			oos.writeInt( message.getSourceFederate() );
-			oos.writeInt( message.getTargetFederate() );
-
 			// write the message
 			if( message.supportsManualMarshal() )
 			{
