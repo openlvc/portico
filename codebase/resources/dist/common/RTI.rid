@@ -115,8 +115,8 @@ rti.network.tcp.nic  = SITE_LOCAL
 # (L.1) LRC Network Connections
 #        The same structure as for the RTI, except that only one name can be specified.
 #
-#lrc.network.connection = multicast
-lrc.network.connection = tcp
+lrc.network.connection = multicast
+#lrc.network.connection = tcp
 
 
 # (L.2) JVM Connection Properties

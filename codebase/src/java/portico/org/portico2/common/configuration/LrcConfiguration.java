@@ -53,10 +53,10 @@ public class LrcConfiguration
 		this.queueWarningCountSize = 500;
 		
 		// defaults
-		//this.lrcConnection = new MulticastConnectionConfiguration( "multicast" );
-		TcpConnectionConfiguration tcc = new TcpConnectionConfiguration( "tcp" );
-		tcc.setAddress( "192.168.1.110" );
-		this.lrcConnection = tcc;
+		this.lrcConnection = new MulticastConnectionConfiguration( "multicast" );
+		//TcpConnectionConfiguration tcc = new TcpConnectionConfiguration( "tcp" );
+		//tcc.setAddress( "SITE_LOCAL" );
+		//this.lrcConnection = tcc;
 	}
 
 	//----------------------------------------------------------
