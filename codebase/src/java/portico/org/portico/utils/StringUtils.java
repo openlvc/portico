@@ -443,7 +443,35 @@ public class StringUtils
 		
 		builder.append( "\n" );
 	}
-	
+
+
+	public static String formatAsBinary( byte[] bytes )
+	{
+		StringBuilder builder = new StringBuilder();
+		// write the first one outside the loop otherwise the modulo check
+		// will pass on 0 and we'll have a leading "  "
+		builder.append( formatAsBinary(bytes[0]) );
+		builder.append( " " );
+		
+		
+		for( int i = 1; i < bytes.length; i++ )
+		{
+			builder.append( formatAsBinary(bytes[i]) );
+			builder.append( " " );
+			
+			if( i % 4 == 0 )
+				builder.append('\n');
+		}
+
+		return builder.toString();
+	}
+
+	public static String formatAsBinary( byte value )
+	{
+		return String.format( "%8s", Integer.toBinaryString(value & 0xff) ).replace(' ', '0');
+	}
+
+
 	///////////////////////////////////////////////////////////////////////////////////////
 	/// Properties Files Management   /////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////

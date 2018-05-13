@@ -277,7 +277,7 @@ public class Bundler
 			type == Type.DATA_MESSAGE )
 		{
 			// turn the payload BACK into a Portico message so we can get the juicy deets
-			PorticoMessage portico = MessageHelpers.inflate( payload, PorticoMessage.class );
+			PorticoMessage portico = MessageHelpers.inflate2( payload, PorticoMessage.class );
 			
 			// we have the PorticoMessage original, let's log some stuff!
 			logger.trace( "(outgoing) type=%s (id=%d), ptype=%s, from=%s, to=%s, size=%d",
@@ -290,7 +290,7 @@ public class Bundler
 		}
 		else if( type == Type.CONTROL_RESP )
 		{
-			ResponseMessage response = MessageHelpers.inflate( payload, ResponseMessage.class );
+			ResponseMessage response = MessageHelpers.inflate2( payload, ResponseMessage.class );
 			logger.trace( "(outgoing) type=%s (id=%d), success=%s, result=%s, size=%d",
 			              type,
 			              requestId,

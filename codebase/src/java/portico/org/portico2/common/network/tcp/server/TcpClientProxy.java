@@ -211,7 +211,7 @@ public class TcpClientProxy implements ITcpChannelListener
 	@Override
 	public void receiveControlRequest( TcpChannel channel, int requestId, byte[] payload ) throws JException
 	{
-		PorticoMessage incoming = MessageHelpers.inflate( payload, PorticoMessage.class );
+		PorticoMessage incoming = MessageHelpers.inflate2( payload, PorticoMessage.class );
 		
 		// Should we even process this?
 		if( receiver.isReceivable(incoming.getTargetFederate()) == false )
@@ -226,13 +226,17 @@ public class TcpClientProxy implements ITcpChannelListener
 
 		// If the incoming message is async, don't send a response
 		if( incoming.isAsync() == false )
-			channel.sendControlResponse( requestId, MessageHelpers.deflate(context.getResponse()) );
+		{
+			channel.sendControlResponse( requestId, MessageHelpers.deflate2(context.getResponse(),
+			                                                                requestId,
+			                                                                incoming) );
+		}
 	}
 
 	@Override
 	public void receiveDataMessage( TcpChannel channel, byte[] payload ) throws JRTIinternalError
 	{
-		PorticoMessage received = MessageHelpers.inflate( payload, PorticoMessage.class );
+		PorticoMessage received = MessageHelpers.inflate2( payload, PorticoMessage.class );
 		receiver.receiveDataMessage( received );
 		
 		parent.sendDataMessage( received );
