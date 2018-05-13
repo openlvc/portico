@@ -249,10 +249,13 @@ public class TcpChannel
 	}
 
 	/**
-	 * Send teh given payload as a message of the given type. Primarily used when someone else
-	 * has done the serialization (perhaps because it is being sent to a lot of people and you
-	 * only want to do it once, in one place). This just offers the message to the bundler with
-	 * the given type header.
+	 * Send the given message to the network using the given call type.
+	 * <p/>
+	 * 
+	 * This is typically used by the Tcp Server connection which has to multiplex messages
+	 * out to a number of connections. Rather than re-serialize them every time, it is done
+	 * once at the start of the message processing and the payload is handed off to each
+	 * client, in turn making its way to this channel.
 	 * 
 	 * @param type Type of message being sent
 	 * @param payload Raw payload to send

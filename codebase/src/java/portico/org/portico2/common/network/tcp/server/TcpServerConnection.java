@@ -208,11 +208,10 @@ public class TcpServerConnection implements IConnection
 		// TODO Optimize me - we should only hand off to those representing certain federate Ids
 
 		// Serialize the message (once, for all targets)
-		CallType type = context.getRequest().isAsync() ? CallType.ControlAsync : CallType.ControlSync;
-		byte[] payload = MessageHelpers.deflate2( context.getRequest(), type, 0 );
+		byte[] payload = MessageHelpers.deflate2( context.getRequest(), CallType.ControlAsync );
 		
 		// Hand off to all the clients to process
-		clients.parallelStream().forEach( client -> client.sendControlRequest(payload) );
+		clients.parallelStream().forEach( client -> client.sendRawAsyncControlRequest(payload) );
 	}
 	
 	@Override
@@ -221,10 +220,10 @@ public class TcpServerConnection implements IConnection
 		// TODO Optimize me - we should only hand off to those representing certain federate Ids
 
 		// Serialize the message (once, for all targets)
-		byte[] payload = MessageHelpers.deflate2( message, CallType.DataMessage, 0 );
+		byte[] payload = MessageHelpers.deflate2( message, CallType.DataMessage );
 		
 		// Hand off to all the clients to process
-		clients.parallelStream().forEach( client -> client.sendDataMessage(payload) );
+		clients.parallelStream().forEach( client -> client.sendRawDataMessage(payload) );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////

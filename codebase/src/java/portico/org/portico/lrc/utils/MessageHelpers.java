@@ -56,6 +56,22 @@ public class MessageHelpers
 	/////////////////////////  Message Marshalling and Unmarshalling  /////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/**
+	 * Same as {@link #deflate2(PorticoMessage, CallType, int)} but it passes 0 for the request
+	 * ID. This should _NOT_ be used for calls of type {@link CallType#ControlSync} or response
+	 * messages {@link CallType#ControlResp} as they both <b>require</b> a request id in order
+	 * to function properly. 
+	 * 
+	 * @param message The message we are deserializing
+	 * @param calltype The type of call that this is (should never be {@link CallType#ControlSync}
+	 *                 or {@link CallType#ControlResp}.
+	 * @return The deflated message in a byte[], ready for transmissions
+	 */
+	public static byte[] deflate2( PorticoMessage message, CallType calltype )
+	{
+		return deflate2( message, calltype, 0 );
+	}
+	
+	/**
 	 * This method will take the given message and turn it into a <code>byte[]</code>.
 	 * <p/>
 	 * 
@@ -120,12 +136,13 @@ public class MessageHelpers
 	}
 
 	/**
-	 * FIXME Write the docs
+	 * This method just calls {@link #deflate2(ResponseMessage, int, int, int, int)}. It takes
+	 * all the information it needs for the header from the given request message.
 	 * 
-	 * @param message
-	 * @param requestId
-	 * @param request
-	 * @return
+	 * @param message The response message to deflate
+	 * @param requestId The ID of the request we are responding to
+	 * @param request The original request message (from which we get federate id, source/target, ...)
+	 * @return A byte[] version of the message ready for transmission
 	 */
 	public static byte[] deflate2( ResponseMessage message,
 	                               int requestId,
@@ -139,11 +156,16 @@ public class MessageHelpers
 	}
 	
 	/**
-	 * FIXME Write the docs
+	 * Deflate and package the given response message. Response messages are a bit special. Their
+	 * is a lot of information that they don't require compared to a request message. This method
+	 * takes only the response message and the metadata that needs to be packaged into the header.
 	 * 
 	 * @param message The message object to deflate
 	 * @param requestId The ID of the request we are responding to
-	 * @return A byte[] representation of the object
+	 * @param targetFederation ID of the federation (package in header)
+	 * @param sourceFederate ID of sender federate  (package in header)
+	 * @param targetFederate ID of target federate  (package in header)
+	 * @return A byte[] version of the message ready for transmission
 	 */
 	public static byte[] deflate2( ResponseMessage message,
 	                               int requestId,
