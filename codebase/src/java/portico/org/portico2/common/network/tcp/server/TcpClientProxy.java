@@ -171,7 +171,7 @@ public class TcpClientProxy implements ITcpChannelListener
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Message SENDING Methods   ////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
-	public void sendControlRequest( byte[] payload )
+	public void sendRawAsyncControlRequest( byte[] payload )
 	{
 		try
 		{
@@ -183,7 +183,7 @@ public class TcpClientProxy implements ITcpChannelListener
 		}
 	}
 	
-	public void sendDataMessage( byte[] payload )
+	public void sendRawDataMessage( byte[] payload )
 	{
 		try
 		{

@@ -197,7 +197,7 @@ public class StringUtils
 			case PorticoConstants.RTI_HANDLE:
 				return "<rti>";
 			case PorticoConstants.TARGET_MANY_HANDLE:
-				return message.getMultipleTargets().toString();
+				return "<multi> "+message.getMultipleTargets().toString();
 			default:
 				return "" + message.getTargetFederate();
 		}
