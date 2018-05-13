@@ -66,7 +66,7 @@ public class MessageHelpers
 	 *                 or {@link CallType#ControlResp}.
 	 * @return The deflated message in a byte[], ready for transmissions
 	 */
-	public static byte[] deflate2( PorticoMessage message, CallType calltype )
+	public static final byte[] deflate2( PorticoMessage message, CallType calltype )
 	{
 		return deflate2( message, calltype, 0 );
 	}
@@ -86,7 +86,7 @@ public class MessageHelpers
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
 	 */
-	public static byte[] deflate2( PorticoMessage message, CallType calltype, int requestId )
+	public static final byte[] deflate2( PorticoMessage message, CallType calltype, int requestId )
 	{
 		// Step 1. Write the body of the message
 		//         We write the body first because we need to know its length to include
@@ -144,9 +144,9 @@ public class MessageHelpers
 	 * @param request The original request message (from which we get federate id, source/target, ...)
 	 * @return A byte[] version of the message ready for transmission
 	 */
-	public static byte[] deflate2( ResponseMessage message,
-	                               int requestId,
-	                               PorticoMessage request )
+	public static final byte[] deflate2( ResponseMessage message,
+	                                     int requestId,
+	                                     PorticoMessage request )
 	{
 		return deflate2( message,
 		                 requestId,
@@ -167,11 +167,11 @@ public class MessageHelpers
 	 * @param targetFederate ID of target federate  (package in header)
 	 * @return A byte[] version of the message ready for transmission
 	 */
-	public static byte[] deflate2( ResponseMessage message,
-	                               int requestId,
-	                               int targetFederation,
-	                               int sourceFederate,
-	                               int targetFederate )
+	public static final byte[] deflate2( ResponseMessage message,
+	                                    int requestId,
+	                                    int targetFederation,
+	                                    int sourceFederate,
+	                                    int targetFederate )
 	{
 		// Step 1. Write the body of the message
 		//         We write the body first because we need to know its length to include
@@ -227,7 +227,7 @@ public class MessageHelpers
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
 	 */
-	public static <T> T inflate2( byte[] data, Class<T> expectedType )
+	public static final <T> T inflate2( byte[] data, Class<T> expectedType )
 	{
 		return inflate2( data, expectedType, null );
 	}
@@ -246,7 +246,7 @@ public class MessageHelpers
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
 	 */
-	public static <T> T inflate2( byte[] data, Class<T> expectedType, LRC lrc )
+	public static final <T> T inflate2( byte[] data, Class<T> expectedType, LRC lrc )
 	{
 		try
 		{

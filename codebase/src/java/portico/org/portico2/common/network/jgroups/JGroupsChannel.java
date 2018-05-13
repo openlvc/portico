@@ -40,6 +40,7 @@ import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.StringUtils;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
+import org.portico2.common.messaging.CallType;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 
@@ -237,7 +238,7 @@ public class JGroupsChannel
 	 */
 	public final void sendDataMessage( PorticoMessage porticoMessage ) throws JRTIinternalError
 	{
-		byte[] payload = MessageHelpers.deflate( porticoMessage );
+		byte[] payload = MessageHelpers.deflate2( porticoMessage, CallType.DataMessage );
 		Message message = new Message( null /*target*/, payload );
 		message.putHeader( TypeHeader.ID, TypeHeader.dataMessage() );
 		send( message, porticoMessage );
@@ -262,7 +263,8 @@ public class JGroupsChannel
 		PorticoMessage request = context.getRequest();
 		
 		// Serialize the message
-		byte[] payload = MessageHelpers.deflate( request );
+		CallType calltype = request.isAsync() ? CallType.ControlAsync : CallType.ControlSync;
+		byte[] payload = MessageHelpers.deflate2( request, calltype );
 		Message message = new Message( null, payload );
 
 		// Insert a header describing the type of message
@@ -287,7 +289,7 @@ public class JGroupsChannel
 				return;
 			}
 			
-			ResponseMessage response = MessageHelpers.inflate( returned.getRawBuffer(), ResponseMessage.class );
+			ResponseMessage response = MessageHelpers.inflate2( returned.getRawBuffer(), ResponseMessage.class );
 			context.setResponse( response );
 		}
 	}
@@ -568,7 +570,7 @@ public class JGroupsChannel
 		if( idHeader != null )
 			id = idHeader.toString();
 
-		PorticoMessage portico = MessageHelpers.inflate( message.getRawBuffer(), PorticoMessage.class );
+		PorticoMessage portico = MessageHelpers.inflate2( message.getRawBuffer(), PorticoMessage.class );
 		
 		logger.trace( "(incoming) type=%s (id=%s), ptype=%s, from=%s, to=%s, size=%d, app=%s",
 		              typeHeader,

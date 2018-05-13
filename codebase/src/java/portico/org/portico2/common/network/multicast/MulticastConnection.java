@@ -159,14 +159,14 @@ public class MulticastConnection implements IConnection, IJGroupsListener
 	@Override
 	public void receiveDataMessage( JGroupsChannel channel, Message message ) throws JRTIinternalError
 	{
-		PorticoMessage received = MessageHelpers.inflate( message.getRawBuffer(), PorticoMessage.class );
+		PorticoMessage received = MessageHelpers.inflate2( message.getRawBuffer(), PorticoMessage.class );
 		receiver.receiveDataMessage( received );
 	}
 
 	@Override
 	public void receiveControlRequest( JGroupsChannel channel, int requestId, Message message ) throws JException
 	{
-		PorticoMessage incoming = MessageHelpers.inflate( message.getRawBuffer(), PorticoMessage.class );
+		PorticoMessage incoming = MessageHelpers.inflate2( message.getRawBuffer(), PorticoMessage.class );
 		
 		// Should we even process this?
 		if( receiver.isReceivable(incoming.getTargetFederate()) == false )
@@ -181,7 +181,10 @@ public class MulticastConnection implements IConnection, IJGroupsListener
 
 		// If the incoming message is async, don't send a response
 		if( incoming.isAsync() == false )
-			channel.sendControlResponse( requestId, MessageHelpers.deflate(context.getResponse()) );
+		{
+			byte[] payload = MessageHelpers.deflate2( context.getResponse(), requestId, incoming );
+			channel.sendControlResponse( requestId, payload );
+		}
 	}
 	
 	@Override
