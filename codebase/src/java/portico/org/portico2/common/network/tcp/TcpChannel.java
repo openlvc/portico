@@ -28,6 +28,7 @@ import org.portico.utils.StringUtils;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.configuration.TcpConnectionConfiguration;
 import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.messaging.CallType;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.ResponseCorrelator;
 
@@ -182,7 +183,9 @@ public class TcpChannel
 	 */
 	public final void sendDataMessage( PorticoMessage porticoMessage ) throws JRTIinternalError
 	{
-		sendRawMessage( Type.DATA_MESSAGE, MessageHelpers.deflate(porticoMessage) );
+		sendRawMessage( Type.DATA_MESSAGE, MessageHelpers.deflate2(porticoMessage,
+		                                                           CallType.DataMessage,
+		                                                           0) );
 	}
 
 	/**
@@ -203,20 +206,20 @@ public class TcpChannel
 	{
 		PorticoMessage request = context.getRequest();
 		
-		// Serialize the message
-		byte[] payload = MessageHelpers.deflate( request );
 		if( request.isAsync() )
 		{
-			// ASYNC call; just submit and return
-			bundler.submit( Type.CONTROL_REQ_ASYNC, payload );
+			bundler.submit( Type.CONTROL_REQ_ASYNC, MessageHelpers.deflate2(request,CallType.ControlAsync,0) );
 			context.success();
 		}
 		else
 		{
-			// SYNC call; send and wait
-			// Get a request ID
+			// Get a request ID for correlation
 			int requestId = responseCorrelator.register();
-			// Send the message
+
+			// Generate the payload
+			byte[] payload = MessageHelpers.deflate2( request, CallType.ControlSync, requestId );
+			
+			// Submit for sending
 			bundler.submit( Type.CONTROL_REQ_SYNC, requestId, payload );
 			// Wait for the response
 			payload = responseCorrelator.waitFor( requestId );
@@ -227,7 +230,7 @@ public class TcpChannel
 			}
 			else
 			{
-				context.setResponse( MessageHelpers.inflate(payload,ResponseMessage.class) );
+				context.setResponse( MessageHelpers.inflate2(payload,ResponseMessage.class) );
 			}
 		}
 	}
@@ -330,7 +333,7 @@ public class TcpChannel
 
 	private final void logControlRequest( Type type, int requestId, byte[] payload )
 	{
-		PorticoMessage portico = MessageHelpers.inflate( payload, PorticoMessage.class );
+		PorticoMessage portico = MessageHelpers.inflate2( payload, PorticoMessage.class );
 		
 		logger.trace( "(incoming) type=%s (id=%d), ptype=%s, from=%s, to=%s, size=%d, app=%s",
 		              type,

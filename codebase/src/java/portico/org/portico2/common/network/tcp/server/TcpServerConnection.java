@@ -30,6 +30,7 @@ import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.configuration.ConnectionConfiguration;
 import org.portico2.common.configuration.TcpConnectionConfiguration;
+import org.portico2.common.messaging.CallType;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.IConnection;
 import org.portico2.common.network.IMessageReceiver;
@@ -207,7 +208,8 @@ public class TcpServerConnection implements IConnection
 		// TODO Optimize me - we should only hand off to those representing certain federate Ids
 
 		// Serialize the message (once, for all targets)
-		byte[] payload = MessageHelpers.deflate( context.getRequest() );
+		CallType type = context.getRequest().isAsync() ? CallType.ControlAsync : CallType.ControlSync;
+		byte[] payload = MessageHelpers.deflate2( context.getRequest(), type, 0 );
 		
 		// Hand off to all the clients to process
 		clients.parallelStream().forEach( client -> client.sendControlRequest(payload) );
@@ -219,7 +221,7 @@ public class TcpServerConnection implements IConnection
 		// TODO Optimize me - we should only hand off to those representing certain federate Ids
 
 		// Serialize the message (once, for all targets)
-		byte[] payload = MessageHelpers.deflate( message );
+		byte[] payload = MessageHelpers.deflate2( message, CallType.DataMessage, 0 );
 		
 		// Hand off to all the clients to process
 		clients.parallelStream().forEach( client -> client.sendDataMessage(payload) );

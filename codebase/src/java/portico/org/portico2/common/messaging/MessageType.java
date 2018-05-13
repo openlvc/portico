@@ -20,7 +20,7 @@ public enum MessageType
 	//                        VALUES
 	//----------------------------------------------------------
 	
-	// Federation Management	
+	// Federation Messages (000-009)
 	Connect                 ( (short)0 ),
 	Disconnect              ( (short)1 ),
 	RtiProbe                ( (short)2 ),
@@ -29,93 +29,97 @@ public enum MessageType
 	ResignFederation        ( (short)5 ),
 	DestroyFederation       ( (short)6 ),
 	ListFederations         ( (short)7 ),
-	
-	// Non-HLA Messages
-	SuccessResponse         ( (short)100 ),
-	ErrorResponse           ( (short)101 ),
-	
-	// Synchronization Points
-	RegisterSyncPoint       ( (short)110 ),  // Register
-	RegisterSyncPointResult ( (short)111 ),  // Deprecated
-	AnnounceSyncPoint       ( (short)112 ),  // Callback
-	AchieveSyncPoint        ( (short)113 ),  // Send
-	FederationSynchronized  ( (short)114 ),  // Callback
-	
-	// Save Restore
-	SaveRequest             ( (short)120 ),  // Start things off
-	SaveInitiate            ( (short)121 ),  // Callback -- everyone should start saving
-	SaveBegun               ( (short)122 ),  // Federate has begun its save
-	SaveComplete            ( (short)123 ),  // Federate has completed its safe OK (true/false)
-	FederationSaved         ( (short)124 ),  // Callback -- everyone saved (true/false)
-	SaveStatusQuery         ( (short)125 ),  // Query the save status of all federates
-	SaveQueryResponse       ( (short)126 ),  // Callback -- save status of everyone
 
-	RestoreRequest          ( (short)130 ),  // RestoreRequest
-	RestoreRequestResult    ( (short)131 ),  // Callback (true/false)
-	RestoreBegun            ( (short)132 ),  // Callback -- restore process is starting
-	RestoreInitiate         ( (short)133 ),  // Callback -- restore yourself with given params
-	RestoreComplete         ( (short)134 ),  // Restore Completed / RestoreNotComplete calls
-	RestoreAbort            ( (short)135 ),  // Abort the restore process
-	FederationRestored      ( (short)136 ),  // Callback -- everyone restored (true/false)
-	RestoreStatusQuery      ( (short)137 ),  // Query the restore status of all federates
-	RestoreQueryResponse    ( (short)138 ),  // Callback -- restore status of everyone
+	// Non-HLA Messages (010-039)
+	SuccessResponse         ( (short)14 ),
+	ErrorResponse           ( (short)15 ),
 	
-	// Publish and Subscribe
-	PublishObjectClass      ( (short)140 ),
-	PublishInteraction      ( (short)141 ),
-	UnpublishObjectClass    ( (short)142 ),
-	UnpublishInteraction    ( (short)143 ),
-	SubscribeObjectClass    ( (short)144 ),
-	SubscribeInteraction    ( (short)145 ),
-	UnsubscribeObjectClass  ( (short)146 ),
-	UnsubscribeInteraction  ( (short)147 ),
+	// Synchronization Points (040-049)
+	RegisterSyncPoint       ( (short)40 ),  // Register
+	RegisterSyncPointResult ( (short)41 ),  // Deprecated
+	AnnounceSyncPoint       ( (short)42 ),  // Callback
+	AchieveSyncPoint        ( (short)43 ),  // Send
+	FederationSynchronized  ( (short)44 ),  // Callback
 	
-	// Object Management
-	RegisterObject          ( (short)160 ),
-	ReserveObjectName       ( (short)161 ),
-	ReserveObjectNameResult ( (short)162 ),
-	DiscoverObject          ( (short)163 ),
-	UpdateAttributes        ( (short)164 ),
-	SendInteraction         ( (short)165 ),
-	DeleteObject            ( (short)166 ),
-	LocalDeleteObject       ( (short)167 ),
-	RequestObjectUpdate     ( (short)168 ),
-	RequestClassUpdate      ( (short)169 ),
-
-	// Ownership Management
-	AttributeDivest         ( (short)180 ),
-	AttributeAcquire        ( (short)181 ),
-	AttributeRelease        ( (short)182 ),
-	AttributesUnavailable   ( (short)183 ),
-	CancelAcquire           ( (short)184 ),
-	CancelDivest            ( (short)185 ),
-	CancelConfirmation      ( (short)186 ),
-	OwnershipAcquired       ( (short)187 ),
-	DivestConfirmation      ( (short)188 ),
-	QueryOwnership          ( (short)189 ),
-	QueryOwnershipResponse  ( (short)190 ),
+	// Publish and Subscribe (050-059)
+	PublishObjectClass      ( (short)50 ),
+	PublishInteraction      ( (short)51 ),
+	UnpublishObjectClass    ( (short)52 ),
+	UnpublishInteraction    ( (short)53 ),
+	SubscribeObjectClass    ( (short)54 ),
+	SubscribeInteraction    ( (short)55 ),
+	UnsubscribeObjectClass  ( (short)56 ),
+	UnsubscribeInteraction  ( (short)57 ),
 	
-	// Time Management
-	EnableTimeConstrained   ( (short)200 ),
-	DisableTimeConstrained  ( (short)201 ),
-	EnableTimeRegulation    ( (short)202 ),
-	DisableTimeRegulation   ( (short)203 ),
-	ModifyLookahead         ( (short)204 ),
-	TimeAdvanceRequest      ( (short)205 ),
-	TimeAdvanceGrant        ( (short)206 ),
-	NextEventRequest        ( (short)207 ),
-	FlushQueueRequest       ( (short)208 ),
-	QueryGALT               ( (short)209 ),
-	EnableAsynchDelivery    ( (short)210 ),
-	DisableAsynchDelivery   ( (short)211 ),
+	// Object Management (060-079)
+	RegisterObject          ( (short)60 ),
+	DiscoverObject          ( (short)61 ),
+	UpdateAttributes        ( (short)254 ), // 254
+	SendInteraction         ( (short)255 ), // 255
+	DeleteObject            ( (short)64 ),
+	LocalDeleteObject       ( (short)65 ),
+	ReserveObjectName       ( (short)66 ),
+	ReserveObjectNameResult ( (short)67 ),
+	RequestObjectUpdate     ( (short)68 ),
+	RequestClassUpdate      ( (short)69 ),
 
-	// Data Distribution Management
-	CreateRegion            ( (short)230 ),
-	DeleteRegion            ( (short)231 ),
-	ModifyRegion            ( (short)232 ),
-	AssociateRegion         ( (short)233 ),
-	UnassociateRegion       ( (short)234 );
+	// Save Restore (080-099)
+	SaveRequest             ( (short)86 ),  // Start things off
+	SaveInitiate            ( (short)81 ),  // Callback -- everyone should start saving
+	SaveBegun               ( (short)82 ),  // Federate has begun its save
+	SaveComplete            ( (short)83 ),  // Federate has completed its safe OK (true/false)
+	FederationSaved         ( (short)84 ),  // Callback -- everyone saved (true/false)
+	SaveStatusQuery         ( (short)85 ),  // Query the save status of all federates
+	SaveQueryResponse       ( (short)86 ),  // Callback -- save status of everyone
 
+	RestoreRequest          ( (short)90 ),  // RestoreRequest
+	RestoreRequestResult    ( (short)91 ),  // Callback (true/false)
+	RestoreBegun            ( (short)92 ),  // Callback -- restore process is starting
+	RestoreInitiate         ( (short)93 ),  // Callback -- restore yourself with given params
+	RestoreComplete         ( (short)94 ),  // Restore Completed / RestoreNotComplete calls
+	RestoreAbort            ( (short)95 ),  // Abort the restore process
+	FederationRestored      ( (short)96 ),  // Callback -- everyone restored (true/false)
+	RestoreStatusQuery      ( (short)97 ),  // Query the restore status of all federates
+	RestoreQueryResponse    ( (short)98 ),  // Callback -- restore status of everyone
+	
+	// Ownership Management (100-119)
+	AttributeDivest         ( (short)100 ),
+	AttributeAcquire        ( (short)101 ),
+	AttributeRelease        ( (short)102 ),
+	AttributesUnavailable   ( (short)103 ),
+	CancelAcquire           ( (short)104 ),
+	CancelDivest            ( (short)105 ),
+	CancelConfirmation      ( (short)106 ),
+	OwnershipAcquired       ( (short)107 ),
+	DivestConfirmation      ( (short)108 ),
+	QueryOwnership          ( (short)109 ),
+	QueryOwnershipResponse  ( (short)110 ),
+	
+	// Time Management (120-139)
+	EnableTimeConstrained   ( (short)120 ),
+	DisableTimeConstrained  ( (short)121 ),
+	EnableTimeRegulation    ( (short)122 ),
+	DisableTimeRegulation   ( (short)123 ),
+	ModifyLookahead         ( (short)124 ),
+	TimeAdvanceRequest      ( (short)125 ),
+	TimeAdvanceGrant        ( (short)126 ),
+	NextEventRequest        ( (short)127 ),
+	FlushQueueRequest       ( (short)128 ),
+	QueryGALT               ( (short)129 ),
+	EnableAsynchDelivery    ( (short)130 ),
+	DisableAsynchDelivery   ( (short)131 ),
+
+	// Data Distribution Management (140-149)
+	CreateRegion            ( (short)140 ),
+	DeleteRegion            ( (short)141 ),
+	ModifyRegion            ( (short)142 ),
+	AssociateRegion         ( (short)143 ),
+	UnassociateRegion       ( (short)144 );
+
+	// Reserved for future use (150-253)
+	
+	// RESERVED (UPDATE/SEND - 254, 255 - Above)
+	
 	// Messages that are for processing within a specific federation
 	// ...
 	// ...
@@ -147,10 +151,10 @@ public enum MessageType
 	 */
 	public boolean isFederationMessage()
 	{
-		return id > 99;
+		return id > 9;
 	}
 
-	public short getId()
+	public final short getId()
 	{
 		return this.id;
 	}
@@ -158,5 +162,27 @@ public enum MessageType
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static MessageType fromId( int id )
+	{
+		// if it is a priority message, just jump straight to it
+		switch( id )
+		{
+			case 254: return UpdateAttributes;
+			case 255: return SendInteraction;
+			case  60: return RegisterObject;
+			case  61: return DiscoverObject;
+			case  64: return DeleteObject;
+			default: break;
+		}
+
+		// loop through all the other types
+		for( MessageType type : MessageType.values() )
+		{
+			if( type.id == id )
+				return type;
+		}
+
+		throw new IllegalArgumentException( "MessageType id not known: "+id );
+	}
 
 }
