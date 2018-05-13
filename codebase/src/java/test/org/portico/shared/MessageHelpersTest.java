@@ -21,6 +21,7 @@ import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.utils.MessageHelpers;
+import org.portico2.common.messaging.CallType;
 import org.portico2.common.services.federation.msg.CreateFederation;
 import org.portico2.common.services.federation.msg.DestroyFederation;
 import org.testng.Assert;
@@ -56,9 +57,9 @@ public class MessageHelpersTest
 		ObjectModel model = FOM.parseFOM( ClassLoader.getSystemResource("fom/testfom.fed") );
 		CreateFederation original = new CreateFederation( "sharedTest", model );
 
-		byte[] deflated = MessageHelpers.deflate( original );
+		byte[] deflated = MessageHelpers.deflate2( original, CallType.ControlSync );
 		
-		CreateFederation inflated = MessageHelpers.inflate( deflated, CreateFederation.class );
+		CreateFederation inflated = MessageHelpers.inflate2( deflated, CreateFederation.class );
 		ObjectModel iModel = inflated.getModel();
 		Assert.assertNotNull( iModel );
 		
@@ -110,7 +111,7 @@ public class MessageHelpersTest
 	{
 		// deflate a PorticoMessage
 		DestroyFederation request = new DestroyFederation( "testFederation" );
-		byte[] data = MessageHelpers.deflate( request );
+		byte[] data = MessageHelpers.deflate2( request, CallType.ControlSync );
 		
 		// pad the data
 		byte[] padded = new byte[data.length+1];
@@ -120,7 +121,7 @@ public class MessageHelpersTest
 		// make sure the defalte fails now as the data should be bad
 		try
 		{
-			MessageHelpers.inflate( padded, DestroyFederation.class );
+			MessageHelpers.inflate2( padded, DestroyFederation.class );
 			Assert.fail( "No exception when inflating invalid data" );
 		}
 		catch( RuntimeException rtie )
@@ -134,7 +135,7 @@ public class MessageHelpersTest
 		
 		// strip the data and then attempt inflation again
 		byte[] stripped = MessageHelpers.stripHeader( padded, 1 );
-		DestroyFederation inflated = MessageHelpers.inflate( stripped, DestroyFederation.class );
+		DestroyFederation inflated = MessageHelpers.inflate2( stripped, DestroyFederation.class );
 		Assert.assertEquals( inflated.getFederationName(), request.getFederationName() );
 	}
 
