@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
@@ -37,12 +38,14 @@ import hla.rti1516e.NullFederateAmbassador;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
+import hla.rti1516e.ParameterHandle;
 import hla.rti1516e.ParameterHandleValueMap;
 import hla.rti1516e.RTIambassador;
 import hla.rti1516e.ResignAction;
 import hla.rti1516e.RtiFactoryFactory;
 import hla.rti1516e.SynchronizationPointFailureReason;
 import hla.rti1516e.TransportationTypeHandle;
+import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.exceptions.FederatesCurrentlyJoined;
 import hla.rti1516e.exceptions.FederationExecutionAlreadyExists;
 import hla.rti1516e.time.HLAfloat64Time;
@@ -75,6 +78,7 @@ public class Federate
 	private ObjectInstanceHandle ourObject;
 	private Map<ObjectInstanceHandle,Long> discoveredObjects; // value: last updated timestamp
 	private Set<ObjectInstanceHandle> deletedObjects;
+	private Set<InteractionInstance> receivedInteractions; // Interactions received in last call to tick()
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -99,6 +103,7 @@ public class Federate
 		this.ourObject = null;
 		this.discoveredObjects = new HashMap<>();
 		this.deletedObjects = new HashSet<>();
+		this.receivedInteractions = new HashSet<>();
 	}
 
 	//----------------------------------------------------------
@@ -194,6 +199,18 @@ public class Federate
 		rtiamb.subscribeInteractionClass( iHandle );
 	}
 	
+	public void subscribeInteractionClass( String className ) throws Exception
+	{
+		InteractionClassHandle iHandle = rtiamb.getInteractionClassHandle( className );
+		rtiamb.subscribeInteractionClass( iHandle );
+	}
+	
+	public void publishInteractionClass( String className ) throws Exception
+	{
+		InteractionClassHandle iHandle = rtiamb.getInteractionClassHandle( className );
+		rtiamb.publishInteractionClass( iHandle );
+	}
+	
 	public void unpublishAndUnsubscribe() throws Exception
 	{
 		// Object
@@ -207,9 +224,21 @@ public class Federate
 		rtiamb.unsubscribeInteractionClass( iHandle );
 	}
 	
+	public void unsubscribeInteractionClass( String className ) throws Exception
+	{
+		InteractionClassHandle iHandle = rtiamb.getInteractionClassHandle( className );
+		rtiamb.unpublishInteractionClass( iHandle );
+	}
+	
+	public void unpublishInteractionClass( String className ) throws Exception
+	{
+		InteractionClassHandle iHandle = rtiamb.getInteractionClassHandle( className );
+		rtiamb.unpublishInteractionClass( iHandle );
+	}
+	
 	public ObjectInstanceHandle registerObject() throws Exception
 	{
-		ObjectClassHandle classHandle = rtiamb.getObjectClassHandle( "ObjectRoot.A.B" );		
+		ObjectClassHandle classHandle = rtiamb.getObjectClassHandle( "ObjectRoot.A.B" );
 		this.ourObject = rtiamb.registerObjectInstance( classHandle, "obj-"+federate );
 		log( "Registered instance: handle="+this.ourObject );
 		return ourObject;
@@ -220,6 +249,43 @@ public class Federate
 		boolean result = tick( 5000, () -> { return discoveredObjects.containsKey(objectHandle); } );
 		if( result == false )
 			throw new Exception( "{"+federate+"} WAITING FOR DISCOVERY OF "+objectHandle );
+	}
+	
+	public InteractionInstance waitForInteraction( String name ) throws Exception
+	{
+		final InteractionClassHandle handle = this.rtiamb.getInteractionClassHandle( name );
+		boolean result = tick( 5000, () -> {
+			boolean hasInteraction = false;
+			for( InteractionInstance interaction : receivedInteractions )
+			{
+				if( interaction.getInteractionClass().equals(handle) )
+				{
+					hasInteraction = true;
+					break;
+				}
+			}
+			
+			return hasInteraction;
+		});
+		
+		if( result )
+		{
+			InteractionInstance theInstance = null;
+			for( InteractionInstance interaction : receivedInteractions )
+			{
+				if( interaction.getInteractionClass().equals(handle) )
+				{
+					theInstance = interaction;
+					break;
+				}
+			}
+			
+			return theInstance;
+		}
+		else
+		{
+			throw new Exception( "{"+federate+"} WAITING FOR RECEIPT OF "+name );
+		}
 	}
 	
 	public void updateObject() throws Exception
@@ -290,6 +356,33 @@ public class Federate
 		rtiamb.sendInteraction( iHandle, parameters, new byte[]{}, time );
 	}
 	
+	public void sendInteraction( String name ) throws Exception
+	{
+		Map<String,byte[]> parameters = new HashMap<>();
+		sendInteraction( name, parameters );
+	}
+	
+	public void sendInteraction( String name, String paramName, byte[] paramValue ) throws Exception
+	{
+		Map<String,byte[]> parameters = new HashMap<>();
+		parameters.put( paramName, paramValue );
+		sendInteraction( name, parameters );
+	}
+	
+	public void sendInteraction( String name, Map<String,byte[]> parameters ) throws Exception
+	{
+		InteractionClassHandle iHandle = rtiamb.getInteractionClassHandle( name );
+		
+		ParameterHandleValueMap hlaParams = rtiamb.getParameterHandleValueMapFactory().create( parameters.size() );
+		for( Entry<String,byte[]> entry : parameters.entrySet() )
+		{
+			ParameterHandle pHandle = rtiamb.getParameterHandle( iHandle, entry.getKey() );
+			hlaParams.put( pHandle, entry.getValue() );
+		}
+		
+		rtiamb.sendInteraction( iHandle, hlaParams, null );
+	}
+	
 	public void enableTimePolicy() throws Exception
 	{
 		rtiamb.enableAsynchronousDelivery();
@@ -333,7 +426,24 @@ public class Federate
 		this.rtiamb.disconnect();
 	}
 
-
+	public void tick( long maxMillis ) throws Exception
+	{
+		long end = System.currentTimeMillis()+maxMillis;
+		while( System.currentTimeMillis() < end )
+		{
+			rtiamb.evokeMultipleCallbacks( 0.1, 1.0 );
+			Thread.sleep( 100 );
+		}
+	}
+	
+	public FederateHandle decodeFederateHandle( ByteWrapper wrapper ) throws Exception
+	{
+		FederateHandle handle = rtiamb.getFederateHandleFactory().decode( wrapper.array(), 
+		                                                                  wrapper.getPos() );
+		wrapper.advance( handle.encodedLength() );
+		return handle;
+	}
+	
 	/////////////////////////////////////////////////////
 	/// Convenience Helper Methods  /////////////////////
 	/////////////////////////////////////////////////////
@@ -347,6 +457,7 @@ public class Federate
 		long end = System.currentTimeMillis()+maxMillis;
 		while( test.getAsBoolean() == false )
 		{
+			this.receivedInteractions.clear();
 			rtiamb.evokeMultipleCallbacks( 0.1, 1.0 );
 			Thread.sleep( 100 );
 			if( System.currentTimeMillis() > end )
@@ -403,6 +514,20 @@ public class Federate
                                         SupplementalReceiveInfo receiveInfo )
         {
 			log( "RECEIVED INTERACTION: "+classHandle );
+			Map<String,byte[]> params = new HashMap<>();
+			for( Entry<ParameterHandle,byte[]> hlaParam : theParameters.entrySet() )
+			{
+				try
+				{
+					String name = rtiamb.getParameterName( classHandle, hlaParam.getKey() );
+					params.put( name, hlaParam.getValue() );
+				}
+				catch( Exception e )
+				{
+					e.printStackTrace();
+				}
+			}
+			receivedInteractions.add( new InteractionInstance(classHandle, params) );
         }
 
 		@Override

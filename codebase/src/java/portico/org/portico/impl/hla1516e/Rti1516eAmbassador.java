@@ -4869,13 +4869,11 @@ return "";
 	           RTIinternalError
 	{
 		helper.checkJoined();
-		return null;
-		
-//		OCInstance instance = helper.getState().getRepository().getInstance( theObject.hashCode() );
-//		if( instance == null )
-//			throw new ObjectInstanceNotKnown( "handle: " + theObject );
-//		else
-//			return new HLA1516eHandle( instance.getDiscoveredClassHandle() );
+		LOCInstance instance = helper.getState().getRepository().getObject( theObject.hashCode() );
+		if( instance == null )
+			throw new ObjectInstanceNotKnown( "handle: " + theObject );
+		else
+			return new HLA1516eHandle( instance.getDiscoveredClassHandle() );
 	}
 
 	// 10.9

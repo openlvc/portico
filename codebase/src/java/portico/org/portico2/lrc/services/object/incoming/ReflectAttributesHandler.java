@@ -77,7 +77,7 @@ public class ReflectAttributesHandler extends LRCMessageHandler
 		LOCInstance instance = repository.getObject( objectHandle );
 		if( instance == null )
 		{
-			logger.debug( "DISCARD reflection for object [%s]: object unknown", objectMoniker(objectHandle) );
+			logger.debug( "[" + federateName() + "] DISCARD reflection for object [%s]: object unknown", objectMoniker(objectHandle) );
 			veto( "Reflection ignored: object unknown" );
 		}
 		
@@ -89,12 +89,12 @@ public class ReflectAttributesHandler extends LRCMessageHandler
 		catch( JObjectClassNotSubscribed ocns )
 		{
 			// we're not subscribed, ignore the reflection
-			veto( "Reflection ignored: no subscribed attributes" );
+			veto( "[" + federateName() + "] Reflection ignored: no subscribed attributes" );
 		}
 
 		if( notice.getFilteredAttributes().isEmpty() )
 		{
-			logger.debug( "DISCARD reflection for object[%s]: no subscribed attributes",
+			logger.debug( "[" + federateName() + "] DISCARD reflection for object[%s]: no subscribed attributes",
 			              objectMoniker(objectHandle) );
 			veto( "Reflection ignored: no subscribed attributes" );
 		}

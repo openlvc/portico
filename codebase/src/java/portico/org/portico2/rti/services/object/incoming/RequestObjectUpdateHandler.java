@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JObjectNotKnown;
@@ -80,7 +81,13 @@ public class RequestObjectUpdateHandler extends RTIMessageHandler
 
 		// send a Provide request to each of the owners
 		for( Integer owner : owners.keySet() )
-			sendProvideRequest( objectHandle, owner, owners.get(owner) );
+		{
+			HashSet<Integer> ownedAttributes = owners.get( owner );
+			if( owner == PorticoConstants.RTI_HANDLE )
+				momManager.updateMomObject( objectHandle, ownedAttributes );
+			else
+				sendProvideRequest( objectHandle, owner, ownedAttributes );
+		}
 
 		// everything is awesome!
 		context.success();

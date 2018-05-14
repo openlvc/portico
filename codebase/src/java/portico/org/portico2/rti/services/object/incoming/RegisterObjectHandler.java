@@ -86,11 +86,15 @@ public class RegisterObjectHandler extends RTIMessageHandler
 		                                                   federateHandle,
 		                                                   published ); // published attributes
 		repository.addObject( newInstance );
+		int instanceHandle = newInstance.getHandle();
+		
+		// Log registrant metrics
+		momManager.objectRegistered( federateHandle, instanceHandle );
 
 		// TODO Region Support
 
 		// Stuff the object handle into the context so we can return it
-		context.success( RegisterObject.KEY_RETURN_HANDLE, newInstance.getHandle() );
+		context.success( RegisterObject.KEY_RETURN_HANDLE, instanceHandle );
 		context.success( RegisterObject.KEY_RETURN_NAME, newInstance.getName() );
 		// FIXME Could we stuff the hash of the class hierarchy in here to avoid any
 		//       issues from FOM misalignment following late joiners?
@@ -110,10 +114,15 @@ public class RegisterObjectHandler extends RTIMessageHandler
 		for( Integer subscriberHandle : subscriptions.keySet() )
 		{
 			newInstance.discover( subscriberHandle, subscriptions.get(subscriberHandle) );
+			
+			// Log discovery metrics
+			if( federateHandle != subscriberHandle)
+				momManager.objectDiscovered( subscriberHandle, instanceHandle );
 		}
 
 		DiscoverObject discover = fill( new DiscoverObject(newInstance), federateHandle );
 		subscriptions.remove( federateHandle ); // don't need to notify the one who created it
+		
 		super.queueManycast( discover, subscriptions.keySet() );
 	}
 
@@ -144,7 +153,7 @@ public class RegisterObjectHandler extends RTIMessageHandler
 
 		return oMetadata;
 	}
-
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

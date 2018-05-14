@@ -251,9 +251,9 @@ public class MomManager implements SaveRestoreTarget
 		try
 		{
 			this.isRestore = true;
-    		momFederation.clear();
-    		for( Federate federate : lrcState.getFederation() )
-    			federateJoinedFederation( federate );
+			momFederation.clear();
+			for( Federate federate : lrcState.getFederation() )
+				federateJoinedFederation( federate );
 		}
 		finally
 		{

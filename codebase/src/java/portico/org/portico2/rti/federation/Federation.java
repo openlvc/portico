@@ -39,6 +39,7 @@ import org.portico2.common.services.pubsub.data.InterestManager;
 import org.portico2.rti.RTI;
 import org.portico2.rti.RtiConnection;
 import org.portico2.rti.services.RTIHandlerRegistry;
+import org.portico2.rti.services.mom.data.MomManager;
 import org.portico2.rti.services.object.data.Repository;
 import org.portico2.rti.services.sync.data.SyncPointManager;
 import org.portico2.rti.services.time.data.TimeManager;
@@ -92,6 +93,9 @@ public class Federation
 	
 	// Ownership settings //
 	private OwnershipManager ownershipManager;
+	
+	// MOM settings
+	private MomManager momManager;
 	
 	// Save/Restore settings //
 //	private Serializer serializer;
@@ -160,6 +164,9 @@ public class Federation
 		
 		// Ownership settings //
 		this.ownershipManager = new OwnershipManager();
+		
+		// MOM settings //
+		this.momManager = new MomManager( this );
 		// ... TBA ...
 
 		// Populate the Message Sinks
@@ -211,6 +218,11 @@ public class Federation
 	public OwnershipManager getOwnershipManager()
 	{
 		return this.ownershipManager;
+	}
+	
+	public MomManager getMomManager()
+	{
+		return this.momManager;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -400,6 +412,9 @@ public class Federation
 	 */
 	public final void queueDataMessage( PorticoMessage message, RtiConnection sender )
 	{
+		// Reflect data message into the message sink so that the Mom Handlers can get a go at it
+		this.incomingSink.process( new MessageContext(message) );
+		
 		for( RtiConnection connection : federateConnections )
 		{
 			if( connection == sender )

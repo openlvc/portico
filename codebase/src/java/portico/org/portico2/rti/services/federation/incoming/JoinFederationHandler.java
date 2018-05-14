@@ -83,6 +83,7 @@ public class JoinFederationHandler extends RTIMessageHandler
 		
 		// Do any internal house-keeping required
 		timeManager.joinedFederation( federateHandle, null );
+		momManager.joinedFederation( federate );
 
 		context.success( welcome );
 	}

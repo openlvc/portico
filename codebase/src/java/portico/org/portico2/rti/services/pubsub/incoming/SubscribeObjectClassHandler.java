@@ -26,6 +26,7 @@ import org.portico.lrc.model.OCMetadata;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DiscoverObject;
 import org.portico2.common.services.pubsub.msg.SubscribeObjectClass;
+import org.portico2.rti.federation.Federate;
 import org.portico2.rti.services.RTIMessageHandler;
 import org.portico2.rti.services.object.data.ROCInstance;
 
@@ -101,6 +102,8 @@ public class SubscribeObjectClassHandler extends RTIMessageHandler
 		                     .filter( instance -> instance.hasDiscovered(federateHandle) == false )
 		                     .collect( Collectors.toSet() );
 		
+		Federate federate = federation.getFederate( federateHandle );
+		
 		for( ROCInstance instance : instances )
 		{
 			// have we already discovered this one?
@@ -111,6 +114,14 @@ public class SubscribeObjectClassHandler extends RTIMessageHandler
 			instance.discover( federateHandle, classType );
 			DiscoverObject discover = new DiscoverObject( instance );
 			discover.setClassHandle( classType.getHandle() );
+			
+			// The subscriber may not have had a chance to update its internal subscription list yet so
+			// discoveries need to be queued to avoid false vetos due to race conditions.
+			discover.setImmediateProcessingFlag( false );
+			
+			// Update discovery metrics
+			momManager.objectDiscovered( federateHandle, instance.getHandle() );
+			
 			super.queueUnicast( discover, federateHandle );
 			if( logger.isDebugEnabled() )
 			{

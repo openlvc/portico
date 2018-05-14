@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.model.OCMetadata;
@@ -143,9 +144,16 @@ public class RequestClassUpdateHandler extends RTIMessageHandler
 					              moniker(owner) );
 				}
 
-				RequestObjectUpdate request = new RequestObjectUpdate( object.getHandle(), owned );
-				super.queueUnicast( request, owner );
-			}				
+				if( owner == PorticoConstants.RTI_HANDLE )
+				{
+					momManager.updateMomObject( object.getHandle(), owned );
+				}
+				else
+				{
+					RequestObjectUpdate request = new RequestObjectUpdate( object.getHandle(), owned );
+					super.queueUnicast( request, owner );
+				}
+			}
 		}
 
 	}

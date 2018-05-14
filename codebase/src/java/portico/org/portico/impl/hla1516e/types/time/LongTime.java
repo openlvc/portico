@@ -111,12 +111,13 @@ public class LongTime implements HLAinteger64Time
 
 	public int encodedLength()
 	{
-		return 8;
+		return 12;  // 4 (size) + 8 (value)
 	}
 
 	public void encode( byte[] buffer, int offset )
 	{
-		BitHelpers.putLongBE( this.time, buffer, offset );
+		BitHelpers.putIntBE( 8, buffer, offset );
+		BitHelpers.putLongBE( this.time, buffer, offset + 4 );
 	}
 
 	public long getValue()
@@ -127,5 +128,10 @@ public class LongTime implements HLAinteger64Time
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-
+	public static LongTime decode( byte[] buffer, int offset )
+	{
+		// int length = BitHelpers.readIntBE( buffer, offset );     // size
+		long value = BitHelpers.readLongBE( buffer, offset + 4 );   // value
+		return new LongTime( value );
+	}
 }
