@@ -17,6 +17,7 @@ package org.portico2.rti.services;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.IMessageHandler;
 import org.portico2.common.messaging.MessageSink;
@@ -24,6 +25,8 @@ import org.portico2.common.messaging.MessageType;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.federation.incoming.JoinFederationHandler;
 import org.portico2.rti.services.federation.incoming.ResignFederationHandler;
+import org.portico2.rti.services.mom.incoming.MomSendInteractionHandler;
+import org.portico2.rti.services.mom.incoming.MomUpdateAttributesHandler;
 import org.portico2.rti.services.object.incoming.DeleteObjectHandler;
 import org.portico2.rti.services.object.incoming.RegisterObjectHandler;
 import org.portico2.rti.services.object.incoming.RequestClassUpdateHandler;
@@ -124,7 +127,14 @@ public class RTIHandlerRegistry
 		in.register( MessageType.EnableAsynchDelivery,   new EnableAsyncDeliveryHandler() );
 		in.register( MessageType.TimeAdvanceRequest,     new TimeAdvanceRequestHandler() );
 		in.register( MessageType.ModifyLookahead,        new ModifyLookaheadHandler() );
-
+		
+		// MOM Interaction Handling and Metric Collection
+		if( PorticoConstants.isMomEnabled() )
+		{
+			in.register( MessageType.SendInteraction, new MomSendInteractionHandler() );
+			in.register( MessageType.UpdateAttributes, new MomUpdateAttributesHandler() );
+		}
+		
 		// Configure all handlers in the sink
 		in.configure( settings );
 	}

@@ -151,7 +151,6 @@ public class RtiInbox
 			                             message.getTargetFederation(),
 			                             message.getClass().getSimpleName() );
 		}
-		
 		targetFederation.queueDataMessage( message, sender );
 	}
 

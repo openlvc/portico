@@ -37,6 +37,7 @@ import org.portico2.common.services.time.msg.TimeAdvanceRequest;
 import org.portico2.rti.federation.Federate;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.federation.FederationManager;
+import org.portico2.rti.services.mom.data.MomManager;
 import org.portico2.rti.services.object.data.Repository;
 import org.portico2.rti.services.sync.data.SyncPointManager;
 import org.portico2.rti.services.time.data.TimeManager;
@@ -60,6 +61,7 @@ public abstract class RTIMessageHandler implements IMessageHandler
 	protected RegionStore      regionStore2;
 	protected TimeManager      timeManager;
 	protected OwnershipManager ownership;
+	protected MomManager       momManager;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -97,6 +99,7 @@ public abstract class RTIMessageHandler implements IMessageHandler
 		this.regionStore2  = federation.getRegionStore();
 		this.timeManager   = federation.getTimeManager();
 		this.ownership     = federation.getOwnershipManager();
+		this.momManager    = federation.getMomManager();
 	}
 	
 	/**

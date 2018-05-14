@@ -47,7 +47,7 @@ import org.portico2.common.messaging.ResponseMessage;
 /**
  * This class represents a channel devoted to supporting an active Portico Federation.
  * The purpose of this class is primarily just to handle the JGroups-specific comms. Any
- * broader logic should be handled by the {@link Federation} class in which this sits.
+ * broader logic should be handled by the {@link ObjectFederation} class in which this sits.
  * 
  * For outgoing messages, we have `sendXxxx` methods. For incoming messages we set up
  * an instance of a {@link ChannelListener} which then routes incoming messages back to

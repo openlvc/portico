@@ -90,7 +90,28 @@ public class ICMetadata implements Serializable
 		
 		return null;
 	}
-
+	
+	/**
+	 * This method will cause this interaction class to remove any links between it and the object
+	 * model to which it is currently attached. This includes removing itself from the store
+	 * of "child" classes in its parent and setting its object model reference to null. The
+	 * overall effect of this method is to cleave the interaction class from the object model.
+	 */
+	protected void cleave()
+	{
+		// dissolve our relationship with our parent //
+		if( this.parent != null )
+		{
+			// remove us as a child
+			this.parent.children.remove( this );
+			// emancipate
+			this.parent = null;
+		}
+		
+		// remove our link to the model //
+		this.model = null;
+	}
+	
 	////////////////////////////////////////////////////////////
 	///////////////////// Parameter Methods ////////////////////
 	////////////////////////////////////////////////////////////

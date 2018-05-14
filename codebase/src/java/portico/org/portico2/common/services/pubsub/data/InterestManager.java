@@ -1226,6 +1226,31 @@ public class InterestManager implements SaveRestoreTarget
 		}
 	}
 
+	/**
+	 * Return a set of all the federate handles that have a subscription interest in the given
+	 * interaction class <b>OR</b> any of its parents.
+	 * 
+	 * @param interactionClass The class that we want to find all the subscribers for
+	 * @return A set of all federate handles that declare an interest in the given object class
+	 *         of any of its parents
+	 */
+	public Set<Integer> getAllSubscribers( ICMetadata interactionClass )
+	{
+		HashSet<Integer> set = new HashSet<>();
+
+		ICMetadata currentClass = interactionClass;
+		while( currentClass != null )
+		{
+			ICInterest interest = sInteractions.get( currentClass );
+			if( interest != null )
+				set.addAll( interest.getFederates() );
+
+			currentClass = currentClass.getParent();
+		}
+		
+		return set;
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// Private Helper Methods /////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
