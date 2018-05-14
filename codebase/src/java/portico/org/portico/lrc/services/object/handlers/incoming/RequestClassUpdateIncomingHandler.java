@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.model.ACInstance;
@@ -45,6 +46,8 @@ public class RequestClassUpdateIncomingHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private int managerClassHandle;
+	private int federateClassHandle;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -56,6 +59,8 @@ public class RequestClassUpdateIncomingHandler extends LRCMessageHandler
 	public void initialize( Map<String,Object> properties )
 	{
 		super.initialize( properties );
+		this.managerClassHandle = Mom.getMomObjectClassHandle( HLAVersion.IEEE1516e, "HLAmanager" );
+		this.federateClassHandle = Mom.getMomObjectClassHandle( HLAVersion.IEEE1516e, "HLAmanager.HLAfederate" );
 	}
 
 	public void process( MessageContext context ) throws Exception
@@ -74,7 +79,8 @@ public class RequestClassUpdateIncomingHandler extends LRCMessageHandler
 		}
 
 		// check to see if this is MOM related
-		if( classHandle == Mom.FederateClass || classHandle == Mom.ManagerClass )
+		
+		if( classHandle == this.managerClassHandle || classHandle == this.federateClassHandle )
 		{
 			respondToMomFederateUpdateRequest( requested );
 			veto("Update was for MOM type, automatically handled by LRC");

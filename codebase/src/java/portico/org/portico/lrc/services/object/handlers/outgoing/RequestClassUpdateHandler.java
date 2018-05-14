@@ -17,6 +17,7 @@ package org.portico.lrc.services.object.handlers.outgoing;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JObjectClassNotDefined;
@@ -41,6 +42,8 @@ public class RequestClassUpdateHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private int managerClassHandle;
+	private int federationClassHandle;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -52,6 +55,8 @@ public class RequestClassUpdateHandler extends LRCMessageHandler
 	public void initialize( Map<String,Object> properties )
 	{
 		super.initialize( properties );
+		this.managerClassHandle = Mom.getMomObjectClassHandle( HLAVersion.IEEE1516e, "HLAmanager" );
+		this.federationClassHandle = Mom.getMomObjectClassHandle( HLAVersion.IEEE1516e, "HLAmanager.HLAfederation" );
 	}
 	
 	public void process( MessageContext context ) throws Exception
@@ -102,7 +107,7 @@ public class RequestClassUpdateHandler extends LRCMessageHandler
 		//  3. Class handle isn't part of the MOM or if for Federate
 		//      -We want to broadcast it. If it's non-mom, we're fine, if it's Mom-Federate, then
 		//       we need to notify the appropriate LRC
-		if( classHandle == Mom.FederationClass )
+		if( classHandle == this.federationClassHandle )
 		{
 			// it's just Manager.Federation, handle locally, no broadcast
 			respondToMomFederationUpdateRequest( request.getAttributes() );
@@ -111,7 +116,7 @@ public class RequestClassUpdateHandler extends LRCMessageHandler
 		{
 			// if it's for manager, handle the federation part locally and broadcast as per
 			// normal for the federation part
-			if( classHandle == Mom.ManagerClass )
+			if( classHandle == this.managerClassHandle )
 				respondToMomFederationUpdateRequest( request.getAttributes() );
 			
 			connection.broadcast( request );

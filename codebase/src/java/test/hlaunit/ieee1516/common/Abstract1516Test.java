@@ -129,7 +129,7 @@ public abstract class Abstract1516Test
 	
 	protected double decodeTime( byte[] time )
 	{
-		return DoubleTime.fromBuffer( time );
+		return DoubleTime.decode( time, 0 ).getTime();
 	}
 
 	//----------------------------------------------------------

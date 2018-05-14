@@ -22,7 +22,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.model.Mom;
 
 @Test(sequential=true, groups={"MomObjectModelTest", "mom"})
@@ -70,6 +70,16 @@ public class MomObjectModelTest extends Abstract1516Test
 		defaultFederate.quickResign();
 	}
 	
+	private int getMomOCHandle( String name )
+	{
+		return Mom.getMomObjectClassHandle( HLAVersion.IEEE1516, name );
+	}
+	
+	private int getMomACHandle( int classHandle, String name )
+	{
+		return Mom.getMomAttributeHandle( HLAVersion.IEEE1516, classHandle, name );
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////// Test Methods //////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -88,131 +98,159 @@ public class MomObjectModelTest extends Abstract1516Test
 		try
 		{
 			int hManager    = getOCHandle( "HLAobjectRoot.HLAmanager" );
-			Assert.assertEquals( hManager, Mom.ManagerClass );
+			Assert.assertEquals( hManager, getMomOCHandle("HLAmanager") );
 			
-			int hFederate   = getOCHandle( "HLAobjectRoot.HLAmanager.Federate" );
-			Assert.assertEquals( hFederate, Mom.FederateClass );
+			int hFederate   = getOCHandle( "HLAobjectRoot.HLAmanager.HLAfederate" );
+			Assert.assertEquals( hFederate, getMomOCHandle("HLAmanager.HLAfederate") );
 
-			int hFederation = getOCHandle( "HLAobjectRoot.HLAmanager.Federation" );
-			Assert.assertEquals( hFederation, Mom.FederationClass );
+			int hFederation = getOCHandle( "HLAobjectRoot.HLAmanager.HLAfederation" );
+			Assert.assertEquals( hFederation, getMomOCHandle("HLAmanager.HLAfederation") );
 
 			///////////////////////////
 			// FEDERATION ATTRIBUTES //
 			///////////////////////////
 			int handle = -1;
 			handle = getACHandle( hFederation, "HLAfederationName" );
-			Assert.assertEquals( handle, Mom.Federation.FederationName.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAfederationName"),
 			                     "Federation.HLAfederationName" );
 			
 			handle = getACHandle( hFederation, "HLAfederatesInFederation" );
-			Assert.assertEquals( handle, Mom.Federation.FederatesInFederation.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAfederatesInFederation"),
 			                     "Federation.HLAfederatesInFederation" );
 			
 			handle = getACHandle( hFederation, "HLARTIversion" );
-			Assert.assertEquals( handle, Mom.Federation.RtiVersion.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLARTIversion"),
 			                     "Federation.HLARTIversion" );
 			
 			handle = getACHandle( hFederation, "HLAFDDID" );
-			Assert.assertEquals( handle, Mom.Federation.FedID.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAFDDID"),
 			                     "Federation.HLAFDDID" );
 			
 			handle = getACHandle( hFederation, "HLAlastSaveName" );
-			Assert.assertEquals( handle, Mom.Federation.LastSaveName.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAlastSaveName"),
 			                     "Federation.HLAlastSaveName" );
 			
 			handle = getACHandle( hFederation, "HLAlastSaveTime" );
-			Assert.assertEquals( handle, Mom.Federation.LastSaveTime.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAlastSaveTime"),
 			                     "Federation.HLAlastSaveTime" );
 			
 			handle = getACHandle( hFederation, "HLAnextSaveName" );
-			Assert.assertEquals( handle, Mom.Federation.NextSaveName.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAnextSaveName"),
 			                     "Federation.HLAnextSaveName" );
 			
 			handle = getACHandle( hFederation, "HLAnextSaveTime" );
-			Assert.assertEquals( handle, Mom.Federation.NextSaveTime.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederation, "HLAnextSaveTime"),
 			                     "Federation.HLAnextSaveTime" );
 
 			/////////////////////////
 			// FEDERATE ATTRIBUTES //
 			/////////////////////////
 			handle = getACHandle( hFederate, "HLAfederateHandle" );
-			Assert.assertEquals( handle, Mom.Federate.FederateHandle.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAfederateHandle"),
 			                     "Federate.HLAfederateHandle" );
 			
 			handle = getACHandle( hFederate, "HLAfederateType" );
-			Assert.assertEquals( handle, Mom.Federate.FederateType.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAfederateType"),
 			                     "Federate.HLAfederateType" );
 			
 			handle = getACHandle( hFederate, "HLARTIversion" );
-			Assert.assertEquals( handle, Mom.Federate.RtiVersion.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLARTIversion"),
 			                     "Federate.HLARTIversion" );
 			
 			handle = getACHandle( hFederate, "HLAFDDID" );
-			Assert.assertEquals( handle, Mom.Federate.FedID.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAFDDID"),
 			                     "Federate.HLAFDDID" );
 			
 			handle = getACHandle( hFederate, "HLAtimeConstrained" );
-			Assert.assertEquals( handle, Mom.Federate.TimeConstrained.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAtimeConstrained"),
 			                     "Federate.HLAtimeConstrained" );
 			
 			handle = getACHandle( hFederate, "HLAtimeRegulating" );
-			Assert.assertEquals( handle, Mom.Federate.TimeRegulating.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAtimeRegulating"),
 			                     "Federate.HLAtimeRegulating" );
 			
 			handle = getACHandle( hFederate, "HLAasynchronousDelivery" );
-			Assert.assertEquals( handle, Mom.Federate.AsynchronousDelivery.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAasynchronousDelivery"),
 			                     "Federate.HLAasynchronousDelivery" );
 			
 			handle = getACHandle( hFederate, "HLAfederateState" );
-			Assert.assertEquals( handle, Mom.Federate.FederateState.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAfederateState"),
 			                     "Federate.HLAfederateState" );
 			
 			handle = getACHandle( hFederate, "HLAtimeManagerState" );
-			Assert.assertEquals( handle, Mom.Federate.TimeManagerState.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAtimeManagerState"),
 			                     "Federate.HLAtimeManagerState" );
 			
 			handle = getACHandle( hFederate, "HLAlogicalTime" );
-			Assert.assertEquals( handle, Mom.Federate.LogicalTime.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAlogicalTime"),
 			                     "Federate.HLAlogicalTime" );
 			
 			handle = getACHandle( hFederate, "HLAlookahead" );
-			Assert.assertEquals( handle, Mom.Federate.Lookahead.handle,
-			                     "Federate.Lookahead" );
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAlookahead"),
+			                     "Federate.HLAlookahead" );
 			
 			handle = getACHandle( hFederate, "HLAROlength" );
-			Assert.assertEquals( handle, Mom.Federate.ROlength.handle,
+			Assert.assertEquals( handle,
+			                     getMomACHandle(hFederate, "HLAROlength"),
 			                     "Federate.HLAROlength" );
 			
 			handle = getACHandle( hFederate, "HLATSOlength" );
-			Assert.assertEquals( handle, Mom.Federate.TSOlength.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLATSOlength"),
 			                     "Federate.HLATSOlength" );
 			
 			handle = getACHandle( hFederate, "HLAreflectionsReceived" );
-			Assert.assertEquals( handle, Mom.Federate.ReflectionsReceived.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAreflectionsReceived"),
 			                     "Federate.HLAreflectionsReceived" );
 			
 			handle = getACHandle( hFederate, "HLAupdatesSent" );
-			Assert.assertEquals( handle, Mom.Federate.UpdatesSent.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAupdatesSent"),
 			                     "Federate.HLAupdatesSent" );
 			
 			handle = getACHandle( hFederate, "HLAinteractionsReceived" );
-			Assert.assertEquals( handle, Mom.Federate.InteractionsReceived.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAinteractionsReceived"),
 			                     "Federate.HLAinteractionsReceived" );
 			
 			handle = getACHandle( hFederate, "HLAinteractionsSent" );
-			Assert.assertEquals( handle, Mom.Federate.InteractionsSent.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAinteractionsSent"),
 			                     "Federate.HLAinteractionsSent" );
 			
 			handle = getACHandle( hFederate, "HLAobjectInstancesThatCanBeDeleted" );
-			Assert.assertEquals( handle, Mom.Federate.ObjectInstancesThatCanBeDeleted.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAobjectInstancesThatCanBeDeleted"),
 			                     "Federate.HLAobjectInstancesThatCanBeDeleted" );
 			
 			handle = getACHandle( hFederate, "HLAobjectInstancesUpdated" );
-			Assert.assertEquals( handle, Mom.Federate.ObjectInstancesUpdated.handle,
+			Assert.assertEquals( handle,
+			                     getMomACHandle(hFederate, "HLAobjectInstancesUpdated"),
 			                     "Federate.HLAobjectInstancessUpdated" );
 			
 			handle = getACHandle( hFederate, "HLAobjectInstancesReflected" );
-			Assert.assertEquals( handle, Mom.Federate.ObjectInstancesReflected.handle,
+			Assert.assertEquals( handle, 
+			                     getMomACHandle(hFederate, "HLAobjectInstancesReflected"),
 			                     "Federate.HLAobjectInstancesReflected" );
 		}
 		catch( Exception e )

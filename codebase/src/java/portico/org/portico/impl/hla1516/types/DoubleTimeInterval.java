@@ -14,8 +14,7 @@
  */
 package org.portico.impl.hla1516.types;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516.InvalidLogicalTime;
 import hla.rti1516.InvalidLookahead;
@@ -146,39 +145,13 @@ public class DoubleTimeInterval implements LogicalTimeInterval
 
 	public int encodedLength()
 	{
-		try
-		{
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeDouble( this.time );
-			stream.close();
-			return byteStream.toByteArray().length;
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen
-			return -1;
-		}
+		return 12;	// 4 (size) + 8 (value)
 	}
 
 	public void encode( byte[] buffer, int offset )
 	{
-		try
-		{
-			// convert the into an array
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeDouble( this.time );
-			stream.close();
-			byte[] bytes = byteStream.toByteArray();
-			
-			// copy it into the given array
-			System.arraycopy( bytes, 0, buffer, offset, bytes.length );
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}
+		BitHelpers.putIntBE( 8, buffer, offset );                 // size
+		BitHelpers.putDoubleBE( this.time, buffer, offset + 4 );  // value
 	}
 	//----------------------------------------------------------
 	//                     STATIC METHODS
@@ -211,5 +184,13 @@ public class DoubleTimeInterval implements LogicalTimeInterval
 		{
 			throw new InvalidLookahead( "Expecting DoubleTimeInterval, found: "+lti.getClass() );
 		}
+	}
+	
+	public static DoubleTimeInterval decode( byte[] buffer, int offset )
+	{
+		// int length = BitHelpers.readIntBE( buffer, offset );        // size
+		double value = BitHelpers.readDoubleBE( buffer, offset + 4 );  // value
+		
+		return new DoubleTimeInterval( value );
 	}
 }

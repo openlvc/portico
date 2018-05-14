@@ -78,6 +78,7 @@ public class ResignFederationHandler extends RTIMessageHandler
 
 		// Do any house keeping necessary
 		timeManager.resignedFederation( federate.getFederateHandle() );
+		momManager.resignedFederation( federate );
 	}
 
 	private void validateResignAction( JResignAction action, Federate federate ) throws JException

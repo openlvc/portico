@@ -30,6 +30,7 @@ public class Federate
 	private String name;
 	private int federateHandle;
 	private RtiConnection federateConnection;
+	private FederateMetrics metrics;
 	
 	private TimeStatus timeStatus;
 
@@ -40,6 +41,7 @@ public class Federate
 	{
 		this.name = name;
 		this.federateConnection = federateConnection;
+		this.metrics = new FederateMetrics();
 		this.federateHandle = PorticoConstants.NULL_HANDLE;
 		
 		this.timeStatus = new TimeStatus();
@@ -75,6 +77,11 @@ public class Federate
 	public TimeStatus getTimeStatus()
 	{
 		return this.timeStatus;
+	}
+	
+	public FederateMetrics getMetrics()
+	{
+		return this.metrics;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- *   Copyright 2012 The Portico Project
+ *   Copyright 2018 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -12,14 +12,13 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.types.time;
+package org.portico2.aaa;
 
-import hla.rti1516e.exceptions.CouldNotDecode;
-import hla.rti1516e.time.HLAfloat64Interval;
-import hla.rti1516e.time.HLAfloat64Time;
-import hla.rti1516e.time.HLAfloat64TimeFactory;
+import java.util.Map;
 
-public class DoubleTimeFactory implements HLAfloat64TimeFactory
+import hla.rti1516e.InteractionClassHandle;
+
+public class InteractionInstance
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -28,61 +27,34 @@ public class DoubleTimeFactory implements HLAfloat64TimeFactory
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private InteractionClassHandle clasz;
+	private Map<String,byte[]> params;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public DoubleTimeFactory()
+	public InteractionInstance( InteractionClassHandle clasz,
+	                            Map<String,byte[]> params )
 	{
-		
+		this.clasz = clasz;
+		this.params = params;
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	public HLAfloat64Time decodeTime( byte[] buffer, int offset ) throws CouldNotDecode
-	{
-		return DoubleTime.decode( buffer, offset );
-	}
 
-	public HLAfloat64Interval decodeInterval( byte[] buffer, int offset ) throws CouldNotDecode
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	public InteractionClassHandle getInteractionClass()
 	{
-		return DoubleTimeInterval.decode( buffer, offset );
+		return this.clasz;
 	}
-
-	public HLAfloat64Time makeInitial()
+	
+	public byte[] getParameterValue( String parameter )
 	{
-		return new DoubleTime( 0.0 );
-	}
-
-	public HLAfloat64Time makeFinal()
-	{
-		return new DoubleTime( Double.MAX_VALUE );
-	}
-
-	public HLAfloat64Time makeTime( double value )
-	{
-		return new DoubleTime( value );
-	}
-
-	public HLAfloat64Interval makeZero()
-	{
-		return new DoubleTimeInterval( 0.0 );
-	}
-
-	public HLAfloat64Interval makeEpsilon()
-	{
-		return new DoubleTimeInterval( 0x0.0000000000001P-1022 );
-	}
-
-	public HLAfloat64Interval makeInterval( double value )
-	{
-		return new DoubleTimeInterval( value );
-	}
-
-	public String getName()
-	{
-		return "HLAfloat64Time";
+		return this.params.get( parameter );
 	}
 
 	//----------------------------------------------------------

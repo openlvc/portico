@@ -14,9 +14,6 @@
  */
 package org.portico.impl.hla1516.types;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
 import hla.rti1516.CouldNotDecode;
 import hla.rti1516.LogicalTime;
 import hla.rti1516.LogicalTimeFactory;
@@ -45,15 +42,7 @@ public class DoubleTimeFactory implements LogicalTimeFactory
 	{
 		try
 		{
-			// get the value
-			ByteArrayInputStream byteStream =
-				new ByteArrayInputStream( buffer, offset, buffer.length-offset );
-			DataInputStream data = new DataInputStream( byteStream );
-			double time = data.readDouble();
-			data.close();
-			
-			// return it
-			return new DoubleTime( time );
+			return DoubleTime.decode( buffer, offset );
 		}
 		catch( Exception e )
 		{

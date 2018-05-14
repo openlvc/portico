@@ -27,8 +27,7 @@ import hla.rti1516.ObjectInstanceHandle;
 import hla.rti1516.ParameterHandle;
 import hla.rti1516.RTIinternalError;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import org.portico.utils.bithelpers.BitHelpers;
 
 public class HLA1516Handle
 {
@@ -79,39 +78,14 @@ public class HLA1516Handle
 
 	public int encodedLength()
 	{
-		try
-		{
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeInt( this.handle );
-			stream.close();
-			return byteStream.toByteArray().length;
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen
-			return -1;
-		}
+		return 8;
 	}
 
 	public void encode( byte[] buffer, int offset )
 	{
-		try
-		{
-			// convert the into an array
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeInt( this.handle );
-			stream.close();
-			byte[] bytes = byteStream.toByteArray();
-			
-			// copy it into the given array
-			System.arraycopy( bytes, 0, buffer, offset, bytes.length );
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen, ignore
-		}
+		// Length is required to be compatible with HLAvariableArray<HLAbyte>
+		BitHelpers.putIntBE( 4, buffer, offset );	
+		BitHelpers.putIntBE( this.handle, buffer, offset + 4 );
 	}
 
 	public String toString()

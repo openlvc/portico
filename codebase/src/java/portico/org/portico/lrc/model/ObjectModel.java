@@ -295,7 +295,7 @@ public class ObjectModel implements Serializable
 		
 		// the only other thing that could have gotten missed is a MOM class
 		// below will return null if it isn't a MOM class
-		return this.getObjectClass( Mom.getMomClassHandle(version,name) );
+		return this.getObjectClass( Mom.getMomObjectClassHandle(version,name) );
 	}
 	
 	/**
@@ -592,8 +592,9 @@ public class ObjectModel implements Serializable
 			name.equalsIgnoreCase("HLAinteractionRoot") )
 			return this.getInteractionRoot();
 
-		// we didn't find the name, return null
-		return null;
+		// the only other thing that could have gotten missed is a MOM class
+		// below will return null if it isn't a MOM class
+		return this.getInteractionClass( Mom.getMomInteractionHandle(version,name) );
 	}
 	
 	/**
@@ -871,13 +872,18 @@ public class ObjectModel implements Serializable
 		/////////////////////////////////////////////////////////////
 		// remove any MOM stuff that currently exists in the model //
 		/////////////////////////////////////////////////////////////
-		String managerName = "ObjectRoot.Manager";
+		String objectManagerName = "ObjectRoot.Manager";
+		String interactionManagerName = "InteractionRoot.Manager";
 		if( model.version == HLAVersion.IEEE1516 || model.version == HLAVersion.IEEE1516e )
 		{
-			managerName = "HLAobjectRoot.HLAmanager";
+			objectManagerName = "HLAobjectRoot.HLAmanager";
+			interactionManagerName = "HLAinteractionRoot.HLAmanager";
 		}
 		
-		OCMetadata ocManager = model.getObjectClass( managerName );
+		//
+		// Objects
+		//
+		OCMetadata ocManager = model.getObjectClass( objectManagerName );
 		if( ocManager != null )
 		{
 			// we have MOM stuff, nurse, pass my cleaver
@@ -894,24 +900,30 @@ public class ObjectModel implements Serializable
 			}
 		}
 		
-		// do the same for any MOM interactions //
-		// FIXME still need to add this //
+		//
+		// Interactions
+		//
+		ICMetadata icManager = model.getInteractionClass( interactionManagerName );
+		if( icManager != null )
+		{
+			// we have MOM stuff, nurse, pass my cleaver
+			icManager.cleave();
+			model.iclasses.remove( ocManager.getHandle() );
+			
+			// remove all its children from the model //
+			// have to create a separate set to avoid a ConcurrentModificationException
+			Set<ICMetadata> children = new HashSet<ICMetadata>( icManager.getChildTypes() );
+			for( ICMetadata clazz : children )
+			{
+				clazz.cleave();
+				model.iclasses.remove( clazz.getHandle() );
+			}
+		}
 
 		//////////////////////////////////
 		// add the predefined MOM stuff //
 		//////////////////////////////////
-		switch( model.version )
-		{
-			case HLA13:
-			case IEEE1516:
-				Mom.insertMomHierarchy( model );
-				break;
-			case IEEE1516e:
-				Mom.insertMomHierarchy1516e( model );
-				break;
-			default:
-				throw new RuntimeException( "Could't determine spec version when inserting MOM" );
-		}
+		Mom.insertMomHierarchy( model );
 		
 		// lock the model again //
 		if( wasLocked )
