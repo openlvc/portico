@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{7fca4d2c-935b-4ce4-82ff-e360dba9c622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e71746c8-52af-468d-8d0d-aef62bbf62cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{201e05ac-979d-46e3-940b-03697f348a19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\common">
+      <UniqueIdentifier>{fa92cdc9-027b-49bb-9dbd-7bf6b94c32ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\datatype">
+      <UniqueIdentifier>{80f551d1-6e1a-41ae-9e40-d87e7b431303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{1a3443d3-780c-4bfc-979b-8b56c121757a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\datatype">
+      <UniqueIdentifier>{80807373-9394-4b90-9180-97ea747260ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\parse">
+      <UniqueIdentifier>{b0120bae-7462-4609-9726-4086457eb839}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\parse">
+      <UniqueIdentifier>{6866ae65-5ac6-420e-9aee-bbbab02f96df}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\main.cpp">
+      <Filter>Header Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFederate.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\common\common.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\parse\QuickCreateTest.cpp">
+      <Filter>Source Files\parse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\AttributeDatatypeTest.cpp">
+      <Filter>Source Files\datatype</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFederate.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\Test1516eFedAmb.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\common\common.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\parse\QuickCreateTest.h">
+      <Filter>Header Files\parse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\test\datatype\AttributeDatatypeTest.h">
+      <Filter>Header Files\datatype</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

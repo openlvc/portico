@@ -13,7 +13,8 @@
  *
  */
 #include "common.h"
-#include "rtiamb/PorticoRtiAmbassador.h"
+#include "rtiamb/PorticoRtiAmbassador.h" 
+#include "portico/RTIambassadorEx.h"
 
 IEEE1516E_NS_START
 

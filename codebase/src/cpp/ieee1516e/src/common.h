@@ -53,7 +53,7 @@
 	#define OS_WINDOWS
     #define WIN32_LEAN_AND_MEAN
 
-	// determine the platform 
+	// determine the platform
 	#if _WIN64
 		#define ARCH_AMD64
 	#elif _WIN32
@@ -169,7 +169,5 @@ typedef double Float64;
 #define PORTICO1516E_NS portico1516e
 #define PORTICO1516E_NS_START namespace PORTICO1516E_NS {
 #define PORTICO1516E_NS_END };
-
-
 
 #endif /*PORTICO_CPP_HLA1516E_COMMON_H_*/

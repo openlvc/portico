@@ -19,16 +19,18 @@
 //------------------------------------------------------------------------------------------
 PORTICO1516E_NS_START
 
-PorticoRtiAmbassador::PorticoRtiAmbassador() : IEEE1516E_NS::RTIambassador()
+PorticoRtiAmbassador::PorticoRtiAmbassador()
 {
 	this->javarti = Runtime::getRuntime()->newRtiAmbassador();
 	this->logger = new Logger( "c++" );
+	this->datatypeRetriever = new DatatypeRetrieval( this->javarti );
 }
 
 PorticoRtiAmbassador::~PorticoRtiAmbassador()
 {
 	Runtime::getRuntime()->removeRtiAmbassador( this->javarti );
 	delete this->logger;
+	delete this->datatypeRetriever;
 }
 
 PORTICO1516E_NS_END

@@ -23,7 +23,7 @@ import java.util.Set;
 import org.portico.lrc.model.datatype.linker.DatatypePlaceholder;
 
 /**
- * This class contains metadata about a FOM Simple data type.
+ * This class contains metadata about a FOM Variant data type.
  * <p/>
  * A variant record datatype represents a discriminated union of types.
  */

@@ -341,7 +341,15 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	string jrelocation = string(rtihome).append( "\\jre" );
 	string temp = string(jrelocation).append( "\\bin\\java.exe" );
 	if( pathExists(temp) == false )
-		throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	{
+		logger->debug( "No JRE found at RTI_HOME, falling back to JAVA_HOME" );
+		const char* javahome = getenv( "JAVA_HOME" );
+		jrelocation = string(javahome).append( "\\jre" );
+		temp = string(jrelocation).append( "\\bin\\java.exe" );
+		
+		if( pathExists(temp) == false )
+			throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	}
 
 	// Get the system path so we can ensure it is on our library path
 	const char *systemPath = getenv( "PATH" );
@@ -441,7 +449,15 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	string jrelocation = string(rtihome).append( "/jre" );
 	string temp = string(jrelocation).append( "/bin/java" );
 	if( pathExists(temp) == false )
-		throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	{
+		logger->debug( "No JRE found at RTI_HOME, falling back to JAVA_HOME" );
+		const char* javahome = getenv( "JAVA_HOME" );
+		jrelocation = string(javahome).append( "/jre" );
+		temp = string(jrelocation).append( "/bin/java" );
+		
+		if( pathExists(temp) == false )
+			throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	}
 
 	// Create our system path
 	stringstream libraryPath;
@@ -463,6 +479,8 @@ string Runtime::getMode() throw( RTIinternalError )
 {
 #ifdef DEBUG
 	return string("-Dportico.cpp.mode=debug");
+#elif _DEBUG
+	return string("-Dportico.cpp.mode=debug");
 #else
 	return string("-Dportico.cpp.mode=release");
 #endif
@@ -474,10 +492,10 @@ string Runtime::getMode() throw( RTIinternalError )
 string Runtime::getCompiler() throw( RTIinternalError )
 {
 #ifdef VC14
-	return string("-Dportico.cpp.compiler=vc14");
-#elif defined VC12
-	return string("-Dportico.cpp.compiler=vc12");
-#elif defined VC11
+	return string( "-Dportico.cpp.compiler=vc14" );
+#elif defined(VC12)
+	return string( "-Dportico.cpp.compiler=vc12" );
+#elif defined(VC11)
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );
@@ -495,11 +513,7 @@ string Runtime::getCompiler() throw( RTIinternalError )
  */
 string Runtime::getHlaVersion() throw( RTIinternalError )
 {
-#ifdef BUILDING_DLC
-	return string( "-Dportico.cpp.hlaversion=dlc13" );
-#else
-	return string( "-Dportico.cpp.hlaversion=hla13" );
-#endif
+	return string( "-Dportico.cpp.hlaversion=ieee1516e" );
 }
 
 /*

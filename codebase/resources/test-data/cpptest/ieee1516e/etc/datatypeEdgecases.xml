@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!--DOCTYPE objectModel SYSTEM "HLA.dtd"-->
+<objectModel
+    DTDversion="1516.2"
+    name="TEST-FOM"
+    type="FOM"
+    version="1.0"
+    date="2006/7/15"
+    purpose="Blah"
+    appDomain="Blah"
+    sponsor="Blah"
+    pocName="Blah Blah"
+    pocOrg="Blah Blah"
+    pocPhone="1234 5678"
+    pocEmail="nobody@example.com">
+    <objects>
+        <objectClass name="HLAobjectRoot" sharing="Neither">
+            <attribute
+                name="HLAprivilegeToDeleteObject"
+                dataType="NA"
+                updateType="NA"
+                updateCondition="NA"
+                ownership="NoTransfer"
+                sharing="Neither"
+                dimensions="NA"
+                transportation="HLAreliable"
+                order="TimeStamp"/>
+            <objectClass name="A" sharing="Subscribe" semantics="NA" >
+                <attribute
+                    name="naattribute"
+                    dataType="NA"
+                    updateType="Conditional"
+                    updateCondition="NA"
+                    ownership="NoTransfer"
+                    sharing="PublishSubscribe"
+                    dimensions="NA"
+                    transportation="HLAreliable"
+                    order="TimeStamp"
+                    semantics="NA" />
+             </objectClass>
+        </objectClass>
+    </objects>
+    <interactions>
+        <interactionClass name="HLAinteractionRoot"
+                          sharing="PublishSubscribe"
+                          dimensions="NA"
+                          transportation="HLAreliable"
+                          order="Receive">
+        </interactionClass>
+    </interactions>
+    <dimensions>
+    </dimensions>
+    <time>
+        <timeStamp dataType="HLAfloat64BE" semantics="Time in seconds"/>
+        <lookahead dataType="HLAfloat64BE" semantics="Time in seconds"/>
+    </time>
+    <tags>
+    </tags>
+    <synchronizations>
+        <synchronization label="StartTest" dataType="NA" semantics="NA" />
+        <synchronization label="EndTest"   dataType="NA" semantics="NA" />
+    </synchronizations>
+    <transportations>
+        <transportation
+            name="HLAreliable"
+            description="Provide reliable delivery of data in the sense that TCP/IP 
+                delivers its data reliably" />
+        <transportation
+            name="HLAbestEffort"
+            description="Make an effort to deliver data in the sense that UDP provides 
+                best-effort delivery" />
+    </transportations>
+    <switches autoProvide="Disabled"
+        conveyRegionDesignatorSets="Disabled"
+        attributeScopeAdvisory="Disabled"
+        attributeRelevanceAdvisory="Disabled"
+        objectClassRelevanceAdvisory="Disabled"
+        interactionRelevanceAdvisory="Disabled"
+        serviceReporting="Disabled"/>
+    <dataTypes>
+        <basicDataRepresentations>
+        </basicDataRepresentations>
+        <simpleDataTypes>
+        </simpleDataTypes>
+        <enumeratedDataTypes>
+        </enumeratedDataTypes>
+        <arrayDataTypes>
+        </arrayDataTypes>
+        <fixedRecordDataTypes>
+        </fixedRecordDataTypes>
+    </dataTypes>
+</objectModel>

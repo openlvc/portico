@@ -77,7 +77,7 @@ jstring JniUtils::fromString( JNIEnv *jnienv, string cstring )
 
 jstring JniUtils::fromWideString( JNIEnv *jnienv, wstring cstring )
 {
-	return jnienv->NewStringUTF( StringUtils::toShortString(cstring).c_str() );
+	return jnienv->NewStringUTF( StringUtils::toNarrowString(cstring).c_str() );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

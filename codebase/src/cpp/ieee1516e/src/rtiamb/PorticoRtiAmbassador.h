@@ -18,29 +18,31 @@
 #include "common.h"
 #include "jni/Runtime.h"
 #include "jni/JavaRTI.h"
+#include "portico/DatatypeRetrieval.h"
+#include "portico/RTIambassadorEx.h"
 
 PORTICO1516E_NS_START
 
-class PorticoRtiAmbassador : public RTIambassador
+class PorticoRtiAmbassador : public RTIambassadorEx 
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private:
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private:
 		JavaRTI *javarti;
-		Logger *logger;
+		Logger *logger; 
+		DatatypeRetrieval *datatypeRetriever; 
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public:
 		PorticoRtiAmbassador();
-		~PorticoRtiAmbassador();
+		virtual ~PorticoRtiAmbassador();
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -1580,13 +1582,28 @@ class PorticoRtiAmbassador : public RTIambassador
 		           NotConnected,
 		           RTIinternalError );
 
-	private:
+		IDatatype* getAttributeDatatype( ObjectClassHandle whichClass,
+										 AttributeHandle theHandle)
+			throw ( AttributeNotDefined,
+					InvalidAttributeHandle,
+					InvalidObjectClassHandle,
+					FederateNotExecutionMember,
+					NotConnected,
+					RTIinternalError);
+
+
+		IDatatype* getParameterDatatype( InteractionClassHandle whichClass,
+										 ParameterHandle theHandle)
+			throw ( InteractionParameterNotDefined,
+				    InvalidParameterHandle,
+				    InvalidInteractionClassHandle,
+				    FederateNotExecutionMember,
+				    NotConnected,
+				    RTIinternalError);
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public:
-
 };
 
 PORTICO1516E_NS_END
