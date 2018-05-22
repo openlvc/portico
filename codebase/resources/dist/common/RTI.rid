@@ -54,29 +54,34 @@ rti.home = ./
 #        areas on Linux, the data directory typically points to subfolder of a users home
 #        directory or some other place that is writable without administrative privileges.
 #
-#rti.data = ${user.home}/.portico     // Linux
-#rti.data = ${user.home}\Portico      // Windows
+# rti.data = ${user.home}/.portico     // Linux
+# rti.data = ${user.home}\Portico      // Windows
 
 
 # --------------------------------------
 #   Network Configuration
 # --------------------------------------
 # (R.3) RTI Network Connections
-#        Specify the names of all the connections we are using. These names have no relation to
-#        the type of connection, even if it appears otherwise. On start-up, the RTI will substitute
-#        the names to find more details properties.
+#        Specify the NAMES of all the connections we are using. These names have no relation to
+#        the type of connection, even if it appears otherwise. On start-up, the RTI will use a
+#        name to look up further properties that contain the actual config.
 #
-#        The RTI will look for a set of properties under the name "rti.network.<name>.{property}"
-#        where "<name>" is substituted for each name in the connection list. The ".type" property
-#        is what defines the actual connection type. It can be one of the pre-defined types of
-#        "jvm", "multicast" or "unicast", or it can specified the fully qualified name of the class
-#        that implements the connection.
+#        For each name in the list, the RTI will look for properties prefixed with the string
+#        "rti.network.<name>.{property}" (where name is substituted for a value from the list).
+#        For example, if the name is "tcp", the RTI will look for all properties starting with
+#        the string "rti.network.example".
+#
+#        The "type" property defines the actual type of the connection. To use our example,
+#        "rti.network.example.type" would be used to look up the type of connection. An example
+#        of each is provided below. We have named the connections after their type, but this
+#        is not required.
 #
 rti.network.connections = multicast, tcp, jvm
 
 
 # (R.4) JVM Network Connection Configuration
-#        This connection type has not properties.
+#        Use an internal, local-process only shared memory exchange.
+#        You can only define a type and log level.
 #
 rti.network.jvm.type = jvm
 
@@ -88,10 +93,10 @@ rti.network.jvm.type = jvm
 #        NIC: The address or host name of the NIC we should use to send/receive traffic, or
 #             one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
 #
-rti.network.multicast.type    = multicast
-rti.network.multicast.address = 239.1.2.3
-rti.network.multicast.port    = 20913
-rti.network.multicast.nic     = SITE_LOCAL
+rti.network.multicast.type     = multicast
+rti.network.multicast.address  = 239.1.2.3
+rti.network.multicast.port     = 20913
+rti.network.multicast.nic      = SITE_LOCAL
 
 
 # (R.6) Unicast Network Connection
@@ -100,9 +105,9 @@ rti.network.multicast.nic     = SITE_LOCAL
 #        NIC: A valid host name or IP address used by the NIC we should use to receive connections,
 #             or one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
 #
-rti.network.tcp.type = tcp-server
-rti.network.tcp.port = 52295
-rti.network.tcp.nic  = SITE_LOCAL
+rti.network.tcp.type     = tcp-server
+rti.network.tcp.port     = 52295
+rti.network.tcp.nic      = SITE_LOCAL
 
 
 # ==================================================================================
@@ -113,10 +118,12 @@ rti.network.tcp.nic  = SITE_LOCAL
 #   Network Configuration
 # --------------------------------------
 # (L.1) LRC Network Connections
-#        The same structure as for the RTI, except that only one name can be specified.
+#        The same structure as for the RTI (see R.3), except that only one name can be specified
+#        because each LRC only has one connection to the RTI/Federation.
 #
 lrc.network.connection = multicast
 #lrc.network.connection = tcp
+#lrc.network.connection = jvm
 
 
 # (L.2) JVM Connection Properties
@@ -124,6 +131,7 @@ lrc.network.connection = multicast
 #        No configuration for the JVM connection beyond saying it is of type JVM
 #
 lrc.network.jvm.type = jvm
+
 
 # (L.3) Multicast Connection Properties
 #
@@ -136,10 +144,10 @@ lrc.network.jvm.type = jvm
 #        NIC: The address or host name of the NIC we should use to send/receive traffic, or
 #             one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
 #
-lrc.network.multicast.type    = multicast
-lrc.network.multicast.address = 239.1.2.3
-lrc.network.multicast.port    = 20913
-lrc.network.multicast.nic     = SITE_LOCAL
+lrc.network.multicast.type     = multicast
+lrc.network.multicast.address  = 239.1.2.3
+lrc.network.multicast.port     = 20913
+lrc.network.multicast.nic      = SITE_LOCAL
 
 # (L.4) TCP Connection Properties
 #
@@ -147,13 +155,13 @@ lrc.network.multicast.nic     = SITE_LOCAL
 #        Be sure to fill out the address of the server and check your firewall for
 #        any connection blocking.
 #
-#    Address: The IP address or host name of the server
+#     Server: The IP address or host name of the server
 #       Port: The port that the server is listening on
 #        NIC: The local NIC to use. Address or host name of the local NIC, or can use
 #             one of the symbolic names (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
 #
 lrc.network.tcp.type     = tcp-client
-lrc.network.tcp.address  = 192.168.0.10
+lrc.network.tcp.server   = 192.168.0.10
 lrc.network.tcp.port     = 52295
 lrc.network.tcp.nic      = SITE_LOCAL
 
