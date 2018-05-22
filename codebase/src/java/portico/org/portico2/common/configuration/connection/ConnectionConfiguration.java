@@ -12,12 +12,21 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.configuration;
+package org.portico2.common.configuration.connection;
 
 import java.util.Properties;
 
-public class JvmConnectionConfiguration extends ConnectionConfiguration
+import org.portico.lrc.compat.JConfigurationException;
+
+/**
+ * This class is the parent of all connection configurations 
+ */
+public abstract class ConnectionConfiguration
 {
+	//----------------------------------------------------------
+	//                      ENUMERATIONS
+	//----------------------------------------------------------
+
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
@@ -25,36 +34,49 @@ public class JvmConnectionConfiguration extends ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private String name;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public JvmConnectionConfiguration( String name )
+	protected ConnectionConfiguration( String name )
 	{
-		super( name );
+		this.name = name;
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	/**
-	 * Read Only
-	 */
-	public ConnectionType getType()
-	{
-		return ConnectionType.JVM;
-	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	@Override
-	protected void parseConfiguration( String prefix, Properties properties )
+	public abstract ConnectionType getType();
+	
+	/**
+	 * Parse the configuration for the connection from the given set of properties. The concrete
+	 * connection type should look for properties with the given prefix.
+	 * 
+	 * @param prefix The prefix to look for properties under
+	 * @param properties The properties set to look in
+	 */
+	public abstract void parseConfiguration( String prefix, Properties properties );
+
+	public String getName()
 	{
-		// no-op
+		return this.name;
+	}
+	
+	public void setName( String name )
+	{
+		this.name = name;
 	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
+	public static ConnectionConfiguration loadFromProperties( String prefix, Properties properties )
+		throws JConfigurationException
+	{
+		
+		return null;	
+	}
 }

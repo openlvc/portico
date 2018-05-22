@@ -15,8 +15,8 @@
 package org.portico2.rti;
 
 
-import org.portico2.common.configuration.Argument;
 import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.commandline.Argument;
 import org.portico2.rti.cli.RtiCli;
 
 /**

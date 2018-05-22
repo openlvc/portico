@@ -25,6 +25,10 @@ import java.util.Properties;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.utils.StringUtils;
 import org.portico2.common.PorticoConstants;
+import org.portico2.common.configuration.connection.ConnectionConfiguration;
+import org.portico2.common.configuration.connection.ConnectionType;
+import org.portico2.common.configuration.connection.JvmConnectionConfiguration;
+import org.portico2.common.configuration.connection.MulticastConnectionConfiguration;
 
 public class RtiConfiguration
 {

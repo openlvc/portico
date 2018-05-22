@@ -20,6 +20,8 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico2.common.configuration.commandline.Argument;
+import org.portico2.common.configuration.commandline.CommandLine;
 import org.portico2.common.logging.Log4jConfiguration;
 import org.portico2.common.utils.FileUtils;
 

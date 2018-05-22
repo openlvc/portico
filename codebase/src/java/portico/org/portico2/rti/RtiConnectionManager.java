@@ -22,8 +22,8 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico2.common.configuration.ConnectionConfiguration;
 import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.connection.ConnectionConfiguration;
 
 /**
  * This class manages the various connections that an RTI can have running at any given point.

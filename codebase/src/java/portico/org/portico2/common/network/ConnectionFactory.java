@@ -15,7 +15,7 @@
 package org.portico2.common.network;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.ConnectionType;
+import org.portico2.common.configuration.connection.ConnectionType;
 import org.portico2.common.network.jvm.JvmConnection;
 import org.portico2.common.network.multicast.MulticastConnection;
 import org.portico2.common.network.tcp.client.TcpClientConnection;

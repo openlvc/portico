@@ -14,8 +14,8 @@
  */
 package org.portico2.forwarder;
 
-import org.portico2.common.configuration.Argument;
 import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.commandline.Argument;
 import org.portico2.forwarder.cli.ForwarderCli;
 
 public class Main

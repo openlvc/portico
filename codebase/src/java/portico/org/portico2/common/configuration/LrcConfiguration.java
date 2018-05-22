@@ -19,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.PorticoConstants;
+import org.portico2.common.configuration.connection.ConnectionConfiguration;
+import org.portico2.common.configuration.connection.ConnectionType;
+import org.portico2.common.configuration.connection.MulticastConnectionConfiguration;
 
 public class LrcConfiguration
 {

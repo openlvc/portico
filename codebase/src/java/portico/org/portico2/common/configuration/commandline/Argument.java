@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.configuration;
+package org.portico2.common.configuration.commandline;
 
 import static org.portico2.common.configuration.RID.*;
 
