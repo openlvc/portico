@@ -1,5 +1,5 @@
 /*
- *   Copyright 2008 The Portico Project
+ *   Copyright 2018 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -357,6 +357,7 @@ public class MessageHelpers
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
 	 */
+	@Deprecated
 	public static byte[] deflate( PorticoMessage message )
 	{
 		// create the output stream with the given size (or resizable if -1 is provided)
@@ -402,6 +403,7 @@ public class MessageHelpers
 	 * @param message The message object to deflate
 	 * @return A byte[] representation of the object
 	 */
+	@Deprecated
 	public static byte[] deflate( Object message )
 	{
 		// create the output stream with the given size (or resizable if -1 is provided)
@@ -434,6 +436,7 @@ public class MessageHelpers
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
 	 */
+	@Deprecated
 	public static <T> T inflate( byte[] data, Class<T> expectedType )
 	{
 		return inflate( data, expectedType, null );
@@ -453,6 +456,7 @@ public class MessageHelpers
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
 	 */
+	@Deprecated
 	public static <T> T inflate( byte[] data, Class<T> expectedType, LRC lrc )
 	{
 		try

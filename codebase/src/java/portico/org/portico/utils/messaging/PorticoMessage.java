@@ -404,6 +404,7 @@ public abstract class PorticoMessage implements Serializable, Cloneable
 	
 	public void writeExternal( ObjectOutput output ) throws IOException
 	{
+		// FIXME What about multiple targets?
 		output.writeBoolean( isFromRti );
 		output.writeInt( sourceFederate );
 		output.writeInt( targetFederate );

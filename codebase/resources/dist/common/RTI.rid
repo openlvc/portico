@@ -180,21 +180,103 @@ lrc.network.tcp.bundling.maxTime = 20
 # ==================================================================================
 # ///  Forwarder Configuration  ////////////////////////////////////////////////////
 # ==================================================================================
+#
+# The Forwarder is designed to bridge networks, whether that be because they
+# are not local, or because there is some need for an administrative boundary
+# between them. The forwarder will pass messages in two directions:
+#
+#       Upstream: Connection between Forwarder and RTI network
+#     Downstream: Connection between Forwarder and local cluster of federates
+#
+#          (RTI) <<<<< Forwarder >>>>> (Local Federates)
+#             {upstream}      {downstream}
+#
+# There is a separate network connection for each direction that reflects how the
+# forwarder will talk to the RTI/Upstream (F.1) and Local Federates/Downstream (F.2).
+#
+# To restrict traffic flow, a firewall can be configured (F.3, F.4 and F.5).
 
 # --------------------------------------
 #   Network Configuration
 # --------------------------------------
+
 # (F.1) Forwarder Upstream Connection
+#
+#       The forwarder upstream connection is our link back to the RTI. The config
+#       information should point to somewhere that an RTI is currently running.
+#
+#       Valid types are: multicast and tcp-client (connect to rti)
+#       Valid settings for each type are the same as in RTI and LRC.
+#
 fwd.network.upstream.type    = tcp-client
 fwd.network.upstream.address = 192.168.0.10
 fwd.network.upstream.port    = 52295
 fwd.network.upstream.nic     = SITE_LOCAL
 
+
 # (F.2) Forwarder Downstream/Local Connection
+#
+#       The forwarder downstream connection is our link to a local fedeate (or cluster
+#       of federates). This connection should reflect how all the local federates will
+#       connect to the forwarder (shared multicast gorup? unicast?).
+#
+#       Valid types are: multicast and tcp-server (so clients can connect to us)
+#       Valid settings for each type are the same as in RTI and LRC.
+#
 fwd.network.downstream.type    = multicast
 fwd.network.downstream.address = 239.1.2.3
 fwd.network.downstream.port    = 20913
 fwd.network.downstream.nic     = SITE_LOCAL
+
+
+# (F.3) Forwarder Firewall
+#
+#       To support increased scalability, the forwarder can act as a firewall.
+#       When enabled, it will prevent all data messages (attributes updates and interactions)
+#       from passing in either direction through the forwarder.
+#
+#       Users then configure which interaction and update types are allowed to pass from
+#       upstream>>downstream (F.4) and from downstream>>upstream (F.5).
+#
+#       This allows the forwarder to prevent overly chatty local clusters from overwhelming
+#       a federation or a long-haul link with unnecessary traffic.
+# 
+#       == Note==
+#       The firewall only affects _DATA_ messages (attribute updates and interactions).
+#       These messages are the vast majority of federation traffic by both volume and bandwidth.
+#       All control-type messages (everything else) will still pass through in both directions.
+#
+fwd.firewall.enabled = false
+
+
+# (F.4) Firewall Import Rules
+#
+#       Comma-separated list of all classes for which attribute updates and interactions
+#       are ALLOWED to pass through the firewall in the upstream>>>downstream direction.
+#
+#       If a data message is received from the RTI and it does NOT match one of the listed
+#       types, it will be dropped, and won't pass to the local cluster.
+#
+#       The text HLAobjectRoot (or ObjectRoot) is optional. The wildcard '*' character matches
+#       for all child types. Use '\' as the last character of a line to use multiple lines.
+#
+fwd.firewall.import.object = HLAobjectRoot.*
+fwd.firewall.import.interaction = HLAinteractionRoot.*
+
+
+# (F.5) Firewall Export Rules
+#
+#       Comma-separated list of all classes for which attribute updates and interactions
+#       are ALLOWED to pass through the firewall in the upstream<<<downstream direction.
+#
+#       If a data message is received from the local cluster and it does NOT match one of
+#       the listed types, it will be dropped, and won't pass to the RTI.
+#
+#       The text HLAobjectRoot (or ObjectRoot) is optional. The wildcard '*' character matches
+#       for all child types. Use '\' as the last character of a line to use multiple lines.
+#
+fwd.firewall.export.object = HLAobjectRoot.*
+fwd.firewall.export.interaction = HLAinteractionRoot.*
 
 
 
