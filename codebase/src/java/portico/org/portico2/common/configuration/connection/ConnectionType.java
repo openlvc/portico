@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.configuration;
+package org.portico2.common.configuration.connection;
 
 import org.portico.lrc.compat.JConfigurationException;
 

@@ -21,7 +21,7 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.configuration.ConnectionConfiguration;
+import org.portico2.common.configuration.connection.ConnectionConfiguration;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.ConnectionFactory;
 import org.portico2.common.network.IConnection;

@@ -17,6 +17,8 @@ package org.portico2.common.configuration;
 import java.util.Properties;
 
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico2.common.configuration.connection.ConnectionConfiguration;
+import org.portico2.common.configuration.connection.ConnectionType;
 
 public class ForwarderConfiguration
 {

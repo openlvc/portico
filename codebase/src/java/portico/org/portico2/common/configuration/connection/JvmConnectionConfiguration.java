@@ -12,19 +12,12 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.configuration;
+package org.portico2.common.configuration.connection;
 
 import java.util.Properties;
 
-/**
- * This class is the parent of all connection configurations 
- */
-public abstract class ConnectionConfiguration
+public class JvmConnectionConfiguration extends ConnectionConfiguration
 {
-	//----------------------------------------------------------
-	//                      ENUMERATIONS
-	//----------------------------------------------------------
-
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
@@ -32,39 +25,33 @@ public abstract class ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private String name;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected ConnectionConfiguration( String name )
+	public JvmConnectionConfiguration( String name )
 	{
-		this.name = name;
+		super( name );
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
-	public abstract ConnectionType getType();
-	
 	/**
-	 * Parse the configuration for the connection from the given set of properties. The concrete
-	 * connection type should look for properties with the given prefix.
-	 * 
-	 * @param prefix The prefix to look for properties under
-	 * @param properties The properties set to look in
+	 * Read Only
 	 */
-	protected abstract void parseConfiguration( String prefix, Properties properties );
-
-	public String getName()
+	public ConnectionType getType()
 	{
-		return this.name;
+		return ConnectionType.JVM;
 	}
-	
-	public void setName( String name )
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/// Configuration Loading   ////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void parseConfiguration( String prefix, Properties properties )
 	{
-		this.name = name;
+		// no-op
 	}
 
 	//----------------------------------------------------------

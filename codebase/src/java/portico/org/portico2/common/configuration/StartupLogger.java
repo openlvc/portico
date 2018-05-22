@@ -21,6 +21,8 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.PorticoConstants;
 import org.portico.utils.SystemInformation;
+import org.portico2.common.configuration.commandline.Argument;
+import org.portico2.common.configuration.commandline.CommandLine;
 
 /**
  * Logs information about Portico on startup. Pulled out into its own class so that we don't

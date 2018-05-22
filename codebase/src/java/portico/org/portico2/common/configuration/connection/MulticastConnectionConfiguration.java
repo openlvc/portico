@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.configuration;
+package org.portico2.common.configuration.connection;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -182,7 +182,7 @@ public class MulticastConnectionConfiguration extends ConnectionConfiguration
 	/// Configuration Loading   ////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void parseConfiguration( String prefix, Properties properties )
+	public void parseConfiguration( String prefix, Properties properties )
 	{
 		prefix += ".";
 		String temp = properties.getProperty( prefix+KEY_ADDRESS );
