@@ -17,6 +17,8 @@ package org.portico2.common.messaging;
 import org.portico.utils.bithelpers.BitHelpers;
 import org.portico.utils.bithelpers.BufferUnderflowException;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * Messages sent over the Portico network are all sent with a particular header. This class
@@ -75,6 +77,56 @@ public class Header
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
+	//////////////////////////////////////////////////////////////////////////////////////
+	///  Header Structure    /////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////
+	//
+	//  0                   1                   2                   3
+    //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |  Type | FedID |    MsgType    |           RequestId           |    // Main Header
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |         Source Handle         |         Target Handle         |    // Routing
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |F|O|  Padding  |                     Handle                    |    // Optional Forwarding Data
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |E|M|P| TailPad |                Message Length                 |    // Payload Header
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |                                                               |    // Raw, Unfiltered Data
+    // +                           Payload...                          +
+    // |                                                               |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    //
+    //  == Main Header ==
+    //  (00-03)   | 4-bit  | Call Type: enum, {Data,ControlSync,ControlAsync,ControlResp,Bundle,Reserverd,Reserved,Reserverd}
+    //  (04-07)   | 4-bit  | Federation ID: half-byte, range=1-16
+    //  (08-15)   | 8-bit  | Message Type: byte, ID for the specific message type
+    //  (16-31)   | 16-bit | Request ID: uint, range=64k 
+    //
+    //  == Routing ==
+    //  (32-47)   | 16-bit | Source Handle: handle of source federate 
+    //  (48-63)   | 16-bit | Target Handle: handle of target federate
+    //
+    // == Optional Forwarding Information ==
+    //  (64-64)   | 1-bit  | Forwarding Data Present? boolean, Is forwarding/filtering info present
+    //  (65-65)   | 1-bit  | Type of handle: boolean, 0 if object, 1 if interaction
+    //  (66-79)   | 14-bit | Padding
+    //  (80-95)   | 16-bit | Class Handle: uint, range=65k, Object of Interaction Class the payload is concerned with
+    //
+    // == Payload Header ==
+    //  (96-96)   | 1-bit  | Encrypted: boolean, Is the payload encrypted? 
+    //  (97-97)   | 1-bit  | Manual Marshal: boolean, Was the message manually marshalled?
+    //  (98-98)   | 1-bit  | Padding
+    //  (99-103)  | 5-bit  | Tail padding: range=32, Amount of tail padding is on the payload to byte-align it
+    //  (104-127) | 24-bit | Message length: range=16,777,216 (16MB)
+    //
+    // == Payload ==
+    //  (128-xxx) | Varies | Payload Data, padded out to nearest 32-bit boundary.
+    //
+
+	//////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators    ///////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////
 	public final CallType getCallType()
 	{
 		return CallType.fromId( BitHelpers.readUint4(buffer,offset,0) );
@@ -141,24 +193,34 @@ public class Header
 		BitHelpers.putBooleanBit( hasFiltering, buffer, offset+8, 0 );
 	}
 
-	public final boolean isFilteringDataObjectClass()
+	public final boolean isFilteringHandleObject()
 	{
-		return BitHelpers.readBooleanBit( buffer, offset+8, 1 );
+		return BitHelpers.readBooleanBit( buffer, offset+8, 1 ) == false;
 	}
 	
-	public final void writeFilteringDataIsObjectClass( boolean isObjectClass )
+	public final boolean isFilteringHandleInteraction()
 	{
-		BitHelpers.putBooleanBit( isObjectClass, buffer, offset+8, 1 );
+		return BitHelpers.readBooleanBit( buffer, offset+8, 1 ) == true;
+	}
+
+	public final void writeFilteringHandleIsObject( boolean isObjectHandle )
+	{
+		// 0 if Object Handle
+		// 1 if Interaction Class Handle
+		if( isObjectHandle )
+			BitHelpers.putBooleanBit( false, buffer, offset+8, 1 );
+		else
+			BitHelpers.putBooleanBit( true, buffer, offset+8, 1 );
 	}
 	
-	public final int getFilteringClassHandle()
+	public final int getFilteringHandle()
 	{
-		return BitHelpers.readUint16( buffer, offset+10 );
+		return (int)BitHelpers.readUint24( buffer, offset+9 );
 	}
 	
-	public final void writeFilteringClassHandle( int classHandle )
+	public final void writeFilteringHandle( int handle )
 	{
-		BitHelpers.putUint16( classHandle, buffer, offset+10 );
+		BitHelpers.putUint24( handle, buffer, offset+9 );
 	}
 	
 	public final boolean isEncrypted()
@@ -223,10 +285,26 @@ public class Header
 		// Optional Forwarding
 		//    1-bit, Forwarding Data Present?  (boolean)
 		//    1-bit, Object Class Handle?      (boolean)
-		//   14-bit, Padding
-		//   16-bit, Object/Interaction Handle (uint16)
+		//    6-bit, Padding
+		//   24-bit, Object/Interaction Handle (uint24)
 		//
-		// FIXME SKIP FOR NOW
+		if( calltype == CallType.DataMessage )
+		{
+			header.writeHasFilteringData( true );
+			switch( message.getType() )
+			{
+				case UpdateAttributes:
+					header.writeFilteringHandleIsObject( true );
+					header.writeFilteringHandle( ((UpdateAttributes)message).getObjectId() );
+					break;
+				case SendInteraction:
+					header.writeFilteringHandleIsObject( false );
+					header.writeFilteringHandle( ((SendInteraction)message).getInteractionId() );
+					break;
+				default:
+					break;
+			}
+		}
 		
 		// Payload Information
 		//    1-bit, Encrypted?                (boolean)
@@ -265,8 +343,8 @@ public class Header
 		
 		// Optional Forwarding
 		header.writeHasFilteringData( false );
-		header.writeFilteringDataIsObjectClass( false );
-		header.writeFilteringClassHandle( 0 );
+		//header.writeFilteringDataIsObjectClass( false );
+		//header.writeFilteringClassHandle( 0 );
 		//   None
 		
 		// Payload Information
