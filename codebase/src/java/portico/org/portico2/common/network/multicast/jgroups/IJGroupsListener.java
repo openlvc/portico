@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.jgroups;
+package org.portico2.common.network.multicast.jgroups;
 
 import org.apache.logging.log4j.Logger;
 import org.jgroups.Message;

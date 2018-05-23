@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.jgroups;
+package org.portico2.common.network.multicast.jgroups;
 
 import java.io.DataInput;
 import java.io.DataOutput;

@@ -27,9 +27,9 @@ import org.portico2.common.configuration.connection.MulticastConnectionConfigura
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.IConnection;
 import org.portico2.common.network.IMessageReceiver;
-import org.portico2.common.network.jgroups.IJGroupsListener;
-import org.portico2.common.network.jgroups.JGroupsChannel;
-import org.portico2.common.network.jgroups.JGroupsConfiguration;
+import org.portico2.common.network.multicast.jgroups.IJGroupsListener;
+import org.portico2.common.network.multicast.jgroups.JGroupsChannel;
+import org.portico2.common.network.multicast.jgroups.JGroupsConfiguration;
 
 /**
  * The {@link MulticastConnection} uses a JGroups-based multicast channel to exchange messages.
