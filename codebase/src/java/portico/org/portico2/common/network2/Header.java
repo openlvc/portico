@@ -12,11 +12,12 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.messaging;
+package org.portico2.common.network2;
 
 import org.portico.utils.bithelpers.BitHelpers;
 import org.portico.utils.bithelpers.BufferUnderflowException;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 
@@ -84,7 +85,7 @@ public class Header
 	//  0                   1                   2                   3
     //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |  Type | FedID |    MsgType    |           RequestId           |    // Main Header
+    // | CType | FedID |    MsgType    |           RequestId           |    // Main Header
     // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     // |         Source Handle         |         Target Handle         |    // Routing
     // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

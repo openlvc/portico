@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.messaging;
+package org.portico2.common.network2;
 
 /**
  * Messages in Portico are broadly broken down into two type: Data and Control.
@@ -33,12 +33,10 @@ package org.portico2.common.messaging;
  * 
  * This enumeration identifies the type of message that is being sent:
  * <ul>
- *   <li><b>DataMessage</b>: A message that should use the fastest available transport. Broadcast.</li>
- *   <li><b>ControlSync</b>: A control request message that requires a response (typically fed->rti)</li>
+ *   <li><b>DataMessage</b>:  A message that should use the fastest available transport. Broadcast.</li>
+ *   <li><b>ControlSync</b>:  A control request message that requires a response (typically fed->rti)</li>
  *   <li><b>ControlAsync</b>: A control request that does not require a response (typically rti->fed)</li>
- *   <li><b>ControlResp</b>: A response to a control message</li>
- *   <li><b>RtiProbe</b>: Someone looking for an RTI. A Control Response should be sent in return</li>
- *   <li><b>Bundle</b>: A bunch of messages bundled together in bulk</li>
+ *   <li><b>ControlResp</b>:  A response to a control message</li>
  * </ul>
  * 
  */
@@ -50,9 +48,7 @@ public enum CallType
 	DataMessage (0),
 	ControlSync (1),
 	ControlAsync(2),
-	ControlResp (3),
-	RtiProbe    (4),
-	Bundle      (5);
+	ControlResp (3);
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -87,8 +83,6 @@ public enum CallType
 			case 1: return ControlSync;
 			case 2: return ControlAsync;
 			case 3: return ControlResp;
-			case 4: return RtiProbe;
-			case 5: return Bundle;
 			default: throw new IllegalArgumentException( "CallType id not known: "+id );
 		}
 	}

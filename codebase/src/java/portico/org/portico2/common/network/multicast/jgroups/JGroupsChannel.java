@@ -40,7 +40,7 @@ import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.StringUtils;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.messaging.CallType;
+import org.portico2.common.network2.CallType;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 

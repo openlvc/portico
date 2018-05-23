@@ -30,7 +30,7 @@ import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.configuration.connection.ConnectionConfiguration;
 import org.portico2.common.configuration.connection.TcpConnectionConfiguration;
-import org.portico2.common.messaging.CallType;
+import org.portico2.common.network2.CallType;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.IConnection;
 import org.portico2.common.network.IMessageReceiver;
