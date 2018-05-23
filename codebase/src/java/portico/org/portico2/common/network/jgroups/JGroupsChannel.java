@@ -456,15 +456,8 @@ public class JGroupsChannel
 		// Step 1. Discard our own messages
 		if( message.getSrc().equals(jchannel.getAddress()) )
 			return;
-		
-		// Step 2. Log that we have an incoming message
-		//if( logger.isTraceEnabled() )
-		//{
-		//	logger.trace( "(incoming) channel=%s, size=%d, source=%s, headers=%s",
-		//	              name, message.getLength(), message.getSrc(), message.getHeaders() );
-		//}
 
-		// Step 3. Determine the type of message
+		// Step 2. Determine the type of message
 		// 	       If there is no type header, discard the message
 		TypeHeader type = message.getHeader( TypeHeader.ID );
 		if( type == null )
@@ -475,8 +468,24 @@ public class JGroupsChannel
 			return;
 		}
 
-		// Step 4. Decide how to handle the message
+		// Step 3. Do some specialized logging
 		short typeid = type.getMessageType();
+		if( logger.isTraceEnabled() )
+		{
+			switch( typeid )
+			{
+				case TypeHeader.DATA_MESSAGE:
+				case TypeHeader.CONTROL_RESP:
+					logBasicMessage( message );
+					break;
+				case TypeHeader.CONTROL_REQ_SYNC:
+				case TypeHeader.CONTROL_REQ_ASYNC:
+					logControlRequest( message );
+					break;
+			}
+		}
+		
+		// Step 4. Decide how to handle the message
 		switch( typeid )
 		{
 			case TypeHeader.DATA_MESSAGE:
@@ -494,22 +503,6 @@ public class JGroupsChannel
 			default:
 				logger.warn( "Unknown jgroups message in TypeHeader; id= "+typeid );
 				break;
-		}
-		
-		// Step 5. Do some more specialized logging
-		if( logger.isTraceEnabled() )
-		{
-			switch( typeid )
-			{
-				case TypeHeader.DATA_MESSAGE:
-				case TypeHeader.CONTROL_RESP:
-					logBasicMessage( message );
-					break;
-				case TypeHeader.CONTROL_REQ_SYNC:
-				case TypeHeader.CONTROL_REQ_ASYNC:
-					logControlRequest( message );
-					break;
-			}
 		}
 	}
 
