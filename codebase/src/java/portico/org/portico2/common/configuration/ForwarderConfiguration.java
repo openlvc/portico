@@ -14,7 +14,10 @@
  */
 package org.portico2.common.configuration;
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.connection.ConnectionConfiguration;
@@ -28,9 +31,17 @@ public class ForwarderConfiguration
 	private static final String PFX_DOWNSTREAM = "fwd.network.downstream";
 	private static final String PFX_UPSTREAM   = "fwd.network.upstream";
 
+	// Firewall properties
+	public static final String KEY_FIREWALL_ENABLED = "fwd.firewall.enabled";
+	public static final String KEY_FIREWALL_IMPORT_OBJ = "fwd.firewall.import.object";
+	public static final String KEY_FIREWALL_IMPORT_INT = "fwd.firewall.import.interaction";
+	public static final String KEY_FIREWALL_EXPORT_OBJ = "fwd.firewall.export.object";
+	public static final String KEY_FIREWALL_EXPORT_INT = "fwd.firewall.export.interaction";
+
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private Properties properties;
 	private ConnectionConfiguration downstreamConfiguration;
 	private ConnectionConfiguration upstreamConfiguration;
 
@@ -47,6 +58,8 @@ public class ForwarderConfiguration
 	////////////////////////////////////////////////////////////////////////////////////////////
 	protected void parseProperties( Properties properties ) throws JConfigurationException
 	{
+		this.properties = properties;
+
 		//
 		// Network Configuration
 		//
@@ -76,6 +89,41 @@ public class ForwarderConfiguration
 		return this.upstreamConfiguration;
 	}
 
+	public boolean isFirewallEnabled()
+	{
+		return Boolean.valueOf(properties.getProperty(KEY_FIREWALL_ENABLED,"false"));
+	}
+	
+	public Set<String> getAllowedImportObjects()
+	{
+		return stringToSet( properties.getProperty(KEY_FIREWALL_IMPORT_OBJ,"") );
+	}
+	
+	public Set<String> getAllowedImportInteractions()
+	{
+		return stringToSet( properties.getProperty(KEY_FIREWALL_IMPORT_INT,"") );
+	}
+	
+	public Set<String> getAllowedExportObjects()
+	{
+		return stringToSet( properties.getProperty(KEY_FIREWALL_EXPORT_OBJ,"") );
+	}
+	
+	public Set<String> getAllowedExportInteractions()
+	{
+		return stringToSet( properties.getProperty(KEY_FIREWALL_EXPORT_INT,"") );
+	}
+
+	private Set<String> stringToSet( String string )
+	{
+		HashSet<String> set = new HashSet<String>();
+		StringTokenizer tokenizer = new StringTokenizer( string, "," );
+		while( tokenizer.hasMoreTokens() )
+			set.add( tokenizer.nextToken().trim() );
+		
+		return set;
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
