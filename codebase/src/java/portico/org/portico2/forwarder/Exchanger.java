@@ -21,6 +21,7 @@ import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.forwarder.ForwarderConnection.Direction;
+import org.portico2.forwarder.firwall.Firewall;
 
 /**
  * An {@link Exchanger} is the class responsible for routing messages between the local and
@@ -46,6 +47,7 @@ public class Exchanger
 	private RID rid;
 	private Logger logger;
 
+	private Firewall firewall;
 	private ForwarderConnection upstream;
 	private ForwarderConnection downstream;
 
@@ -58,6 +60,7 @@ public class Exchanger
 		this.rid       = forwarder.getRid();
 		this.logger    = forwarder.getLogger();
 
+		this.firewall = null;        // set in startup()
 		this.upstream = null;        // set in startup()
 		this.downstream = null;      // set in startup()
 	}
@@ -72,6 +75,9 @@ public class Exchanger
 	protected void startup()
 	{
 		ForwarderConfiguration configuration = rid.getForwarderConfiguration();
+
+		// Grab the references we need
+		this.firewall = forwarder.getFirewall();
 		
 		// Create the connections
 		logger.debug( "Creating local and upstream connections" );
@@ -131,35 +137,29 @@ public class Exchanger
 		switch( receivedFrom )
 		{
 			case DOWNSTREAM:
+				if( firewall.isEnabled() )
+				{
+					// send the information to state tracking
+					// check to see if it should pass through the firewall
+				}
+				
+				// process the message
 				upstream.sendControlRequest( context );
 				break;
 			case UPSTREAM:
+				if( firewall.isEnabled() )
+				{
+					// send the information to state tracking
+					// check to see if it should pass through the firewall
+				}
+				
+				// process the message
 				downstream.sendControlRequest( context );
 				break;
 		}
 		
 		if( logger.isDebugEnabled() && !context.getRequest().isAsync() )
 			logger.debug( responseLog(receivedFrom.reverse(),context) );
-		
-		
-		
-		
-//		//////////////////////////////////////////////////////////////
-//		if( logger.isDebugEnabled() )
-//			logger.debug( outboundLog(receivedFrom,context.getRequest(),"(Control)") );
-//		
-//		switch( receivedFrom )
-//		{
-//			case DOWNSTREAM:
-//				upstream.sendControlRequest( context );
-//				break;
-//			case UPSTREAM:
-//				downstream.sendControlRequest( context );
-//				break;
-//		}
-//		
-//		if( logger.isDebugEnabled() )
-//			logger.debug( responseLog(receivedFrom.reverse(),context) );
 	}
 
 	/*

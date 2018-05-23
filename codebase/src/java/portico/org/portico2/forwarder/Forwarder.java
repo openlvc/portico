@@ -20,6 +20,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.configuration.StartupLogger;
 import org.portico2.common.logging.Log4jConfigurator;
+import org.portico2.forwarder.firwall.Firewall;
+import org.portico2.forwarder.tracking.StateTracker;
 
 /**
  * The Forwarder is a component that sits between a local federation and a remote RTI.
@@ -57,6 +59,10 @@ public class Forwarder
 	
 	// Connection Management
 	private Exchanger exchanger;
+	
+	// Firewall and State Tracking
+	private Firewall firewall;
+	private StateTracker tracker;   // watches what is happening to support filtering
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -136,6 +142,11 @@ public class Forwarder
 	public RID getRid()
 	{
 		return this.rid;
+	}
+
+	public Firewall getFirewall()
+	{
+		return this.firewall;
 	}
 
 	//----------------------------------------------------------
