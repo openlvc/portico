@@ -32,15 +32,27 @@ public class Connection
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private ConnectionConfiguration configuration;
 	private IApplicationReceiver appReceiver;
-	
 	private Logger logger;
+
+	protected ITransport transport;
 	private ProtocolStack protocolStack;
 	private ResponseCorrelator<ResponseMessage> responseCorrelator;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	protected Connection()
+	{
+		this.configuration = null;   // set in configure()
+		this.appReceiver = null;     // set in configure()
+		this.logger = null;          // set in configure()
+
+		this.transport = null;       // set in configure()
+		this.protocolStack = new ProtocolStack( this );
+		this.responseCorrelator = new ResponseCorrelator<>();
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -60,8 +72,17 @@ public class Connection
 	public void configure( ConnectionConfiguration configuration, IApplicationReceiver appReceiver )
 		throws JConfigurationException
 	{
+		// extract the properties we need to store
+		this.configuration = configuration;
 		this.appReceiver = appReceiver;
 		this.logger = appReceiver.getLogger();
+		
+		// create the transport
+		
+		
+		// populate the protocol stack
+		this.protocolStack.empty();
+		// FIXME do population!!
 	}
 
 	/**

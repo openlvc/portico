@@ -25,7 +25,13 @@ public interface IProtocol
 	//----------------------------------------------------------
 	
 	public String getName();
-	
+
+	// lifecycle
+	public void configure();
+	public void open();
+	public void close();
+
+	// message passing
 	public boolean down( Message message );
 	public boolean up( Message message );
 }

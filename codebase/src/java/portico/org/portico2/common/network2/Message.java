@@ -27,6 +27,7 @@ public class Message
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private CallType calltype;
 	private int requestId;
 	
 	// serialized version of the message
@@ -42,6 +43,7 @@ public class Message
 	public Message( PorticoMessage request, CallType calltype, int requestId )
 	{
 		this.request = request;
+		this.calltype = calltype;
 		this.requestId = requestId;
 		
 		this.buffer = MessageHelpers.deflate2( request, calltype, requestId );
@@ -53,6 +55,7 @@ public class Message
 		this.buffer = buffer;
 		this.header = new Header( buffer, 0 );
 		this.requestId = header.getRequestId();
+		this.calltype = this.header.getCallType();
 	}
 
 	//----------------------------------------------------------
@@ -62,10 +65,12 @@ public class Message
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public int getRequestId() { return this.requestId; }
-	public Header getHeader() { return this.header; }
-	public byte[] getBuffer() { return this.buffer; }
+	public final int getRequestId() { return this.requestId; }
+	public final Header getHeader() { return this.header; }
+	public final byte[] getBuffer() { return this.buffer; }
+	public final CallType getCallType() { return this.calltype; }
 	
+
 	public final PorticoMessage inflateAsPorticoMessage()
 	{
 		return MessageHelpers.inflate2( buffer, PorticoMessage.class );
