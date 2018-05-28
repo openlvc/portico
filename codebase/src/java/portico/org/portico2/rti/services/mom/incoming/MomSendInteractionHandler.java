@@ -37,11 +37,14 @@ import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.pubsub.data.InterestManager;
 import org.portico2.rti.RtiConnection;
 import org.portico2.rti.federation.Federate;
+import org.portico2.rti.federation.FederateMetrics;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.RTIMessageHandler;
 import org.portico2.rti.services.mom.data.FomModule;
 import org.portico2.rti.services.mom.data.MomEncodingHelpers;
+import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
 import org.portico2.rti.services.mom.data.SynchPointFederate;
+import org.portico2.rti.services.object.data.ROCInstance;
 import org.portico2.rti.services.sync.data.SyncPoint;
 import org.portico2.rti.services.sync.data.SyncPointManager;
 import org.w3c.dom.Document;
@@ -93,6 +96,12 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		//
 		// HLAfederate
 		//
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesThatCanBeDeleted", 
+		                                    this::handleFederateRequestObjectInstancesThatCanBeDeleted );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesUpdated", 
+		                                    this::handleFederateRequestObjectInstancesUpdated );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesReflected", 
+		                                    this::handleFederateRequestObjectInstancesReflected );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestFOMmoduleData", 
 		                                    this::handleFederateRequestFomModuleData );
 		
@@ -128,17 +137,17 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		
 		// Record metrics for the interaction sender
 		int interactionId = request.getInteractionId();
+		ICMetadata interactionClass = objectModel.getInteractionClass( interactionId );
 		int sender = request.getSourceFederate();
-		momManager.interactionSent( sender, interactionId );
+		momManager.interactionSent( sender, interactionClass );
 		
 		// Record metrics for all interaction receivers
-		ICMetadata interactionClass = objectModel.getInteractionClass( interactionId );
 		InterestManager interests = federation.getInterestManager();
 		Set<Integer> subscribers = interests.getAllSubscribers( interactionClass );
 		for( int subscriber : subscribers )
 		{
 			if( subscriber != sender )
-				momManager.interactionReceived( subscriber, interactionId );
+				momManager.interactionReceived( subscriber, interactionClass );
 		}
 		
 		// If the incoming interaction is a MOM interaction, then handle it
@@ -149,14 +158,65 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  MOM Interaction Handlers   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	private void handleFederateRequestObjectInstancesThatCanBeDeleted( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		Set<ROCInstance> owned = metrics.getObjectsOwned();
+		
+		ObjectClassBasedCount[] ownedCountArray = FederateMetrics.toClassBasedCount( federate, owned );
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAobjectInstanceCounts", ownedCountArray );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesThatCanBeDeleted", 
+		              responseParams );
+	}
+
+	private void handleFederateRequestObjectInstancesUpdated( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		Set<ROCInstance> updated = metrics.getObjectsUpdated();
+		
+		ObjectClassBasedCount[] updatedCountArray = FederateMetrics.toClassBasedCount( federate, updated );
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAobjectInstanceCounts", updatedCountArray );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesUpdated", 
+		              responseParams );
+	}
+	
+	private void handleFederateRequestObjectInstancesReflected( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		Set<ROCInstance> reflected = metrics.getObjectsReflected();
+		
+		ObjectClassBasedCount[] reflectedCountArray = FederateMetrics.toClassBasedCount( federate, 
+		                                                                                 reflected );
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAobjectInstanceCounts", reflectedCountArray );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesReflected", 
+		              responseParams );
+	}
+	
 	private void handleFederateRequestFomModuleData( Map<String,Object> requestParams )
 		throws MomException
 	{
-		// Check to see if the requested federate exists
-		int federateHandle = (Integer)requestParams.get( "HLAfederate" );
-		Federate federate = federation.getFederate( federateHandle );
-		if( federate == null )
-			throw new MomException( "invalid federate " + federateHandle, true );
+		Federate federate = getRequestFederate( requestParams );
 		
 		// Check to see if the provided module index is within bounds
 		int fomModuleIndex = (Integer)requestParams.get( "HLAFOMmoduleIndicator" );
@@ -169,7 +229,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		FomModule module = modules.get( fomModuleIndex );
 		
 		Map<String,Object> responseParams = new HashMap<String,Object>();
-		responseParams.put( "HLAfederate", federateHandle );
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
 		responseParams.put( "HLAFOMmoduleIndicator", fomModuleIndex );
 		responseParams.put( "HLAFOMmoduleData", module.getContent() );
 		
@@ -286,6 +346,26 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Helper Convenience Methods   //////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Returns the Federate whose handle is contained in the <code>requestParams</code> map under the
+	 * "HLAfederate" key.
+	 * 
+	 * @param requestParams the map to search for the federate handle in
+	 * @return the Federate whose handle is contained in the <code>requestParams</code> map
+	 * @throws MomException if the federation does not contain a federate with the given handle
+	 */
+	private Federate getRequestFederate( Map<String,Object> requestParams )
+		throws MomException
+	{
+		int federateHandle = (Integer)requestParams.get( "HLAfederate" );
+		Federate federate = federation.getFederate( federateHandle );
+		if( federate == null )
+			throw new MomException( "invalid federate " + federateHandle, true );
+		
+		return federate;
+	}
+	
+	
 	/**
 	 * Caches interaction metadata for HLAreportMomException.
 	 * <p/>

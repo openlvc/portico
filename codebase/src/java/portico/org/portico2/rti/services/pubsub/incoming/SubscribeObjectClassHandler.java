@@ -120,7 +120,7 @@ public class SubscribeObjectClassHandler extends RTIMessageHandler
 			discover.setImmediateProcessingFlag( false );
 			
 			// Update discovery metrics
-			momManager.objectDiscovered( federateHandle, instance.getHandle() );
+			momManager.objectDiscovered( federateHandle, instance );
 			
 			super.queueUnicast( discover, federateHandle );
 			if( logger.isDebugEnabled() )
