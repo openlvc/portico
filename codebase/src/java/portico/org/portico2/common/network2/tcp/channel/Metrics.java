@@ -12,9 +12,14 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network2;
+package org.portico2.common.network2.tcp.channel;
 
-public class ProtocolStack
+/**
+ * There are a number of classes that record various metrics. This is a generic class to hold
+ * metric data. Nothing fancy, just a struct. So not-fancy that I'm just giving public access
+ * to the members.
+ */
+public class Metrics
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -23,63 +28,35 @@ public class ProtocolStack
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Connection connection;
-	private IProtocol[] protocols;
+	public long messagesSent;
+	public long messagesReceived;
+	public long bytesSent;
+	public long bytesReceived;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected ProtocolStack( Connection connection )
+	public Metrics()
 	{
-		this.connection = connection;
-		this.protocols = new IProtocol[0];
+		clear();
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	public final void down( Message message )
-	{
-		// pass the message to each protocol
-		for( int i = 0; i < protocols.length; i++ )
-		{
-			if( protocols[i].down(message) == false )
-				return;
-		}
-
-		// pass to the transport
-		this.connection.transport.send( message );
-	}
-	
-	public void up( Message message )
-	{
-		for( int i = protocols.length-1; i >=0; i-- )
-		{
-			if( protocols[i].up(message) == false )
-				return;
-		}
-		
-		// pass to connection for final processing
-		this.connection.receive( message );
-	}
-
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * Remove all existing protocols from the protocol stack
-	 */
-	protected void empty()
+	public void clear()
 	{
-		this.protocols = new IProtocol[]{};
+		this.messagesSent = 0;
+		this.messagesReceived = 0;
+		this.bytesSent = 0;
+		this.bytesReceived = 0;
 	}
-	
-	
-	
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
 }

@@ -167,7 +167,7 @@ public class RtiInbox
 	{
 		logger.info( "Application has connected via network %s (type:%s)",
 		             connection.getName(),
-		             connection.getType() );
+		             connection.getTransportType() );
 
 		context.success();
 	}
@@ -220,7 +220,9 @@ public class RtiInbox
     		if( context.isSuccessResponse() )
     		{
     			logger.info( "Federate [%s] joined federation via connection %s (type:%s)",
-    			             request.getFederateName(), connection.getName(), connection.getType() );
+    			             request.getFederateName(),
+    			             connection.getName(),
+    			             connection.getTransportType() );
     		}
 		}
 		catch( Exception e )

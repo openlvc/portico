@@ -12,9 +12,11 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network2;
+package org.portico2.common.network2.configuration;
 
-public class ProtocolStack
+import java.util.Properties;
+
+public class JvmConfiguration extends ConnectionConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -23,63 +25,37 @@ public class ProtocolStack
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Connection connection;
-	private IProtocol[] protocols;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected ProtocolStack( Connection connection )
+	public JvmConfiguration( String name )
 	{
-		this.connection = connection;
-		this.protocols = new IProtocol[0];
+		super( name );
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	public final void down( Message message )
-	{
-		// pass the message to each protocol
-		for( int i = 0; i < protocols.length; i++ )
-		{
-			if( protocols[i].down(message) == false )
-				return;
-		}
-
-		// pass to the transport
-		this.connection.transport.send( message );
-	}
-	
-	public void up( Message message )
-	{
-		for( int i = protocols.length-1; i >=0; i-- )
-		{
-			if( protocols[i].up(message) == false )
-				return;
-		}
-		
-		// pass to connection for final processing
-		this.connection.receive( message );
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
 	/**
-	 * Remove all existing protocols from the protocol stack
+	 * Read Only
 	 */
-	protected void empty()
+	public TransportType getTransportType()
 	{
-		this.protocols = new IProtocol[]{};
+		return TransportType.JVM;
 	}
-	
-	
-	
+
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/// Configuration Loading   ////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void parseConfiguration( String prefix, Properties properties )
+	{
+		// no-op
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
 }

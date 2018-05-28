@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
-import org.portico2.common.configuration.connection.ConnectionType;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.network2.configuration.TransportType;
 
 public class ForwarderConfiguration
 {
@@ -64,16 +64,14 @@ public class ForwarderConfiguration
 		// Network Configuration
 		//
 		// Local-side connection configuration
-		String typeString = properties.getProperty( PFX_DOWNSTREAM+".type", "multicast" );
-		ConnectionType localType = ConnectionType.fromString( typeString );
-		this.downstreamConfiguration = localType.newConfig( "downstream" );
-		this.downstreamConfiguration.parseConfiguration( PFX_DOWNSTREAM, properties );
+		String transportString = properties.getProperty( PFX_DOWNSTREAM+".transport", "multicast" );
+		TransportType transportType = TransportType.fromString( transportString );
+		this.downstreamConfiguration = transportType.newConfiguration( "downstream", PFX_DOWNSTREAM, properties );
 		
 		// Upstream-side connection configuration
-		typeString = properties.getProperty( PFX_UPSTREAM+".type", "tcp-client" );
-		ConnectionType upstreamType = ConnectionType.fromString( typeString );
-		this.upstreamConfiguration = upstreamType.newConfig( "upstream" );
-		this.upstreamConfiguration.parseConfiguration( PFX_UPSTREAM, properties );
+		transportString = properties.getProperty( PFX_UPSTREAM+".transport", "tcp-client" );
+		transportType = TransportType.fromString( transportString );
+		this.upstreamConfiguration = transportType.newConfiguration( "upstream", PFX_UPSTREAM, properties );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////

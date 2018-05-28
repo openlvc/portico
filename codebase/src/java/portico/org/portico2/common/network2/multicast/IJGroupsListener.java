@@ -12,9 +12,17 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network2;
+package org.portico2.common.network2.multicast;
 
-public class ProtocolStack
+import org.apache.logging.log4j.Logger;
+import org.portico.lrc.compat.JRTIinternalError;
+
+/**
+ * This interface is used to link a JGroups channel to the component that is managing it. When
+ * messages are received on the channel, they are passed to an implementation of this interface
+ * for processing.
+ */
+public interface IJGroupsListener
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -23,63 +31,29 @@ public class ProtocolStack
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Connection connection;
-	private IProtocol[] protocols;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected ProtocolStack( Connection connection )
-	{
-		this.connection = connection;
-		this.protocols = new IProtocol[0];
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
-	public final void down( Message message )
-	{
-		// pass the message to each protocol
-		for( int i = 0; i < protocols.length; i++ )
-		{
-			if( protocols[i].down(message) == false )
-				return;
-		}
-
-		// pass to the transport
-		this.connection.transport.send( message );
-	}
-	
-	public void up( Message message )
-	{
-		for( int i = protocols.length-1; i >=0; i-- )
-		{
-			if( protocols[i].up(message) == false )
-				return;
-		}
-		
-		// pass to connection for final processing
-		this.connection.receive( message );
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
 	/**
-	 * Remove all existing protocols from the protocol stack
+	 * A message has been received on the given channel for processing.
+	 * 
+	 * @param channel The channel it was received on
+	 * @param payload The raw payload that was received
+	 * @throws JRTIinternalError Throw this if there is an error and the channel will log it
 	 */
-	protected void empty()
-	{
-		this.protocols = new IProtocol[]{};
-	}
+	public void receive( JGroupsChannel channel, byte[] payload ) throws JRTIinternalError;
 	
-	
+	/**
+	 * @return Each listener must provide a logger to the channel.
+	 */
+	public Logger provideLogger();
 	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
 }

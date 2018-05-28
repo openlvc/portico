@@ -16,7 +16,8 @@ package org.portico2.common.network2;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.network2.configuration.TransportType;
 
 /**
  * A {@link ITransport} implementation performs two functions:
@@ -42,6 +43,8 @@ public interface ITransport
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
+	public TransportType getType();
+
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +64,10 @@ public interface ITransport
 	 * Establish a link to the underlying transport and commence processing messages.
 	 * This method is called when the connection itself is starting up. Prior to calls to this
 	 * method, the transport should not process any messages.
+	 * <p/>
+	 * 
+	 * Note: Any messages logged by open() should be done at the TRACE level unless they are
+	 *       warnings or errors.
 	 * 
 	 * @throws JRTIinternalError If there is a problem encountered during startup
 	 */
@@ -69,6 +76,10 @@ public interface ITransport
 	/**
 	 * Called when the {@link Connection} that we are in is closing down. All active links
 	 * to the transport layer should be closed.
+	 * <p/>
+	 * 
+	 * Note: Any messages logged by open() should be done at the TRACE level unless they are
+	 *       warnings or errors.
 	 * 
 	 * @throws JRTIinternalError If there is a problem encountered during close out
 	 */

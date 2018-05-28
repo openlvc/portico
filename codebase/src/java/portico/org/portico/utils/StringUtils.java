@@ -190,16 +190,25 @@ public class StringUtils
 	 */
 	public static String targetHandleToString( PorticoMessage message )
 	{
-		switch( message.getTargetFederate() )
+		return targetHandleToString( message.getTargetFederate() );
+	}
+	
+	/**
+	 * Takes the targetFederate property from the given message and turns it into a string.
+	 * Either "<all>", "<rti>", "[x, y, z]" or "x". No name substitution attempt is made.
+	 */
+	public static String targetHandleToString( int federateHandle )
+	{
+		switch( federateHandle )
 		{
 			case PorticoConstants.TARGET_ALL_HANDLE:
 				return "<all>";
 			case PorticoConstants.RTI_HANDLE:
 				return "<rti>";
 			case PorticoConstants.TARGET_MANY_HANDLE:
-				return "<multi> "+message.getMultipleTargets().toString();
+				return "<multi>";//+message.getMultipleTargets().toString();
 			default:
-				return "" + message.getTargetFederate();
+				return "" + federateHandle;
 		}
 	}
 
@@ -209,14 +218,23 @@ public class StringUtils
 	 */
 	public static String sourceHandleToString( PorticoMessage message )
 	{
-		switch( message.getSourceFederate() )
+		return sourceHandleToString( message.getSourceFederate() );
+	}
+	
+	/**
+	 * Takes the sourceFederate property from the given message and turns it into a string.
+	 * Either "<unjoined>", "<rti>", "x". No name substitution attempt is made.
+	 */
+	public static String sourceHandleToString( int federateHandle )
+	{
+		switch( federateHandle )
 		{
 			case PorticoConstants.NULL_HANDLE:
 				return "<unjoined>";
 			case PorticoConstants.RTI_HANDLE:
 				return "<rti>";
 			default:
-				return ""+message.getSourceFederate();
+				return ""+federateHandle;
 		}
 	}
 

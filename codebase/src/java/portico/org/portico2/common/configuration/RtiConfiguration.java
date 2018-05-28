@@ -25,10 +25,10 @@ import java.util.Properties;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.utils.StringUtils;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
-import org.portico2.common.configuration.connection.ConnectionType;
-import org.portico2.common.configuration.connection.JvmConnectionConfiguration;
-import org.portico2.common.configuration.connection.MulticastConnectionConfiguration;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.network2.configuration.JvmConfiguration;
+import org.portico2.common.network2.configuration.MulticastConfiguration;
+import org.portico2.common.network2.configuration.TransportType;
 
 public class RtiConfiguration
 {
@@ -49,8 +49,6 @@ public class RtiConfiguration
 	protected RtiConfiguration()
 	{
 		this.rtiConnections = new HashMap<>();
-		
-		
 	}
 
 	//----------------------------------------------------------
@@ -89,17 +87,17 @@ public class RtiConfiguration
 	}
 
 	/**
-	 * Go through all the connections and remove any that are of the given type. This
-	 * helps you force the use of a specific connection type. 
+	 * Go through all the connections and remove any that are of the given transport type.
+	 * This helps you force the use of a specific connection type. 
 	 */
-	public void removeConnectionsOfType( ConnectionType... types )
+	public void removeConnectionsOfType( TransportType... types )
 	{
 		List<String> toRemove = new ArrayList<>();
-		List<ConnectionType> alltypes = Arrays.asList( types );
+		List<TransportType> alltypes = Arrays.asList( types );
 		for( String name : rtiConnections.keySet() )
 		{
 			ConnectionConfiguration configuration = rtiConnections.get( name );
-			if( alltypes.contains(configuration.getType()) )
+			if( alltypes.contains(configuration.getTransportType()) )
 				toRemove.add( name );
 		}
 		
@@ -118,14 +116,14 @@ public class RtiConfiguration
 			if( PorticoConstants.OVERRIDE_CONNECTION == null )
 			{
 				// no configurations have been specified - fall back on just having a JVM connection
-				this.rtiConnections.put( "jvm", new JvmConnectionConfiguration("jvm") );
-				this.rtiConnections.put( "multicast", new MulticastConnectionConfiguration("multicast") );
+				this.rtiConnections.put( "jvm", new JvmConfiguration("jvm") );
+				this.rtiConnections.put( "multicast", new MulticastConfiguration("multicast") );
 			}
 			else
 			{
 				// an override is in place, use it
 				String override = PorticoConstants.OVERRIDE_CONNECTION;
-				ConnectionConfiguration config = ConnectionType.fromString(override).newConfig("hlaunit");
+				ConnectionConfiguration config = TransportType.fromString(override).newConfiguration("hlaunit");
 				this.rtiConnections.put( "hlaunit", config );
 			}
 		}
@@ -146,10 +144,10 @@ public class RtiConfiguration
     			if( typeString == null )
     				throw new JConfigurationException( "RTI Connection [%s] does not specify a type", name );
     			
-    			ConnectionType type = ConnectionType.fromString( typeString );
+    			TransportType type = TransportType.fromString( typeString );
     
     			// create the configuration and store it
-    			ConnectionConfiguration configuration = type.newConfig( name );
+    			ConnectionConfiguration configuration = type.newConfiguration( name );
     			configuration.parseConfiguration( prefix, properties );
     			this.rtiConnections.put( name, configuration );
     		}

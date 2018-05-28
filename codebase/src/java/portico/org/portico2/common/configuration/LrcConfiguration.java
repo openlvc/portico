@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
-import org.portico2.common.configuration.connection.ConnectionType;
-import org.portico2.common.configuration.connection.MulticastConnectionConfiguration;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.network2.configuration.MulticastConfiguration;
+import org.portico2.common.network2.configuration.TransportType;
 
 public class LrcConfiguration
 {
@@ -40,7 +40,7 @@ public class LrcConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private ConnectionConfiguration lrcConnection;
+	private ConnectionConfiguration connectionConfiguration;
 	
 	// Tick Processing
 	private long tickTimeout; // stored in nanos
@@ -51,12 +51,12 @@ public class LrcConfiguration
 	//----------------------------------------------------------
 	public LrcConfiguration()
 	{
-		this.lrcConnection = null; // set in parseProperties()
-		this.tickTimeout   = TimeUnit.MILLISECONDS.toNanos( 5 );
+		this.connectionConfiguration = null; // set in parseProperties()
+		this.tickTimeout = TimeUnit.MILLISECONDS.toNanos( 5 );
 		this.queueWarningCountSize = 500;
 		
 		// defaults
-		this.lrcConnection = new MulticastConnectionConfiguration( "multicast" );
+		this.connectionConfiguration = new MulticastConfiguration( "multicast" );
 		//TcpConnectionConfiguration tcc = new TcpConnectionConfiguration( "tcp" );
 		//tcc.setAddress( "SITE_LOCAL" );
 		//this.lrcConnection = tcc;
@@ -80,15 +80,16 @@ public class LrcConfiguration
 		if( PorticoConstants.OVERRIDE_CONNECTION != null )
 		{
 			String override = PorticoConstants.OVERRIDE_CONNECTION;
-			this.lrcConnection = ConnectionType.fromString(override).newConfig( "hlaunit" );
+			this.connectionConfiguration = TransportType.fromString(override).newConfiguration( "hlaunit" );
 		}
 		else if( properties.containsKey(KEY_LRC_CONNECTION) )
 		{
 			String connectionName = properties.getProperty( KEY_LRC_CONNECTION );
-			String connectionType = properties.getProperty( "lrc.network."+connectionName+".type" );
-			ConnectionType type = ConnectionType.fromString( connectionType );
-			this.lrcConnection = type.newConfig( "lrc" );
-			this.lrcConnection.parseConfiguration( "lrc.network."+connectionName, properties );
+			String tranportName = properties.getProperty( "lrc.network."+connectionName+".transport" );
+			TransportType transport = TransportType.fromString( tranportName );
+			this.connectionConfiguration = transport.newConfiguration( "lrc",
+			                                                           "lrc.network."+connectionName,
+			                                                           properties );
 		}
 
 		//
@@ -106,12 +107,12 @@ public class LrcConfiguration
 	////////////////////////////////////////////////////////////////////////////////////////////
 	public ConnectionConfiguration getConnectionConfiguration()
 	{
-		return this.lrcConnection;
+		return this.connectionConfiguration;
 	}
 
-	public void setConnectionConfiguration( ConnectionConfiguration lrcConnection )
+	public void setConnectionConfiguration( ConnectionConfiguration connectionConfiguration )
 	{
-		this.lrcConnection = lrcConnection;
+		this.connectionConfiguration = connectionConfiguration;
 	}
 	
 	public long getTickTimeoutNanos()
