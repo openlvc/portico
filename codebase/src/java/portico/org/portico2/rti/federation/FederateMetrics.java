@@ -14,8 +14,15 @@
  */
 package org.portico2.rti.federation;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import org.portico.lrc.model.OCMetadata;
+import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
+import org.portico2.rti.services.object.data.ROCInstance;
 
 /**
  * This class tracks various federate metrics that are ultimately reported in the MOM class
@@ -34,9 +41,9 @@ public class FederateMetrics
 	private int updatesSent;
 	private int interactionsReceived;
 	private int interactionsSent;
-	private Set<Integer> objectsOwned;
-	private Set<Integer> objectsUpdated;
-	private Set<Integer> objectsReflected;
+	private Set<ROCInstance> objectsOwned;
+	private Set<ROCInstance> objectsUpdated;
+	private Set<ROCInstance> objectsReflected;
 	private int objectsDeleted;
 	private int objectsRemoved;
 	private int objectsRegistered;
@@ -51,9 +58,9 @@ public class FederateMetrics
 		this.updatesSent = 0;
 		this.interactionsReceived = 0;
 		this.interactionsSent = 0;
-		this.objectsOwned = new HashSet<Integer>();
-		this.objectsUpdated = new HashSet<Integer>();
-		this.objectsReflected = new HashSet<Integer>();
+		this.objectsOwned = new HashSet<ROCInstance>();
+		this.objectsUpdated = new HashSet<ROCInstance>();
+		this.objectsReflected = new HashSet<ROCInstance>();
 		this.objectsDeleted = 0;
 		this.objectsRemoved = 0;
 		this.objectsRegistered = 0;
@@ -67,16 +74,16 @@ public class FederateMetrics
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Federate Event Handlers   /////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public void reflectionReceived( int objectHandle )
+	public void reflectionReceived( ROCInstance instance )
 	{
 		++this.reflectionsReceived;
-		this.objectsReflected.add( objectHandle );
+		this.objectsReflected.add( instance );
 	}
 	
-	public void sentUpdate( int objectHandle )
+	public void sentUpdate( ROCInstance instance )
 	{
 		++this.updatesSent;
-		this.objectsUpdated.add( objectHandle );
+		this.objectsUpdated.add( instance );
 	}
 	
 	public void interactionReceived()
@@ -89,21 +96,21 @@ public class FederateMetrics
 		++this.interactionsSent;
 	}
 
-	public void objectRegistered( int objectHandle )
+	public void objectRegistered( ROCInstance instance )
 	{
 		++this.objectsRegistered;
 		
 		// When a federate registers an object, they hold privilege to delete until such time as they 
 		// yield it, or remove it 
-		this.objectsOwned.add( objectHandle );
+		this.objectsOwned.add( instance );
 	}
 	
-	public void objectDeleted( int objectHandle )
+	public void objectDeleted( ROCInstance instance )
 	{
 		++this.objectsDeleted;
 		
 		// Object is no longer owned by the federate 
-		this.objectsOwned.remove( objectHandle );
+		this.objectsOwned.remove( instance );
 	}
 	
 	public void objectRemoved()
@@ -155,25 +162,25 @@ public class FederateMetrics
 	 * @return the number of Object Instances for which the federate owns the HLAprivilegeToDelete 
 	 *         parameter
 	 */
-	public int getObjectsOwned()
+	public Set<ROCInstance> getObjectsOwned()
 	{
-		return this.objectsOwned.size();
+		return new HashSet<>( this.objectsOwned );
 	}
 	
 	/**
 	 * @return the number of Object Instances for which the federate has provided an attribute update
 	 */
-	public int getObjectsUpdated()
+	public Set<ROCInstance> getObjectsUpdated()
 	{
-		return this.objectsUpdated.size();
+		return new HashSet<>( this.objectsUpdated );
 	}
 	
 	/**
 	 * @return the number of Object Instances for which the federate has received an attribute reflection
 	 */
-	public int getObjectsReflected()
+	public Set<ROCInstance> getObjectsReflected()
 	{
-		return this.objectsReflected.size();
+		return new HashSet<>( this.objectsReflected );
 	}
 	
 	/**
@@ -211,4 +218,33 @@ public class FederateMetrics
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	/**
+	 * Returns the number of instances of each Object Class in the provided set
+	 * 
+	 * @param federate the federate that the class handles should be relative to
+	 * @param instances the object instances to classify
+	 * @return the number of instances of each Object Class in the provided set
+	 */
+	public static ObjectClassBasedCount[] toClassBasedCount( Federate federate, 
+	                                                         Set<ROCInstance> instances )
+	{
+		Map<OCMetadata,Integer> countMap = new HashMap<>();
+		for( ROCInstance instance : instances )
+		{
+			OCMetadata type = instance.getRegisteredType();	// TODO should be discovered type for some cases?
+			Integer count = countMap.get( type );
+			if( count == null )
+				count = new Integer( 1 );
+			else
+				count = new Integer( count + 1 );
+			countMap.put( type, count );
+		}
+		
+		ObjectClassBasedCount[] countArray = new ObjectClassBasedCount[countMap.size()];
+		int index = 0;
+		for( Entry<OCMetadata,Integer> entry : countMap.entrySet() )
+			countArray[index++] = new ObjectClassBasedCount( entry.getKey(), entry.getValue() );
+		
+		return countArray;
+	}
 }

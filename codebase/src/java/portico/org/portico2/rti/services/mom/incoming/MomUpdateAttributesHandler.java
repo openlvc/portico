@@ -60,10 +60,10 @@ public class MomUpdateAttributesHandler extends RTIMessageHandler
 		// Log update metrics
 		int sendingFederate = request.getSourceFederate();
 		int objectHandle = request.getObjectId();
-		momManager.objectUpdated( sendingFederate, objectHandle );
+		ROCInstance instance = repository.getObject( objectHandle );
+		momManager.objectUpdated( sendingFederate, instance );
 		
 		// Log reflect metrics
-		ROCInstance instance = repository.getObject( objectHandle );
 		InterestManager interests = federation.getInterestManager();
 		Set<Integer> subscribers = interests.getAllSubscribers( instance.getRegisteredType() );
 		for( int subscriber : subscribers )
@@ -71,7 +71,7 @@ public class MomUpdateAttributesHandler extends RTIMessageHandler
 			if( subscriber == sendingFederate )
 				continue;
 			
-			momManager.objectReflected( subscriber, objectHandle );
+			momManager.objectReflected( subscriber, instance );
 		}
 	}
 	
