@@ -93,7 +93,7 @@ public class JoinFederationHandler extends LRCMessageHandler
 		if( request.getFomModuleLocations().size() > 0 )
 		{
 			for( URL fedLocation : request.getFomModuleLocations() )
-				request.addJoinModule( FomParser.parse(fedLocation) );
+				request.addJoinModule( fedLocation, FomParser.parse(fedLocation) );
 			
 			// let people know what happened
 			logger.debug( "Parsed ["+request.getParsedJoinModules().size()+"] additional FOM modules" );
