@@ -14,7 +14,7 @@
  */
 package org.portico.lrc.utils;
 
-import org.portico2.common.messaging.CallType;
+import org.portico2.common.network2.CallType;
 import org.portico2.common.services.federation.msg.RtiProbe;
 import org.testng.annotations.Test;
 
