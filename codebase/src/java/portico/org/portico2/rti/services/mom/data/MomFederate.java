@@ -15,6 +15,7 @@
 package org.portico2.rti.services.mom.data;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -195,7 +196,14 @@ public class MomFederate
 	
 	private byte[] getFomModuleDesignatorList( ACMetadata metadata )
 	{
-		return notYetSupported( "HLAFOMmoduleDesignatorList" );
+		IDatatype type = metadata.getDatatype();
+		List<FomModule> modules = federate.getRawFomModules();
+		int moduleCount = modules.size();
+		String[] designators = new String[moduleCount];
+		for( int i = 0 ; i < moduleCount ; ++i )
+			designators[i] = modules.get( i ).getDesignator();
+		
+		return MomEncodingHelpers.encode( type, designators );
 	}
 
 	private byte[] getRTIversion( ACMetadata metadata )

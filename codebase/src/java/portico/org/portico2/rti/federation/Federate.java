@@ -14,9 +14,15 @@
  */
 package org.portico2.rti.federation;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.portico2.common.PorticoConstants;
 import org.portico2.common.services.time.data.TimeStatus;
 import org.portico2.rti.RtiConnection;
+import org.portico2.rti.services.mom.data.FomModule;
 
 public class Federate
 {
@@ -31,6 +37,7 @@ public class Federate
 	private int federateHandle;
 	private RtiConnection federateConnection;
 	private FederateMetrics metrics;
+	private List<FomModule> fomModules;
 	
 	private TimeStatus timeStatus;
 
@@ -43,6 +50,7 @@ public class Federate
 		this.federateConnection = federateConnection;
 		this.metrics = new FederateMetrics();
 		this.federateHandle = PorticoConstants.NULL_HANDLE;
+		this.fomModules = new ArrayList<FomModule>();
 		
 		this.timeStatus = new TimeStatus();
 	}
@@ -84,6 +92,28 @@ public class Federate
 		return this.metrics;
 	}
 
+	public void addRawFomModules( List<FomModule> modules )
+	{
+		// As per the 1516e spec, only modules that add something to the FOM are to be recorded. To keep
+		// things simple, we'll just assume that if the designator is different then the module added
+		// new content
+		Set<String> existingDesignators = new HashSet<>();
+		for( FomModule existingModule : this.fomModules )
+			existingDesignators.add( existingModule.getDesignator() );
+		
+		for( FomModule newModule : modules )
+		{
+			String newDesignator = newModule.getDesignator();
+			if( !existingDesignators.contains(newDesignator) )
+				this.fomModules.add( newModule );
+		}
+	}
+	
+	public List<FomModule> getRawFomModules()
+	{
+		return new ArrayList<>( this.fomModules );
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////
 	/// Message Sending and Processing  //////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////

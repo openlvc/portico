@@ -27,6 +27,7 @@ import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
 import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.rti.services.mom.data.FomModule;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -61,8 +62,12 @@ public class CreateFederationHandler extends LRCMessageHandler
 		
 		// try and parse each of the fed files that we have
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
-		for( URL module : request.getFomModules() )
+		List<FomModule> modules = new ArrayList<FomModule>();
+		for( URL module : request.getFomModuleLocations() )
+		{
 			foms.add( FomParser.parse(module) );
+			modules.add( new FomModule(module) );
+		}
 		
 		// -- NOT DONE ANY MORE --
 		// Used to be important, but we will manually insert the MOM with handles we can control
@@ -81,7 +86,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		ObjectModel.resolveSymbols( combinedFOM );
 		
 		// we have our grand unified FOM!
-		request.setModel( combinedFOM );
+		request.setModel( combinedFOM, modules );
 		
 		// check that we don't have a null name
 		if( request.getFederationName() == null )

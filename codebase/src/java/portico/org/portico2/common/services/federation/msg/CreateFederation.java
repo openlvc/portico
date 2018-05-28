@@ -16,12 +16,14 @@ package org.portico2.common.services.federation.msg;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageType;
+import org.portico2.rti.services.mom.data.FomModule;
 
 /**
  * Contains information relating to a request to create a new federation. The component creating
@@ -39,9 +41,10 @@ public class CreateFederation extends PorticoMessage
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String federationName;
-	private transient List<URL> fomModules;
+	private transient List<URL> fomModuleLocations;
 	private ObjectModel objectModel;
 	private HLAVersion hlaVersion;
+	private List<FomModule> rawFomModules;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -49,7 +52,8 @@ public class CreateFederation extends PorticoMessage
 	public CreateFederation()
 	{
 		super();
-		this.fomModules = new ArrayList<URL>();
+		this.fomModuleLocations = new ArrayList<URL>();
+		this.rawFomModules = new ArrayList<FomModule>();
 	}
 	
 	public CreateFederation( String federationName, ObjectModel model )
@@ -63,7 +67,7 @@ public class CreateFederation extends PorticoMessage
 	{
 		this();
 		this.federationName = federationName;
-		this.fomModules.add( fedfileLocation );
+		this.fomModuleLocations.add( fedfileLocation );
 	}
 	
 	public CreateFederation( String federationName, URL[] fomModules )
@@ -71,14 +75,14 @@ public class CreateFederation extends PorticoMessage
 		this();
 		this.federationName = federationName;
 		for( URL module : fomModules )
-			this.fomModules.add( module );
+			this.fomModuleLocations.add( module );
 	}
 	
 	public CreateFederation( String federationName, List<URL> fomModules )
 	{
 		this();
 		this.federationName = federationName;
-		this.fomModules.addAll( fomModules );
+		this.fomModuleLocations.addAll( fomModules );
 	}
 
 	//----------------------------------------------------------
@@ -100,9 +104,11 @@ public class CreateFederation extends PorticoMessage
 		this.federationName = federationName;
 	}
 	
-	public void setModel( ObjectModel model )
+	public void setModel( ObjectModel model, Collection<FomModule> rawModules )
 	{
 		this.objectModel = model;
+		this.rawFomModules.clear();
+		this.rawFomModules.addAll( rawModules );
 	}
 	
 	public ObjectModel getModel()
@@ -110,9 +116,14 @@ public class CreateFederation extends PorticoMessage
 		return this.objectModel;
 	}
 	
-	public List<URL> getFomModules()
+	public List<URL> getFomModuleLocations()
 	{
-		return this.fomModules;
+		return this.fomModuleLocations;
+	}
+	
+	public List<FomModule> getRawFomModules()
+	{
+		return this.rawFomModules;
 	}
 	
 	public void setHlaVersion( HLAVersion version )
@@ -124,8 +135,7 @@ public class CreateFederation extends PorticoMessage
 	{
 		return this.hlaVersion;
 	}
-
-
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
