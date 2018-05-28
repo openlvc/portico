@@ -21,13 +21,12 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.network.ConnectionFactory;
-import org.portico2.common.network.IConnection;
-import org.portico2.common.network.IMessageReceiver;
+import org.portico2.common.network2.Connection;
+import org.portico2.common.network2.IApplicationReceiver;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
 
-public class LRCConnection implements IMessageReceiver
+public class LRCConnection implements IApplicationReceiver
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -38,7 +37,7 @@ public class LRCConnection implements IMessageReceiver
 	//----------------------------------------------------------
 	private LRC lrc;
 	private ConnectionConfiguration configuration;
-	private IConnection connection;
+	private Connection connection;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -49,7 +48,7 @@ public class LRCConnection implements IMessageReceiver
 		this.configuration = configuration;
 		
 		// Create the underlying connection and configure it
-		this.connection = ConnectionFactory.createConnection( configuration.getType() );
+		this.connection = new Connection();
 		this.connection.configure( configuration, this );
 	}
 
@@ -116,12 +115,12 @@ public class LRCConnection implements IMessageReceiver
 		lrc.getState().getQueue().offer( incoming );
 	}
 
-	@Override
-	public final boolean isReceivable( int targetFederate )
-	{
-		// Just filter out ones targeting the RTI for now. We can filter the rest later.
-		return targetFederate != PorticoConstants.RTI_HANDLE;
-	}
+//	@Override
+//	public final boolean isReceivable( int targetFederate )
+//	{
+//		// Just filter out ones targeting the RTI for now. We can filter the rest later.
+//		return targetFederate != PorticoConstants.RTI_HANDLE;
+//	}
 	
 	@Override
 	public Logger getLogger()

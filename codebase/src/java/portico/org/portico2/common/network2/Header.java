@@ -133,6 +133,16 @@ public class Header
 		return CallType.fromId( BitHelpers.readUint4(buffer,offset,0) );
 	}
 	
+	public final boolean isDataMessage()
+	{
+		return BitHelpers.readUint4(buffer,offset,0) == 0;
+	}
+	
+	public final boolean isControlMessage()
+	{
+		return !isDataMessage();
+	}
+	
 	public final void writeCallType( CallType calltype )
 	{
 		BitHelpers.putUint4( (byte)calltype.getId(), buffer, offset, 0 );

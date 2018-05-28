@@ -20,13 +20,12 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.network.ConnectionFactory;
-import org.portico2.common.network.IConnection;
-import org.portico2.common.network.IMessageReceiver;
+import org.portico2.common.network2.Connection;
+import org.portico2.common.network2.IApplicationReceiver;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
 
-public class ForwarderConnection implements IMessageReceiver
+public class ForwarderConnection implements IApplicationReceiver
 {
 	//----------------------------------------------------------
 	//                      ENUMERATIONS
@@ -54,7 +53,7 @@ public class ForwarderConnection implements IMessageReceiver
 	
 	// Connection Settings
 	private ConnectionConfiguration configuration;
-	private IConnection connection;
+	private Connection connection;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -70,7 +69,7 @@ public class ForwarderConnection implements IMessageReceiver
 
 		// Connection Settings
 		this.configuration = configuration;
-		this.connection = ConnectionFactory.createConnection( configuration.getType() );
+		this.connection = new Connection();
 		this.connection.configure( configuration, this );
 	}
 
@@ -119,12 +118,13 @@ public class ForwarderConnection implements IMessageReceiver
 		exchanger.dataMessageReceived( direction, incoming );
 	}
 
-	@Override
-	public final boolean isReceivable( int targetFederate )
-	{
-		// accept everything
-		return true;
-	}
+//  FIXME - Do we still need this?
+//	@Override
+//	public final boolean isReceivable( int targetFederate )
+//	{
+//		// accept everything
+//		return true;
+//	}
 	
 	@Override
 	public Logger getLogger()

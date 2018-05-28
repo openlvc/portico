@@ -12,9 +12,21 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network2;
+package org.portico2.common.network2.configuration;
 
-public class ProtocolStack
+import java.util.Properties;
+
+/**
+ * This class represents a generic structure for the configuration of a connection.
+ * Each connection has a root transport type that it uses. This is expressed in the
+ * {@link TransportType} enumeration.
+ * <p/>
+ * 
+ * Each connection also has a set of common properties, such as a name, encryption
+ * and filtering settings. The common properties are accessed through this parent
+ * class, but the transport-specific properties are contained in subclasses. 
+ */
+public abstract class ConnectionConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -23,63 +35,48 @@ public class ProtocolStack
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Connection connection;
-	private IProtocol[] protocols;
+	private String name;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected ProtocolStack( Connection connection )
+	protected ConnectionConfiguration( String name )
 	{
-		this.connection = connection;
-		this.protocols = new IProtocol[0];
+		this.name = name;
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	public final void down( Message message )
-	{
-		// pass the message to each protocol
-		for( int i = 0; i < protocols.length; i++ )
-		{
-			if( protocols[i].down(message) == false )
-				return;
-		}
-
-		// pass to the transport
-		this.connection.transport.send( message );
-	}
+	/**
+	 * @return Get the underlying transport type that this connection will use.
+	 */
+	public abstract TransportType getTransportType();
 	
-	public void up( Message message )
-	{
-		for( int i = protocols.length-1; i >=0; i-- )
-		{
-			if( protocols[i].up(message) == false )
-				return;
-		}
-		
-		// pass to connection for final processing
-		this.connection.receive( message );
-	}
+	/**
+	 * Parse the configuration for the connection from the given set of properties. The concrete
+	 * connection type should look for properties with the given prefix.
+	 * 
+	 * @param prefix The prefix to look for properties under
+	 * @param properties The properties set to look in
+	 */
+	public abstract void parseConfiguration( String prefix, Properties properties );
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * Remove all existing protocols from the protocol stack
-	 */
-	protected void empty()
+	public String getName()
 	{
-		this.protocols = new IProtocol[]{};
+		return this.name;
 	}
 	
-	
-	
+	public void setName( String name )
+	{
+		this.name = name;
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
 }

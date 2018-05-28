@@ -14,15 +14,39 @@
  */
 package org.portico2.common.network2;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.services.federation.msg.RtiProbe;
 
+/**
+ * The {@link Connection} class is the main interface for the rest of the Portico framework
+ * to the networking stack. Within each instance there is:
+ * 
+ * <ul>
+ *   <li>A {@link ProtocolStack}: Handles the processing of messages as they are sent/received.</li>
+ *   <li>An {@link ITransport}: The actual network component that does the raw sending/receiving.</li>
+ *   <li>Other misc items (such as a component to correlate requests to resposnes)...</li>
+ * </ul>
+ * 
+ * <b>Sending Messages</b>
+ * When a message is given to the connection for sending, it will pass it <i>DOWN</i> the protocol
+ * stack, allowing each {@link IProtocol} to process the message. At the conclusion of this process
+ * the message is pushed into the {@link ITransport} for sending.
+ * <p/>
+ * 
+ * <b>Receiving Messages</b>
+ * When a message is received from the underlying {@link ITransport}, it is passed <i>UP</i> the
+ * protocol stack until it is received by the connection. If the message is a control response,
+ * the connection will try to link it up with any outstanding request. If it is any other type,
+ * the message will be passed to the {@link IApplicationReceiver} for processing by the RTI.
+ */
 public class Connection
 {
 	//----------------------------------------------------------
@@ -32,6 +56,7 @@ public class Connection
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private String name;
 	private ConnectionConfiguration configuration;
 	private IApplicationReceiver appReceiver;
 	private Logger logger;
@@ -43,8 +68,9 @@ public class Connection
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected Connection()
+	public Connection()
 	{
+		this.name = "unknown";       // set in configure()
 		this.configuration = null;   // set in configure()
 		this.appReceiver = null;     // set in configure()
 		this.logger = null;          // set in configure()
@@ -73,12 +99,15 @@ public class Connection
 		throws JConfigurationException
 	{
 		// extract the properties we need to store
+		this.name = configuration.getName();
 		this.configuration = configuration;
 		this.appReceiver = appReceiver;
-		this.logger = appReceiver.getLogger();
+		//this.logger = appReceiver.getLogger();
+		this.logger = LogManager.getFormatterLogger( appReceiver.getLogger().getName()+"."+name );
 		
 		// create the transport
-		
+		this.transport = configuration.getTransportType().newTransport();
+		this.transport.configure( configuration, this );
 		
 		// populate the protocol stack
 		this.protocolStack.empty();
@@ -93,7 +122,15 @@ public class Connection
 	 */
 	public void connect() throws JRTIinternalError
 	{
+		// log some initialization information
+		logger.debug( "Opening connection [%s]", name );
+		//logger.debug( BufferInformation );
+		//logger.debug( ProtocolStack );
+		//logger.debug( "Transport: "+this.transport.getType() );
 		
+		logger.trace( "Opening transport: %s", this.transport.getType() );
+		this.transport.open();
+		logger.trace( "Transport opened" );
 	}
 	
 	/**
@@ -103,7 +140,23 @@ public class Connection
 	 */
 	public void disconnect() throws JRTIinternalError
 	{
-		
+		logger.debug( "Disconnecting..." );
+
+		logger.trace( "Closing transport: %s", this.transport.getType() );
+		this.transport.close();
+	}
+
+	/**
+	 * This method will send an {@link RtiProbe}. If we get a response, we know there
+	 * is an RTI out there. If we don't, we know there isn't one.
+	 * 
+	 * @return <code>true</code> if there is an RTI out there; <code>false</code> otherwise
+	 */
+	public boolean findRti()
+	{
+		MessageContext context = new MessageContext( new RtiProbe() );
+		sendControlRequest( context );
+		return context.isSuccessResponse();
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +269,15 @@ public class Connection
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	public Logger getLogger()
+	{
+		return this.logger;
+	}
 
+	public ProtocolStack getProtocolStack()
+	{
+		return this.protocolStack;
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

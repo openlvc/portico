@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.configuration.RID;
-import org.portico2.common.configuration.connection.ConnectionConfiguration;
+import org.portico2.common.network2.configuration.ConnectionConfiguration;
 
 /**
  * This class manages the various connections that an RTI can have running at any given point.
@@ -87,7 +87,7 @@ public class RtiConnectionManager
 			RtiConnection connection = new RtiConnection( rti, configuration );
 			this.connections.put( connectionName, connection );
 			
-			logger.debug( "Created connection [%s], type=%s", connectionName, connection.getType() );
+			logger.debug( "Created connection [%s], type=%s", connectionName, connection.getTransportType() );
 		}
 	}
 
@@ -119,7 +119,7 @@ public class RtiConnectionManager
 	{
 		HashSet<String> descriptions = new HashSet<>();
 		for( RtiConnection connection : connections.values() )
-			descriptions.add( connection.getName()+":"+connection.getType() );
+			descriptions.add( connection.getName()+":"+connection.getTransportType() );
 		
 		return descriptions;
 	}
