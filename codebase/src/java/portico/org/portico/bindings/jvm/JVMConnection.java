@@ -181,8 +181,8 @@ public class JVMConnection implements IConnection
 		
 		// Merge the provided join modules with the existing FOM - this method will
 		// perform a dry-run first to ensure that things can be merged happily
-		logger.debug( "Merge ["+joinMessage.getJoinModules().size()+"] modules into existing FOM" );
-		broadcaster.extendFOM( joinMessage.getJoinModules() );
+		logger.debug( "Merge ["+joinMessage.getParsedJoinModules().size()+"] modules into existing FOM" );
+		broadcaster.extendFOM( joinMessage.getParsedJoinModules() );
 
 		// join the federation
 		// this will check to see if there is already a federate with the same name

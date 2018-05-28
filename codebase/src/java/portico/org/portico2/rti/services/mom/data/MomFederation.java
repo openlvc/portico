@@ -16,6 +16,7 @@ package org.portico2.rti.services.mom.data;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -29,11 +30,13 @@ import org.portico.lrc.compat.JEncodingHelpers;
 import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.ObjectModel;
+import org.portico.lrc.model.XmlRenderer;
 import org.portico.lrc.model.datatype.IDatatype;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.object.data.RACInstance;
 import org.portico2.rti.services.object.data.ROCInstance;
+import org.w3c.dom.Document;
 
 /**
  * Contains links between the {@link OCInstance} used to represent the federation in the federation
@@ -210,12 +213,24 @@ public class MomFederation
 
 	private byte[] getFomModuleDesignatorList( ACMetadata metadata )
 	{
-		return notYetSupported( "HLAFOMmoduleDesignatorList" );
+		IDatatype type = metadata.getDatatype();
+		List<FomModule> modules = federation.getRawFomModules();
+		int moduleCount = modules.size();
+		String[] designators = new String[moduleCount];
+		for( int i = 0 ; i < moduleCount ; ++i )
+			designators[i] = modules.get( i ).getDesignator();
+		
+		return MomEncodingHelpers.encode( type, designators );
 	}
 
 	private byte[] getCurrentFdd( ACMetadata metadata )
 	{
-		return notYetSupported( "HLAcurrentFDD" );
+		IDatatype type = metadata.getDatatype();
+		ObjectModel fom = federation.getFOM();
+		Document asXml = new XmlRenderer().renderFOM( fom );
+		String asString = XmlRenderer.xmlToString( asXml );
+		
+		return MomEncodingHelpers.encode( type, asString );
 	}
 
 	private byte[] getTimeImplementationName( ACMetadata metadata )

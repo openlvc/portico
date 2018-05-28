@@ -28,6 +28,7 @@ import org.portico.utils.fom.FomParser;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.federation.msg.CreateFederation;
 import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.rti.services.mom.data.FomModule;
 
 public class CreateFederationHandler extends LRCMessageHandler
 {
@@ -63,8 +64,12 @@ public class CreateFederationHandler extends LRCMessageHandler
 		
 		// try and parse each of the fed files that we have
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
-		for( URL module : request.getFomModules() )
+		List<FomModule> modules = new ArrayList<FomModule>();
+		for( URL module : request.getFomModuleLocations() )
+		{
 			foms.add( FomParser.parse(module) );
+			modules.add( new FomModule(module) );
+		}
 		
 		// -- NOT DONE ANY MORE --
 		// Used to be important, but we will manually insert the MOM with handles we can control
@@ -80,7 +85,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		ObjectModel.mommify( combinedFOM );
 
 		// we have our grand unified FOM!
-		request.setModel( combinedFOM );
+		request.setModel( combinedFOM, modules );
 		
 		// log the request and pass it on to the connection
 		logger.debug( "ATTEMPT Create federation execution [" + request.getFederationName() + "]" );

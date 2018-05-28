@@ -410,7 +410,7 @@ public class Mom
 							.parameter( "HLAsyncPointName", "HLAunicodeString" )	// This param is listed in the spec but not in the MIM xml :(
 						.end()
 						.interaction( "HLArequestFOMmoduleData" )
-							.parameter( "HLAfOMmoduleIndicator", "HLAindex" )
+							.parameter( "HLAFOMmoduleIndicator", "HLAindex" )
 						.end()
 						.interaction( "HLArequestMIMdata" ).end()
 					.end()

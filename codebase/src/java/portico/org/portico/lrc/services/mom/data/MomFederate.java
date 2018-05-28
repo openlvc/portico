@@ -279,7 +279,7 @@ public class MomFederate
 			int attributeHandle = instance.getType().getHandle();
 			if( attributes.containsKey(attributeHandle) )
 			{
-				String canonicalName = Mom.getMomAttributeName( version, 
+				String canonicalName = Mom.getMomAttributeName( HLAVersion.HLA13, 
 				                                                attributeHandle );
 				Function<HLAVersion,byte[]> encoder = this.attributeEncoders.get( canonicalName );
 				if( encoder != null )

@@ -14,6 +14,7 @@
  */
 package org.portico.impl.hla1516e.types;
 
+import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516e.AttributeHandle;
@@ -141,12 +142,16 @@ public class HLA1516eHandle implements AttributeHandle,
 	 */
 	public static <T> T decode( Class<T> standardType, byte[] buffer, int offset )
 	{
-		return standardType.cast( new HLA1516eHandle(BitHelpers.readIntBE(buffer,offset)) );
+		HLA1516eHandle handle = new HLA1516eHandle( ObjectModel.INVALID_HANDLE );
+		handle.decode( buffer, offset );
+		return standardType.cast( handle );
 	}
 
 	public static int decode( byte[] buffer )
 	{
-		return new HLA1516eHandle( BitHelpers.readIntBE(buffer,0) ).handle;
+		HLA1516eHandle handle = new HLA1516eHandle( ObjectModel.INVALID_HANDLE );
+		handle.decode( buffer, 0 );
+		return handle.handle;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
