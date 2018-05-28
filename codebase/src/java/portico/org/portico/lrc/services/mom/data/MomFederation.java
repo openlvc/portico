@@ -192,7 +192,7 @@ public class MomFederation
 			int attributeHandle = instance.getType().getHandle();
 			if( handles.contains(attributeHandle) )
 			{
-				String canonicalName = Mom.getMomAttributeName( version,  
+				String canonicalName = Mom.getMomAttributeName( HLAVersion.HLA13,  
 				                                                attributeHandle );
 				Function<HLAVersion,byte[]> encoder = this.attributeEncoders.get( canonicalName );
 				if( encoder != null )

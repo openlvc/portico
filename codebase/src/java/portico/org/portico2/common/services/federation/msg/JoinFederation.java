@@ -22,6 +22,7 @@ import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.rti.RtiConnection;
+import org.portico2.rti.services.mom.data.FomModule;
 
 public class JoinFederation extends PorticoMessage
 {
@@ -35,9 +36,10 @@ public class JoinFederation extends PorticoMessage
 	//----------------------------------------------------------
 	private String federateName;
 	private String federationName;
-	private List<ObjectModel> joinModules; // parsed version of object FOM modules below
+	private List<ObjectModel> parsedJoinObjectModels; // parsed version of object FOM modules below
+	private List<FomModule> rawJoinObjectModels;      // raw version of FOM modules below
 
-	private transient List<URL> fomModules;
+	private transient List<URL> fomModuleLocations;
 	private transient ObjectModel fom;
 	private transient RtiConnection connection; // ewww, separation-of-concerns! RTI need this sadly
 	                                            // FIXME Put this in some kind of generic map or something
@@ -50,8 +52,9 @@ public class JoinFederation extends PorticoMessage
 	{
 		super();
 		this.setImmediateProcessingFlag( true );
-		this.joinModules = new ArrayList<ObjectModel>();
-		this.fomModules = new ArrayList<URL>();
+		this.rawJoinObjectModels = new ArrayList<FomModule>();
+		this.parsedJoinObjectModels = new ArrayList<ObjectModel>();
+		this.fomModuleLocations = new ArrayList<URL>();
 	}
 
 	public JoinFederation( String federationName, String federateName )
@@ -67,7 +70,7 @@ public class JoinFederation extends PorticoMessage
 		if( fomModules != null )
 		{
     		for( URL module : fomModules )
-    			this.fomModules.add( module );
+    			this.fomModuleLocations.add( module );
 		}
 	}
 
@@ -106,17 +109,24 @@ public class JoinFederation extends PorticoMessage
 		return true;
 	}
 
+	public List<FomModule> getRawJoinModules()
+	{
+		return this.rawJoinObjectModels;
+	}
+	
 	/**
 	 * Returns a list of all the FOM modules that this federate is trying to join with.
 	 */
-	public List<ObjectModel> getJoinModules()
+	public List<ObjectModel> getParsedJoinModules()
 	{
-		return this.joinModules;
+		return this.parsedJoinObjectModels;
 	}
 	
-	public void addJoinModule( ObjectModel module )
+	public void addJoinModule( URL from, ObjectModel module )
 	{
-		this.joinModules.add( module );
+		FomModule raw = new FomModule( from );
+		this.rawJoinObjectModels.add( raw );
+		this.parsedJoinObjectModels.add( module );
 	}
 	
 	//////////////////////////////////////////////////
@@ -132,9 +142,14 @@ public class JoinFederation extends PorticoMessage
 		this.fom = fom;
 	}
 	
-	public List<URL> getFomModules()
+	public List<URL> getFomModuleLocations()
 	{
-		return this.fomModules;
+		return this.fomModuleLocations;
+	}
+	
+	public List<FomModule> getRawFomModules()
+	{
+		return this.rawJoinObjectModels;
 	}
 
 	public RtiConnection getConnection()

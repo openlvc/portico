@@ -14,8 +14,10 @@
  */
 package org.portico2.rti.federation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -39,6 +41,7 @@ import org.portico2.common.services.pubsub.data.InterestManager;
 import org.portico2.rti.RTI;
 import org.portico2.rti.RtiConnection;
 import org.portico2.rti.services.RTIHandlerRegistry;
+import org.portico2.rti.services.mom.data.FomModule;
 import org.portico2.rti.services.mom.data.MomManager;
 import org.portico2.rti.services.object.data.Repository;
 import org.portico2.rti.services.sync.data.SyncPointManager;
@@ -61,8 +64,8 @@ public class Federation
 	private String      federationName;
 	private int         federationHandle;
 	private HLAVersion  federationVersion;
-	private ObjectModel fom;	
-
+	private ObjectModel fom;
+	
 	private Logger logger;
 
 	// Federation Management //
@@ -96,6 +99,7 @@ public class Federation
 	
 	// MOM settings
 	private MomManager momManager;
+	private List<FomModule> fomModules;
 	
 	// Save/Restore settings //
 //	private Serializer serializer;
@@ -167,6 +171,7 @@ public class Federation
 		
 		// MOM settings //
 		this.momManager = new MomManager( this );
+		this.fomModules = new ArrayList<>();
 		// ... TBA ...
 
 		// Populate the Message Sinks
@@ -224,7 +229,29 @@ public class Federation
 	{
 		return this.momManager;
 	}
-
+	
+	public void addRawFomModules( List<FomModule> modules )
+	{
+		// As per the 1516e spec, only modules that add something to the FOM are to be recorded. To keep
+		// things simple, we'll just assume that if the designator is different then the module added
+		// new content
+		Set<String> existingDesignators = new HashSet<>();
+		for( FomModule existingModule : this.fomModules )
+			existingDesignators.add( existingModule.getDesignator() );
+		
+		for( FomModule newModule : modules )
+		{
+			String newDesignator = newModule.getDesignator();
+			if( !existingDesignators.contains(newDesignator) )
+				this.fomModules.add( newModule );
+		}
+	}
+	
+	public List<FomModule> getRawFomModules()
+	{
+		return new ArrayList<>( this.fomModules );
+	}
+	
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Federate Management   ////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -273,6 +300,8 @@ public class Federation
 			if( temp.getFederateName().equalsIgnoreCase(federate.getFederateName()) )
 				throw new JFederateNameAlreadyInUse( federate.getFederateName() );
 		}
+		
+		this.addRawFomModules( federate.getRawFomModules() );
 		
 		// Assign the federate a handle and store it
 		federate.setFederateHandle( federateHandleCounter.incrementAndGet() );

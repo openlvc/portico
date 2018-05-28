@@ -66,6 +66,8 @@ public class JoinFederationHandler extends RTIMessageHandler
 
 		// Create the federate and attach it to the federation
 		Federate federate = new Federate( federateName, request.getConnection() );
+		federate.addRawFomModules( request.getRawFomModules() );
+		
 		int federateHandle = federation.joinFederate( federate );
 		
 		logger.info( "SUCCESS Federate [%s] joined federation [%s] with handle [%d]",

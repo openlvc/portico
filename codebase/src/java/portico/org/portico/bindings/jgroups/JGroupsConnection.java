@@ -243,9 +243,9 @@ public class JGroupsConnection implements IConnection
 		Federation federation = findFederation( joinMessage.getFederationName() );
 		
 		// validate that our FOM modules can be merged successfully with the existing FOM first
-		logger.debug( "Validate that ["+joinMessage.getJoinModules().size()+
+		logger.debug( "Validate that ["+joinMessage.getParsedJoinModules().size()+
 		              "] modules can merge successfully with the existing FOM" );
-		ModelMerger.mergeDryRun( federation.getManifest().getFom() , joinMessage.getJoinModules() );
+		ModelMerger.mergeDryRun( federation.getManifest().getFom() , joinMessage.getParsedJoinModules() );
 		logger.debug( "Modules can be merged successfully, continue with join" );
 
 		// tell the channel that we're joining the federation
@@ -268,14 +268,14 @@ public class JGroupsConnection implements IConnection
 		// specifics of this connection it's better to put the logic in the connection rather than
 		// in the generic-to-all-connections RoleCallHandler. Long way of saying we need to merge
 		// in the additional join modules that were provided here. F*** IT! WE'LL DO IT LIVE!
-		if( joinMessage.getJoinModules().size() > 0 )
+		if( joinMessage.getParsedJoinModules().size() > 0 )
 		{
-			logger.debug( "Merging "+joinMessage.getJoinModules().size()+
+			logger.debug( "Merging "+joinMessage.getParsedJoinModules().size()+
 			              " additional FOM modules that we receive with join request" );
 
 			ObjectModel fom = federation.getManifest().getFom();
 			fom.unlock();
-			federation.getManifest().setFom( ModelMerger.merge(fom,joinMessage.getJoinModules()) );
+			federation.getManifest().setFom( ModelMerger.merge(fom,joinMessage.getParsedJoinModules()) );
 			fom.lock();
 		}
 

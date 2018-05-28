@@ -16,6 +16,7 @@ package org.portico2.rti.services.mom.incoming;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,20 +26,25 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.Mom;
+import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.PCMetadata;
+import org.portico.lrc.model.XmlRenderer;
 import org.portico.lrc.model.datatype.IDatatype;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.pubsub.data.InterestManager;
 import org.portico2.rti.RtiConnection;
+import org.portico2.rti.federation.Federate;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.RTIMessageHandler;
+import org.portico2.rti.services.mom.data.FomModule;
 import org.portico2.rti.services.mom.data.MomEncodingHelpers;
 import org.portico2.rti.services.mom.data.SynchPointFederate;
 import org.portico2.rti.services.sync.data.SyncPoint;
 import org.portico2.rti.services.sync.data.SyncPointManager;
+import org.w3c.dom.Document;
 
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
@@ -84,10 +90,24 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	{
 		// Register handlers for requests that we will respond to
 		this.handlers = new HashMap<>();
+		//
+		// HLAfederate
+		//
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestFOMmoduleData", 
+		                                    this::handleFederateRequestFomModuleData );
+		
+		//
+		// HLAfederation
+		//
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederation.HLArequest.HLArequestSynchronizationPoints", 
-		                                    this::handleRequestSynchronizationPoints );
+		                                    this::handleFederationRequestSynchronizationPoints );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederation.HLArequest.HLArequestSynchronizationPointStatus", 
-		                                    this::handleRequestSynchronizationPointStatus );
+		                                    this::handleFederationRequestSynchronizationPointStatus );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederation.HLArequest.HLArequestFOMmoduleData", 
+		                                    this::handleFederationRequestFomModuleData );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederation.HLArequest.HLArequestMIMdata", 
+		                                    this::handleFederationRequestMIMData );
+		
 	}
 
 	//----------------------------------------------------------
@@ -129,7 +149,36 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  MOM Interaction Handlers   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	private void handleRequestSynchronizationPoints( Map<String,Object> requestParams )
+	private void handleFederateRequestFomModuleData( Map<String,Object> requestParams )
+		throws MomException
+	{
+		// Check to see if the requested federate exists
+		int federateHandle = (Integer)requestParams.get( "HLAfederate" );
+		Federate federate = federation.getFederate( federateHandle );
+		if( federate == null )
+			throw new MomException( "invalid federate " + federateHandle, true );
+		
+		// Check to see if the provided module index is within bounds
+		int fomModuleIndex = (Integer)requestParams.get( "HLAFOMmoduleIndicator" );
+		List<FomModule> modules = federate.getRawFomModules();
+		int moduleCount = modules.size();
+		if( fomModuleIndex > moduleCount - 1 )
+			throw new MomException( "HLAFOMmoduleIndicator " + fomModuleIndex + " out of bounds", true );
+		
+		// Get the requested module
+		FomModule module = modules.get( fomModuleIndex );
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federateHandle );
+		responseParams.put( "HLAFOMmoduleIndicator", fomModuleIndex );
+		responseParams.put( "HLAFOMmoduleData", module.getContent() );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportFOMmoduleData", 
+		              responseParams );
+	}
+	
+	private void handleFederationRequestSynchronizationPoints( Map<String,Object> requestParams )
 		throws MomException
 	{
 		// Get the labels of all syncpoints 
@@ -149,7 +198,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		              responseParams );
 	}
 	
-	private void handleRequestSynchronizationPointStatus( Map<String,Object> requestParams )
+	private void handleFederationRequestSynchronizationPointStatus( Map<String,Object> requestParams )
 		throws MomException
 	{
 		Map<String,Object> responseParams = new HashMap<>();
@@ -172,6 +221,65 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		
 		// Send the response
 		sendResponse( "HLAmanager.HLAfederation.HLAreport.HLAreportSynchronizationPointStatus", 
+		              responseParams );
+	}
+	
+	private void handleFederationRequestFomModuleData( Map<String,Object> requestParams )
+		throws MomException
+	{
+		int fomModuleIndex = (Integer)requestParams.get( "HLAFOMmoduleIndicator" );
+		
+		// Check to see if the provided module index is within bounds
+		List<FomModule> modules = federation.getRawFomModules();
+		int moduleCount = modules.size();
+		if( fomModuleIndex > moduleCount - 1 )
+			throw new MomException( "HLAFOMmoduleIndicator " + fomModuleIndex + " out of bounds", true );
+		
+		// Get the requested module
+		FomModule module = modules.get( fomModuleIndex );
+		
+		Map<String,Object> responseParams = new HashMap<>();
+		responseParams.put( "HLAFOMmoduleIndicator", fomModuleIndex );
+		responseParams.put( "HLAFOMmoduleData", module.getContent() );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederation.HLAreport.HLAreportFOMmoduleData", 
+		              responseParams );
+	}
+	
+	private void handleFederationRequestMIMData( Map<String,Object> requestParams )
+		throws MomException
+	{
+		// Create an dummy ObjectModel and inject the MIM into it
+		ObjectModel mim = new ObjectModel( federation.getHlaVersion() );
+		
+		// All this stuff needs to be in the ObjectModel before we call ObjectModel.mommify()
+		OCMetadata ocRoot = mim.newObject( "HLAobjectRoot" );
+		mim.addObjectClass( ocRoot );
+		mim.setObjectRoot( ocRoot );
+		OCMetadata ocHlaManager = mim.newObject( "HLAmanager" );
+		ocHlaManager.setParent( ocRoot );
+		mim.addObjectClass( ocHlaManager );
+		
+		ICMetadata icRoot = mim.newInteraction( "HLAinteractionRoot" );
+		mim.addInteractionClass( icRoot );
+		mim.setInteractionRoot( icRoot );
+		ICMetadata icHlaManager = mim.newInteraction( "HLAmanager" );
+		icHlaManager.setParent( icRoot );
+		mim.addInteractionClass( icHlaManager );
+		
+		ObjectModel.mommify( mim );
+		ObjectModel.resolveSymbols( mim );
+		
+		// Create an XML representation of the object model
+		Document mimXml = new XmlRenderer().renderFOM( mim );
+		String mimString = XmlRenderer.xmlToString( mimXml );
+		
+		Map<String,Object> responseParams = new HashMap<>();
+		responseParams.put( "HLAMIMdata", mimString );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederation.HLAreport.HLAreportMIMdata", 
 		              responseParams );
 	}
 	

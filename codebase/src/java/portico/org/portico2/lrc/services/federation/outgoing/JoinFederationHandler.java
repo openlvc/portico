@@ -86,13 +86,13 @@ public class JoinFederationHandler extends LRCMessageHandler
 		logger.debug( "ATTEMPT Join federate ["+federate+"] to federation ["+federation+"]" );
 		
 		// parse any additional FOM modules and store back in the request for processing
-		if( request.getFomModules().size() > 0 )
+		if( request.getFomModuleLocations().size() > 0 )
 		{
-			for( URL fedLocation : request.getFomModules() )
-				request.addJoinModule( FomParser.parse(fedLocation) );
+			for( URL fedLocation : request.getFomModuleLocations() )
+				request.addJoinModule( fedLocation, FomParser.parse(fedLocation) );
 			
 			// let people know what happened
-			logger.debug( "Parsed ["+request.getJoinModules().size()+"] additional FOM modules" );
+			logger.debug( "Parsed ["+request.getParsedJoinModules().size()+"] additional FOM modules" );
 		}
 		
 		/////////////////////////////////

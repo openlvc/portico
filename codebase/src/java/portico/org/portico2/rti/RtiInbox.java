@@ -190,6 +190,7 @@ public class RtiInbox
 		logger.info( "ATTEMPT Creating federation name="+name );
 		
 		Federation federation = federationManager.createFederation( rti, name, fom, hlaVersion );
+		federation.addRawFomModules( request.getRawFomModules() );
 		
 		logger.info( "SUCCESS Created federation name="+name );
 		context.success( federation.getFederationHandle() );

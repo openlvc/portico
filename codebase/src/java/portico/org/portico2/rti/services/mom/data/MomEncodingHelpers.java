@@ -72,15 +72,19 @@ public class MomEncodingHelpers
 		this.encoders.put( "HLAcount", this::encodeInt32BE );
 		this.encoders.put( "HLAhandle", this::encodeHandle );
 		this.encoders.put( "HLAhandleList", this::encodeHandleList );
+		this.encoders.put( "HLAindex", this::encodeInt32BE );
 		this.encoders.put( "HLAlogicalTime", this::encodeTime );
 		this.encoders.put( "HLAmsec", this::encodeInt32BE );
 		this.encoders.put( "HLAsynchPointList", this::encodeUnicodeStringVariableArray );
 		this.encoders.put( "HLAtimeInterval", this::encodeTimeInterval );
 		this.encoders.put( "HLAunicodeString", this::encodeUnicodeString );
 		this.encoders.put( "HLAsynchPointFederateList", this::encodeSynchPointFederateList );
+		this.encoders.put( "HLAmoduleDesignatorList", this::encodeUnicodeStringVariableArray );
 		
 		this.decoders = new HashMap<>();
 		this.decoders.put( "HLAASCIIstring", this::decodeAsciiString );
+		this.decoders.put( "HLAhandle", this::decodeHandle );
+		this.decoders.put( "HLAindex", this::decodeInt32BE );
 		this.decoders.put( "HLAunicodeString", this::decodeUnicodeString );
 	}
 
@@ -270,6 +274,25 @@ public class MomEncodingHelpers
 		else
 		{
 			throw new JRTIinternalError( "non-SynchPointFederate array type: " + data.getClass() );
+		}
+	}
+	
+	public int decodeInt32BE( byte[] value ) throws DecoderException
+	{
+		HLAinteger32BE int32BE = this.factory.createHLAinteger32BE();
+		int32BE.decode( value );
+		return int32BE.getValue();
+	}
+	
+	public int decodeHandle( byte[] value ) throws DecoderException
+	{
+		try
+		{
+			return HLA1516eHandle.decode( value );
+		}
+		catch( Exception e )
+		{
+			throw new DecoderException( e.getMessage(), e );
 		}
 	}
 	
