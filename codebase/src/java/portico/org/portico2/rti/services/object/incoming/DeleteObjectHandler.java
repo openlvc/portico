@@ -15,7 +15,6 @@
 package org.portico2.rti.services.object.incoming;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JDeletePrivilegeNotHeld;
@@ -98,12 +97,11 @@ public class DeleteObjectHandler extends RTIMessageHandler
 		repository.deleteObject( objectHandle );
 		context.success();
 		
-		Set<Integer> discoverers = instance.getDiscoverers();
-		logMetrics( sourceFederate, objectHandle, discoverers );
+		logMetrics( sourceFederate, instance );
 		
 		// find the federates that know about this object and tell them
 		DeleteObject copy = request.clone( DeleteObject.class );
-		queueManycast( copy, discoverers );
+		queueManycast( copy, instance.getDiscoverers() );
 		
 		if( logger.isInfoEnabled() )
 		{
@@ -120,21 +118,20 @@ public class DeleteObjectHandler extends RTIMessageHandler
 	 * removed notification.
 	 * 
 	 * @param deletor the id of the federate deleting the object instance 
-	 * @param objectHandle the id of the object instance being deleted
-	 * @param discoverers the ids of all federates that will receive the removed notification
+	 * @param instance the object instance being deleted
 	 */
-	private void logMetrics( int deletor, int objectHandle, Set<Integer> discoverers )
+	private void logMetrics( int deletor, ROCInstance instance )
 	{
 		// objectDeleted from sending federate
-		momManager.objectDeleted( deletor, objectHandle );
+		momManager.objectDeleted( deletor, instance );
 		
 		// objectRemoved on all target federates
-		for( int discoverer : discoverers )
+		for( int discoverer : instance.getDiscoverers() )
 		{
 			if( discoverer == deletor )
 				continue;
 			
-			momManager.objectRemoved( discoverer, objectHandle );
+			momManager.objectRemoved( discoverer, instance );
 		}
 	}
 	//----------------------------------------------------------

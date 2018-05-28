@@ -311,19 +311,22 @@ public class MomFederate
 	private byte[] getObjectsOwned( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getObjectsOwned() );
+		Set<ROCInstance> owned = federate.getMetrics().getObjectsOwned();
+		return MomEncodingHelpers.encode( type, owned.size() );
 	}
 
 	private byte[] getObjectsUpdated( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getObjectsUpdated() );
+		Set<ROCInstance> updated = federate.getMetrics().getObjectsUpdated();
+		return MomEncodingHelpers.encode( type, updated.size() );
 	}
 
 	private byte[] getObjectsReflected( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getObjectsReflected() );
+		Set<ROCInstance> reflected = federate.getMetrics().getObjectsReflected();
+		return MomEncodingHelpers.encode( type, reflected.size() );
 	}
 
 	private byte[] getObjectInstancesDeleted( ACMetadata metadata )

@@ -89,7 +89,7 @@ public class RegisterObjectHandler extends RTIMessageHandler
 		int instanceHandle = newInstance.getHandle();
 		
 		// Log registrant metrics
-		momManager.objectRegistered( federateHandle, instanceHandle );
+		momManager.objectRegistered( federateHandle, newInstance );
 
 		// TODO Region Support
 
@@ -117,7 +117,7 @@ public class RegisterObjectHandler extends RTIMessageHandler
 			
 			// Log discovery metrics
 			if( federateHandle != subscriberHandle)
-				momManager.objectDiscovered( subscriberHandle, instanceHandle );
+				momManager.objectDiscovered( subscriberHandle, newInstance );
 		}
 
 		DiscoverObject discover = fill( new DiscoverObject(newInstance), federateHandle );

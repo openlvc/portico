@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
+import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
@@ -174,7 +175,8 @@ public class MomManager implements SaveRestoreTarget
 
 		// create a HLA object instance for the federate
 		Repository repository = this.federation.getRepository();
-		ROCInstance instance = repository.createObject( federateClass, federate.getFederateName(),
+		ROCInstance instance = repository.createObject( federateClass, 
+		                                                federate.getFederateName(),
 		                                                PorticoConstants.RTI_HANDLE,
 		                                                federateClass.getAllAttributeHandles() );
 		repository.addObject( instance );
@@ -197,7 +199,7 @@ public class MomManager implements SaveRestoreTarget
 
 		Set<Integer> subscribers = subscriptions.keySet();
 		for( int subscriber : subscribers )
-			this.objectDiscovered( subscriber, instance.getHandle() );
+			this.objectDiscovered( subscriber, instance );
 
 		if( subscriptions.size() > 0 )
 		{
@@ -224,12 +226,12 @@ public class MomManager implements SaveRestoreTarget
 		DeleteObject delete = new DeleteObject( objectInstanceHandle, new byte[0] );
 		Set<Integer> discoverers = removeInstance.getDiscoverers();
 		for( int discoverer : discoverers )
-			objectRemoved( discoverer, objectInstanceHandle );
+			objectRemoved( discoverer, removeInstance );
 
 		this.queueManycast( delete, removeInstance.getDiscoverers() );
 	}
 
-	public void interactionSent( int sender, int interactionId )
+	public void interactionSent( int sender, ICMetadata interaction )
 	{
 		if( !this.enabled )
 			return;
@@ -242,7 +244,7 @@ public class MomManager implements SaveRestoreTarget
 		}
 	}
 
-	public void interactionReceived( int receiver, int interactionId )
+	public void interactionReceived( int receiver, ICMetadata interaction )
 	{
 		if( !this.enabled )
 			return;
@@ -251,7 +253,7 @@ public class MomManager implements SaveRestoreTarget
 		receiverFederate.getMetrics().interactionReceived();
 	}
 
-	public void objectRegistered( int creator, int instanceId )
+	public void objectRegistered( int creator, ROCInstance instance )
 	{
 		if( !this.enabled )
 			return;
@@ -259,11 +261,11 @@ public class MomManager implements SaveRestoreTarget
 		if( creator != PorticoConstants.RTI_HANDLE )
 		{
 			Federate senderFederate = federation.getFederate( creator );
-			senderFederate.getMetrics().objectRegistered( instanceId );
+			senderFederate.getMetrics().objectRegistered( instance );
 		}
 	}
 
-	public void objectDiscovered( int discoverer, int instanceId )
+	public void objectDiscovered( int discoverer, ROCInstance instance )
 	{
 		if( !this.enabled )
 			return;
@@ -272,7 +274,7 @@ public class MomManager implements SaveRestoreTarget
 		subscriberFederate.getMetrics().objectDiscovered();
 	}
 
-	public void objectUpdated( int updator, int instanceId )
+	public void objectUpdated( int updator, ROCInstance instance )
 	{
 		if( !this.enabled )
 			return;
@@ -280,20 +282,20 @@ public class MomManager implements SaveRestoreTarget
 		if( updator != PorticoConstants.RTI_HANDLE )
 		{
 			Federate updatingFederate = federation.getFederate( updator );
-			updatingFederate.getMetrics().sentUpdate( instanceId );
+			updatingFederate.getMetrics().sentUpdate( instance );
 		}
 	}
 
-	public void objectReflected( int reflector, int instanceId )
+	public void objectReflected( int reflector, ROCInstance instance )
 	{
 		if( !this.enabled )
 			return;
 
 		Federate reflectingFederate = federation.getFederate( reflector );
-		reflectingFederate.getMetrics().reflectionReceived( instanceId );
+		reflectingFederate.getMetrics().reflectionReceived( instance );
 	}
 
-	public void objectDeleted( int deletor, int instanceId )
+	public void objectDeleted( int deletor, ROCInstance instance )
 	{
 		if( !this.enabled )
 			return;
@@ -301,11 +303,11 @@ public class MomManager implements SaveRestoreTarget
 		if( deletor != PorticoConstants.RTI_HANDLE )
 		{
 			Federate deletingFederate = federation.getFederate( deletor );
-			deletingFederate.getMetrics().objectDeleted( instanceId );
+			deletingFederate.getMetrics().objectDeleted( instance );
 		}
 	}
 
-	public void objectRemoved( int remover, int instanceId )
+	public void objectRemoved( int remover, ROCInstance instance )
 	{
 		if( !this.enabled )
 			return;

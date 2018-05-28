@@ -74,12 +74,13 @@ public class MomEncodingHelpers
 		this.encoders.put( "HLAhandleList", this::encodeHandleList );
 		this.encoders.put( "HLAindex", this::encodeInt32BE );
 		this.encoders.put( "HLAlogicalTime", this::encodeTime );
+		this.encoders.put( "HLAmoduleDesignatorList", this::encodeUnicodeStringVariableArray );
 		this.encoders.put( "HLAmsec", this::encodeInt32BE );
+		this.encoders.put( "HLAobjectClassBasedCounts", this::encodeObjectClassBasedCounts );
 		this.encoders.put( "HLAsynchPointList", this::encodeUnicodeStringVariableArray );
 		this.encoders.put( "HLAtimeInterval", this::encodeTimeInterval );
 		this.encoders.put( "HLAunicodeString", this::encodeUnicodeString );
 		this.encoders.put( "HLAsynchPointFederateList", this::encodeSynchPointFederateList );
-		this.encoders.put( "HLAmoduleDesignatorList", this::encodeUnicodeStringVariableArray );
 		
 		this.decoders = new HashMap<>();
 		this.decoders.put( "HLAASCIIstring", this::decodeAsciiString );
@@ -274,6 +275,24 @@ public class MomEncodingHelpers
 		else
 		{
 			throw new JRTIinternalError( "non-SynchPointFederate array type: " + data.getClass() );
+		}
+	}
+	
+	public byte[] encodeObjectClassBasedCounts( Object data )
+	{
+		if( data == null )
+			data = new ObjectClassBasedCount[0];
+		
+		if( data instanceof ObjectClassBasedCount[] )
+		{
+			ObjectClassBasedCount[] asArray = (ObjectClassBasedCount[])data;
+			HLAvariableArray<ObjectClassBasedCount> hlaArray = factory.createHLAvariableArray( null, 
+			                                                                                   asArray );
+			return hlaArray.toByteArray();
+		}
+		else
+		{
+			throw new JRTIinternalError( "non-ObjectClassBasedCount array type: " + data.getClass() );
 		}
 	}
 	
