@@ -47,6 +47,7 @@ import org.portico2.rti.services.mom.data.InteractionSubscription;
 import org.portico2.rti.services.mom.data.MomEncodingHelpers;
 import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
 import org.portico2.rti.services.mom.data.SynchPointFederate;
+import org.portico2.rti.services.object.data.RACInstance;
 import org.portico2.rti.services.object.data.ROCInstance;
 import org.portico2.rti.services.object.data.Repository;
 import org.portico2.rti.services.sync.data.SyncPoint;
@@ -97,6 +98,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	{
 		// Register handlers for requests that we will respond to
 		this.handlers = new HashMap<>();
+		
 		//
 		// HLAfederate
 		//
@@ -118,6 +120,8 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		                                    this::handleFederateRequestReflectionsReceived );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestInteractionsReceived", 
 		                                    this::handleFederateRequestInteractionsReceived );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstanceInformation", 
+		                                    this::handleFederateRequestObjectInstanceInformation );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestFOMmoduleData", 
 		                                    this::handleFederateRequestFomModuleData );
 		
@@ -410,6 +414,49 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		
 		// Send the response
 		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportInteractionsReceived", 
+		              responseParams );
+	}
+	
+
+	private void handleFederateRequestObjectInstanceInformation( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		int federateHandle = federate.getFederateHandle(); 
+		int instanceHandle = (Integer)requestParams.get( "HLAobjectInstance" );
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federateHandle );
+		responseParams.put( "HLAobjectInstance", instanceHandle );
+		
+		Repository repository = federation.getRepository(); 
+		ROCInstance instance = repository.getObject( instanceHandle );
+		boolean knownToFederate = false;
+		
+		if( instance != null )
+		{
+			OCMetadata knownAs = instance.getDiscoveredType( federateHandle );
+			if( knownAs != null )
+			{
+				OCMetadata registeredAs = instance.getRegisteredType();
+				responseParams.put( "HLAregisteredClass", registeredAs.getHandle() );
+				responseParams.put( "HLAknownClass", knownAs.getHandle() );
+				
+				Set<RACInstance> ownedAttributes = instance.getAllAttributesOwnedBy( federateHandle );
+				int[] ownedAttributeHandles = new int[ownedAttributes.size()];
+				int index = 0;
+				for( RACInstance ownedAttribute : ownedAttributes )
+					ownedAttributeHandles[index++] = ownedAttribute.getHandle();
+				
+				responseParams.put( "HLAownedInstanceAttributeList", ownedAttributeHandles );
+			}
+		}
+		
+		if( !responseParams.containsKey("HLAownedInstanceAttributeList") )
+			responseParams.put( "HLAownedInstanceAttributeList", null );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstanceInformation", 
 		              responseParams );
 	}
 	
