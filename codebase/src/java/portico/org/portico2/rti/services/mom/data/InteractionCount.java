@@ -22,11 +22,11 @@ import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 
 /**
- * An immutable record of the number of instances of a particular object class.
+ * A count of a particular interaction class.
  * <p/>
- * This class mirrors the HLAobjectClassBasedCount Fixed Record structure defined in the MOM 
+ * This class mirrors the HLAinteractionCount Fixed Record structure defined in the MOM 
  */
-public class ObjectClassBasedCount implements DataElement
+public class InteractionCount implements DataElement
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -41,7 +41,7 @@ public class ObjectClassBasedCount implements DataElement
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public ObjectClassBasedCount( int classHandle, int count )
+	public InteractionCount( int classHandle, int count )
 	{
 		this.classHandle = classHandle;
 		this.count = count;
@@ -96,6 +96,16 @@ public class ObjectClassBasedCount implements DataElement
 	public int getCount()
 	{
 		return this.count;
+	}
+	
+	public void increment()
+	{
+		++this.count;
+	}
+	
+	public void setCount( int count )
+	{
+		this.count = count;
 	}
 
 	//----------------------------------------------------------

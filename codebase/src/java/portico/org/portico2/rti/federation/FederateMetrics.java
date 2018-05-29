@@ -17,12 +17,10 @@ package org.portico2.rti.federation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.portico.lrc.model.OCMetadata;
+import org.portico2.rti.services.mom.data.InteractionCount;
 import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
-import org.portico2.rti.services.object.data.ROCInstance;
 
 /**
  * This class tracks various federate metrics that are ultimately reported in the MOM class
@@ -37,13 +35,11 @@ public class FederateMetrics
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private int reflectionsReceived;
-	private int updatesSent;
-	private int interactionsReceived;
-	private int interactionsSent;
-	private Set<ROCInstance> objectsOwned;
-	private Set<ROCInstance> objectsUpdated;
-	private Set<ROCInstance> objectsReflected;
+	private Map<Integer,InteractionCount> interactionsReceived;
+	private Map<Integer,InteractionCount> interactionsSent;
+	private Set<Integer> objectsOwned;
+	private Map<Integer,OCMetricTracker> reflectionsReceived;
+	private Map<Integer,OCMetricTracker> updatesSent;
 	private int objectsDeleted;
 	private int objectsRemoved;
 	private int objectsRegistered;
@@ -54,13 +50,11 @@ public class FederateMetrics
 	//----------------------------------------------------------
 	public FederateMetrics()
 	{
-		this.reflectionsReceived = 0;
-		this.updatesSent = 0;
-		this.interactionsReceived = 0;
-		this.interactionsSent = 0;
-		this.objectsOwned = new HashSet<ROCInstance>();
-		this.objectsUpdated = new HashSet<ROCInstance>();
-		this.objectsReflected = new HashSet<ROCInstance>();
+		this.interactionsReceived = new HashMap<Integer,InteractionCount>();
+		this.interactionsSent = new HashMap<Integer,InteractionCount>();
+		this.objectsOwned = new HashSet<Integer>();
+		this.updatesSent = new HashMap<Integer,OCMetricTracker>();
+		this.reflectionsReceived = new HashMap<Integer,OCMetricTracker>();
 		this.objectsDeleted = 0;
 		this.objectsRemoved = 0;
 		this.objectsRegistered = 0;
@@ -74,43 +68,69 @@ public class FederateMetrics
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Federate Event Handlers   /////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public void reflectionReceived( ROCInstance instance )
+	public void reflectionReceived( int classId, int instanceId )
 	{
-		++this.reflectionsReceived;
-		this.objectsReflected.add( instance );
+		OCMetricTracker tracker = this.reflectionsReceived.get( classId );
+		if( tracker == null )
+		{
+			tracker = new OCMetricTracker( classId );
+			this.reflectionsReceived.put( classId, tracker );
+		}
+		
+		tracker.increment( instanceId );
 	}
 	
-	public void sentUpdate( ROCInstance instance )
+	public void sentUpdate( int classId, int instanceId )
 	{
-		++this.updatesSent;
-		this.objectsUpdated.add( instance );
+		OCMetricTracker tracker = this.updatesSent.get( classId );
+		if( tracker == null )
+		{
+			tracker = new OCMetricTracker( classId );
+			this.updatesSent.put( classId, tracker );
+		}
+		
+		tracker.increment( instanceId );
 	}
 	
-	public void interactionReceived()
+	public void interactionReceived( int classId )
 	{
-		++this.interactionsReceived;
+		InteractionCount tracker = this.interactionsReceived.get( classId );
+		if( tracker == null )
+		{
+			tracker = new InteractionCount( classId, 0 );
+			this.interactionsReceived.put( classId, tracker );
+		}
+		
+		tracker.increment();
 	}
 	
-	public void interactionSent()
+	public void interactionSent( int classId )
 	{
-		++this.interactionsSent;
+		InteractionCount tracker = this.interactionsSent.get( classId );
+		if( tracker == null )
+		{
+			tracker = new InteractionCount( classId, 0 );
+			this.interactionsSent.put( classId, tracker );
+		}
+		
+		tracker.increment();
 	}
 
-	public void objectRegistered( ROCInstance instance )
+	public void objectRegistered( int instanceId )
 	{
 		++this.objectsRegistered;
 		
 		// When a federate registers an object, they hold privilege to delete until such time as they 
 		// yield it, or remove it 
-		this.objectsOwned.add( instance );
+		this.objectsOwned.add( instanceId );
 	}
 	
-	public void objectDeleted( ROCInstance instance )
+	public void objectDeleted( int instanceId )
 	{
 		++this.objectsDeleted;
 		
 		// Object is no longer owned by the federate 
-		this.objectsOwned.remove( instance );
+		this.objectsOwned.remove( instanceId );
 	}
 	
 	public void objectRemoved()
@@ -127,60 +147,90 @@ public class FederateMetrics
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * @return the number of times the ReflectAttributeValues service has been invoked on the federate
+	 * @return the number of times the ReflectAttributeValues service has been invoked on the federate,
+	 *         grouped by class Id
 	 */
-	public int getReflectionsReceived()
+	public ObjectClassBasedCount[] getReflectionsReceived()
 	{
-		return this.reflectionsReceived;
+		ObjectClassBasedCount[] results = new ObjectClassBasedCount[this.reflectionsReceived.size()];
+		int index = 0;
+		for( OCMetricTracker tracker : this.reflectionsReceived.values() )
+			results[index++] = tracker.getTotal();
+		
+		return results;
+	}
+	
+	public ObjectClassBasedCount[] getObjectInstancesReflected()
+	{
+		ObjectClassBasedCount[] results = new ObjectClassBasedCount[this.reflectionsReceived.size()];
+		int index = 0;
+		for( OCMetricTracker tracker : this.reflectionsReceived.values() )
+			results[index++] = tracker.getTotalUniqueInstances();
+		
+		return results;
+	}
+	
+	/**
+	 * @return the number of times the federate has sent an Attribute Update, grouped by class Id
+	 */
+	public ObjectClassBasedCount[] getUpdatesSent()
+	{
+		ObjectClassBasedCount[] results = new ObjectClassBasedCount[this.updatesSent.size()];
+		int index = 0;
+		for( OCMetricTracker tracker : this.updatesSent.values() )
+			results[index++] = tracker.getTotal();
+		
+		return results;
 	}
 	
 	/**
 	 * @return the number of times the federate has invoked the UpdateAttributeValues service
 	 */
-	public int getUpdatesSent()
+	public ObjectClassBasedCount[] getObjectInstancesUpdated()
 	{
-		return this.updatesSent;
+		ObjectClassBasedCount[] results = new ObjectClassBasedCount[this.updatesSent.size()];
+		int index = 0;
+		for( OCMetricTracker tracker : this.updatesSent.values() )
+			results[index++] = tracker.getTotalUniqueInstances();
+		
+		return results;
 	}
 	
 	/**
-	 * @return the number of times the ReceiveInteraction service has been invoked on the federate
+	 * @return the number of times the ReceiveInteraction service has been invoked on the federate for
+	 *         each interaction class
 	 */
-	public int getInteractionsReceived()
+	public InteractionCount[] getInteractionsReceived()
 	{
-		return this.interactionsReceived;
+		InteractionCount[] results = new InteractionCount[this.interactionsReceived.size()];
+		int index = 0;
+		for( InteractionCount classCount : this.interactionsReceived.values() )
+			results[index++] = classCount;
+		
+		return results;
 	}
 	
 	/**
-	 * @return the number of times the federate has invoked the SendInteractions service
+	 * @return the number of times the federate has invoked the SendInteractions service for each
+	 *         interaction class
 	 */
-	public int getInteractionsSent()
+	public InteractionCount[] getInteractionsSent()
 	{
-		return this.interactionsSent;
+		InteractionCount[] results = new InteractionCount[this.interactionsSent.size()];
+		int index = 0;
+		for( InteractionCount classCount : this.interactionsSent.values() )
+			results[index++] = classCount;
+		
+		return results;
 	}
 	
 	/**
 	 * @return the number of Object Instances for which the federate owns the HLAprivilegeToDelete 
 	 *         parameter
 	 */
-	public Set<ROCInstance> getObjectsOwned()
+	public Set<Integer> getObjectsOwned()
 	{
 		return new HashSet<>( this.objectsOwned );
-	}
-	
-	/**
-	 * @return the number of Object Instances for which the federate has provided an attribute update
-	 */
-	public Set<ROCInstance> getObjectsUpdated()
-	{
-		return new HashSet<>( this.objectsUpdated );
-	}
-	
-	/**
-	 * @return the number of Object Instances for which the federate has received an attribute reflection
-	 */
-	public Set<ROCInstance> getObjectsReflected()
-	{
-		return new HashSet<>( this.objectsReflected );
 	}
 	
 	/**
@@ -218,33 +268,33 @@ public class FederateMetrics
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	/**
-	 * Returns the number of instances of each Object Class in the provided set
-	 * 
-	 * @param federate the federate that the class handles should be relative to
-	 * @param instances the object instances to classify
-	 * @return the number of instances of each Object Class in the provided set
-	 */
-	public static ObjectClassBasedCount[] toClassBasedCount( Federate federate, 
-	                                                         Set<ROCInstance> instances )
+	private class OCMetricTracker
 	{
-		Map<OCMetadata,Integer> countMap = new HashMap<>();
-		for( ROCInstance instance : instances )
+		private int classHandle;
+		private int total;
+		private Set<Integer> instances;
+		
+		public OCMetricTracker( int classHandle )
 		{
-			OCMetadata type = instance.getRegisteredType();	// TODO should be discovered type for some cases?
-			Integer count = countMap.get( type );
-			if( count == null )
-				count = new Integer( 1 );
-			else
-				count = new Integer( count + 1 );
-			countMap.put( type, count );
+			this.classHandle = classHandle;
+			this.total = 0;
+			this.instances = new HashSet<>();
 		}
 		
-		ObjectClassBasedCount[] countArray = new ObjectClassBasedCount[countMap.size()];
-		int index = 0;
-		for( Entry<OCMetadata,Integer> entry : countMap.entrySet() )
-			countArray[index++] = new ObjectClassBasedCount( entry.getKey(), entry.getValue() );
+		public void increment( int instanceId )
+		{
+			++total;
+			this.instances.add( instanceId );
+		}
 		
-		return countArray;
+		public ObjectClassBasedCount getTotal()
+		{
+			return new ObjectClassBasedCount( classHandle, total );
+		}
+		
+		public ObjectClassBasedCount getTotalUniqueInstances()
+		{
+			return new ObjectClassBasedCount( classHandle, instances.size() );
+		}
 	}
 }

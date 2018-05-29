@@ -113,7 +113,8 @@ public class RegisterObjectHandler extends RTIMessageHandler
 		Map<Integer,OCMetadata> subscriptions = interests.getAllSubscribersWithTypes( objectClass );
 		for( Integer subscriberHandle : subscriptions.keySet() )
 		{
-			newInstance.discover( subscriberHandle, subscriptions.get(subscriberHandle) );
+			OCMetadata discoveredAs = subscriptions.get( subscriberHandle );
+			newInstance.discover( subscriberHandle, discoveredAs );
 			
 			// Log discovery metrics
 			if( federateHandle != subscriberHandle)

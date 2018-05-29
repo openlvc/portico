@@ -240,7 +240,8 @@ public class MomManager implements SaveRestoreTarget
 		if( sender != PorticoConstants.RTI_HANDLE )
 		{
 			Federate senderFederate = federation.getFederate( sender );
-			senderFederate.getMetrics().interactionSent();
+			int handle = interaction.getHandle();
+			senderFederate.getMetrics().interactionSent( handle );
 		}
 	}
 
@@ -250,7 +251,8 @@ public class MomManager implements SaveRestoreTarget
 			return;
 
 		Federate receiverFederate = federation.getFederate( receiver );
-		receiverFederate.getMetrics().interactionReceived();
+		int handle = interaction.getHandle(); // TODO Handle that the receiver will receive it as?
+		receiverFederate.getMetrics().interactionReceived( handle );
 	}
 
 	public void objectRegistered( int creator, ROCInstance instance )
@@ -261,7 +263,7 @@ public class MomManager implements SaveRestoreTarget
 		if( creator != PorticoConstants.RTI_HANDLE )
 		{
 			Federate senderFederate = federation.getFederate( creator );
-			senderFederate.getMetrics().objectRegistered( instance );
+			senderFederate.getMetrics().objectRegistered( instance.getHandle() );
 		}
 	}
 
@@ -282,7 +284,8 @@ public class MomManager implements SaveRestoreTarget
 		if( updator != PorticoConstants.RTI_HANDLE )
 		{
 			Federate updatingFederate = federation.getFederate( updator );
-			updatingFederate.getMetrics().sentUpdate( instance );
+			updatingFederate.getMetrics().sentUpdate( instance.getRegisteredClassHandle(), 
+			                                          instance.getHandle() );
 		}
 	}
 
@@ -292,7 +295,9 @@ public class MomManager implements SaveRestoreTarget
 			return;
 
 		Federate reflectingFederate = federation.getFederate( reflector );
-		reflectingFederate.getMetrics().reflectionReceived( instance );
+		OCMetadata discoveredAs = instance.getDiscoveredType( reflector );
+		reflectingFederate.getMetrics().reflectionReceived( discoveredAs.getHandle(), 
+		                                                    instance.getHandle() );
 	}
 
 	public void objectDeleted( int deletor, ROCInstance instance )
@@ -303,7 +308,7 @@ public class MomManager implements SaveRestoreTarget
 		if( deletor != PorticoConstants.RTI_HANDLE )
 		{
 			Federate deletingFederate = federation.getFederate( deletor );
-			deletingFederate.getMetrics().objectDeleted( instance );
+			deletingFederate.getMetrics().objectDeleted( instance.getHandle() );
 		}
 	}
 
