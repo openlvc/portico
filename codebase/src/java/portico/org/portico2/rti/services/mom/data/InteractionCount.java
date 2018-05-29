@@ -55,6 +55,7 @@ public class InteractionCount implements DataElement
 	{
 		return 4;
 	}
+	
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
@@ -62,11 +63,13 @@ public class InteractionCount implements DataElement
 		handle.encode( byteWrapper );
 		byteWrapper.putInt( count );
 	}
+	
 	@Override
 	public int getEncodedLength()
 	{
 		return HLA1516eHandle.EncodedLength + 4;
 	}
+	
 	@Override
 	public byte[] toByteArray() throws EncoderException
 	{
@@ -74,11 +77,13 @@ public class InteractionCount implements DataElement
 		this.encode( wrapper );
 		return wrapper.array();
 	}
+	
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
 		throw new UnsupportedOperationException();
 	}
+	
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
