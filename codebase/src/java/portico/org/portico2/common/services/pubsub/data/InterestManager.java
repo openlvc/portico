@@ -1251,6 +1251,80 @@ public class InterestManager implements SaveRestoreTarget
 		return set;
 	}
 	
+	/**
+	 * Returns a set of object class handles that the provided federate has a publication interest in.
+	 * 
+	 * @param federateHandle the handle of the federate to find all object class publications for
+	 * @return a set of object class handles that the provided federate has a publication interest in
+	 */
+	public Set<Integer> getAllPublishedObjectClasses( int federateHandle )
+	{
+		Set<Integer> objectClasses = new HashSet<>();
+		for( OCInterest interest : this.pObjects.values() )
+		{
+			if( interest.hasInterest(federateHandle) )
+				objectClasses.add( interest.getObjectClass().getHandle() );
+		}
+		
+		return objectClasses;
+	}
+	
+	/**
+	 * Returns a set of object class handles that the provided federate has a subscription interest in.
+	 * 
+	 * @param federateHandle the handle of the federate to find all object class subscriptions for
+	 * @return a set of object class handles that the provided federate has a subscription interest in
+	 */
+	public Set<Integer> getAllSubscribedObjectClasses( int federateHandle )
+	{
+		Set<Integer> objectClasses = new HashSet<>();
+		for( OCInterest interest : this.sObjects.values() )
+		{
+			if( interest.hasInterest(federateHandle) )
+				objectClasses.add( interest.getObjectClass().getHandle() );
+		}
+		
+		return objectClasses;
+	}
+	
+	/**
+	 * Returns a set of interaction class handles that the provided federate has a publication interest 
+	 * in.
+	 * 
+	 * @param federateHandle the handle of the federate to find all interaction class publications for
+	 * @return a set of interaction class handles that the provided federate has a publication interest in
+	 */
+	public Set<Integer> getAllPublishedInteractionClasses( int federateHandle )
+	{
+		Set<Integer> interactionClasses = new HashSet<>();
+		for( ICInterest interest : this.pInteractions.values() )
+		{
+			if( interest.hasInterest(federateHandle) )
+				interactionClasses.add( interest.getInteractionClass().getHandle() );
+		}
+		
+		return interactionClasses;
+	}
+	
+	/**
+	 * Returns a set of interaction class handles that the provided federate has a subscription interest 
+	 * in.
+	 * 
+	 * @param federateHandle the handle of the federate to find all interaction class subscriptions for
+	 * @return a set of interaction class handles that the provided federate has a subscriptions interest in
+	 */
+	public Set<Integer> getAllSubscribedInteractionClasses( int federateHandle )
+	{
+		Set<Integer> interactionClasses = new HashSet<>();
+		for( ICInterest interest : this.sInteractions.values() )
+		{
+			if( interest.hasInterest(federateHandle) )
+				interactionClasses.add( interest.getInteractionClass().getHandle() );
+		}
+		
+		return interactionClasses;
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// Private Helper Methods /////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////
