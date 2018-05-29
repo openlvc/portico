@@ -29,19 +29,6 @@ import org.portico2.common.network.configuration.ConnectionConfiguration;
 public class ForwarderConnection implements IApplicationReceiver
 {
 	//----------------------------------------------------------
-	//                      ENUMERATIONS
-	//----------------------------------------------------------
-	/** The "direction" that a connection will pass messages. */
-	public enum Direction
-	{
-		UPSTREAM, DOWNSTREAM;
-		public String toString() { return name().toLowerCase(); }
-		public String flowDirection() { return this == UPSTREAM ? "upstream>>>downstream" : "upstream<<<downstream"; }
-		public Direction reverse() { return this == UPSTREAM ? DOWNSTREAM : UPSTREAM; }
-	}
-	
-
-	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 
@@ -91,32 +78,20 @@ public class ForwarderConnection implements IApplicationReceiver
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
-	///  Message SENDING methods   ////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////
-	public void sendControlRequest( MessageContext context ) throws JRTIinternalError
-	{
-		connection.sendControlRequest( context );
-	}
-	
-	public void sendDataMessage( PorticoMessage message ) throws JException
-	{
-		connection.sendDataMessage( message );
-	}
-
-	
-	///////////////////////////////////////////////////////////////////////////////////////
 	///  Message RECEIVING methods   //////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void receiveControlRequest( MessageContext context ) throws JRTIinternalError
 	{
-		exchanger.controlRequestReceived( direction, context );
+		// No-op
+		// FIXME - Throw exception?
 	}
-	
+
 	@Override
-	public void receiveDataMessage( PorticoMessage incoming ) throws JException
+	public void receiveDataMessage( PorticoMessage message ) throws JException
 	{
-		exchanger.dataMessageReceived( direction, incoming );
+		// No-op
+		// FIXME - Throw exception?
 	}
 
 	@Override

@@ -20,30 +20,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.configuration.StartupLogger;
 import org.portico2.common.logging.Log4jConfigurator;
-import org.portico2.forwarder.firewall.Firewall;
-import org.portico2.forwarder.tracking.StateTracker;
 
-/**
- * The Forwarder is a component that sits between a local federation and a remote RTI.
- * Typically, local federates communicate with each other over a high-speed local connection
- * using multicast. This also means that we cannot bridge across multiple multicast domains,
- * which is a problem when federates are separated by network (as is common in many cloud or
- * container frameworks) or physically separated.
- * <p/>
- * The Forwarder can also act as a basic firewall of sorts. For federates that are running on
- * low power devices, but are operating in federates with high-powered, chatty federates, the
- * volume of traffic can be overwhelming. In this case, we can the low-power federates behind
- * a Forwarder and block off various pieces of traffic. The federates will still be able to
- * exchange data for various object classes locally (that is, they can remain subscribed), but
- * the fact that they're running on a separate network will allow us to use the Forwarder as a
- * filtering point. In this case, <b>all CONTROL messages</b> will be allowed to pass, ALWAYS.
- * However, <b>DATA messages may be blocked</b> (unless the forwarder is configured to allow
- * them through.
- * <p/>
- * Each Forwarder has two sides: <code>local</code> and <code>upstream</code> (the RTI). At
- * startup, a Forwarder will connect to an upstream RTI (to ensure that one exists). It will
- * then start forwarding messages from the local side to the upstream side (and vice versa). 
- */
 public class Forwarder
 {
 	//----------------------------------------------------------
@@ -57,12 +34,7 @@ public class Forwarder
 	private Logger logger;
 	private boolean running;
 	
-	// Connection Management
 	private Exchanger exchanger;
-	
-	// Firewall and State Tracking
-	private Firewall firewall;
-	private StateTracker tracker;   // watches what is happening to support filtering
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -70,13 +42,14 @@ public class Forwarder
 	public Forwarder( RID rid ) throws JConfigurationException
 	{
 		if( rid == null )
-			throw new JConfigurationException( "Cannot create an RTI without RID (initialization data)" );
+			throw new JConfigurationException( "Cannot create an Forwarder without RID (initialization data)" );
 		
 		// Store the configuration and bootstrap logging
 		this.rid = rid;
 		this.logger = null;            // set in startup()
+		this.running = false;          // set in startup()
 		this.exchanger = null;         // set in startup()
-		this.firewall = null;          // set in startup()
+//		this.firewall = null;          // set in startup()
 	}
 
 	//----------------------------------------------------------
@@ -99,7 +72,7 @@ public class Forwarder
 		this.logger = LogManager.getFormatterLogger( "portico.forwarder" );
 		
 		// build the firewall and parse rules
-		this.firewall = new Firewall();
+//		this.firewall = new Firewall();
 
 		// log some startup information
 		StartupLogger.logGenericStartupHeader( logger, rid );
@@ -111,8 +84,6 @@ public class Forwarder
 		// Start
 		//
 		logger.info( "Starting the Forwarder" );
-		
-		// start the contained components
 		this.exchanger.startup();
 		
 		// install a shutdown hook to clean up gracefully if the JVM is terminated
@@ -128,10 +99,12 @@ public class Forwarder
 			return;
 
 		logger.info( "Shutting down the RTI" );
-		
-		// kill the active connections
-		//this.connectionManager.shutdown();
-		
+
+		// Kill the connections so that we're not getting the stream any more
+		// The exchanger manages all this
+		this.exchanger.shutdown();
+
+		logger.info( "Forwarder is shutdown" );
 		this.running = false;
 	}
 
@@ -148,9 +121,9 @@ public class Forwarder
 		return this.rid;
 	}
 
-	public Firewall getFirewall()
+	public Exchanger getExchanger()
 	{
-		return this.firewall;
+		return this.exchanger;
 	}
 
 	//----------------------------------------------------------
@@ -179,5 +152,4 @@ public class Forwarder
 			this.forwarder.shutdown();
 		}
 	}
-
 }
