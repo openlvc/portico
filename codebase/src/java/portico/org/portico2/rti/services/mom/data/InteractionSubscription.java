@@ -61,17 +61,20 @@ public class InteractionSubscription implements DataElement
 	{
 		return HLA1516eHandle.EncodedLength;
 	}
+	
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
 		new HLA1516eHandle( this.interactionClass ).encode( byteWrapper );
 		new HLA1516eBoolean( this.active ).encode( byteWrapper );
 	}
+	
 	@Override
 	public int getEncodedLength()
 	{
 		return HLA1516eHandle.EncodedLength + 4;
 	}
+	
 	@Override
 	public byte[] toByteArray() throws EncoderException
 	{
@@ -79,11 +82,13 @@ public class InteractionSubscription implements DataElement
 		this.encode( wrapper );
 		return wrapper.array();
 	}
+	
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
 		throw new UnsupportedOperationException();
 	}
+	
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
