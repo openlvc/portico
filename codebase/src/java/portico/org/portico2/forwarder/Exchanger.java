@@ -21,7 +21,7 @@ import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.forwarder.ForwarderConnection.Direction;
-import org.portico2.forwarder.firwall.Firewall;
+import org.portico2.forwarder.firewall.Firewall;
 
 /**
  * An {@link Exchanger} is the class responsible for routing messages between the local and
