@@ -20,7 +20,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.configuration.StartupLogger;
 import org.portico2.common.logging.Log4jConfigurator;
-import org.portico2.forwarder.firwall.Firewall;
+import org.portico2.forwarder.firewall.Firewall;
 import org.portico2.forwarder.tracking.StateTracker;
 
 /**
@@ -75,7 +75,8 @@ public class Forwarder
 		// Store the configuration and bootstrap logging
 		this.rid = rid;
 		this.logger = null;            // set in startup()
-		this.exchanger = null;          // set in startup()
+		this.exchanger = null;         // set in startup()
+		this.firewall = null;          // set in startup()
 	}
 
 	//----------------------------------------------------------
@@ -96,6 +97,9 @@ public class Forwarder
 		// initialize the logging framework
 		Log4jConfigurator.activate( this.rid.getLog4jConfiguration() );
 		this.logger = LogManager.getFormatterLogger( "portico.forwarder" );
+		
+		// build the firewall and parse rules
+		this.firewall = new Firewall();
 
 		// log some startup information
 		StartupLogger.logGenericStartupHeader( logger, rid );

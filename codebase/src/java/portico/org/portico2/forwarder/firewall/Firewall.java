@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.forwarder.firwall;
+package org.portico2.forwarder.firewall;
 
 public class Firewall
 {
