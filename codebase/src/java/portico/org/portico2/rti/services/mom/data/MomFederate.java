@@ -287,46 +287,74 @@ public class MomFederate
 	private byte[] getReflectionsReceived( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getReflectionsReceived() );
+		ObjectClassBasedCount[] updated = federate.getMetrics().getReflectionsReceived();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : updated )
+			grandTotal += classCount.getCount();
+		
+		return MomEncodingHelpers.encode( type, grandTotal );
 	}
 
 	private byte[] getUpdatesSent( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getUpdatesSent() );
+		ObjectClassBasedCount[] updated = federate.getMetrics().getUpdatesSent();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : updated )
+			grandTotal += classCount.getCount();
+		
+		return MomEncodingHelpers.encode( type, grandTotal );
 	}
 
 	private byte[] getInteractionsReceived( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getInteractionsReceived() );
+		InteractionCount[] received = federate.getMetrics().getInteractionsReceived();
+		int grandTotal = 0;
+		for( InteractionCount classCount : received )
+			grandTotal += classCount.getCount();
+		
+		return MomEncodingHelpers.encode( type, grandTotal );
 	}
 
 	private byte[] getInteractionsSent( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getMetrics().getInteractionsSent() );
+		InteractionCount[] received = federate.getMetrics().getInteractionsSent();
+		int grandTotal = 0;
+		for( InteractionCount classCount : received )
+			grandTotal += classCount.getCount();
+		
+		return MomEncodingHelpers.encode( type, grandTotal );
 	}
 
 	private byte[] getObjectsOwned( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		Set<ROCInstance> owned = federate.getMetrics().getObjectsOwned();
+		Set<Integer> owned = federate.getMetrics().getObjectsOwned();
 		return MomEncodingHelpers.encode( type, owned.size() );
 	}
 
 	private byte[] getObjectsUpdated( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		Set<ROCInstance> updated = federate.getMetrics().getObjectsUpdated();
-		return MomEncodingHelpers.encode( type, updated.size() );
+		ObjectClassBasedCount[] updated = federate.getMetrics().getObjectInstancesUpdated();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : updated )
+			grandTotal += classCount.getCount();
+		
+		return MomEncodingHelpers.encode( type, grandTotal );
 	}
 
 	private byte[] getObjectsReflected( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		Set<ROCInstance> reflected = federate.getMetrics().getObjectsReflected();
-		return MomEncodingHelpers.encode( type, reflected.size() );
+		ObjectClassBasedCount[] reflected = federate.getMetrics().getObjectInstancesReflected();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : reflected )
+			grandTotal += classCount.getCount();
+		
+		return MomEncodingHelpers.encode( type, grandTotal );
 	}
 
 	private byte[] getObjectInstancesDeleted( ACMetadata metadata )
