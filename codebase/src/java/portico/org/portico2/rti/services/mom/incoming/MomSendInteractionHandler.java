@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.portico.impl.HLAVersion;
@@ -41,10 +42,12 @@ import org.portico2.rti.federation.FederateMetrics;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.RTIMessageHandler;
 import org.portico2.rti.services.mom.data.FomModule;
+import org.portico2.rti.services.mom.data.InteractionCount;
 import org.portico2.rti.services.mom.data.MomEncodingHelpers;
 import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
 import org.portico2.rti.services.mom.data.SynchPointFederate;
 import org.portico2.rti.services.object.data.ROCInstance;
+import org.portico2.rti.services.object.data.Repository;
 import org.portico2.rti.services.sync.data.SyncPoint;
 import org.portico2.rti.services.sync.data.SyncPointManager;
 import org.w3c.dom.Document;
@@ -102,6 +105,14 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		                                    this::handleFederateRequestObjectInstancesUpdated );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesReflected", 
 		                                    this::handleFederateRequestObjectInstancesReflected );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestUpdatesSent", 
+		                                    this::handleFederateRequestUpdatesSent );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestInteractionsSent", 
+		                                    this::handleFederateRequestInteractionsSent );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestReflectionsReceived", 
+		                                    this::handleFederateRequestReflectionsReceived );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestInteractionsReceived", 
+		                                    this::handleFederateRequestInteractionsReceived );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestFOMmoduleData", 
 		                                    this::handleFederateRequestFomModuleData );
 		
@@ -163,13 +174,29 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	{
 		Federate federate = getRequestFederate( requestParams );
 		FederateMetrics metrics = federate.getMetrics();
-		Set<ROCInstance> owned = metrics.getObjectsOwned();
 		
-		ObjectClassBasedCount[] ownedCountArray = FederateMetrics.toClassBasedCount( federate, owned );
+		Map<Integer,Integer> ownedInstancesPerClass = new HashMap<>();
+		Repository repository = federation.getRepository();
+		for( int instanceId : metrics.getObjectsOwned() )
+		{
+			ROCInstance instance = repository.getObject( instanceId );
+			int classId = instance.getRegisteredClassHandle();
+			Integer count = ownedInstancesPerClass.get( classId );
+			if( count == null )
+				count = 1;
+			else
+				count = count + 1;
+			ownedInstancesPerClass.put( classId, count );
+		}
+		
+		ObjectClassBasedCount[] ownedCounts = new ObjectClassBasedCount[ownedInstancesPerClass.size()];
+		int index = 0;
+		for( Entry<Integer,Integer> entry : ownedInstancesPerClass.entrySet() )
+			ownedCounts[index++] = new ObjectClassBasedCount( entry.getKey(), entry.getValue() );
 		
 		Map<String,Object> responseParams = new HashMap<String,Object>();
 		responseParams.put( "HLAfederate", federate.getFederateHandle() );
-		responseParams.put( "HLAobjectInstanceCounts", ownedCountArray );
+		responseParams.put( "HLAobjectInstanceCounts", ownedCounts );
 		
 		// Send the response
 		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesThatCanBeDeleted", 
@@ -181,13 +208,11 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	{
 		Federate federate = getRequestFederate( requestParams );
 		FederateMetrics metrics = federate.getMetrics();
-		Set<ROCInstance> updated = metrics.getObjectsUpdated();
-		
-		ObjectClassBasedCount[] updatedCountArray = FederateMetrics.toClassBasedCount( federate, updated );
+		ObjectClassBasedCount[] updatedCounts = metrics.getObjectInstancesUpdated();
 		
 		Map<String,Object> responseParams = new HashMap<String,Object>();
 		responseParams.put( "HLAfederate", federate.getFederateHandle() );
-		responseParams.put( "HLAobjectInstanceCounts", updatedCountArray );
+		responseParams.put( "HLAobjectInstanceCounts", updatedCounts );
 		
 		// Send the response
 		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesUpdated", 
@@ -199,17 +224,82 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	{
 		Federate federate = getRequestFederate( requestParams );
 		FederateMetrics metrics = federate.getMetrics();
-		Set<ROCInstance> reflected = metrics.getObjectsReflected();
-		
-		ObjectClassBasedCount[] reflectedCountArray = FederateMetrics.toClassBasedCount( federate, 
-		                                                                                 reflected );
+		ObjectClassBasedCount[] reflectedCounts = metrics.getObjectInstancesReflected();
 		
 		Map<String,Object> responseParams = new HashMap<String,Object>();
 		responseParams.put( "HLAfederate", federate.getFederateHandle() );
-		responseParams.put( "HLAobjectInstanceCounts", reflectedCountArray );
+		responseParams.put( "HLAobjectInstanceCounts", reflectedCounts );
 		
 		// Send the response
 		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectInstancesReflected", 
+		              responseParams );
+	}
+	
+	private void handleFederateRequestUpdatesSent( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		ObjectClassBasedCount[] updateCounts = metrics.getUpdatesSent();
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAtransportation", "HLAreliable" );
+		responseParams.put( "HLAupdateCounts", updateCounts );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportUpdatesSent", 
+		              responseParams );
+	}
+	
+	private void handleFederateRequestInteractionsSent( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		InteractionCount[] sentCounts = metrics.getInteractionsSent();
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAtransportation", "HLAreliable" );
+		responseParams.put( "HLAinteractionCounts", sentCounts );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportInteractionsSent", 
+		              responseParams );
+	}
+	
+	private void handleFederateRequestReflectionsReceived( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		ObjectClassBasedCount[] updateCounts = metrics.getReflectionsReceived();
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAtransportation", "HLAreliable" );
+		responseParams.put( "HLAreflectCounts", updateCounts );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportReflectionsReceived", 
+		              responseParams );
+	}
+	
+	private void handleFederateRequestInteractionsReceived( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		FederateMetrics metrics = federate.getMetrics();
+		InteractionCount[] sentCounts = metrics.getInteractionsReceived();
+		
+		Map<String,Object> responseParams = new HashMap<String,Object>();
+		responseParams.put( "HLAfederate", federate.getFederateHandle() );
+		responseParams.put( "HLAtransportation", "HLAreliable" );
+		responseParams.put( "HLAinteractionCounts", sentCounts );
+		
+		// Send the response
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportInteractionsReceived", 
 		              responseParams );
 	}
 	
