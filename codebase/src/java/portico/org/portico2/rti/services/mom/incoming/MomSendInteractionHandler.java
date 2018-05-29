@@ -43,6 +43,7 @@ import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.RTIMessageHandler;
 import org.portico2.rti.services.mom.data.FomModule;
 import org.portico2.rti.services.mom.data.InteractionCount;
+import org.portico2.rti.services.mom.data.InteractionSubscription;
 import org.portico2.rti.services.mom.data.MomEncodingHelpers;
 import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
 import org.portico2.rti.services.mom.data.SynchPointFederate;
@@ -99,6 +100,10 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		//
 		// HLAfederate
 		//
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestPublications", 
+		                                    this::handleFederateRequestPublications );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestSubscriptions", 
+		                                    this::handleFederateRequestSubscriptions );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesThatCanBeDeleted", 
 		                                    this::handleFederateRequestObjectInstancesThatCanBeDeleted );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestObjectInstancesUpdated", 
@@ -169,6 +174,111 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  MOM Interaction Handlers   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	private void handleFederateRequestPublications( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		int federateHandle = federate.getFederateHandle();
+		
+		//
+		// Objects
+		//
+		InterestManager interests = federation.getInterestManager();
+		
+		Set<Integer> publishedOCs = interests.getAllPublishedObjectClasses( federateHandle );
+		Map<String,Object> ocResponseParams = new HashMap<String,Object>();
+		ocResponseParams.put( "HLAfederate", federate.getFederateHandle() );
+		ocResponseParams.put( "HLAnumberOfClasses", publishedOCs.size() );
+		
+		if( publishedOCs.size() > 0 )
+		{
+			// Send one interaction for each object class published
+			for( int classHandle : publishedOCs )
+			{
+				Set<Integer> attributes = interests.getPublishedAttributes( federateHandle, classHandle );
+				ocResponseParams.put( "HLAobjectClass", classHandle );
+				ocResponseParams.put( "HLAattributeList", attributes );
+				// Send response for this object class
+				sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassPublication", 
+				              ocResponseParams );
+			}
+		}
+		else
+		{
+			// Send NULL response if no object classes are published
+			sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassPublication", 
+			              ocResponseParams );	
+		}
+		
+		//
+		// Interactions
+		//
+		Set<Integer> publishedICs = interests.getAllPublishedInteractionClasses( federateHandle );
+		
+		Map<String,Object> icResponseParams = new HashMap<String,Object>();
+		icResponseParams.put( "HLAfederate", federate.getFederateHandle() );
+		icResponseParams.put( "HLAinteractionClassList", publishedICs );
+		
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportInteractionPublication", 
+		              icResponseParams );
+	}
+	
+	private void handleFederateRequestSubscriptions( Map<String,Object> requestParams )
+		throws MomException
+	{
+		Federate federate = getRequestFederate( requestParams );
+		int federateHandle = federate.getFederateHandle();
+		
+		//
+		// Objects
+		//
+		InterestManager interests = federation.getInterestManager();
+		
+		Set<Integer> subscribedOCs = interests.getAllSubscribedObjectClasses( federateHandle );
+		Map<String,Object> ocResponseParams = new HashMap<String,Object>();
+		ocResponseParams.put( "HLAfederate", federate.getFederateHandle() );
+		ocResponseParams.put( "HLAnumberOfClasses", subscribedOCs.size() );
+		
+		if( subscribedOCs.size() > 0 )
+		{
+			// Send one interaction for each object class subscribed to
+			for( int classHandle : subscribedOCs )
+			{
+				Set<Integer> attributes = interests.getPublishedAttributes( federateHandle, classHandle );
+				ocResponseParams.put( "HLAobjectClass", classHandle );
+				ocResponseParams.put( "HLAactive", true );               // TODO Not supported yet
+				ocResponseParams.put( "HLAmaxUpdateRate", "None" );      // TODO Not supported yet
+				ocResponseParams.put( "HLAattributeList", attributes );
+				// Send response for this object class
+				sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassSubscription", 
+				              ocResponseParams );
+			}
+		}
+		else
+		{
+			// Send NULL response if there are no object class subscriptions
+			sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportObjectClassSubscription", 
+			              ocResponseParams );	
+		}
+		
+		//
+		// Interactions
+		//
+		Set<Integer> subscribedICs = interests.getAllSubscribedInteractionClasses( federateHandle );
+		InteractionSubscription[] icSubscriptions = new InteractionSubscription[subscribedICs.size()];
+		int index = 0;
+		for( int subscribedIC : subscribedICs )
+			icSubscriptions[index++] = new InteractionSubscription( subscribedIC );
+		
+		Map<String,Object> icResponseParams = new HashMap<String,Object>();
+		icResponseParams.put( "HLAfederate", federate.getFederateHandle() );
+		icResponseParams.put( "HLAinteractionClassList", icSubscriptions );
+		
+		sendResponse( "HLAmanager.HLAfederate.HLAreport.HLAreportInteractionSubscription", 
+		              icResponseParams );
+		
+	}
+	
 	private void handleFederateRequestObjectInstancesThatCanBeDeleted( Map<String,Object> requestParams )
 		throws MomException
 	{
@@ -758,6 +868,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
 	/**
 	 * Internal exception type. Indicates that an error occurred during the processing of a MOM request
 	 * interaction. This exception will be reported back to the federate as a HLAreportMOMexception via

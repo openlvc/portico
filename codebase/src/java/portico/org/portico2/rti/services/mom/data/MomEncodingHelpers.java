@@ -14,6 +14,7 @@
  */
 package org.portico2.rti.services.mom.data;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -74,6 +75,7 @@ public class MomEncodingHelpers
 		this.encoders.put( "HLAhandleList", this::encodeHandleList );
 		this.encoders.put( "HLAindex", this::encodeInt32BE );
 		this.encoders.put( "HLAinteractionCounts", this::encodeInteractionCounts );
+		this.encoders.put( "HLAinteractionSubList", this::encodeInteractionSubList );
 		this.encoders.put( "HLAlogicalTime", this::encodeTime );
 		this.encoders.put( "HLAmoduleDesignatorList", this::encodeUnicodeStringVariableArray );
 		this.encoders.put( "HLAmsec", this::encodeInt32BE );
@@ -82,6 +84,7 @@ public class MomEncodingHelpers
 		this.encoders.put( "HLAtimeInterval", this::encodeTimeInterval );
 		this.encoders.put( "HLAtransportationName", this::encodeUnicodeString );
 		this.encoders.put( "HLAunicodeString", this::encodeUnicodeString );
+		this.encoders.put( "HLAupdateRateName", this::encodeUnicodeString );
 		this.encoders.put( "HLAsynchPointFederateList", this::encodeSynchPointFederateList );
 		
 		this.decoders = new HashMap<>();
@@ -194,6 +197,17 @@ public class MomEncodingHelpers
 	
 	public byte[] encodeHandleList( Object data )
 	{
+		if( data instanceof Collection<?> )
+		{
+			@SuppressWarnings("unchecked")
+			Collection<Integer> asCollection = (Collection<Integer>)data;
+			int[] temp = new int[asCollection.size()];
+			int index = 0;
+			for( int element : asCollection )
+				temp[index++] = element;
+			data = temp;
+		}
+		
 		if( data instanceof int[] )
 		{
 			int[] asIntArray = (int[])data;
@@ -313,6 +327,24 @@ public class MomEncodingHelpers
 		else
 		{
 			throw new JRTIinternalError( "non-InteractionCount array type: " + data.getClass() );
+		}
+	}
+	
+	public byte[] encodeInteractionSubList( Object data )
+	{
+		if( data == null )
+			data = new InteractionSubscription[0];
+		
+		if( data instanceof InteractionSubscription[] )
+		{
+			InteractionSubscription[] asArray = (InteractionSubscription[])data;
+			HLAvariableArray<InteractionSubscription> hlaArray = factory.createHLAvariableArray( null, 
+			                                                                                     asArray );
+			return hlaArray.toByteArray();
+		}
+		else
+		{
+			throw new JRTIinternalError( "non-InteractionSubscription array type: " + data.getClass() );
 		}
 	}
 	
