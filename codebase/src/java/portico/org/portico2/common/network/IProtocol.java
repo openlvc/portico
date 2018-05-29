@@ -27,7 +27,7 @@ public interface IProtocol
 	public String getName();
 
 	// lifecycle
-	public void configure();
+	public void configure( Connection hostConnection );
 	public void open();
 	public void close();
 

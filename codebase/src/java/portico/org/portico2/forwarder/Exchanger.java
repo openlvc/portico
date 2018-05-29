@@ -15,30 +15,14 @@
 package org.portico2.forwarder;
 
 import org.apache.logging.log4j.Logger;
-import org.portico.utils.StringUtils;
-import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.common.configuration.RID;
-import org.portico2.common.messaging.MessageContext;
-import org.portico2.forwarder.ForwarderConnection.Direction;
-import org.portico2.forwarder.firewall.Firewall;
 
-/**
- * An {@link Exchanger} is the class responsible for routing messages between the local and
- * upstream sides of a {@link Forwarder}.
- */
 public class Exchanger
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private enum Type
-	{
-		Data         { public String toString(){return "(Data)";}},
-		ControlAsync { public String toString(){return "(ControlAsync)";}},
-		ControlSync  { public String toString(){return "(ControlSync)";}},
-		Response     { public String toString(){return "(ControlResp)";}};
-	};
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -47,7 +31,7 @@ public class Exchanger
 	private RID rid;
 	private Logger logger;
 
-	private Firewall firewall;
+//	private Firewall firewall;
 	private ForwarderConnection upstream;
 	private ForwarderConnection downstream;
 
@@ -60,7 +44,7 @@ public class Exchanger
 		this.rid       = forwarder.getRid();
 		this.logger    = forwarder.getLogger();
 
-		this.firewall = null;        // set in startup()
+//		this.firewall = null;        // set in startup()
 		this.upstream = null;        // set in startup()
 		this.downstream = null;      // set in startup()
 	}
@@ -77,13 +61,16 @@ public class Exchanger
 		ForwarderConfiguration configuration = rid.getForwarderConfiguration();
 
 		// Grab the references we need
-		this.firewall = forwarder.getFirewall();
+//		this.firewall = forwarder.getFirewall();
 		
 		// Create the connections
 		logger.debug( "Creating local and upstream connections" );
-		this.upstream = new ForwarderConnection( Direction.UPSTREAM, this, configuration.getUpstreamConfiguration() );
-		this.downstream = new ForwarderConnection( Direction.DOWNSTREAM, this, configuration.getDownstreamConfiguration() );
+		this.upstream = new ForwarderConnection( Direction.Upstream, this, configuration.getUpstreamConfiguration() );
+		this.downstream = new ForwarderConnection( Direction.Downstream, this, configuration.getDownstreamConfiguration() );
 		
+		// Create and insert the ForwardingProtocol implementations and insert into connections
+		// FIXME DO EET! START HERE
+
 		// Start the connections
 		logger.info( "Starting UPSTREAM connection" );
 		this.upstream.connect();
@@ -93,7 +80,7 @@ public class Exchanger
 
 		logger.info( "Exchanger is UP" );
 	}
-	
+
 	protected void shutdown()
 	{
 		// Bring the connections down
@@ -106,99 +93,52 @@ public class Exchanger
 		logger.info( "Exchanger is DOWN" );
 	}
 
-
 	////////////////////////////////////////////////////////////////////////////////////////
-	///  Message Passing   /////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	protected final void dataMessageReceived( Direction receivedFrom, PorticoMessage message )
-	{
-		if( logger.isDebugEnabled() )
-			logger.debug( requestLog(receivedFrom,message,Type.Data) );
-		
-		switch( receivedFrom )
-		{
-			case DOWNSTREAM:
-				upstream.sendDataMessage( message );
-				break;
-			case UPSTREAM:
-				downstream.sendDataMessage( message );
-				break;
-		}
-	}
-	
-	protected final void controlRequestReceived( Direction receivedFrom, MessageContext context )
-	{
-		if( logger.isDebugEnabled() )
-		{
-			Type type = context.getRequest().isAsync() ? Type.ControlAsync : Type.ControlSync;
-			logger.debug( requestLog(receivedFrom,context.getRequest(),type) );
-		}
-		
-		switch( receivedFrom )
-		{
-			case DOWNSTREAM:
-				if( firewall.isEnabled() )
-				{
-					// send the information to state tracking
-					// check to see if it should pass through the firewall
-				}
-				
-				// process the message
-				upstream.sendControlRequest( context );
-				break;
-			case UPSTREAM:
-				if( firewall.isEnabled() )
-				{
-					// send the information to state tracking
-					// check to see if it should pass through the firewall
-				}
-				
-				// process the message
-				downstream.sendControlRequest( context );
-				break;
-		}
-		
-		if( logger.isDebugEnabled() && !context.getRequest().isAsync() )
-			logger.debug( responseLog(receivedFrom.reverse(),context) );
-	}
-
-	/*
-	 * Build up a nice, descriptive log message for each of the portico messages that pass
-	 * through the exchange.
+	/**
+	 * The application ultimately represents the context that a connection sits within.
+	 * As such, we often want the connection framework to use the same logging infrastructure.
+	 * This method lets the application provide a logger to a connection.
+	 * 
+	 * @return The logger that the connection framework should use
 	 */
-	private final String requestLog( Direction direction, PorticoMessage message, Type type )
-	{
-		String from = StringUtils.sourceHandleToString( message );
-		String to = StringUtils.targetHandleToString( message );
-		
-		// Switch the to/from for reponse types; because above we take them from the REQUEST
-		if( type == Type.Response )
-		{
-			String temp = to;
-			to = from;
-			from = temp;
-		}
-		
-		return String.format( "[%s] %-14s: type=%s, from=%s, to=%s",
-		                      direction.flowDirection(),
-		                      type,
-		                      message.getType(),
-		                      from,
-		                      to );
-	}
-	
-	private final String responseLog( Direction direction, MessageContext context )
-	{
-		return requestLog(direction,context.getRequest(),Type.Response)+", result="+context.isSuccessResponse();
-	}
-	
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Accessor and Mutator Methods   /////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
 	public Logger getLogger()
 	{
-		return forwarder.getLogger();
+		return this.logger;
 	}
+
+	
+	
+//	/*
+//	 * Build up a nice, descriptive log message for each of the portico messages that pass
+//	 * through the exchange.
+//	 */
+//	private final String requestLog( Direction direction, PorticoMessage message, Type type )
+//	{
+//		String from = StringUtils.sourceHandleToString( message );
+//		String to = StringUtils.targetHandleToString( message );
+//		
+//		// Switch the to/from for reponse types; because above we take them from the REQUEST
+//		if( type == Type.Response )
+//		{
+//			String temp = to;
+//			to = from;
+//			from = temp;
+//		}
+//		
+//		return String.format( "[%s] %-14s: type=%s, from=%s, to=%s",
+//		                      direction.flowDirection(),
+//		                      type,
+//		                      message.getType(),
+//		                      from,
+//		                      to );
+//	}
+//	
+//	private final String responseLog( Direction direction, MessageContext context )
+//	{
+//		return requestLog(direction,context.getRequest(),Type.Response)+", result="+context.isSuccessResponse();
+//	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
