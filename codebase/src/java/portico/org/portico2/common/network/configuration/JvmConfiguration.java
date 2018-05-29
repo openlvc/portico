@@ -12,12 +12,11 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network;
+package org.portico2.common.network.configuration;
 
-/**
- * This class should be used to create new instances of {@link Connection} implementations.
- */
-public class ConnectionFactory
+import java.util.Properties;
+
+public class JvmConfiguration extends ConnectionConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -30,15 +29,31 @@ public class ConnectionFactory
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public JvmConfiguration( String name )
+	{
+		super( name );
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Read Only
+	 */
+	public TransportType getTransportType()
+	{
+		return TransportType.JVM;
+	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/// Configuration Loading   ////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void parseConfiguration( String prefix, Properties properties )
+	{
+		// no-op
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

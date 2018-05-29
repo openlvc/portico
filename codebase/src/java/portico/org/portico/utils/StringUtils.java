@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.network.ByteUnit;
+import org.portico2.common.utils.ByteUnit;
 
 public class StringUtils
 {
@@ -391,6 +391,11 @@ public class StringUtils
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/// Wireshark Formatting   /////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////	
+	public static String formatAsHex( int value )
+	{
+		return String.format( "0x%04X", value );
+	}
+
 	/**
 	 * Convert the given byte[] into a "wireshark formatted" hex/ascii grid. Example output format
 	 * for single row:

@@ -18,11 +18,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.utils.messaging.PorticoMessage;
-import org.portico2.common.messaging.MessageContext;
 
 /**
- * The {@link JvmExchange} is an aggregation point for {@link JvmConnections}. Each connection will
+ * The {@link JvmExchange} is an aggregation point for {@link JvmTransport}s. Each connection will
  * forward all its messages into the exchange where they are reflected around to all the other
  * connections.
  */
@@ -36,14 +34,14 @@ public class JvmExchange
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Set<JvmConnection> connections;
+	private Set<JvmTransport> transports;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	private JvmExchange()
 	{
-		this.connections = new HashSet<>();
+		this.transports = new HashSet<>();
 	}
 
 	//----------------------------------------------------------
@@ -61,12 +59,12 @@ public class JvmExchange
 	 * @param lrcConnection The connection representing the LRC
 	 * @throws JRTIinternalError If there is no active RTI yet
 	 */
-	protected void attachLrc( JvmConnection lrcConnection ) throws JRTIinternalError
+	protected void attachLrc( JvmTransport lrcConnection ) throws JRTIinternalError
 	{
 		if( lrcConnection == null )
 			return;
 		
-		this.connections.add( lrcConnection );
+		this.transports.add( lrcConnection );
 	}
 
 	/**
@@ -77,39 +75,27 @@ public class JvmExchange
 	 * @param lrc The LRC to detach
 	 * @throws JRTIinternalError TBA
 	 */
-	protected void detachLrc( JvmConnection lrc ) throws JRTIinternalError
+	protected void detachLrc( JvmTransport lrc ) throws JRTIinternalError
 	{
-		this.connections.remove( lrc );
+		this.transports.remove( lrc );
 	}
 
 	
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Exchange Methods   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	protected void sendControlRequest( JvmConnection sender, MessageContext context ) throws JRTIinternalError
+	protected void sendMessage( JvmTransport sender, byte[] message ) throws JRTIinternalError
 	{
-		// FIXME Each call should have its own MessageContext
-		//       Or the call should only go where it needs to go
-		for( JvmConnection lrcConnection : connections )
-		{
-			if( lrcConnection != sender )
-				lrcConnection.receiveControlRequest( sender, context );
-		}
+		// reflect to all other connected JVM transports, skipping ourselves
+		for( JvmTransport temp : transports )
+			if( temp != sender )
+				temp.receive( message );
 	}
 	
-	protected void sendDataMessage( JvmConnection sender, PorticoMessage message )
-	{
-		for( JvmConnection lrcConnection : connections )
-		{
-			if( lrcConnection != sender )
-				lrcConnection.receiveDataMessage( sender, message );
-		}
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static final JvmExchange instance()
+	protected static final JvmExchange instance()
 	{
 		return JvmExchange.INSTANCE;
 	}

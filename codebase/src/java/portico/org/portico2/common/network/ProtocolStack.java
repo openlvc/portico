@@ -14,10 +14,7 @@
  */
 package org.portico2.common.network;
 
-/**
- * This class should be used to create new instances of {@link Connection} implementations.
- */
-public class ConnectionFactory
+public class ProtocolStack
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -26,21 +23,63 @@ public class ConnectionFactory
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private Connection connection;
+	private IProtocol[] protocols;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	protected ProtocolStack( Connection connection )
+	{
+		this.connection = connection;
+		this.protocols = new IProtocol[0];
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
+	public final void down( Message message )
+	{
+		// pass the message to each protocol
+		for( int i = 0; i < protocols.length; i++ )
+		{
+			if( protocols[i].down(message) == false )
+				return;
+		}
+
+		// pass to the transport
+		this.connection.transport.send( message );
+	}
+	
+	public void up( Message message )
+	{
+		for( int i = protocols.length-1; i >=0; i-- )
+		{
+			if( protocols[i].up(message) == false )
+				return;
+		}
+		
+		// pass to connection for final processing
+		this.connection.receive( message );
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 
-
+	/**
+	 * Remove all existing protocols from the protocol stack
+	 */
+	protected void empty()
+	{
+		this.protocols = new IProtocol[]{};
+	}
+	
+	
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
 }

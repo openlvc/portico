@@ -21,9 +21,10 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.network2.Connection;
-import org.portico2.common.network2.IApplicationReceiver;
-import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.network.Connection;
+import org.portico2.common.network.Header;
+import org.portico2.common.network.IApplicationReceiver;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
 
 public class ForwarderConnection implements IApplicationReceiver
 {
@@ -118,13 +119,12 @@ public class ForwarderConnection implements IApplicationReceiver
 		exchanger.dataMessageReceived( direction, incoming );
 	}
 
-//  FIXME - Do we still need this?
-//	@Override
-//	public final boolean isReceivable( int targetFederate )
-//	{
-//		// accept everything
-//		return true;
-//	}
+	@Override
+	public final boolean isReceivable( Header header )
+	{
+		// accept everything
+		return true;
+	}
 	
 	@Override
 	public Logger getLogger()

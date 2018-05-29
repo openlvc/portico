@@ -22,9 +22,10 @@ import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.network2.Connection;
-import org.portico2.common.network2.IApplicationReceiver;
-import org.portico2.common.network2.configuration.ConnectionConfiguration;
+import org.portico2.common.network.Connection;
+import org.portico2.common.network.Header;
+import org.portico2.common.network.IApplicationReceiver;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
 
 public class LRCConnection implements IApplicationReceiver
 {
@@ -115,12 +116,12 @@ public class LRCConnection implements IApplicationReceiver
 		lrc.getState().getQueue().offer( incoming );
 	}
 
-//	@Override
-//	public final boolean isReceivable( int targetFederate )
-//	{
-//		// Just filter out ones targeting the RTI for now. We can filter the rest later.
-//		return targetFederate != PorticoConstants.RTI_HANDLE;
-//	}
+	@Override
+	public final boolean isReceivable( Header header )
+	{
+		// Just filter out ones targeting the RTI for now. We can filter the rest later.
+		return header.getTargetFederate() != PorticoConstants.RTI_HANDLE;
+	}
 	
 	@Override
 	public Logger getLogger()

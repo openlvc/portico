@@ -12,12 +12,14 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network;
+package org.portico2.common.network.tcp.channel;
 
 /**
- * This class should be used to create new instances of {@link Connection} implementations.
+ * There are a number of classes that record various metrics. This is a generic class to hold
+ * metric data. Nothing fancy, just a struct. So not-fancy that I'm just giving public access
+ * to the members.
  */
-public class ConnectionFactory
+public class Metrics
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -26,10 +28,18 @@ public class ConnectionFactory
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	public long messagesSent;
+	public long messagesReceived;
+	public long bytesSent;
+	public long bytesReceived;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public Metrics()
+	{
+		clear();
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -38,7 +48,13 @@ public class ConnectionFactory
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-
+	public void clear()
+	{
+		this.messagesSent = 0;
+		this.messagesReceived = 0;
+		this.bytesSent = 0;
+		this.bytesReceived = 0;
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
