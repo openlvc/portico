@@ -12,12 +12,13 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network;
+package org.portico2.common.utils;
 
 /**
- * This class should be used to create new instances of {@link Connection} implementations.
+ * Class to clearly encapsulate the set of various socket options we might want to apply
+ * to a socket.
  */
-public class ConnectionFactory
+public class SocketOptions
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -26,6 +27,8 @@ public class ConnectionFactory
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	public int recvBufferSize  = (int)ByteUnit.MEGABYTES.toBytes( 4 );
+	public int sendBufferSize  = (int)ByteUnit.MEGABYTES.toBytes( 4 );
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -35,11 +38,39 @@ public class ConnectionFactory
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/// Accessor and Mutator Methods   /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	public void setSendBufferSize( int value )
+	{
+		this.sendBufferSize = value;
+	}
+	
+	public void setSendBufferSize( int value, ByteUnit unit )
+	{
+		this.sendBufferSize = (int)unit.toBytes( value );
+	}
+	
+	public int getSendBufferSize()
+	{
+		return this.sendBufferSize;
+	}
+	
+	public void setRecvBufferSize( int value )
+	{
+		this.recvBufferSize = value;
+	}
+	
+	public void setRecvBufferSize( int value, ByteUnit unit )
+	{
+		this.recvBufferSize = (int)unit.toBytes( value );
+	}
+	
+	public int getRecvBufferSize()
+	{
+		return this.recvBufferSize;
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

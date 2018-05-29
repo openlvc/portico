@@ -23,10 +23,10 @@ import java.io.ObjectOutputStream;
 
 import org.portico.lrc.LRC;
 import org.portico.utils.messaging.PorticoMessage;
-import org.portico2.common.network2.CallType;
-import org.portico2.common.network2.Header;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
+import org.portico2.common.network.CallType;
+import org.portico2.common.network.Header;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 

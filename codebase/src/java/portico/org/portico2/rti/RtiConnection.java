@@ -20,10 +20,11 @@ import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.network2.Connection;
-import org.portico2.common.network2.IApplicationReceiver;
-import org.portico2.common.network2.configuration.ConnectionConfiguration;
-import org.portico2.common.network2.configuration.TransportType;
+import org.portico2.common.network.Connection;
+import org.portico2.common.network.Header;
+import org.portico2.common.network.IApplicationReceiver;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.configuration.TransportType;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 public class RtiConnection implements IApplicationReceiver
@@ -125,12 +126,31 @@ public class RtiConnection implements IApplicationReceiver
 		rti.getInbox().receiveDataMessage( incoming, this );
 	}
 	
-//	@Override
-//	public final boolean isReceivable( int targetFederate )
-//	{
-//		return targetFederate == PorticoConstants.RTI_HANDLE ||
-//		       targetFederate == PorticoConstants.TARGET_ALL_HANDLE;
-//	}
+	@Override
+	public final boolean isReceivable( Header header )
+	{
+		return true;
+		// only process message if it is
+		//   (a) -NOT- from the RTI
+		//   (b) The target is either the RTI or Everyone
+//		if( header.getSourceFederate() != PorticoConstants.RTI_HANDLE )
+//		{
+//			return 
+//		}
+//		else
+//		{
+//			return false;
+//		}
+//		
+//		return header.getSourceFederate() != PorticoConstants.RTI_HANDLE &&
+//		       header.getTargetFederate() == PorticoConstants.RTI_HANDLE ||
+//		
+//		return sourceFederate != PorticoConstants.RTI_HANDLE;
+//		
+//		return targetFederate == PorticoConstants.TARGET_ALL_HANDLE ||
+//		       (targetFederate == PorticoConstants.RTI_HANDLE &&
+//		        sourceFederate != PorticoConstants.RTI_HANDLE );
+	}
 
 	@Override
 	public Logger getLogger()

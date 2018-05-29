@@ -25,10 +25,10 @@ import java.util.Properties;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.utils.StringUtils;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.network2.configuration.ConnectionConfiguration;
-import org.portico2.common.network2.configuration.JvmConfiguration;
-import org.portico2.common.network2.configuration.MulticastConfiguration;
-import org.portico2.common.network2.configuration.TransportType;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.configuration.JvmConfiguration;
+import org.portico2.common.network.configuration.MulticastConfiguration;
+import org.portico2.common.network.configuration.TransportType;
 
 public class RtiConfiguration
 {
@@ -140,7 +140,7 @@ public class RtiConfiguration
     			String prefix = PFX_RTI_CONNECTION+"."+name;
     			
     			// get the connection type
-    			String typeString = properties.getProperty( prefix+".type" );
+    			String typeString = properties.getProperty( prefix+".transport" );
     			if( typeString == null )
     				throw new JConfigurationException( "RTI Connection [%s] does not specify a type", name );
     			

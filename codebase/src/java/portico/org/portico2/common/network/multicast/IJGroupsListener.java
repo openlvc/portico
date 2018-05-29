@@ -12,12 +12,17 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network;
+package org.portico2.common.network.multicast;
+
+import org.apache.logging.log4j.Logger;
+import org.portico.lrc.compat.JRTIinternalError;
 
 /**
- * This class should be used to create new instances of {@link Connection} implementations.
+ * This interface is used to link a JGroups channel to the component that is managing it. When
+ * messages are received on the channel, they are passed to an implementation of this interface
+ * for processing.
  */
-public class ConnectionFactory
+public interface IJGroupsListener
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -34,12 +39,20 @@ public class ConnectionFactory
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
+	/**
+	 * A message has been received on the given channel for processing.
+	 * 
+	 * @param channel The channel it was received on
+	 * @param payload The raw payload that was received
+	 * @throws JRTIinternalError Throw this if there is an error and the channel will log it
+	 */
+	public void receive( JGroupsChannel channel, byte[] payload ) throws JRTIinternalError;
+	
+	/**
+	 * @return Each listener must provide a logger to the channel.
+	 */
+	public Logger provideLogger();
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

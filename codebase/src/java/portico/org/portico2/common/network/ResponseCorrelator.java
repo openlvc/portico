@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@link #waitFor(int)}, passing in the ID of the request. This method will block until
  * either a response with that ID has been provided, or a timeout period has been reached.
  * There is an overload you can specify a precise timeout with, but the default timeout
- * can be set on the correlator (in milliseconds) via {@link #setDefaultTimeout(long)}.
+ * can be set on the correlator (in milliseconds) via {@link #setTimeout(long)}.
  * <p/>
  * 
  * On the input side, the medium receiving messages can offer them to the correlator via the
@@ -66,7 +66,7 @@ public class ResponseCorrelator<T>
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private AtomicInteger idGenerator;
-	private long defaultTimeout;
+	private long timeout;
 	
 	private Map<Integer,Holder> responseMap;
 
@@ -76,7 +76,7 @@ public class ResponseCorrelator<T>
 	public ResponseCorrelator()
 	{
 		this.idGenerator = new AtomicInteger(0);
-		this.defaultTimeout = 2000;
+		this.timeout = 2000;
 		this.responseMap = new Hashtable<>();
 	}
 
@@ -99,7 +99,7 @@ public class ResponseCorrelator<T>
 	
 	public T waitFor( int id )
 	{
-		return waitFor( id, defaultTimeout );
+		return waitFor( id, timeout );
 	}
 	
 	public T waitFor( int id, long timeout )
@@ -150,10 +150,10 @@ public class ResponseCorrelator<T>
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public void setDefaultTimeout( long millis )
+	public void setTimeout( long millis )
 	{
 		if( millis > 0 )
-			this.defaultTimeout = millis;
+			this.timeout = millis;
 	}
 	
 	public boolean isRegistered( int id )

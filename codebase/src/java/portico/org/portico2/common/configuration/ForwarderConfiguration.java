@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.network2.configuration.ConnectionConfiguration;
-import org.portico2.common.network2.configuration.TransportType;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.configuration.TransportType;
 
 public class ForwarderConfiguration
 {
