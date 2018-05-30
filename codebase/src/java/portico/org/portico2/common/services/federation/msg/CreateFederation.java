@@ -37,6 +37,11 @@ public class CreateFederation extends PorticoMessage
 	//----------------------------------------------------------
 	private static final long serialVersionUID = 98121116105109L;
 
+	// Keys that will go into a successful response object
+	public static final String KEY_FEDERATION_NAME = "federationName";
+	public static final String KEY_FEDERATION_HANDLE = "federationHandle";
+	public static final String KEY_FOM = "fom";
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------

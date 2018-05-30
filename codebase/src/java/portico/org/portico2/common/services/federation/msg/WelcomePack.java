@@ -46,6 +46,8 @@ public class WelcomePack implements Externalizable
 	//----------------------------------------------------------
 	private int federationHandle;
 	private int federateHandle;
+	private String federationName;
+	private String federateName;
 	private ObjectModel fom;
 
 	// Federation State
@@ -58,6 +60,8 @@ public class WelcomePack implements Externalizable
 	{
 		this.federationHandle = PorticoConstants.NULL_HANDLE;
 		this.federateHandle   = PorticoConstants.NULL_HANDLE;
+		this.federationName   = "unknown";
+		this.federateName     = "unknown";
 		this.fom = null;
 		
 		// Federation State
@@ -71,10 +75,14 @@ public class WelcomePack implements Externalizable
 	public ObjectModel getFOM() { return this.fom; }
 	public int         getFederationHandle() { return this.federationHandle; }
 	public int         getFederateHandle()   { return this.federateHandle; }
+	public String      getFederationName()   { return this.federationName; }
+	public String      getFederateName()     { return this.federateName; }
 	public Set<String> getSyncPoints( )      { return this.syncpoints; }
 
 	public void setFederationHandle( int handle ) { this.federationHandle = handle; }
 	public void setFederateHandle  ( int handle ) { this.federateHandle = handle; }
+	public void setFederationName  ( String name ){ this.federationName = name; }
+	public void setFederateName    ( String name ){ this.federateName = name; }
 	public void setFOM             ( ObjectModel fom ) { this.fom = fom; }
 	public void setSyncPoints      ( Set<String> points ) { this.syncpoints = points; }
 	
@@ -85,6 +93,8 @@ public class WelcomePack implements Externalizable
 	{
 		this.federationHandle = input.readInt();
 		this.federateHandle = input.readInt();
+		this.federationName = input.readUTF();
+		this.federateName = input.readUTF();
 		this.fom = (ObjectModel)input.readObject();
 		
 		// sync points
@@ -97,6 +107,8 @@ public class WelcomePack implements Externalizable
 	{
 		output.writeInt( federationHandle );
 		output.writeInt( federateHandle );
+		output.writeUTF( federationName );
+		output.writeUTF( federateName );
 		output.writeObject( fom );
 		
 		// sync points

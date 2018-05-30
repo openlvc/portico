@@ -19,7 +19,6 @@ import java.util.EnumSet;
 import org.apache.logging.log4j.Logger;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.Header;
 import org.portico2.common.network.IProtocol;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ProtocolStack;
@@ -102,7 +101,7 @@ public class ForwardingProtocol implements IProtocol
 
 	public void close()
 	{
-		
+		// no-op
 	}
 
 
@@ -118,36 +117,56 @@ public class ForwardingProtocol implements IProtocol
 
 	public boolean up( Message message )
 	{
-		Header header = message.getHeader();
+		switch( message.getCallType() )
+		{
+			case DataMessage:
+			{
+				// Only data messages that pass our filtering rules can get through.
+				// Check the rulez and link it through to its siblings if it is cool.
+
+				// TODO check the rulez!
+				targetStack.down( message );
+				break;
+			}
+			
+			case ControlSync:
+			{
+				// We _must_ forward all control messages to the other side; no questions.
+				// However, there is a small subset we want to snoop on, so check for that.
+
+				// Do we care about this type?
+				if( PassthroughTypes.contains(message.getHeader().getMessageType()) )
+					exchanger.stateTracker.receiveControlRequest( message );
+				
+				// Pass to the other side
+				targetStack.down( message );
+				break;
+			}
+			
+			case ControlAsync:
+			{
+				// We just forward async/from RTI control messages through.
+				// Nothing to track for now.
+				targetStack.down( message );
+				break;
+			}
+
+			case ControlResp:
+			{
+				// We only track a control response if we took a look at the original
+				// request and decided that we needed to see the response
+				if( exchanger.stateTracker.isResponseWanted(message.getRequestId()) )
+					exchanger.stateTracker.receiveControlResponse( message );
+				
+				targetStack.down( message );
+				break;
+			}
+
+			default:
+				break; // Nope. Don't know what it is. YOU. SHALL NOT. PASSSS!
+		}
 		
-		if( header.isDataMessage() )
-		{
-			//
-			// Only data messages that pass our filtering rules will get through
-			//
-			
-			// TODO check the rulez!
-			targetStack.down( message );
-			
-			// Never pass data messages up the forwarder stack any further. We do no
-			// local processing on them.
-			return false;
-		}
-		else if( header.isControlMessage() )
-		{
-			//
-			// All control messages will automatically go to the other side, no questions asked.
-			// However, only some will go up the forwarder stack for additional local processing.
-			//
-			
-			// pass to the other side
-			targetStack.down( message );
-
-			// do we want to pass it up the _forwarder_ stack for more processing?
-			return PassthroughTypes.contains( header.getMessageType() );
-		}
-
-		// If we get here, we don't know what it is, so we should block it
+		// Never pass messages up the stack any further. We don't do local processing.
 		return false;
 	}
 

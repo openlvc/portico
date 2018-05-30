@@ -95,7 +95,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		if( context.isErrorResponse() )
 			throw context.getErrorResponseException();
 		
-		int federationHandle = context.getSuccessResultAsInt();
+		int federationHandle = context.getSuccessResultAsInt( CreateFederation.KEY_FEDERATION_HANDLE );
 		logger.info( "SUCCESS Created federation execution [%s] with handle %d",
 		             request.getFederationName(),
 		             federationHandle );

@@ -78,6 +78,8 @@ public class JoinFederationHandler extends RTIMessageHandler
 		WelcomePack welcome = new WelcomePack();
 		welcome.setFederateHandle( federateHandle );
 		welcome.setFederationHandle( federation.getFederationHandle() );
+		welcome.setFederationName( federationName );
+		welcome.setFederateName( federateName );
 		welcome.setFOM( federation.getFOM() );
 		// federation state - sync points
 		welcome.setSyncPoints( syncManager.getAllUnsynchronizedLabels() );

@@ -17,6 +17,7 @@ package org.portico2.forwarder;
 import org.apache.logging.log4j.Logger;
 import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.common.configuration.RID;
+import org.portico2.forwarder.tracking.StateTracker;
 
 public class Exchanger
 {
@@ -31,7 +32,6 @@ public class Exchanger
 	private RID rid;
 	private Logger logger;
 
-//	private Firewall firewall;
 	private ForwarderConnection upstream;
 	private ForwarderConnection downstream;
 	
@@ -47,6 +47,11 @@ public class Exchanger
 	// insert them into the connections
 	protected ForwardingProtocol upstreamForwarder;
 	protected ForwardingProtocol downstreamForwarder;
+	
+	// State Tracker
+	// We use this to track information about the various federations that exist
+	// so that we can resolve names to handles appropriately
+	protected StateTracker stateTracker;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -57,13 +62,15 @@ public class Exchanger
 		this.rid       = forwarder.getRid();
 		this.logger    = forwarder.getLogger();
 
-//		this.firewall = null;        // set in startup()
 		this.upstream = null;        // set in startup()
 		this.downstream = null;      // set in startup()
 		
 		// Forwarders
-		this.upstreamForwarder = null;  // set in startup()
+		this.upstreamForwarder = null;   // set in startup()
 		this.downstreamForwarder = null; // set in startup()
+		
+		// State Tracker
+		this.stateTracker = null;    // set in startup
 	}
 
 	//----------------------------------------------------------
@@ -76,10 +83,10 @@ public class Exchanger
 	protected void startup()
 	{
 		ForwarderConfiguration configuration = rid.getForwarderConfiguration();
-
-		// Grab the references we need
-//		this.firewall = forwarder.getFirewall();
 		
+		// Start the state tracker
+		this.stateTracker = new StateTracker( configuration, logger );
+
 		// Create the connections
 		logger.debug( "Creating local and upstream connections" );
 		this.upstream = new ForwarderConnection( Direction.Upstream, this, configuration.getUpstreamConfiguration() );
