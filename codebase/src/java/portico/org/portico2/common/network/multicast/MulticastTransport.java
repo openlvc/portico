@@ -75,11 +75,6 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 		// create a JGroups channel configuration from what was provided
 		this.jgroupsConfiguration = new JGroupsConfiguration( configuration.getName() );
 		this.jgroupsConfiguration.fromRidConfiguration( this.configuration );
-		
-		logger.debug( "--- Multicast Configuration ---" );
-		logger.debug( "  >>   NIC Address: "+jgroupsConfiguration.getBindAddress() );
-		logger.debug( "  >> Group Address: "+jgroupsConfiguration.getMulticastGroupAddress() );
-		logger.debug( "  >>    Group Port: "+jgroupsConfiguration.getMulticastPort() );
 	}
 	
 	/**
@@ -92,6 +87,11 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 		if( this.isConnected )
 			return;
 
+		logger.trace( "--- Multicast Configuration ---" );
+		logger.trace( "  >>   NIC Address: "+jgroupsConfiguration.getBindAddress() );
+		logger.trace( "  >> Group Address: "+jgroupsConfiguration.getMulticastGroupAddress() );
+		logger.trace( "  >>    Group Port: "+jgroupsConfiguration.getMulticastPort() );
+		logger.trace( "" );
 		logger.trace( "Connecting to Multicast channel: portico" );
 		
 		// Create the channel and connect to it
@@ -143,6 +143,12 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 	public Logger provideLogger()
 	{
 		return logger;
+	}
+	
+	@Override
+	public boolean isOpen()
+	{
+		return isConnected;
 	}
 
 	//----------------------------------------------------------

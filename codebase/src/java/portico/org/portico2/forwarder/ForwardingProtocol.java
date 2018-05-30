@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.IProtocol;
 import org.portico2.common.network.Message;
+import org.portico2.common.network.ProtocolStack;
 
 /**
  * A Connection interfaces with outside application components via "full fat" objects. These are
@@ -54,8 +55,10 @@ public class ForwardingProtocol implements IProtocol
 	//----------------------------------------------------------
 	private Direction direction;
 	private Exchanger exchanger;
-	
+
+	private Connection hostConnection;	
 	private Logger logger;
+	private ProtocolStack targetStack; // where we want to dump messages
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -64,6 +67,10 @@ public class ForwardingProtocol implements IProtocol
 	{
 		this.direction = direction;
 		this.exchanger = exchanger;
+
+		this.hostConnection = null; // set in open()
+		this.logger = null;         // set in open()
+		this.targetStack = null;    // set in open()
 	}
 
 	//----------------------------------------------------------
@@ -75,12 +82,16 @@ public class ForwardingProtocol implements IProtocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	public void configure( Connection hostConnection )
 	{
+		this.hostConnection = hostConnection;
 		this.logger = hostConnection.getLogger();
 	}
 
 	public void open()
 	{
+		ForwardingProtocol sibling = direction == Direction.Upstream ? exchanger.downstreamForwarder :
+		                                                               exchanger.upstreamForwarder; 
 		
+		this.targetStack = sibling.hostConnection.getProtocolStack();
 	}
 
 	public void close()
@@ -94,6 +105,8 @@ public class ForwardingProtocol implements IProtocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	public boolean down( Message message )
 	{
+		// No-op for us. We only intercept messages coming in and forward them over so that
+		// they can go out the other side.
 		return true;
 	}
 
@@ -104,6 +117,8 @@ public class ForwardingProtocol implements IProtocol
 		// Let through special cases that we may need to watch
 		
 		// Divert all other messages across to the other half
+		logger.fatal( "%s Handing message off to target", direction.flowDirection() );
+		targetStack.down( message );
 		return true;
 	}
 

@@ -32,8 +32,8 @@ public class Exchanger
 	private Logger logger;
 
 //	private Firewall firewall;
-	protected ForwarderConnection upstream;
-	protected ForwarderConnection downstream;
+	private ForwarderConnection upstream;
+	private ForwarderConnection downstream;
 	
 	// Forwarders
 	//
@@ -45,8 +45,8 @@ public class Exchanger
 	//
 	// We create these here so we can populate them with the links they need. We then
 	// insert them into the connections
-	private ForwardingProtocol upstreamForwarder;
-	private ForwardingProtocol downstreamForwarder;
+	protected ForwardingProtocol upstreamForwarder;
+	protected ForwardingProtocol downstreamForwarder;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -89,7 +89,7 @@ public class Exchanger
 		this.upstreamForwarder = new ForwardingProtocol( Direction.Upstream, this );
 		this.downstreamForwarder = new ForwardingProtocol( Direction.Downstream, this );
 		this.upstream.getConnection().getProtocolStack().addProtocol( upstreamForwarder );
-		this.upstream.getConnection().getProtocolStack().addProtocol( downstreamForwarder );
+		this.downstream.getConnection().getProtocolStack().addProtocol( downstreamForwarder );
 		
 		// Start the connections
 		logger.info( "Starting UPSTREAM connection" );
