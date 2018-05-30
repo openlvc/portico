@@ -14,8 +14,12 @@
  */
 package org.portico2.forwarder;
 
+import java.util.EnumSet;
+
 import org.apache.logging.log4j.Logger;
+import org.portico2.common.messaging.MessageType;
 import org.portico2.common.network.Connection;
+import org.portico2.common.network.Header;
 import org.portico2.common.network.IProtocol;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ProtocolStack;
@@ -49,6 +53,8 @@ public class ForwardingProtocol implements IProtocol
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	private static final EnumSet PassthroughTypes = EnumSet.of( MessageType.CreateFederation,
+	                                                            MessageType.JoinFederation );
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -112,14 +118,37 @@ public class ForwardingProtocol implements IProtocol
 
 	public boolean up( Message message )
 	{
-		// Apply firewall rules
+		Header header = message.getHeader();
 		
-		// Let through special cases that we may need to watch
-		
-		// Divert all other messages across to the other half
-		logger.fatal( "%s Handing message off to target", direction.flowDirection() );
-		targetStack.down( message );
-		return true;
+		if( header.isDataMessage() )
+		{
+			//
+			// Only data messages that pass our filtering rules will get through
+			//
+			
+			// TODO check the rulez!
+			targetStack.down( message );
+			
+			// Never pass data messages up the forwarder stack any further. We do no
+			// local processing on them.
+			return false;
+		}
+		else if( header.isControlMessage() )
+		{
+			//
+			// All control messages will automatically go to the other side, no questions asked.
+			// However, only some will go up the forwarder stack for additional local processing.
+			//
+			
+			// pass to the other side
+			targetStack.down( message );
+
+			// do we want to pass it up the _forwarder_ stack for more processing?
+			return PassthroughTypes.contains( header.getMessageType() );
+		}
+
+		// If we get here, we don't know what it is, so we should block it
+		return false;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////

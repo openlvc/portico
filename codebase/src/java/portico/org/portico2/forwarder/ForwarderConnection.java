@@ -86,9 +86,6 @@ public class ForwarderConnection implements IApplicationReceiver
 	{
 		// No-op
 		// FIXME - Throw exception?
-//		ForwarderConnection target = direction == Direction.Upstream ? exchanger.downstream : exchanger.upstream;
-//		target.getConnection().sendControlRequest( context );
-//		System.out.println( "HANDING OFF!" );
 	}
 
 	@Override
@@ -96,8 +93,6 @@ public class ForwarderConnection implements IApplicationReceiver
 	{
 		// No-op
 		// FIXME - Throw exception?
-//		ForwarderConnection target = direction == Direction.Upstream ? exchanger.downstream : exchanger.upstream;
-//		target.getConnection().sendDataMessage( message );
 	}
 
 	@Override
