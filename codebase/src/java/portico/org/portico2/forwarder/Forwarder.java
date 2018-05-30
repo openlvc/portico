@@ -90,7 +90,7 @@ public class Forwarder
 		Runtime.getRuntime().addShutdownHook( new ForwarderShutdownHook(this) );
 		
 		this.running = true;
-		logger.info( "Forwarder is up and ready for Bizness!" );
+		logger.info( "Forwarder is up and ready for Bizness!\n" );
 	}
 	
 	public void shutdown()

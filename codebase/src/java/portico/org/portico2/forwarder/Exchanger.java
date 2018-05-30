@@ -32,8 +32,21 @@ public class Exchanger
 	private Logger logger;
 
 //	private Firewall firewall;
-	private ForwarderConnection upstream;
-	private ForwarderConnection downstream;
+	protected ForwarderConnection upstream;
+	protected ForwarderConnection downstream;
+	
+	// Forwarders
+	//
+	// These sit inside a Connection and are linked to one another so that messages
+	// coming through a connection can be diverted prior to them being "inflated".
+	// When a message is received on the wire from upstream, the upstream forwarder
+	// captures it and hands it directly to its sibling protocol that is in the downstream
+	// connection to pass down and out.
+	//
+	// We create these here so we can populate them with the links they need. We then
+	// insert them into the connections
+	private ForwardingProtocol upstreamForwarder;
+	private ForwardingProtocol downstreamForwarder;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -47,6 +60,10 @@ public class Exchanger
 //		this.firewall = null;        // set in startup()
 		this.upstream = null;        // set in startup()
 		this.downstream = null;      // set in startup()
+		
+		// Forwarders
+		this.upstreamForwarder = null;  // set in startup()
+		this.downstreamForwarder = null; // set in startup()
 	}
 
 	//----------------------------------------------------------
@@ -69,8 +86,11 @@ public class Exchanger
 		this.downstream = new ForwarderConnection( Direction.Downstream, this, configuration.getDownstreamConfiguration() );
 		
 		// Create and insert the ForwardingProtocol implementations and insert into connections
-		// FIXME DO EET! START HERE
-
+		this.upstreamForwarder = new ForwardingProtocol( Direction.Upstream, this );
+		this.downstreamForwarder = new ForwardingProtocol( Direction.Downstream, this );
+		this.upstream.getConnection().getProtocolStack().addProtocol( upstreamForwarder );
+		this.upstream.getConnection().getProtocolStack().addProtocol( downstreamForwarder );
+		
 		// Start the connections
 		logger.info( "Starting UPSTREAM connection" );
 		this.upstream.connect();

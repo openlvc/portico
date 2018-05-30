@@ -14,6 +14,11 @@
  */
 package org.portico2.common.network;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.portico.lrc.compat.JConfigurationException;
+
 public class ProtocolStack
 {
 	//----------------------------------------------------------
@@ -24,7 +29,7 @@ public class ProtocolStack
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private Connection connection;
-	private IProtocol[] protocols;
+	private List<IProtocol> protocols;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -32,7 +37,7 @@ public class ProtocolStack
 	protected ProtocolStack( Connection connection )
 	{
 		this.connection = connection;
-		this.protocols = new IProtocol[0];
+		this.protocols = new ArrayList<>();
 	}
 
 	//----------------------------------------------------------
@@ -42,9 +47,9 @@ public class ProtocolStack
 	public final void down( Message message )
 	{
 		// pass the message to each protocol
-		for( int i = 0; i < protocols.length; i++ )
+		for( int i = 0; i < protocols.size(); i++ )
 		{
-			if( protocols[i].down(message) == false )
+			if( protocols.get(i).down(message) == false )
 				return;
 		}
 
@@ -54,9 +59,9 @@ public class ProtocolStack
 	
 	public void up( Message message )
 	{
-		for( int i = protocols.length-1; i >=0; i-- )
+		for( int i = protocols.size()-1; i >=0; i-- )
 		{
-			if( protocols[i].up(message) == false )
+			if( protocols.get(i).up(message) == false )
 				return;
 		}
 		
@@ -65,17 +70,43 @@ public class ProtocolStack
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	///  Protocol Management Methods   /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	public void addProtocol( IProtocol protocol ) throws JConfigurationException
+	{
+		// check to make sure we don't have this protocol already
+		for( IProtocol temp : protocols )
+		{
+			if( temp.getName().equalsIgnoreCase(protocol.getName()) )
+				throw new JConfigurationException( "Already have instance of protocol in stack: %s", protocol.getName() );
+		}
+		
+		// configure the protocol and add it
+		protocol.configure( connection );
+		protocol.open();
+		protocols.add( protocol );
+	}
+	
+	public IProtocol removeProtocol( IProtocol protocol )
+	{
+		if( protocols.remove(protocol) == false )
+			return null;
+		
+		protocol.close();
+		return protocol;
+	}
 
 	/**
 	 * Remove all existing protocols from the protocol stack
 	 */
 	protected void empty()
 	{
-		this.protocols = new IProtocol[]{};
+		this.protocols.clear();
 	}
 	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	
 	
 	//----------------------------------------------------------

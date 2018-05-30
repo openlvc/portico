@@ -101,10 +101,6 @@ public class TcpServerTransport implements ITransport
 		
 		this.socketAddress = new InetSocketAddress( this.configuration.getAddress(),
 		                                            this.configuration.getPort() );
-		
-		logger.debug( "--- TCP Server Configuration ---" );
-		logger.debug( "  >> Listen Address: "+this.configuration.getAddressString() );
-		logger.debug( "  >> Listen Port   : "+this.configuration.getPort() );
 	}
 
 	/**
@@ -121,7 +117,11 @@ public class TcpServerTransport implements ITransport
 		
 		try
 		{
-    		logger.trace( "Opening server socket and listening for new connection requests" );
+			logger.trace( "--- TCP Server Configuration ---" );
+			logger.trace( "  >> Listen Address: "+this.configuration.getAddressString() );
+			logger.trace( "  >> Listen Port   : "+this.configuration.getPort() );
+			logger.trace( "" );
+			logger.trace( "Opening server socket and listening for new connection requests" );
 
     		// re-initialize the socket address just in case
     		this.socketAddress = new InetSocketAddress( this.configuration.getAddress(),
@@ -141,6 +141,7 @@ public class TcpServerTransport implements ITransport
 		this.connectionAcceptor.start();
 
 		this.isConnected = true;
+		logger.trace( "TCP Server connection is open" );
 	}
 	
 	/**
@@ -225,7 +226,7 @@ public class TcpServerTransport implements ITransport
 	
 		public void run()
 		{
-			logger.debug( "Ready to accept connections" );
+			logger.trace( "Connection acceptor is open; listening for incoming connections" );
 			while( Thread.interrupted() == false )
 			{
 				try
