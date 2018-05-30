@@ -193,7 +193,9 @@ public class RtiInbox
 		federation.addRawFomModules( request.getRawFomModules() );
 		
 		logger.info( "SUCCESS Created federation name="+name );
-		context.success( federation.getFederationHandle() );
+		context.success( CreateFederation.KEY_FEDERATION_HANDLE, federation.getFederationHandle() );
+		context.success( CreateFederation.KEY_FEDERATION_NAME, federation.getFederationName() );
+		context.success( CreateFederation.KEY_FOM, federation.getFOM() );
 	}
 
 	/**

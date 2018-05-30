@@ -270,7 +270,7 @@ public class MessageContext implements Externalizable
 	public final void success( String key, Object value )
 	{
 		if( this.response == null ||
-			(this.response instanceof ExtendedSuccessResponse) == false )
+		   (this.response instanceof ExtendedSuccessResponse) == false )
 		{
 			this.response = new ExtendedSuccessResponse();
 		}

@@ -221,6 +221,20 @@ public class ResponseMessage implements Serializable
 		return ""+getSuccessResultMap().get( key );
 	}
 
+	public <T> T getSuccessResultAs( Class<T> type )
+	{
+		return getSuccessResultAs( "result", type );
+	}
+	
+	public <T> T getSuccessResultAs( String key, Class<T> type )
+	{
+		Object o = getSuccessResultMap().get( key );
+		if( o == null )
+			throw new IllegalArgumentException( "Unknown result key: "+key );
+		else
+			return type.cast( o );
+	}
+	
 	/**
 	 * If this response is an {@link ErrorResponse}, this method will extract it and fetch
 	 * the cause of the error, casting it to an Exception before returning it (it is stored as a

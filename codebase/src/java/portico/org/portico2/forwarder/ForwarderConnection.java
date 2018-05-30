@@ -25,6 +25,7 @@ import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.forwarder.tracking.StateTracker;
 
 public class ForwarderConnection implements IApplicationReceiver
 {
@@ -37,6 +38,7 @@ public class ForwarderConnection implements IApplicationReceiver
 	//----------------------------------------------------------
 	private Direction direction;
 	private Exchanger exchanger;
+	private StateTracker stateTracker;
 	private Logger logger;
 	
 	// Connection Settings
@@ -53,6 +55,7 @@ public class ForwarderConnection implements IApplicationReceiver
 	{
 		this.direction = direction;
 		this.exchanger = exchanger;
+		this.stateTracker = exchanger.stateTracker;
 		this.logger = LogManager.getFormatterLogger( exchanger.getLogger().getName()+"."+direction );
 		this.logger = exchanger.getLogger();
 
@@ -84,7 +87,7 @@ public class ForwarderConnection implements IApplicationReceiver
 	@Override
 	public void receiveControlRequest( MessageContext context ) throws JRTIinternalError
 	{
-		// No-op
+		// no-op
 		// FIXME - Throw exception?
 	}
 

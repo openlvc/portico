@@ -14,6 +14,8 @@
  */
 package org.portico2.forwarder.tracking;
 
+import org.portico.lrc.model.ObjectModel;
+
 public class Federation
 {
 	//----------------------------------------------------------
@@ -23,10 +25,17 @@ public class Federation
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private String name;
+	private ObjectModel fom;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	protected Federation( String name, ObjectModel model )
+	{
+		this.name = name;
+		this.fom = model;
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -35,7 +44,10 @@ public class Federation
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-
+	public String getName()
+	{
+		return this.name;
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
