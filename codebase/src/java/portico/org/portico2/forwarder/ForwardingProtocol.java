@@ -19,9 +19,12 @@ import java.util.EnumSet;
 import org.apache.logging.log4j.Logger;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.network.Connection;
+import org.portico2.common.network.Header;
 import org.portico2.common.network.IProtocol;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ProtocolStack;
+import org.portico2.forwarder.firewall.Firewall;
+import org.portico2.forwarder.tracking.StateTracker;
 
 /**
  * A Connection interfaces with outside application components via "full fat" objects. These are
@@ -64,6 +67,9 @@ public class ForwardingProtocol implements IProtocol
 	private Connection hostConnection;	
 	private Logger logger;
 	private ProtocolStack targetStack; // where we want to dump messages
+	
+	private StateTracker stateTracker;
+	private Firewall firewall;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -76,6 +82,9 @@ public class ForwardingProtocol implements IProtocol
 		this.hostConnection = null; // set in open()
 		this.logger = null;         // set in open()
 		this.targetStack = null;    // set in open()
+		
+		this.stateTracker = null;   // set in open()
+		this.firewall = null;       // set in open()
 	}
 
 	//----------------------------------------------------------
@@ -97,6 +106,9 @@ public class ForwardingProtocol implements IProtocol
 		                                                               exchanger.upstreamForwarder; 
 		
 		this.targetStack = sibling.hostConnection.getProtocolStack();
+		
+		this.stateTracker = exchanger.stateTracker;
+		this.firewall = exchanger.firewall;
 	}
 
 	public void close()
@@ -108,15 +120,23 @@ public class ForwardingProtocol implements IProtocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Passing   /////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public boolean down( Message message )
+	public final boolean down( Message message )
 	{
 		// No-op for us. We only intercept messages coming in and forward them over so that
 		// they can go out the other side.
 		return true;
 	}
 
-	public boolean up( Message message )
+	public final boolean up( Message message )
 	{
+		// short-circuit the whole thing
+		if( firewall.isEnabled() == false )
+		{
+			targetStack.down( message );
+			return false;
+		}
+
+		// different course of action depending on the call type
 		switch( message.getCallType() )
 		{
 			case DataMessage:
@@ -124,8 +144,16 @@ public class ForwardingProtocol implements IProtocol
 				// Only data messages that pass our filtering rules can get through.
 				// Check the rulez and link it through to its siblings if it is cool.
 
-				// TODO check the rulez!
-				targetStack.down( message );
+				// Check the rulez!
+				Header header = message.getHeader();
+				if( firewall.acceptUpdate(direction,
+				                          header.isFilteringHandleObject(),
+				                          header.getFederation(),
+				                          header.getFilteringHandle()) )
+				{
+					targetStack.down( message );
+				}
+				
 				break;
 			}
 			
@@ -136,7 +164,7 @@ public class ForwardingProtocol implements IProtocol
 
 				// Do we care about this type?
 				if( PassthroughTypes.contains(message.getHeader().getMessageType()) )
-					exchanger.stateTracker.receiveControlRequest( message );
+					stateTracker.receiveControlRequest( message );
 				
 				// Pass to the other side
 				targetStack.down( message );
@@ -155,8 +183,8 @@ public class ForwardingProtocol implements IProtocol
 			{
 				// We only track a control response if we took a look at the original
 				// request and decided that we needed to see the response
-				if( exchanger.stateTracker.isResponseWanted(message.getRequestId()) )
-					exchanger.stateTracker.receiveControlResponse( message );
+				if( stateTracker.isResponseWanted(message.getRequestId()) )
+					stateTracker.receiveControlResponse( message );
 				
 				targetStack.down( message );
 				break;

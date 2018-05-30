@@ -17,6 +17,7 @@ package org.portico2.forwarder;
 import org.apache.logging.log4j.Logger;
 import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.common.configuration.RID;
+import org.portico2.forwarder.firewall.Firewall;
 import org.portico2.forwarder.tracking.StateTracker;
 
 public class Exchanger
@@ -52,6 +53,10 @@ public class Exchanger
 	// We use this to track information about the various federations that exist
 	// so that we can resolve names to handles appropriately
 	protected StateTracker stateTracker;
+	
+	// Firewall
+	// We use the firewall to help us determine whether to forward messages or not
+	protected Firewall firewall;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -71,6 +76,9 @@ public class Exchanger
 		
 		// State Tracker
 		this.stateTracker = null;    // set in startup
+		
+		// Firewall
+		this.firewall = null;        // set in startup()
 	}
 
 	//----------------------------------------------------------
@@ -84,8 +92,9 @@ public class Exchanger
 	{
 		ForwarderConfiguration configuration = rid.getForwarderConfiguration();
 		
-		// Start the state tracker
+		// State Tracker and Firewall
 		this.stateTracker = new StateTracker( configuration, logger );
+		this.firewall = new Firewall( configuration, stateTracker, logger );
 
 		// Create the connections
 		logger.debug( "Creating local and upstream connections" );
