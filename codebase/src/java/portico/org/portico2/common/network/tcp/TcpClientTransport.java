@@ -101,10 +101,6 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 		this.serverAddress = new InetSocketAddress( this.configuration.getAddress(),
 		                                            this.configuration.getPort() );
 		
-		logger.debug( "--- TCP Client Configuration ---" );
-		logger.debug( "  >> Server Address: "+this.configuration.getAddressString() );
-		logger.debug( "  >> Server Port   : "+this.configuration.getPort() );
-
 		// Sending and Receiving
 		this.channel = new TcpChannel( this );
 		this.channel.configure( this.configuration );
@@ -118,6 +114,11 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 	{
 		if( this.isConnected )
 			return;
+
+		logger.debug( "--- TCP Client Configuration ---" );
+		logger.debug( "  >> Server Address: "+this.configuration.getAddressString() );
+		logger.debug( "  >> Server Port   : "+this.configuration.getPort() );
+		logger.trace( "" );
 
 		//
 		// 1. Connect to the server
@@ -279,6 +280,12 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public boolean isOpen()
+	{
+		return this.isConnected;
+	}
+
 
 
 	//----------------------------------------------------------

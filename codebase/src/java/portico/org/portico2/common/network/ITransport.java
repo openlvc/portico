@@ -85,6 +85,10 @@ public interface ITransport
 	 */
 	public void close() throws JRTIinternalError;
 
+	/**
+	 * @return Whether the transport is open or not.
+	 */
+	public boolean isOpen();
 	
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Transport Messaging Methods   ////////////////////////////////////////////////////

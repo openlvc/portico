@@ -44,6 +44,50 @@ public class ProtocolStack
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Lifecycle Management Methods   ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	public void open()
+	{
+		List<IProtocol> failed = new ArrayList<>();
+		
+		for( IProtocol protocol : protocols )
+		{
+			try
+			{
+				protocol.open();
+			}
+			catch( Exception e )
+			{
+				connection.getLogger().warn( "Exception while opening protocol "+protocol.getName()+": "+
+				                             e.getMessage(), e );
+				failed.add( protocol );
+			}
+		}
+		
+		protocols.removeAll( failed );
+	}
+
+	public void close()
+	{
+		for( IProtocol protocol : protocols )
+		{
+			try
+			{
+				protocol.close();
+			}
+			catch( Exception e )
+			{
+				connection.getLogger().warn( "Exception while closing protocol "+protocol.getName()+": "+
+				                             e.getMessage(), e );
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Message Management Methods   //////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	
 	public final void down( Message message )
 	{
 		// pass the message to each protocol
@@ -83,7 +127,8 @@ public class ProtocolStack
 		
 		// configure the protocol and add it
 		protocol.configure( connection );
-		protocol.open();
+		if( connection.isOpen() )
+			protocol.open();
 		protocols.add( protocol );
 	}
 	

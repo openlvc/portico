@@ -128,6 +128,11 @@ public class Connection
 		//logger.debug( ProtocolStack );
 		//logger.debug( "Transport: "+this.transport.getType() );
 		
+		// tell the protocols that we're starting up
+		logger.trace( "Opening protocol stack" );
+		this.protocolStack.open();
+		
+		// open the transport and let the messages flow!
 		logger.trace( "Opening transport [%s/%s]", name, this.transport.getType() );
 		this.transport.open();
 		logger.trace( "Transport is now open [%s/%s]", name, this.transport.getType() );
@@ -292,6 +297,11 @@ public class Connection
 	public ResponseCorrelator<ResponseMessage> getResponseCorrelator()
 	{
 		return this.responseCorrelator;
+	}
+
+	public boolean isOpen()
+	{
+		return transport.isOpen();
 	}
 
 	//----------------------------------------------------------
