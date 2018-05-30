@@ -14,6 +14,8 @@
  */
 package org.portico2.forwarder.tracking;
 
+import org.portico.lrc.model.ICMetadata;
+import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 
 public class Federation
@@ -47,6 +49,35 @@ public class Federation
 	public String getName()
 	{
 		return this.name;
+	}
+
+	/**
+	 * When a federate joins a federation, it may expand the FOM. As such, whenever we see
+	 * a federation join call we need to take the new FOM and use it in place of the old.
+	 * 
+	 * @param fom The new FOM that was part of a successful federation join
+	 */
+	protected void updateFOM( ObjectModel fom )
+	{
+		this.fom = fom;
+	}
+
+	protected final String resolveClassHandleToName( int classHandle )
+	{
+		OCMetadata clazz = fom.getObjectClass( classHandle );
+		if( clazz != null )
+			return clazz.getQualifiedName();
+		else
+			return null;
+	}
+	
+	protected final String resolveInteractionClassToName( int classHandle )
+	{
+		ICMetadata clazz = fom.getInteractionClass( classHandle );
+		if( clazz != null )
+			return clazz.getQualifiedName();
+		else
+			return null;
 	}
 
 	//----------------------------------------------------------

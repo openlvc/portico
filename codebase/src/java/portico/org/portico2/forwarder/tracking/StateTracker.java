@@ -99,9 +99,9 @@ public class StateTracker
 	{
 		return outstandingRequests.containsKey( requestId );
 	}
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	///  Message-Specific Methods   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	private void createFederationResponse( ResponseMessage response )
 	{
@@ -159,7 +159,51 @@ public class StateTracker
     		             welcome.getFederateHandle(),
     		             welcome.getFederationName(),
     		             welcome.getFederationHandle() );
+    		
+    		// update the stored object model, because it may have now been expanded
+    		federation.updateFOM( welcome.getFOM() );
 		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Find the FOM for the identified federation and then look the class handle up inside it.
+	 * Return the fully qualified name of the class.<p/>
+	 * 
+	 * If we don't know the federation, or the federation doesn't have a value for the class
+	 * handle, null is returned.
+	 * 
+	 * @param federationHandle The handle of the federation we're looking the class up in
+	 * @param classHandle      The handle of the class we want the fully qualified name for
+	 * @return                 The fully qualified name of the class, or null
+	 */
+	public final String resolveObjectClass( int federationHandle, int classHandle )
+	{
+		if( federations.containsKey(federationHandle) )
+			return federations.get(federationHandle).resolveClassHandleToName( classHandle );
+		else
+			return null;
+	}
+
+	/**
+	 * Find the FOM for the identified federation and then look the class handle up inside it.
+	 * Return the fully qualified name of the class.<p/>
+	 * 
+	 * If we don't know the federation, or the federation doesn't have a value for the class
+	 * handle, null is returned.
+	 * 
+	 * @param federationHandle The handle of the federation we're looking the class up in
+	 * @param classHandle      The handle of the class we want the fully qualified name for
+	 * @return                 The fully qualified name of the class, or null
+	 */
+	public final String resolveInteractionClass( int federationHandle, int classHandle )
+	{
+		if( federations.containsKey(federationHandle) )
+			return federations.get(federationHandle).resolveInteractionClassToName( classHandle );
+		else
+			return null;
 	}
 
 	//----------------------------------------------------------
