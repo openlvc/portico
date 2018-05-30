@@ -101,7 +101,7 @@ public class RTI
 		Runtime.getRuntime().addShutdownHook( new RtiShutdownHook(this) );
 		
 		this.running = true;
-		logger.info( "RTI is up. Connections active and ready for bizness!" );
+		logger.info( "RTI is up. Connections active and ready for bizness!\n" );
 	}
 	
 	public synchronized void shutdown()
