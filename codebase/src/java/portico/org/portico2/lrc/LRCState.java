@@ -78,6 +78,12 @@ public class LRCState
 	// DDM state entities //
 	private RegionStore regionStore;
 	
+	// MOM Settings //
+	private boolean serviceReporting;
+	private boolean exceptionReporting;
+	private int serviceInvocationCounter;
+	
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -495,6 +501,31 @@ public class LRCState
 	public RegionStore getRegionStore()
 	{
 		return this.regionStore;
+	}
+
+	public boolean isServiceReporting()
+	{
+		return this.serviceReporting;
+	}
+	
+	public void setServiceReporting( boolean reporting )
+	{
+		this.serviceReporting = reporting;
+	}
+	
+	public boolean isExceptionReporting()
+	{
+		return this.exceptionReporting;
+	}
+	
+	public void setExceptionReporting( boolean reporting )
+	{
+		this.exceptionReporting = reporting;
+	}
+	
+	public int getNextServiceInvocationSerial()
+	{
+		return this.serviceInvocationCounter++;
 	}
 	
 	protected boolean isQueueLogging()

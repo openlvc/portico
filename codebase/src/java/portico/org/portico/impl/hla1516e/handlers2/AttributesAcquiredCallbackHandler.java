@@ -23,6 +23,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.services.ownership.msg.OwnershipAcquired;
 import org.portico2.common.messaging.MessageContext;
 
+import hla.rti1516e.AttributeHandleSet;
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.FederateInternalError;
 
 public class AttributesAcquiredCallbackHandler extends LRC1516eCallbackHandler
@@ -53,8 +55,9 @@ public class AttributesAcquiredCallbackHandler extends LRC1516eCallbackHandler
 	{
 		OwnershipAcquired acquired = context.getRequest( OwnershipAcquired.class, this );
 		vetoUnlessFromUs( acquired );
-		int objectHandle = acquired.getObjectHandle();
+		ObjectInstanceHandle objectHandle = new HLA1516eHandle( acquired.getObjectHandle() );
 		Set<Integer> attributes = acquired.getAttributeHandles();
+		AttributeHandleSet handleSet = new HLA1516eAttributeHandleSet( attributes );
 
 		if( logger.isTraceEnabled() )
 		{
@@ -62,11 +65,15 @@ public class AttributesAcquiredCallbackHandler extends LRC1516eCallbackHandler
 			              ",attributes="+attributes+")" );
 		}
 
-		HLA1516eAttributeHandleSet handleSet = new HLA1516eAttributeHandleSet( attributes );
-		fedamb().attributeOwnershipAcquisitionNotification( new HLA1516eHandle(objectHandle),
+		
+		fedamb().attributeOwnershipAcquisitionNotification( objectHandle,
 		                                                    handleSet,
 		                                                    null );
-		
+		helper.reportServiceInvocation( "attributeOwnershipAcquisitionNotification", 
+		                                true, 
+		                                null, 
+		                                objectHandle,
+		                                handleSet );
 		logger.trace( "         attributeOwnershipAcquisitionNotification() callback complete" );
 	}
 

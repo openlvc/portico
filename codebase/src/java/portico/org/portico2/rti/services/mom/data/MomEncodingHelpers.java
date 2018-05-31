@@ -17,19 +17,28 @@ package org.portico2.rti.services.mom.data;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 
+import org.portico.impl.HLAVersion;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMapFactory;
 import org.portico.impl.hla1516e.types.encoding.HLA1516eEncoderFactory;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.impl.hla1516e.types.time.DoubleTimeInterval;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.ICMetadata;
+import org.portico.lrc.model.Mom;
+import org.portico.lrc.model.ObjectModel;
+import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.model.datatype.IDatatype;
 import org.portico.utils.bithelpers.BitHelpers;
+import org.portico2.common.services.object.msg.SendInteraction;
 
 import hla.rti1516e.ParameterHandleValueMapFactory;
 import hla.rti1516e.encoding.DecoderException;
+import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.EncoderFactory;
 import hla.rti1516e.encoding.HLAASCIIstring;
 import hla.rti1516e.encoding.HLAboolean;
@@ -69,6 +78,7 @@ public class MomEncodingHelpers
 		
 		this.encoders = new HashMap<>();
 		this.encoders.put( "HLAASCIIstring", this::encodeAsciiString );
+		this.encoders.put( "HLAargumentList", this::encodeUnicodeStringVariableArray );
 		this.encoders.put( "HLAboolean", this::encodeBoolean );
 		this.encoders.put( "HLAcount", this::encodeInt32BE );
 		this.encoders.put( "HLAhandle", this::encodeHandle );
@@ -89,6 +99,7 @@ public class MomEncodingHelpers
 		
 		this.decoders = new HashMap<>();
 		this.decoders.put( "HLAASCIIstring", this::decodeAsciiString );
+		this.decoders.put( "HLAboolean", this::decodeBoolean );
 		this.decoders.put( "HLAhandle", this::decodeHandle );
 		this.decoders.put( "HLAindex", this::decodeInt32BE );
 		this.decoders.put( "HLAunicodeString", this::decodeUnicodeString );
@@ -97,41 +108,93 @@ public class MomEncodingHelpers
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	private String objectToString( Object object )
+	{
+		if( object instanceof byte[] )
+			return byteArrayToString( (byte[])object );
+		else if( object instanceof Iterable<?> )
+			return iterableToString( (Iterable)object );
+		else if( object instanceof Map<?,?>)
+			return mapToString( (Map)object );
+		
+		if( object == null )
+			return "<null>";
+		else
+			return object.toString();
+	}
 	private String iterableToString( Iterable<?> collection )
 	{
 		StringBuilder builder = new StringBuilder();
 		boolean firstElement = true;
+		builder.append( '[' );
 		for( Object o : collection )
 		{
-			if( !firstElement )
+			if( firstElement )
+				firstElement = false;
+			else
 				builder.append( "," );
 			
-			builder.append( o.toString() );
+			builder.append( objectToString(o) );
 		}
+		builder.append( ']' );
+		return builder.toString();
+	}
+	
+	private String mapToString( Map<?,?> map )
+	{
+		StringBuilder builder = new StringBuilder();
+		boolean firstElement = true;
+		builder.append( '{' );
+		for( Entry<?,?> entry : map.entrySet() )
+		{
+			if( firstElement )
+				firstElement = false;
+			else
+				builder.append( "," );
+			
+			builder.append( objectToString(entry.getKey()) );
+			builder.append( '=' );
+			builder.append( objectToString(entry.getValue()) );
+		}
+		builder.append( '}' );
+		return builder.toString();
+	}
+	
+	private String byteArrayToString( byte[] array )
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append( '[' );
+		for( int i = 0 ; i < array.length ; ++i )
+		{
+			if( i > 0 )
+				builder.append( ',' );
+			short value = array[i];
+			builder.append("0x");
+			
+			if( value < 16 )
+				builder.append( '0' );
+			builder.append( Integer.toString(value, 16) );
+		}
+		builder.append( ']' );
 		
 		return builder.toString();
 	}
 	
 	public byte[] encodeUnicodeString( Object data )
 	{
-		String content = null;
-		if( data instanceof Iterable )
-			content = iterableToString( (Iterable)data );
-		else
-			content = data.toString();
+		HLAunicodeString hlaString = this.factory.createHLAunicodeString();
+		if( data != null )
+		{
+			String content = objectToString( data );
+			hlaString.setValue( content );
+		}
 		
-		HLAunicodeString hlaString = this.factory.createHLAunicodeString( content );
 		return hlaString.toByteArray();
 	}
 	
 	public byte[] encodeAsciiString( Object data )
 	{
-		String content = null;
-		if( data instanceof Iterable )
-			content = iterableToString( (Iterable)data );
-		else
-			content = data.toString();
-		
+		String content = objectToString( data );
 		HLAASCIIstring hlaString = this.factory.createHLAASCIIstring( content );
 		return hlaString.toByteArray();
 	}
@@ -144,7 +207,11 @@ public class MomEncodingHelpers
 			int length = asArray.length;
 			HLAunicodeString[] stringArray = new HLAunicodeString[length];
 			for( int i = 0; i < length; ++i )
-				stringArray[i] = this.factory.createHLAunicodeString( asArray[i].toString() );
+			{
+				Object element = asArray[i];
+				String asString = objectToString( element );
+				stringArray[i] = this.factory.createHLAunicodeString( asString );
+			}
 
 			HLAvariableArray<HLAunicodeString> hlaArray =
 			    this.factory.createHLAvariableArray( null, stringArray );
@@ -381,6 +448,13 @@ public class MomEncodingHelpers
 		return unicodeString.getValue();
 	}
 	
+	public boolean decodeBoolean( byte[] value ) throws DecoderException
+	{
+		HLAboolean hlaBoolean = this.factory.createHLAboolean();
+		hlaBoolean.decode( value );
+		return hlaBoolean.getValue();
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -431,5 +505,121 @@ public class MomEncodingHelpers
 			throw new JRTIinternalError( "unhandled parameter datatype " + datatype.getName() );
 		
 		return value;
+	}
+	
+	/**
+	 * Decodes the values of the specified interaction parameters and maps them against their canonical 
+	 * parameter names.
+	 * <p/>
+	 * Values are decoded based on the {@link IDatatype} of their corresponding parameter.
+	 * 
+	 * @param interactionId the identifier of the interaction that the parameters belong to
+	 * @param params the parameters as received from {@link SendInteraction#getParameters()}
+	 * @return the decoded parameter values, mapped against the canonical name of their corresponding 
+	 *         parameters 
+	 * @throws MomException if a parameter value could not be decoded, or if an expected parameter entry 
+	 *                      was missing from <code>params</code>
+	 */
+	public static Map<String,Object> decodeInteractionParameters( HLAVersion version,
+	                                                              ObjectModel fom,
+	                                                              int interactionId, 
+	                                                              Map<Integer,byte[]> params )
+		throws MomException
+	{
+		Map<String,Object> decoded = new HashMap<>();
+		
+		// Iterate over all the parameters that we expect to be provided in the request
+		ICMetadata requestMetadata = fom.getInteractionClass( interactionId );
+		Set<PCMetadata> paramMetadata = requestMetadata.getAllParameters();
+		for( PCMetadata expectedParam : paramMetadata )
+		{
+			IDatatype type = expectedParam.getDatatype();
+			int parameterId = expectedParam.getHandle();
+			byte[] rawValue = params.get( parameterId );
+			if( rawValue != null )
+			{
+				// Get the parameter's canonical name
+				String name = Mom.getMomParameterName( version, 
+				                                       parameterId );
+				if( name == null )
+				{
+					// If we get here, then it's an internal configuration issue (e.g. we don't have
+					// the parameter in our MOM tree
+					throw new JRTIinternalError( "could not resolve canonical name for parameter " + 
+					                             parameterId + 
+					                             " of interaction " + interactionId );
+				}
+				
+				Object value = null;
+				try
+				{
+					value = MomEncodingHelpers.decode( type, rawValue );
+				}
+				catch( DecoderException de )
+				{
+					// Could not decode the value
+					throw new MomException( "could not decode value for parameter " + 
+					                        expectedParam.getName() + "[id=" + parameterId + "]",
+					                        true,
+					                        de );
+				}
+				
+				decoded.put( name, value );
+			}
+			else
+			{
+				// Expected parameter was not provided
+				throw new MomException( "no value provided for required parameter " + 
+				                        expectedParam.getName() + "[id=" + parameterId + "]",
+				                        true );
+			}
+		}
+		
+		return decoded;
+	}
+	
+	/**
+	 * Encodes the values of the specified response parameters and maps them against their corresponding 
+	 * parameter handle
+	 * <p/>
+	 * Values are encoded based on the {@link IDatatype} of their corresponding parameter.
+	 * 
+	 * @param interactionMetadata the metadata of the response being sent
+	 * @param params the values of the response parameters, mapped against their canonical parameter name
+	 * @return the encoded parameter values, mapped against the handle of their corresponding parameters 
+	 * @throws EncoderException if a parameter value could not be encoded.
+	 */
+	public static HashMap<Integer,byte[]> encodeInteractionParameters( HLAVersion version,
+	                                                                   ICMetadata interactionMetadata,
+	                                                                   Map<String,Object> params )
+	{
+		HashMap<Integer,byte[]> encoded = new HashMap<>();
+		for( PCMetadata paramMetadata : interactionMetadata.getAllParameters() )
+		{
+			int paramHandle = paramMetadata.getHandle();
+			IDatatype datatype = paramMetadata.getDatatype();
+			String paramName = Mom.getMomParameterName( version,
+			                                            paramHandle );
+			if( paramName == null )
+			{
+				// Programmer error
+				throw new JRTIinternalError( "not a canonical parameter name: " + paramName );
+			}
+
+			
+			if( params.containsKey(paramName) )
+			{
+				Object value = params.get( paramName );
+				byte[] encodedValue = MomEncodingHelpers.encode( datatype, value );
+				encoded.put( paramHandle, encodedValue );
+			}
+			else
+			{
+				//logger.warn( "No value provided for MOM interaction parameter" + 
+				//	         interactionMetadata.getQualifiedName() + "." + paramMetadata.getName() );
+			}
+		}
+		
+		return encoded;
 	}
 }

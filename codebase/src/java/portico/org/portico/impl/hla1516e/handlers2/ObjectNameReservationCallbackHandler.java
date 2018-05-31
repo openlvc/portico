@@ -58,6 +58,7 @@ public class ObjectNameReservationCallbackHandler extends LRC1516eCallbackHandle
 				logger.trace( "CALLBACK objectInstanceNameReservationSucceeded(name="+name+")" );
 
 			fedamb().objectInstanceNameReservationSucceeded( name );
+			helper.reportServiceInvocation( "objectInstanceNameReservationSucceeded", true, null, name );
 			
 			if( logger.isTraceEnabled() )
 				logger.trace( "         objectInstanceNameReservationSucceeded() callback complete" );
@@ -68,6 +69,7 @@ public class ObjectNameReservationCallbackHandler extends LRC1516eCallbackHandle
 				logger.trace( "CALLBACK objectInstanceNameReservationFailed(name="+name+")" );
 
 			fedamb().objectInstanceNameReservationFailed( name );
+			helper.reportServiceInvocation( "objectInstanceNameReservationFailed", true, null, name );
 			
 			if( logger.isTraceEnabled() )
 				logger.trace( "         objectInstanceNameReservationFailed() callback complete" );

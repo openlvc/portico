@@ -94,6 +94,12 @@ public class SupplementalInfo implements FederateAmbassador.SupplementalReceiveI
 		return this.sentRegions == null;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "ProducingFederate="+producingFederate.toString();
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

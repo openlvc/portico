@@ -68,7 +68,7 @@ public class PublishInteractionClassHandler extends RTIMessageHandler
 			             federateName(federateHandle),
 			             icMoniker(classHandle) );
 		}
-
+		
 		context.success();
 	}
 

@@ -49,7 +49,9 @@ import org.portico.lrc.compat.JTimeAdvanceAlreadyInProgress;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.StringUtils;
 import org.portico2.common.configuration.RID;
+import org.portico2.common.messaging.ErrorResponse;
 import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.lrc.LRC;
 import org.portico2.lrc.LRCState;
 /**
@@ -430,6 +432,59 @@ public class Impl1516eHelper implements ISpecHelper
 //		this.lrc.reinitialize();
 	}
 
+	/**
+	 * Reports the result of an RTIambassador service invocation to the federation via the MOM
+	 * 
+	 * @param serviceName the name of the service invoked
+	 * @param response the response from the RTI
+	 * @param parameters the parameters the service was invoked with
+	 */
+	public void reportServiceInvocation( String serviceName,
+	                                     ResponseMessage response,
+	                                     Object... parameters )
+	{
+		boolean reporting = this.state.isServiceReporting() || this.state.isExceptionReporting();
+		if( !reporting )
+			return;
+		
+		boolean success = response.isSuccess();
+		Object returnValue = success ? response.getResult() : null;
+		String errorMessage = !success ? ((ErrorResponse)response).getCause().getMessage() : null;
+		
+		this.lrc.reportServiceInvocation( serviceName, 
+		                                  success, 
+		                                  returnValue, 
+		                                  errorMessage, 
+		                                  parameters );
+	}
+	
+	/**
+	 * Reports the result of a service invocation to the federation via the MOM
+	 * 
+	 * @param serviceName the name of the service invoked
+	 * @param success whether the service invocation was successful
+	 * @param result if the <code>success</code> parameter is <code>true</code> this value will be 
+	 *               interpreted as the value the service invocation returned. If the <code>success</code>
+	 *               parameter is <code>false</code> this value will be interpreted as the error message 
+	 *               that was raised
+	 * @param parameters the parameters the service was invoked with
+	 */
+	public void reportServiceInvocation( String serviceName,
+	                                     boolean success,
+	                                     Object result,
+	                                     Object... parameters )
+	{
+		boolean reporting = this.state.isServiceReporting() || this.state.isExceptionReporting();
+		if( !reporting )
+			return;
+		
+		this.lrc.reportServiceInvocation( serviceName, 
+		                                  success, 
+		                                  success ? result : null, 
+		                                  !success ? result.toString() : null, 
+		                                  parameters );
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

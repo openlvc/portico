@@ -114,9 +114,14 @@ public enum MessageType
 	DeleteRegion            ( (short)141 ),
 	ModifyRegion            ( (short)142 ),
 	AssociateRegion         ( (short)143 ),
-	UnassociateRegion       ( (short)144 );
+	UnassociateRegion       ( (short)144 ),
 
-	// Reserved for future use (150-253)
+	
+	// Management Object Model (150-159)
+	SetServiceReporting     ( (short)150 ),
+	SetExceptionReporting   ( (short)151 );
+	
+	// Reserved for future use (160-253)
 	
 	// RESERVED (UPDATE/SEND - 254, 255 - Above)
 	

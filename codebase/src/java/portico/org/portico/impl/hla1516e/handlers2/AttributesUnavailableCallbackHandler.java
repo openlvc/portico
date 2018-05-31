@@ -23,6 +23,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.services.ownership.msg.AttributesUnavailable;
 import org.portico2.common.messaging.MessageContext;
 
+import hla.rti1516e.AttributeHandleSet;
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.FederateInternalError;
 
 public class AttributesUnavailableCallbackHandler extends LRC1516eCallbackHandler
@@ -53,8 +55,9 @@ public class AttributesUnavailableCallbackHandler extends LRC1516eCallbackHandle
 	{
 		AttributesUnavailable unavailable = context.getRequest( AttributesUnavailable.class, this );
 		vetoUnlessFromUs( unavailable );
-		int objectHandle = unavailable.getObjectHandle();
+		ObjectInstanceHandle objectHandle = new HLA1516eHandle( unavailable.getObjectHandle() );
 		Set<Integer> attributes = unavailable.getAttributeHandles();
+		AttributeHandleSet handleSet = new HLA1516eAttributeHandleSet( attributes );
 		
 		if( logger.isTraceEnabled() )
 		{
@@ -62,8 +65,13 @@ public class AttributesUnavailableCallbackHandler extends LRC1516eCallbackHandle
 			              ",attributes="+attributes+")" );
 		}
 
-		HLA1516eAttributeHandleSet handleSet = new HLA1516eAttributeHandleSet( attributes );
-		fedamb().attributeOwnershipUnavailable( new HLA1516eHandle(objectHandle), handleSet );
+		
+		fedamb().attributeOwnershipUnavailable( objectHandle, handleSet );
+		helper.reportServiceInvocation( "attributeOwnershipUnavailable", 
+		                                true, 
+		                                null, 
+		                                objectHandle, 
+		                                handleSet );
 		
 		context.success();
 		

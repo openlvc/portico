@@ -21,6 +21,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.sync.msg.FederationSynchronized;
 
+import hla.rti1516e.FederateHandleSet;
 import hla.rti1516e.exceptions.FederateInternalError;
 
 public class FederationSynchronizedCallbackHandler extends LRC1516eCallbackHandler
@@ -54,8 +55,13 @@ public class FederationSynchronizedCallbackHandler extends LRC1516eCallbackHandl
 
 		// let the fedamb know
 		logger.trace( "CALLBACK federationSynchronized(label="+label+")" );
-		fedamb().federationSynchronized( label, new HLA1516eFederateHandleSet() );
-
+		FederateHandleSet federates = new HLA1516eFederateHandleSet();
+		fedamb().federationSynchronized( label, federates );
+		helper.reportServiceInvocation( "federationSynchronized", 
+		                                true, 
+		                                null, 
+		                                label,
+		                                federates);
 		logger.trace( "         federationSynchronized() callback complete" );
 		context.success();
 	}

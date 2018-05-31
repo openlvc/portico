@@ -23,6 +23,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.ownership.msg.AttributeAcquire;
 
+import hla.rti1516e.AttributeHandleSet;
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.FederateInternalError;
 
 public class AttributeReleaseRequestCallbackHandler extends LRC1516eCallbackHandler
@@ -52,8 +54,9 @@ public class AttributeReleaseRequestCallbackHandler extends LRC1516eCallbackHand
 	public void callback( MessageContext context ) throws FederateInternalError
 	{
 		AttributeAcquire callback = context.getRequest( AttributeAcquire.class, this );
-		int objectHandle = callback.getObjectHandle();
+		ObjectInstanceHandle objectHandle = new HLA1516eHandle( callback.getObjectHandle() );
 		Set<Integer> attributes = callback.getAttributes();
+		AttributeHandleSet ahs = new HLA1516eAttributeHandleSet( attributes );
 		byte[] tag = callback.getTag();
 		
 		if( logger.isTraceEnabled() )
@@ -62,10 +65,15 @@ public class AttributeReleaseRequestCallbackHandler extends LRC1516eCallbackHand
 			              ",attributes="+attributes+",tagsize="+tag.length+")" );
 		}
 		
-		fedamb().requestAttributeOwnershipRelease( new HLA1516eHandle(objectHandle),
-		                                           new HLA1516eAttributeHandleSet(attributes),
+		fedamb().requestAttributeOwnershipRelease( objectHandle,
+		                                           ahs,
 		                                           tag );
-		
+		helper.reportServiceInvocation( "requestAttributeOwnershipRelease", 
+		                                true, 
+		                                null,
+		                                objectHandle, 
+		                                ahs, 
+		                                tag );
 		context.success();
 		
 		if( logger.isTraceEnabled() )
