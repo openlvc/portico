@@ -20,11 +20,13 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.model.ObjectModel;
 import org.portico2.common.configuration.ForwarderConfiguration;
-import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.Message;
 import org.portico2.common.services.federation.msg.CreateFederation;
 import org.portico2.common.services.federation.msg.WelcomePack;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.object.msg.RegisterObject;
 
 public class StateTracker
 {
@@ -38,7 +40,7 @@ public class StateTracker
 	private ForwarderConfiguration configuration;
 	private Logger logger;
 
-	private Map<Integer,MessageType> outstandingRequests;
+	private Map<Integer,Message> outstandingRequests;
 	private Map<Integer,Federation> federations;
 
 	//----------------------------------------------------------
@@ -59,16 +61,42 @@ public class StateTracker
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Processing Methods   //////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public final void receiveControlRequest( Message message )
+	public final void receiveSyncControlRequest( Message message )
+	{
+		outstandingRequests.put( message.getHeader().getRequestId(), message );
+		
+//		switch( message.getHeader().getMessageType() )
+//		{
+//			case CreateFederation:
+//			case JoinFederation:
+//			case RegisterObject:
+//			case DeleteObject:
+//				outstandingRequests.put( message.getHeader().getRequestId(),
+//				                         message.getHeader().getMessageType() );
+//				break;
+//			default:
+//				break; // no-op
+//		}
+	}
+	
+	public final void receiveAsyncControlRequest( Message message )
 	{
 		switch( message.getHeader().getMessageType() )
 		{
-			case CreateFederation:
-			case JoinFederation:
-				
-				outstandingRequests.put( message.getHeader().getRequestId(),
-				                         message.getHeader().getMessageType() );
+			case DiscoverObject:
+			{
+				DiscoverObject notice = message.inflateAsPorticoMessage( DiscoverObject.class );
+				discoverObject( message.getHeader().getFederation(),
+				                notice.getObjectHandle(),
+				                notice.getClassHandle() );
 				break;
+			}
+			case DeleteObject:
+			{
+				DeleteObject notice = message.inflateAsPorticoMessage( DeleteObject.class );
+				deleteObject( message.getHeader().getFederation(), notice.getObjectHandle() );
+				break;
+			}
 			default:
 				break; // no-op
 		}
@@ -77,18 +105,24 @@ public class StateTracker
 	public final void receiveControlResponse( Message message )
 	{
 		// are we interested in this particular response?
-		MessageType requestType = outstandingRequests.remove( message.getRequestId() );
-		if( requestType == null )
+		Message request = outstandingRequests.remove( message.getRequestId() );
+		if( request == null )
 			return;
 
 		// process the response as the appropriate type
-		switch( requestType )
+		switch( request.getHeader().getMessageType() )
 		{
 			case CreateFederation:
 				createFederationResponse( message.inflateAsResponse() );
 				break;
 			case JoinFederation:
 				joinFederationResponse( message.inflateAsResponse() );
+				break;
+			case RegisterObject:
+				registerObject( request, message.inflateAsResponse() );
+				break;
+			case DeleteObject:
+				deleteObject( request, message.inflateAsResponse() );
 				break;
 			default:
 				break; // we don't care about it
@@ -165,9 +199,98 @@ public class StateTracker
 		}
 	}
 
+	/**
+	 * Track information about an object within the federation. We cache the qualified class
+	 * name of the object for later use in matching attribute reflections against our import
+	 * and export rules.
+	 * 
+	 * @param request  The original request that was sent
+	 * @param response The response that came back
+	 */
+	private final void registerObject( Message request, ResponseMessage response )
+	{
+		if( response.isSuccess() == false )
+			return;
+		
+		int objectHandle = response.getSuccessResultAsInt( RegisterObject.KEY_RETURN_HANDLE );
+		int classHandle = response.getSuccessResultAsInt( RegisterObject.KEY_RETURN_CLASS );
+		discoverObject( request.getHeader().getFederation(), objectHandle, classHandle );
+	}
+
+	/**
+	 * Track information about an object within the federation. We cache the qualified class
+	 * name of the object for later use in matching attribute reflections against our import
+	 * and export rules.
+	 * 
+	 * @param federationHandle The handle of the federation the object was registered in
+	 * @param objectHandle     The handle of the object that was registered
+	 * @param classHandle      The handle of the class of the object that was registered
+	 */
+	private final void discoverObject( int federationHandle, int objectHandle, int classHandle )
+	{
+		Federation federation = federations.get( federationHandle );
+		if( federation == null )
+			return;
+
+		// save the object information for later use
+		federation.addObject( objectHandle, classHandle );
+	}
+
+	/**
+	 * Convert a response message from a "DeleteObject" request so that if successful, we remove
+	 * information about it from our local store.
+	 * 
+	 * @param request  The original request that was sent
+	 * @param response The response that came back
+	 */
+	private final void deleteObject( Message request, ResponseMessage response )
+	{
+		if( response.isSuccess() == false )
+			return;
+		
+		int objectHandle = response.getSuccessResultAsInt();
+		deleteObject( request.getHeader().getFederation(), objectHandle );
+	}
+
+	/**
+	 * Remove local storage information about the given object from the given federation.
+	 * 
+	 * @param federationHandle The handle of the federation that contains the object
+	 * @param objectHandle The handle of the object that was removed
+	 */
+	private final void deleteObject( int federationHandle, int objectHandle )
+	{
+		Federation federation = federations.get( federationHandle );
+		if( federation == null )
+			return;
+		
+		// dump the object information from our store
+		federation.removeObject( objectHandle );
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * This method will check our store of objects and look up the one with the given object handle.
+	 * We'll the return the fully qualified name of the class it is an instance of.<p/>
+	 * 
+	 * If we don't know about the federation identified in the federation handle, or we don't have
+	 * a record of the object, <code>null</code> will be returned.
+	 * 
+	 * @param federationHandle The handle of the federation to look in
+	 * @param objectHandle The handle of the object to get the class name for
+	 * @return The qualified class name for the identified object, or null if we can't find the
+	 *         fedetation or the object
+	 */
+	public final String resolveObjectHandleToClassName( int federationHandle, int objectHandle )
+	{
+		if( federations.containsKey(federationHandle) )
+			return federations.get(federationHandle).resolveObjectHandleToClassName( objectHandle );
+		else
+			return null;
+	}
+	
 	/**
 	 * Find the FOM for the identified federation and then look the class handle up inside it.
 	 * Return the fully qualified name of the class.<p/>

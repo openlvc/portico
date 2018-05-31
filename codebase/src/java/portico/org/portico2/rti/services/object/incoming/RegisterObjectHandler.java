@@ -96,6 +96,7 @@ public class RegisterObjectHandler extends RTIMessageHandler
 		// Stuff the object handle into the context so we can return it
 		context.success( RegisterObject.KEY_RETURN_HANDLE, instanceHandle );
 		context.success( RegisterObject.KEY_RETURN_NAME, newInstance.getName() );
+		context.success( RegisterObject.KEY_RETURN_CLASS, classHandle );
 		// FIXME Could we stuff the hash of the class hierarchy in here to avoid any
 		//       issues from FOM misalignment following late joiners?
 		if( logger.isInfoEnabled() )

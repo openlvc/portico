@@ -45,6 +45,7 @@ public class RegisterObject extends PorticoMessage implements Externalizable
 	// Keys against which we register returned information if request is successful
 	public static final String KEY_RETURN_HANDLE = "object-handle";
 	public static final String KEY_RETURN_NAME   = "object-name";
+	public static final String KEY_RETURN_CLASS  = "object-class";
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES

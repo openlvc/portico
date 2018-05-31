@@ -95,6 +95,9 @@ public abstract class PorticoMessage implements Serializable, Cloneable
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	/**
+	 * @return The {@link MessageType} that identifies this particular class of message.
+	 */
 	public abstract MessageType getType();
 
 	/**

@@ -88,14 +88,20 @@ public class ForwarderConnection implements IApplicationReceiver
 	public void receiveControlRequest( MessageContext context ) throws JRTIinternalError
 	{
 		// no-op
-		// FIXME - Throw exception?
+		logger.warn( "Received Control Request - should never get here (%s) source=%s, target=%s",
+		             context.getRequest().getType(),
+		             context.getRequest().getSourceFederate(),
+		             context.getRequest().getTargetFederate() );
 	}
 
 	@Override
 	public void receiveDataMessage( PorticoMessage message ) throws JException
 	{
 		// No-op
-		// FIXME - Throw exception?
+		logger.warn( "Received Data Message - should never get here (%s) source=%s, target=%s",
+		             message.getType(),
+		             message.getSourceFederate(),
+		             message.getTargetFederate() );
 	}
 
 	@Override

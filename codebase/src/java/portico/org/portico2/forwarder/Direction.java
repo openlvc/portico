@@ -34,7 +34,7 @@ public enum Direction
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	public String toString() { return name().toLowerCase(); }
-	public String flowDirection() { return this == Upstream ? "upstream>>>downstream" : "upstream<<<downstream"; }
+	public String flowDirection() { return this == Upstream ? "upstream<<<downstream" : "upstream>>>downstream"; }
 	public Direction reverse() { return this == Upstream ? Downstream : Upstream; }
 
 	//----------------------------------------------------------
