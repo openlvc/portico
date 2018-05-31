@@ -84,8 +84,9 @@ public class RegisterSyncPointHandler extends RTIMessageHandler
 		AnnounceSyncPoint announcement = new AnnounceSyncPoint( point );
 		super.queueManycast( announcement, syncset );
 		
-		// Set the respone to successful and return
+		// Set the response to successful and return
 		context.success();
+		
 		if( logger.isInfoEnabled() )
 			logger.info( "SUCCESS Registered sync point ["+label+"] by ["+moniker(source)+"]" );
 	}

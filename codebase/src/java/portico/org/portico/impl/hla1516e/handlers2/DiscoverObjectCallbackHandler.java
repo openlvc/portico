@@ -66,6 +66,12 @@ public class DiscoverObjectCallbackHandler extends LRC1516eCallbackHandler
 		ObjectInstanceHandle oHandle = new HLA1516eHandle( objectHandle );
 		ObjectClassHandle cHandle = new HLA1516eHandle( classHandle );
 		fedamb().discoverObjectInstance( oHandle, cHandle, objectName );
+		helper.reportServiceInvocation( "discoverObjectInstance", 
+		                                true, 
+		                                null, 
+		                                oHandle, 
+		                                cHandle, 
+		                                objectName );
 		context.success();
 		
 		if( logger.isTraceEnabled() )

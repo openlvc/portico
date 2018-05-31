@@ -27,6 +27,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.SendInteraction;
 
+import hla.rti1516e.InteractionClassHandle;
+import hla.rti1516e.LogicalTime;
 import hla.rti1516e.OrderType;
 import hla.rti1516e.exceptions.FederateInternalError;
 
@@ -57,9 +59,9 @@ public class ReceiveInteractionCallbackHandler extends LRC1516eCallbackHandler
 	public void callback( MessageContext context ) throws FederateInternalError
 	{
 		SendInteraction request = context.getRequest( SendInteraction.class, this );
-		int classHandle = request.getInteractionId();
+		InteractionClassHandle classHandle = new HLA1516eHandle( request.getInteractionId() );
 		HashMap<Integer,byte[]> parameters = request.getParameters();
-		double timestamp = request.getTimestamp();
+		byte[] tag = request.getTag();
 
 		// convert the attributes into an appropriate form
 		HLA1516eParameterHandleValueMap received = new HLA1516eParameterHandleValueMap(parameters);
@@ -70,6 +72,7 @@ public class ReceiveInteractionCallbackHandler extends LRC1516eCallbackHandler
 		// do the callback
 		if( request.isTimestamped() )
 		{
+			LogicalTime<?,?> timestamp = new DoubleTime( request.getTimestamp() );
 			if( logger.isTraceEnabled() )
 			{
 				logger.trace( "CALLBACK receiveInteraction(class="+classHandle+",parameters="+
@@ -77,14 +80,25 @@ public class ReceiveInteractionCallbackHandler extends LRC1516eCallbackHandler
 				              timestamp+") (TSO)" );
 			}
 			
-			fedamb().receiveInteraction( new HLA1516eHandle(classHandle),
+			fedamb().receiveInteraction( classHandle,
 			                             received,                  // map
-			                             request.getTag(),          // tag
+			                             tag,                       // tag
 			                             OrderType.TIMESTAMP,       // sent order
 			                             RELIABLE,                  // transport
-			                             new DoubleTime(timestamp), // time 
+			                             timestamp,                 // time 
 			                             OrderType.TIMESTAMP,       // received order
 			                             supplement );              // supplemental receive info
+			helper.reportServiceInvocation( "receiveInteraction", 
+			                                true, 
+			                                null, 
+			                                classHandle,
+			                                received,
+			                                tag,
+			                                OrderType.TIMESTAMP,
+			                                RELIABLE,
+			                                timestamp,
+			                                OrderType.TIMESTAMP,
+			                                supplement );
 		}
 		else
 		{
@@ -94,12 +108,22 @@ public class ReceiveInteractionCallbackHandler extends LRC1516eCallbackHandler
 				              super.pcMonikerWithSizes(parameters)+") (RO)" );
 			}
 			
-			fedamb().receiveInteraction( new HLA1516eHandle(classHandle),
+			fedamb().receiveInteraction( classHandle,
 			                             received,          // map
-			                             request.getTag(),  // tag
+			                             tag,               // tag
 			                             OrderType.RECEIVE, // sent order
 			                             BEST_EFFORT,       // transport
 			                             supplement );      // supplemental receive info
+			helper.reportServiceInvocation( "receiveInteraction", 
+			                                true, 
+			                                null, 
+			                                classHandle,
+			                                received,
+			                                request,
+			                                tag,
+			                                OrderType.RECEIVE,
+			                                BEST_EFFORT,
+			                                supplement );
 		}
 		
 		context.success();

@@ -16,6 +16,7 @@ package org.portico2.rti.services.mom.data;
 
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.services.object.msg.DeleteObject;
 import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 import org.portico2.common.services.pubsub.data.InterestManager;
 import org.portico2.rti.federation.Federate;
@@ -87,7 +89,7 @@ public class MomManager implements SaveRestoreTarget
 		this.federation = federation;
 		this.version = federation.getHlaVersion();
 		this.isRestore = false;
-
+		
 		// Create the object for this Federation
 		if( this.enabled )
 			this.createFederationObjectInstance();
@@ -121,7 +123,7 @@ public class MomManager implements SaveRestoreTarget
 		message.setTargetFederates( targets );
 		federation.queueControlMessage( message );
 	}
-
+	
 	/**
 	 * Generates an {@link UpdateAttributes} message for the MOM object representing the
 	 * federation. It only includes the attributes provided in the given set.
@@ -239,9 +241,10 @@ public class MomManager implements SaveRestoreTarget
 		// Interaction sent by the sender
 		if( sender != PorticoConstants.RTI_HANDLE )
 		{
-			Federate senderFederate = federation.getFederate( sender );
 			int handle = interaction.getHandle();
-			senderFederate.getMetrics().interactionSent( handle );
+			Federate senderFederate = federation.getFederate( sender );
+			if( senderFederate != null )
+				senderFederate.getMetrics().interactionSent( handle );
 		}
 	}
 
@@ -250,9 +253,10 @@ public class MomManager implements SaveRestoreTarget
 		if( !this.enabled )
 			return;
 
-		Federate receiverFederate = federation.getFederate( receiver );
 		int handle = interaction.getHandle(); // TODO Handle that the receiver will receive it as?
-		receiverFederate.getMetrics().interactionReceived( handle );
+		Federate receiverFederate = federation.getFederate( receiver );
+		if( receiverFederate != null )
+			receiverFederate.getMetrics().interactionReceived( handle );
 	}
 
 	public void objectRegistered( int creator, ROCInstance instance )
@@ -263,7 +267,8 @@ public class MomManager implements SaveRestoreTarget
 		if( creator != PorticoConstants.RTI_HANDLE )
 		{
 			Federate senderFederate = federation.getFederate( creator );
-			senderFederate.getMetrics().objectRegistered( instance.getHandle() );
+			if( senderFederate != null )
+				senderFederate.getMetrics().objectRegistered( instance.getHandle() );
 		}
 	}
 
@@ -273,7 +278,8 @@ public class MomManager implements SaveRestoreTarget
 			return;
 
 		Federate subscriberFederate = federation.getFederate( discoverer );
-		subscriberFederate.getMetrics().objectDiscovered();
+		if( subscriberFederate != null )
+			subscriberFederate.getMetrics().objectDiscovered();
 	}
 
 	public void objectUpdated( int updator, ROCInstance instance )
@@ -284,8 +290,11 @@ public class MomManager implements SaveRestoreTarget
 		if( updator != PorticoConstants.RTI_HANDLE )
 		{
 			Federate updatingFederate = federation.getFederate( updator );
-			updatingFederate.getMetrics().sentUpdate( instance.getRegisteredClassHandle(), 
-			                                          instance.getHandle() );
+			if( updatingFederate != null )
+			{
+				updatingFederate.getMetrics().sentUpdate( instance.getRegisteredClassHandle(),
+				                                          instance.getHandle() );
+			}
 		}
 	}
 
@@ -295,9 +304,12 @@ public class MomManager implements SaveRestoreTarget
 			return;
 
 		Federate reflectingFederate = federation.getFederate( reflector );
-		OCMetadata discoveredAs = instance.getDiscoveredType( reflector );
-		reflectingFederate.getMetrics().reflectionReceived( discoveredAs.getHandle(), 
-		                                                    instance.getHandle() );
+		if( reflectingFederate != null )
+		{
+			OCMetadata discoveredAs = instance.getDiscoveredType( reflector );
+			reflectingFederate.getMetrics().reflectionReceived( discoveredAs.getHandle(),
+			                                                    instance.getHandle() );
+		}
 	}
 
 	public void objectDeleted( int deletor, ROCInstance instance )
@@ -308,7 +320,8 @@ public class MomManager implements SaveRestoreTarget
 		if( deletor != PorticoConstants.RTI_HANDLE )
 		{
 			Federate deletingFederate = federation.getFederate( deletor );
-			deletingFederate.getMetrics().objectDeleted( instance.getHandle() );
+			if( deletingFederate != null )
+				deletingFederate.getMetrics().objectDeleted( instance.getHandle() );
 		}
 	}
 
@@ -321,7 +334,38 @@ public class MomManager implements SaveRestoreTarget
 		if( removingFederate != null )
 			removingFederate.getMetrics().objectRemoved();
 	}
-
+	
+	// NOTE: This method has not been tested yet as the necessary mechanism to trigger it is not in place
+	public void federateLost( int federate, String faultDescription )
+	{
+		if( !this.enabled )
+			return;
+		
+		// NOTE: Assumes the federate has not been removed yet
+		Federate lostFederate = federation.getFederate( federate );
+		
+		Map<String,Object> params = new HashMap<>();
+		params.put( "HLAfederate", federate );
+		params.put( "HLAfederateName", lostFederate.getFederateName() );
+		params.put( "HLAtimeStamp", lostFederate.getTimeStatus().getCurrentTime() );
+		params.put( "HLAfaultDescription", faultDescription );
+		int federateLostHandle = Mom.getMomInteractionHandle( CANONICAL_VERSION,
+		                                                      "HLAmanager.HLAfederate.HLAreport.HLAreportFederateLost");
+		ICMetadata federateLostIc = federation.getFOM().getInteractionClass( federateLostHandle );
+		HashMap<Integer,byte[]> hlaParams = 
+			MomEncodingHelpers.encodeInteractionParameters( federation.getHlaVersion(), 
+			                                                federateLostIc, 
+			                                                params );
+		SendInteraction sendInteraction = new SendInteraction( federateLostHandle, null, hlaParams );
+		sendInteraction.setIsFromRti( true );
+		federation.queueDataMessage( sendInteraction, null );
+		
+		// TODO check that this is all kosher
+		// Clean up the MOM object that was assigned to the lost federate and advise everyone listening
+		// that it has been deleted
+		this.resignedFederation( lostFederate );
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Save/Restore Methods   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////

@@ -55,6 +55,10 @@ public class SyncRegisterResultCallbackHandler extends LRC1516eCallbackHandler
 		{
 			logger.trace( "CALLBACK synchronizationPointRegistrationSucceeded(label="+label+")" );
 			fedamb().synchronizationPointRegistrationSucceeded( label );
+			helper.reportServiceInvocation( "synchronizationPointRegistrationSucceeded", 
+			                                true, 
+			                                null, 
+			                                label );
 			logger.trace( "         synchronizationPointRegistrationSucceeded() callback complete" );
 			
 			// deliver the announcement for the local federate as well
@@ -69,6 +73,11 @@ public class SyncRegisterResultCallbackHandler extends LRC1516eCallbackHandler
 			logger.trace( "CALLBACK synchronizationPointRegistrationFailed(label="+label+")" );
 			fedamb().synchronizationPointRegistrationFailed( label,
 			         SynchronizationPointFailureReason.SYNCHRONIZATION_POINT_LABEL_NOT_UNIQUE );
+			helper.reportServiceInvocation( "synchronizationPointRegistrationFailed", 
+			                                true, 
+			                                null, 
+			                                label,
+			                                SynchronizationPointFailureReason.SYNCHRONIZATION_POINT_LABEL_NOT_UNIQUE );
 			logger.trace( "         synchronizationPointRegistrationFailed() callback complete" );
 		}
 		

@@ -41,6 +41,8 @@ import org.portico2.lrc.services.federation.outgoing.DestroyFederationHandler;
 import org.portico2.lrc.services.federation.outgoing.JoinFederationHandler;
 import org.portico2.lrc.services.federation.outgoing.ListFederationsHandler;
 import org.portico2.lrc.services.federation.outgoing.ResignFederationHandler;
+import org.portico2.lrc.services.mom.incoming.SetExceptionReportingHandler;
+import org.portico2.lrc.services.mom.incoming.SetServiceReportingHandler;
 import org.portico2.lrc.services.object.incoming.DiscoverObjectHandler;
 import org.portico2.lrc.services.object.incoming.ProvideObjectUpdateHandler;
 import org.portico2.lrc.services.object.incoming.ReceiveInteractionHandler;
@@ -212,6 +214,10 @@ public class LRCHandlerRegistry
 
 		in.register( MessageType.OwnershipAcquired,       new AttributesAcquiredIncomingHandler() );
 		in.register( MessageType.OwnershipAcquired,       new AttributesAcquiredCallbackHandler() );
+		
+		// MOM
+		in.register( MessageType.SetServiceReporting,     new SetServiceReportingHandler() );
+		in.register( MessageType.SetExceptionReporting,   new SetExceptionReportingHandler() );
 		
 		// Configure all the registered handlers
 		in.configure( settings );

@@ -22,6 +22,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.DeleteObject;
 
+import hla.rti1516e.LogicalTime;
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.OrderType;
 import hla.rti1516e.exceptions.FederateInternalError;
 
@@ -52,8 +54,8 @@ public class RemoveObjectCallbackHandler extends LRC1516eCallbackHandler
 	public void callback( MessageContext context ) throws FederateInternalError
 	{
 		DeleteObject request = context.getRequest( DeleteObject.class, this );
-		int objectHandle = request.getObjectHandle();
-		double timestamp = request.getTimestamp();
+		ObjectInstanceHandle objectHandle = new HLA1516eHandle( request.getObjectHandle() );
+		byte[] tag = request.getTag();
 		
 		// generate the supplemental information
 		SupplementalInfo supplement = null;//new SupplementalInfo( request.getSourceFederate() );
@@ -61,28 +63,45 @@ public class RemoveObjectCallbackHandler extends LRC1516eCallbackHandler
 		// do the callback
 		if( request.isTimestamped() )
 		{
+			LogicalTime<?,?> timestamp = new DoubleTime( request.getTimestamp() );
 			if( logger.isTraceEnabled() )
 			{
 				logger.trace( "CALLBACK removeObjectInstance(object="+objectHandle+
 				              ",time="+timestamp+") (TSO)" );
 			}
 			
-			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
-			                               request.getTag(),           // tag
+			fedamb().removeObjectInstance( objectHandle,
+			                               tag,                        // tag
 			                               OrderType.TIMESTAMP,        // sent order
-			                               new DoubleTime(timestamp),  // time
+			                               timestamp,                  // time
 			                               OrderType.TIMESTAMP,        // received order
 			                               supplement );               // supplemental remove info
+			helper.reportServiceInvocation( "removeObjectInstance", 
+			                                true, 
+			                                null, 
+			                                objectHandle,
+			                                tag,
+			                                OrderType.TIMESTAMP,
+			                                timestamp,
+			                                OrderType.TIMESTAMP,
+			                                supplement );
 		}
 		else
 		{
 			if( logger.isTraceEnabled() )
 				logger.trace( "CALLBACK removeObjectInstance(object="+objectHandle+") (RO)" );
 			
-			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
-			                               request.getTag(),           // tag
+			fedamb().removeObjectInstance( objectHandle,
+			                               tag,                        // tag
 			                               OrderType.RECEIVE,          // sent order
 			                               supplement );               // supplemental remove info
+			helper.reportServiceInvocation( "removeObjectInstance", 
+			                                true, 
+			                                null, 
+			                                objectHandle,
+			                                tag,
+			                                OrderType.RECEIVE,
+			                                supplement );
 		}
 		
 		context.success();

@@ -23,6 +23,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.object.msg.RequestObjectUpdate;
 
+import hla.rti1516e.AttributeHandleSet;
+import hla.rti1516e.ObjectInstanceHandle;
 import hla.rti1516e.exceptions.FederateInternalError;
 
 public class ProvideUpdateCallbackHandler extends LRC1516eCallbackHandler
@@ -52,8 +54,10 @@ public class ProvideUpdateCallbackHandler extends LRC1516eCallbackHandler
 	public void callback( MessageContext context ) throws FederateInternalError
 	{
 		RequestObjectUpdate request = context.getRequest( RequestObjectUpdate.class, this );
-		int objectHandle = request.getObjectId();
+		ObjectInstanceHandle objectHandle = new HLA1516eHandle( request.getObjectId() );
 		Set<Integer> attributes = request.getAttributes();
+		AttributeHandleSet ahs = new HLA1516eAttributeHandleSet( attributes );
+		byte[] tag = request.getTag();
 
 		if( logger.isTraceEnabled() )
 		{
@@ -62,9 +66,15 @@ public class ProvideUpdateCallbackHandler extends LRC1516eCallbackHandler
 		}
 		
 		// do the callback
-		fedamb().provideAttributeValueUpdate( new HLA1516eHandle(objectHandle),
-		                                      new HLA1516eAttributeHandleSet(attributes),
-		                                      request.getTag() );
+		fedamb().provideAttributeValueUpdate( objectHandle,
+		                                      ahs,
+		                                      tag );
+		helper.reportServiceInvocation( "provideAttributeValueUpdate", 
+		                                true, 
+		                                null, 
+		                                objectHandle,
+		                                ahs,
+		                                tag );
 
 		context.success();
 		

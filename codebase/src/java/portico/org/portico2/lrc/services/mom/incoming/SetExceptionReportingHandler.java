@@ -12,19 +12,18 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.handlers2;
+package org.portico2.lrc.services.mom.incoming;
 
 import java.util.Map;
 
-import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico.lrc.compat.JException;
 import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.services.time.msg.TimeAdvanceGrant;
+import org.portico2.common.services.mom.msg.SetExceptionReporting;
+import org.portico2.lrc.LRCMessageHandler;
+import org.portico2.lrc.LRCState;
 
-import hla.rti1516e.LogicalTime;
-import hla.rti1516e.exceptions.FederateInternalError;
-
-public class TimeAdvanceGrantCallbackHandler extends LRC1516eCallbackHandler
+public class SetExceptionReportingHandler extends LRCMessageHandler
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -46,21 +45,23 @@ public class TimeAdvanceGrantCallbackHandler extends LRC1516eCallbackHandler
 	{
 		super.configure( properties );
 	}
-
+	
 	@Override
-	public void callback( MessageContext context ) throws FederateInternalError
+	public void process( MessageContext context ) throws JException
 	{
-		TimeAdvanceGrant grant = context.getRequest( TimeAdvanceGrant.class, this );
-		LogicalTime<?,?> theTime = new DoubleTime( grant.getTime() );
-		if( logger.isTraceEnabled() )
-			logger.trace( "CALLBACK timeAdvanceGrant(time="+theTime+")" );
-		fedamb().timeAdvanceGrant( theTime );
-		helper.reportServiceInvocation( "timeAdvanceGrant", true, null, theTime );
+		vetoUnlessForUs( context.getRequest() );
+		
+		SetExceptionReporting request = context.getRequest( SetExceptionReporting.class );
+		LRCState state = lrc.getState();
+		state.setExceptionReporting( request.isExceptionReporting() );
+		
 		context.success();
-
-		if( logger.isTraceEnabled() )
-			logger.trace( "         timeAdvanceGrant() callback complete" );
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

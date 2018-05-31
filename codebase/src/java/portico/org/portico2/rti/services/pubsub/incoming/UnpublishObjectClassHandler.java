@@ -74,7 +74,7 @@ public class UnpublishObjectClassHandler extends RTIMessageHandler
 		releaseAttributes( federateHandle, classHandle );
 		
 		context.success();
-
+		
 		if( logger.isInfoEnabled() )
 		{
 			logger.info( "SUCCESS Federate [%s] unpublished  [%s] with attributes %s",

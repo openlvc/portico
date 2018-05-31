@@ -12,19 +12,17 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.impl.hla1516e.handlers2;
+package org.portico2.rti.services.mom.data;
 
-import java.util.Map;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.rti.services.mom.incoming.MomSendInteractionHandler;
 
-import org.portico.impl.hla1516e.types.time.DoubleTime;
-import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.messaging.MessageContext;
-import org.portico2.common.services.time.msg.TimeAdvanceGrant;
-
-import hla.rti1516e.LogicalTime;
-import hla.rti1516e.exceptions.FederateInternalError;
-
-public class TimeAdvanceGrantCallbackHandler extends LRC1516eCallbackHandler
+/**
+ * Internal exception type. Indicates that an error occurred during the processing of a MOM request
+ * interaction. This exception will be reported back to the federate as a HLAreportMOMexception via
+ * the {@link MomSendInteractionHandler#reportMomException(SendInteraction, MomException)} method.
+ */
+public class MomException extends Exception
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -33,35 +31,35 @@ public class TimeAdvanceGrantCallbackHandler extends LRC1516eCallbackHandler
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-
+	private boolean parameterError;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-
+	public MomException( String message, boolean parameterError )
+	{
+		super( message );
+		this.parameterError = parameterError;
+	}
+	
+	public MomException( String message, boolean parameterError, Throwable cause )
+	{
+		super( message, cause );
+		this.parameterError = parameterError;
+	}
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	@Override
-	public void configure( Map<String,Object> properties ) throws JConfigurationException
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	public boolean isParameterError()
 	{
-		super.configure( properties );
+		return this.parameterError;
 	}
-
-	@Override
-	public void callback( MessageContext context ) throws FederateInternalError
-	{
-		TimeAdvanceGrant grant = context.getRequest( TimeAdvanceGrant.class, this );
-		LogicalTime<?,?> theTime = new DoubleTime( grant.getTime() );
-		if( logger.isTraceEnabled() )
-			logger.trace( "CALLBACK timeAdvanceGrant(time="+theTime+")" );
-		fedamb().timeAdvanceGrant( theTime );
-		helper.reportServiceInvocation( "timeAdvanceGrant", true, null, theTime );
-		context.success();
-
-		if( logger.isTraceEnabled() )
-			logger.trace( "         timeAdvanceGrant() callback complete" );
-	}
-
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
