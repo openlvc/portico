@@ -95,7 +95,7 @@ public class DeleteObjectHandler extends RTIMessageHandler
 		
 		// remove the object
 		repository.deleteObject( objectHandle );
-		context.success();
+		context.success( objectHandle ); // handle needed for forwarder
 		
 		logMetrics( sourceFederate, instance );
 		

@@ -14,6 +14,13 @@
  */
 package org.portico2.forwarder.firewall;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.forwarder.Direction;
@@ -41,6 +48,11 @@ public class Firewall
 	private StateTracker stateTracker;
 	private Logger logger;
 	private boolean enabled;
+	
+	private Map<String,Pattern> allowedImportObjects;
+	private Map<String,Pattern> allowedImportInteractions;
+	private Map<String,Pattern> allowedExportObjects;
+	private Map<String,Pattern> allowedExportInteractions;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -49,22 +61,33 @@ public class Firewall
 	{
 		this.stateTracker = stateTracker;
 		this.configuration = configuration;
-		this.logger = logger;
+		this.logger = LogManager.getFormatterLogger( logger.getName()+".firewall" );
 
-		this.enabled = false;
+		// is the firewall even enabled?
+		this.enabled = configuration.isFirewallEnabled();
+		
+		// extract the allows import/export class configuration
+		this.allowedImportObjects      = new HashMap<>();
+		this.allowedImportInteractions = new HashMap<>();
+		this.allowedExportObjects      = new HashMap<>();
+		this.allowedExportInteractions = new HashMap<>();
+		
+		buildPatternMap( configuration.getAllowedImportObjects(), allowedImportObjects );
+		buildPatternMap( configuration.getAllowedExportObjects(), allowedExportObjects );
+		buildPatternMap( configuration.getAllowedImportInteractions(), allowedImportInteractions );
+		buildPatternMap( configuration.getAllowedExportInteractions(), allowedExportInteractions );
+		logConfiguration();
+	}
+	
+	private void buildPatternMap( Set<String> strings, Map<String,Pattern> store )
+	{
+		for( String temp : strings )
+			store.put( temp, Pattern.compile(temp.replace("*",".*?")) );
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-	public final boolean isEnabled()
-	{
-		return this.enabled;
-	}
 
 	/**
 	 * Should the given update be accepted. We will look at:
@@ -96,16 +119,86 @@ public class Firewall
 			return true;
 
 		// find the qualified name for the class
-		String qualifiedName = objectUpdate ? stateTracker.resolveObjectClass(federationHandle,classHandle) :
+		String qualifiedName = objectUpdate ? stateTracker.resolveObjectHandleToClassName(federationHandle,classHandle) :
 		                                      stateTracker.resolveInteractionClass(federationHandle,classHandle) ;
 		
-		if( qualifiedName == null )
-			return false;
+		// figure out the pattern set we need to match against depending on whether the
+		// flow is upstream or downstream, and whether it is an interaction of reflection
+		Collection<Pattern> patterns = null;
+		if( direction == Direction.Upstream )
+		{
+			if( objectUpdate ) patterns = allowedExportObjects.values();
+			else               patterns = allowedExportInteractions.values();
+		}
+		else
+		{
+			if( objectUpdate ) patterns = allowedImportObjects.values();
+			else               patterns = allowedImportInteractions.values();
+		}
 		
-		// TODO Pattern match on the name (with the appropriate set) 
-		return true;
+		// check all the patterns to see if we have a match
+		for( Pattern pattern : patterns )
+		{
+			if( pattern.matcher(qualifiedName).matches() )
+			{
+				if( logger.isTraceEnabled() )
+				{
+    				logger.trace( "[ACCEPT] %s (%s) Firewall has matched %s against rule %s",
+    				              direction.flowDirection(),
+    				              objectUpdate ? "Reflection" : "Interaction",
+    				              qualifiedName,
+    				              pattern );
+				}
+				return true;
+			}
+		}
+		
+		// if we get here, there was no match, so it's denial time
+		if( logger.isTraceEnabled() )
+		{
+    		logger.trace( "[REJECT] %s (%s) Firewall has blocked %s",
+    		              direction.flowDirection(),
+    		              objectUpdate ? "Reflection" : "Interaction",
+    		              qualifiedName );
+		}
+		return false;
 	}
-	
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	public final boolean isEnabled()
+	{
+		return this.enabled;
+	}
+
+	private void logConfiguration()
+	{
+		logger.info( "Firewall Status: "+(enabled? "ENABLED":"DISABLED") );
+		logger.debug( "Firewall Configuration" );
+		logger.debug( "  [Import - Objects]" );
+		logConfigurationDetail( allowedImportObjects.keySet() );
+		logger.debug( "  [Export - Objects]" );
+		logConfigurationDetail( allowedExportObjects.keySet() );
+		logger.debug( "  [Import - Interactions]" );
+		logConfigurationDetail( allowedImportInteractions.keySet() );
+		logger.debug( "  [Export - Interactions]" );
+		logConfigurationDetail( allowedExportInteractions.keySet() );
+		logger.debug( "" );
+	}
+
+	private void logConfigurationDetail( Set<String> list )
+	{
+		if( list.isEmpty() )
+		{
+			logger.debug( "    - None" );
+			return;
+		}
+		
+		for( String string : list )
+			logger.debug( "    - %s", string );
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

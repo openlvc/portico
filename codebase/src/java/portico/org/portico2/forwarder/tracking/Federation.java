@@ -14,6 +14,9 @@
  */
 package org.portico2.forwarder.tracking;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
@@ -29,6 +32,7 @@ public class Federation
 	//----------------------------------------------------------
 	private String name;
 	private ObjectModel fom;
+	private Map<Integer,String> objectToClassQName;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -37,6 +41,7 @@ public class Federation
 	{
 		this.name = name;
 		this.fom = model;
+		this.objectToClassQName = new HashMap<>();
 	}
 
 	//----------------------------------------------------------
@@ -44,13 +49,8 @@ public class Federation
 	//----------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	///  State Management Methods   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public String getName()
-	{
-		return this.name;
-	}
-
 	/**
 	 * When a federate joins a federation, it may expand the FOM. As such, whenever we see
 	 * a federation join call we need to take the new FOM and use it in place of the old.
@@ -62,6 +62,41 @@ public class Federation
 		this.fom = fom;
 	}
 
+	/**
+	 * Store information about an object that was registered. We pre-cache the qualified
+	 * name of its registering class so we can quickly look it up later via the method
+	 * {@link #resolveObjectHandleToClassName(int)}.
+	 * 
+	 * @param objectHandle The handle of the object that was added
+	 * @param classHandle  The class handle for the object that was added
+	 * @return True if the name was registered, false otherwise. This can fail if we cannot
+	 *         resolve the class handle to a name
+	 */
+	protected boolean addObject( int objectHandle, int classHandle )
+	{
+		// convert the class handle into a class name
+		String qname = resolveClassHandleToName( classHandle );
+		if( qname == null )
+			return false;
+
+		// register the name against the object handle
+		objectToClassQName.put( objectHandle, qname );
+		return true;
+	}
+	
+	protected void removeObject( int objectHandle )
+	{
+		objectToClassQName.remove( objectHandle );
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Query Support Methods   ///////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	protected final String resolveObjectHandleToClassName( int objectHandle )
+	{
+		return objectToClassQName.get( objectHandle );
+	}
+	
 	protected final String resolveClassHandleToName( int classHandle )
 	{
 		OCMetadata clazz = fom.getObjectClass( classHandle );
@@ -78,6 +113,15 @@ public class Federation
 			return clazz.getQualifiedName();
 		else
 			return null;
+	}
+
+	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	public String getName()
+	{
+		return this.name;
 	}
 
 	//----------------------------------------------------------

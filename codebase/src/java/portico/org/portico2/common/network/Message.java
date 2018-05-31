@@ -77,6 +77,11 @@ public class Message
 		return request;
 	}
 	
+	public final <T extends PorticoMessage> T inflateAsPorticoMessage( Class<T> clazz )
+	{
+		return clazz.cast( inflateAsPorticoMessage() );
+	}
+	
 	public final ResponseMessage inflateAsResponse()
 	{
 		return MessageHelpers.inflate2( buffer, ResponseMessage.class );

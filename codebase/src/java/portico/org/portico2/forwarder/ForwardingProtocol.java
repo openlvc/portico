@@ -55,13 +55,21 @@ public class ForwardingProtocol implements IProtocol
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final EnumSet PassthroughTypes = EnumSet.of( MessageType.CreateFederation,
-	                                                            MessageType.JoinFederation );
+	private static final EnumSet SyncPassthrough  = EnumSet.of( MessageType.CreateFederation,
+	                                                            MessageType.JoinFederation,
+	                                                            MessageType.RegisterObject,
+	                                                            MessageType.DeleteObject );
+	
+	private static final EnumSet AsyncPassthrough = EnumSet.of( MessageType.DiscoverObject,
+	                                                            MessageType.DeleteObject );
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Direction direction;
+	private Direction side;
+	private Direction directionOfTravel; // messages only flow up() through the stack, thus the
+	                                     // actual direction of travel is the reverse of the side
+	                                     // of the forwarder that a connection is on
 	private Exchanger exchanger;
 
 	private Connection hostConnection;	
@@ -76,7 +84,8 @@ public class ForwardingProtocol implements IProtocol
 	//----------------------------------------------------------
 	public ForwardingProtocol( Direction direction, Exchanger exchanger )
 	{
-		this.direction = direction;
+		this.side = direction;
+		this.directionOfTravel = side.reverse();
 		this.exchanger = exchanger;
 
 		this.hostConnection = null; // set in open()
@@ -102,8 +111,8 @@ public class ForwardingProtocol implements IProtocol
 
 	public void open()
 	{
-		ForwardingProtocol sibling = direction == Direction.Upstream ? exchanger.downstreamForwarder :
-		                                                               exchanger.upstreamForwarder; 
+		ForwardingProtocol sibling = side == Direction.Upstream ? exchanger.downstreamForwarder :
+		                                                          exchanger.upstreamForwarder; 
 		
 		this.targetStack = sibling.hostConnection.getProtocolStack();
 		
@@ -146,7 +155,7 @@ public class ForwardingProtocol implements IProtocol
 
 				// Check the rulez!
 				Header header = message.getHeader();
-				if( firewall.acceptUpdate(direction,
+				if( firewall.acceptUpdate(directionOfTravel,
 				                          header.isFilteringHandleObject(),
 				                          header.getFederation(),
 				                          header.getFilteringHandle()) )
@@ -163,8 +172,8 @@ public class ForwardingProtocol implements IProtocol
 				// However, there is a small subset we want to snoop on, so check for that.
 
 				// Do we care about this type?
-				if( PassthroughTypes.contains(message.getHeader().getMessageType()) )
-					stateTracker.receiveControlRequest( message );
+				if( SyncPassthrough.contains(message.getHeader().getMessageType()) )
+					stateTracker.receiveSyncControlRequest( message );
 				
 				// Pass to the other side
 				targetStack.down( message );
@@ -173,8 +182,13 @@ public class ForwardingProtocol implements IProtocol
 			
 			case ControlAsync:
 			{
-				// We just forward async/from RTI control messages through.
-				// Nothing to track for now.
+				// We _must_ forward all control messages to the other side; no questions.
+				// However, there is a small subset we want to snoop on, so check for that.
+
+				// Do we care about this type?
+				if( AsyncPassthrough.contains(message.getHeader().getMessageType()) )
+					stateTracker.receiveAsyncControlRequest( message );
+				
 				targetStack.down( message );
 				break;
 			}
@@ -203,7 +217,7 @@ public class ForwardingProtocol implements IProtocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	public String getName()
 	{
-		return "Forwarding ("+direction+")";
+		return "Forwarding ("+side+")";
 	}
 
 
