@@ -31,9 +31,11 @@ import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.PCMetadata;
 import org.portico.lrc.model.XmlRenderer;
-import org.portico.lrc.model.datatype.IDatatype;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.PorticoConstants;
 import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.services.mom.msg.SetExceptionReporting;
+import org.portico2.common.services.mom.msg.SetServiceReporting;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.pubsub.data.InterestManager;
 import org.portico2.rti.RtiConnection;
@@ -45,6 +47,7 @@ import org.portico2.rti.services.mom.data.FomModule;
 import org.portico2.rti.services.mom.data.InteractionCount;
 import org.portico2.rti.services.mom.data.InteractionSubscription;
 import org.portico2.rti.services.mom.data.MomEncodingHelpers;
+import org.portico2.rti.services.mom.data.MomException;
 import org.portico2.rti.services.mom.data.ObjectClassBasedCount;
 import org.portico2.rti.services.mom.data.SynchPointFederate;
 import org.portico2.rti.services.object.data.RACInstance;
@@ -53,9 +56,6 @@ import org.portico2.rti.services.object.data.Repository;
 import org.portico2.rti.services.sync.data.SyncPoint;
 import org.portico2.rti.services.sync.data.SyncPointManager;
 import org.w3c.dom.Document;
-
-import hla.rti1516e.encoding.DecoderException;
-import hla.rti1516e.encoding.EncoderException;
 
 /**
  * This handler receives all {@link SendInteraction} messages reflected into the Federation's internal
@@ -102,6 +102,10 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		//
 		// HLAfederate
 		//
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLAadjust.HLAsetServiceReporting", 
+		                                    this::handleFederateSetServiceReporting );
+		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLAadjust.HLAsetExceptionReporting", 
+		                                    this::handleFederateSetExceptionReporting );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestPublications", 
 		                                    this::handleFederateRequestPublications );
 		this.registerMomInteractionHandler( "HLAmanager.HLAfederate.HLArequest.HLArequestSubscriptions", 
@@ -171,13 +175,81 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		}
 		
 		// If the incoming interaction is a MOM interaction, then handle it
-		if( interactionId < ObjectModel.MAX_MOM_HANDLE && !request.isFromRti() )
+		if( interactionId < ObjectModel.MAX_MOM_HANDLE && 
+			request.getSourceFederate() != PorticoConstants.RTI_HANDLE )
+		{
 			processMomInteraction( request );
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  MOM Interaction Handlers   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	private void handleFederateSetServiceReporting( Map<String,Object> requestParams )
+		throws MomException
+	{
+		// TODO This has potential for race conditions between the target federate subscribing to
+		// HLAreportServiceInvocation, and the requesting federate sending HLAsetServiceReporting. If
+		// all requests are processed in a single thread within the RTI then it should all be ok.
+		
+		boolean reportingState = (boolean)requestParams.get( "HLAreportingState" );
+		
+		Federate federate = getRequestFederate( requestParams );
+		int federateHandle = federate.getFederateHandle();
+		InterestManager interests = federation.getInterestManager();
+		
+		int rsiHandle = Mom.getMomInteractionHandle( CANONICAL_VERSION, 
+		                                             "HLAmanager.HLAfederate.HLAreport.HLAreportServiceInvocation" );
+		boolean isSubscribedToRsi = interests.isInteractionClassSubscribed( federateHandle, 
+		                                    		                        rsiHandle ); 
+		if( reportingState  )
+		{
+			// Spec only allows service reporting to be enabled on federates that DO NOT subscribe to
+			// HLAreportServiceInvocation
+			if( !isSubscribedToRsi )
+			{
+				SetServiceReporting enableReporting = new SetServiceReporting( true );
+				queueUnicast( enableReporting, federateHandle );
+				
+				logger.debug( "Service invocation reporting for " +
+				              federate.getFederateName()+" ["+federateHandle+"]" +
+				              " has been ENABLED" );
+			}
+			else
+			{
+				throw new MomException( "federate "+federate.getFederateHandle() + 
+				                        " subscribes to HLAmanager.HLAfederate.HLAreport.HLAreportServiceInvocation", 
+				                        false );
+			}
+		}
+		else
+		{
+			SetServiceReporting disableReporting = new SetServiceReporting( false );
+			disableReporting.setTargetFederate( federateHandle );
+			queueUnicast( disableReporting, federateHandle );
+			logger.debug( "Service invocation reporting for " +
+			              federate.getFederateName()+" ["+federateHandle+"]" +
+			              " has been DISABLED" );
+		}
+	}
+	
+	private void handleFederateSetExceptionReporting( Map<String,Object> requestParams )
+		throws MomException
+	{
+		boolean reportingState = (boolean)requestParams.get( "HLAreportingState" );
+		
+		Federate federate = getRequestFederate( requestParams );
+		int federateHandle = federate.getFederateHandle();
+		
+		SetExceptionReporting enableReporting = new SetExceptionReporting( reportingState );
+		queueUnicast( enableReporting, federateHandle );
+		
+		logger.debug( "Exception reporting for " +
+		              federate.getFederateName()+" ["+federateHandle+"]" +
+		              " has been " + (reportingState ? "ENABLED" : "DISABLED") );
+		
+	}
+	
 	private void handleFederateRequestPublications( Map<String,Object> requestParams )
 		throws MomException
 	{
@@ -696,8 +768,11 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 				// Decode the incoming parameters. This will attempt to decode all parameter
 				// values based on their FOM datatype, and will map them against the parameter's
 				// canonical name
-				Map<String,Object> params = decodeRequestParameters( interactionId, 
-				                                                     request.getParameters() );
+				Map<String,Object> params = 
+					MomEncodingHelpers.decodeInteractionParameters( CANONICAL_VERSION,
+					                                                fom(),
+				                                                    interactionId, 
+				                                                    request.getParameters() );
 				
 				// Pass the params to the handler for processing!
 				handler.accept( params );
@@ -725,117 +800,6 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 			throw new JRTIinternalError( "invalid MOM interaction: " + name );
 		
 		return metadata;
-	}
-	
-	/**
-	 * Decodes the values of the specified interaction parameters and maps them against their canonical 
-	 * parameter names.
-	 * <p/>
-	 * Values are decoded based on the {@link IDatatype} of their corresponding parameter.
-	 * 
-	 * @param interactionId the identifier of the interaction that the parameters belong to
-	 * @param params the parameters as received from {@link SendInteraction#getParameters()}
-	 * @return the decoded parameter values, mapped against the canonical name of their corresponding 
-	 *         parameters 
-	 * @throws MomException if a parameter value could not be decoded, or if an expected parameter entry 
-	 *                      was missing from <code>params</code>
-	 */
-	private Map<String,Object> decodeRequestParameters( int interactionId, 
-	                                                    Map<Integer,byte[]> params )
-		throws MomException
-	{
-		Map<String,Object> decoded = new HashMap<>();
-		
-		// Iterate over all the parameters that we expect to be provided in the request
-		ICMetadata requestMetadata = fom().getInteractionClass( interactionId );
-		Set<PCMetadata> paramMetadata = requestMetadata.getAllParameters();
-		for( PCMetadata expectedParam : paramMetadata )
-		{
-			IDatatype type = expectedParam.getDatatype();
-			int parameterId = expectedParam.getHandle();
-			byte[] rawValue = params.get( parameterId );
-			if( rawValue != null )
-			{
-				// Get the parameter's canonical name
-				String name = Mom.getMomParameterName( CANONICAL_VERSION, 
-				                                       parameterId );
-				if( name == null )
-				{
-					// If we get here, then it's an internal configuration issue (e.g. we don't have
-					// the parameter in our MOM tree
-					throw new JRTIinternalError( "could not resolve canonical name for parameter " + 
-					                             parameterId + 
-					                             " of interaction " + interactionId );
-				}
-				
-				Object value = null;
-				try
-				{
-					value = MomEncodingHelpers.decode( type, rawValue );
-				}
-				catch( DecoderException de )
-				{
-					// Could not decode the value
-					throw new MomException( "could not decode value for parameter " + 
-					                        expectedParam.getName() + "[id=" + parameterId + "]",
-					                        true,
-					                        de );
-				}
-				
-				decoded.put( name, value );
-			}
-			else
-			{
-				// Expected parameter was not provided
-				throw new MomException( "no value provided for required parameter " + 
-				                        expectedParam.getName() + "[id=" + parameterId + "]",
-				                        true );
-			}
-		}
-		
-		return decoded;
-	}
-	
-	/**
-	 * Encodes the values of the specified response parameters and maps them against their corresponding 
-	 * parameter handle
-	 * <p/>
-	 * Values are encoded based on the {@link IDatatype} of their corresponding parameter.
-	 * 
-	 * @param interactionMetadata the metadata of the response being sent
-	 * @param params the values of the response parameters, mapped against their canonical parameter name
-	 * @return the encoded parameter values, mapped against the handle of their corresponding parameters 
-	 * @throws EncoderException if a parameter value could not be encoded.
-	 */
-	private HashMap<Integer,byte[]> encodeResponseParameters( ICMetadata interactionMetadata,
-	                                                          Map<String,Object> params )
-	{
-		HashMap<Integer,byte[]> encoded = new HashMap<>();
-		for( PCMetadata paramMetadata : interactionMetadata.getAllParameters() )
-		{
-			int paramHandle = paramMetadata.getHandle();
-			IDatatype datatype = paramMetadata.getDatatype();
-			String paramName = Mom.getMomParameterName( CANONICAL_VERSION,
-			                                            paramHandle );
-			if( paramName == null )
-			{
-				// Programmer error
-				throw new JRTIinternalError( "not a canonical parameter name: " + paramName );
-			}
-
-			Object value = params.get( paramName );
-			if( value != null )
-			{
-				byte[] encodedValue = MomEncodingHelpers.encode( datatype, value );
-				encoded.put( paramHandle, encodedValue );
-			}
-			else
-			{
-				logger.warn( "No parameter value found for " + paramMetadata.getName() );
-			}
-		}
-		
-		return encoded;
 	}
 	
 	/**
@@ -888,13 +852,22 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		ICMetadata responseMetadata = getMomInteractionMetadata( responseName );
 		int responseHandle = responseMetadata.getHandle();
 		
+		Set<Integer> interestedFederates = interests.getAllSubscribers( responseMetadata );
+		if( interestedFederates.size() == 0 )
+		{
+			this.logger.warn( "Not sending MOM interaction " + responseMetadata + 
+			                  " as no federates subscribe to it" );
+			return;
+		}
+		
 		// Encode the parameter values into wire format
 		HashMap<Integer,byte[]> hlaParams =
-		    this.encodeResponseParameters( responseMetadata, params );
+		    MomEncodingHelpers.encodeInteractionParameters( CANONICAL_VERSION, responseMetadata, params );
 
 		// Create the response object
 		SendInteraction response = new SendInteraction( responseHandle, null, hlaParams );
 		response.setIsFromRti( true );
+		response.setTargetFederates( interestedFederates );
 
 		if( logger.isDebugEnabled() )
 		{
@@ -915,33 +888,6 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
-	/**
-	 * Internal exception type. Indicates that an error occurred during the processing of a MOM request
-	 * interaction. This exception will be reported back to the federate as a HLAreportMOMexception via
-	 * the {@link MomSendInteractionHandler#reportMomException(SendInteraction, MomException)} method.
-	 */
-	private class MomException extends Exception
-	{
-		private boolean parameterError;
-		
-		public MomException( String message, boolean parameterError )
-		{
-			super( message );
-			this.parameterError = parameterError;
-		}
-		
-		public MomException( String message, boolean parameterError, Throwable cause )
-		{
-			super( message, cause );
-			this.parameterError = parameterError;
-		}
-		
-		public boolean isParameterError()
-		{
-			return this.parameterError;
-		}
-	}
 	
 	/**
 	 * Consumer extension that allows the consumer method to throw a checked exception.

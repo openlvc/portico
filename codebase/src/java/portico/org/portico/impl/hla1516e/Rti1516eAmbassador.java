@@ -746,10 +746,15 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		RegisterSyncPoint request = new RegisterSyncPoint( label, userSuppliedTag );
 		ResponseMessage response = processMessage( request );
-
+		
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerFederationSynchronizationPoint", 
+		                                response, 
+		                                label,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -804,10 +809,16 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 			set = HLA1516eFederateHandleSet.toJavaSet( synchronizationSet );
 		RegisterSyncPoint request = new RegisterSyncPoint( label, tag, set );
 		ResponseMessage response = processMessage( request );
-
+		
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerFederationSynchronizationPoint", 
+		                                response, 
+		                                label,
+		                                tag,
+		                                synchronizationSet );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -856,10 +867,14 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		SyncPointAchieved request = new SyncPointAchieved( synchronizationPointLabel );
 		ResponseMessage response = processMessage( request );
-
+		
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "synchronizationPointAchieved", 
+		                                response, 
+		                                synchronizationPointLabel );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -917,6 +932,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "synchronizationPointAchieved", 
+		                                response, 
+		                                synchronizationPointLabel,
+		                                successIndicator );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1113,6 +1133,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "publishObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1174,6 +1199,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unpublishObjectClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1243,6 +1272,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unpublishObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1312,6 +1346,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "publishInteractionClass", 
+		                                response, 
+		                                theInteraction );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1369,6 +1407,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unpublishInteractionClass", 
+		                                response, 
+		                                theInteraction );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1433,6 +1475,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "subscribeObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1544,6 +1591,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unsubscribeObjectClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1608,6 +1659,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unsubscribeObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1674,6 +1730,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "subscribeInteractionClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1748,6 +1808,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unsubscribeInteractionClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1811,6 +1875,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "reserveObjectInstanceName", 
+		                                response, 
+		                                theObjectName );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1905,6 +1973,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerObjectInstance", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1973,6 +2045,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerObjectInstance", 
+		                                response, 
+		                                theClass,
+		                                theObjectName );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2046,6 +2123,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "updateAttributeValues", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2126,6 +2209,13 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "updateAttributeValues", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                tag,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2201,6 +2291,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "sendInteraction", 
+		                                response, 
+		                                theInteraction,
+		                                theParameters,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2280,6 +2376,13 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "sendInteraction", 
+		                                response, 
+		                                theInteraction,
+		                                theParameters,
+		                                tag,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2351,6 +2454,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "deleteObjectInstance", 
+		                                response, 
+		                                objectHandle,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2423,6 +2531,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "deleteObjectInstance", 
+		                                response, 
+		                                objectHandle,
+		                                userSuppliedTag,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2490,6 +2604,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "localDeleteObjectInstance", 
+		                                response, 
+		                                objectHandle );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2558,6 +2676,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "requestAttributeValueUpdate", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2627,6 +2751,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "requestAttributeValueUpdate", 
+		                                response, 
+		                                theClass,
+		                                theAttributes,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2761,6 +2891,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unconditionalAttributeOwnershipDivestiture", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2837,6 +2972,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "negotiatedAttributeOwnershipDivestiture", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2936,6 +3077,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "attributeOwnershipAcquisition", 
+		                                response, 
+		                                theObject,
+		                                desiredAttributes,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3021,6 +3168,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "attributeOwnershipAcquisitionIfAvailable", 
+		                                response, 
+		                                theObject,
+		                                desiredAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3126,6 +3278,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "attributeOwnershipDivestitureIfWanted", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3204,6 +3361,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "cancelNegotiatedAttributeOwnershipDivestiture", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3283,6 +3445,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "cancelAttributeOwnershipAcquisition", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3360,6 +3527,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "queryAttributeOwnership", 
+		                                response, 
+		                                theObject,
+		                                theAttribute );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3468,6 +3640,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "enableTimeRegulation", 
+		                                response, 
+		                                theLookahead );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3540,6 +3716,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "disableTimeRegulation", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3598,6 +3777,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "enableTimeConstrained", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3662,6 +3844,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "disableTimeConstrained", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3728,6 +3913,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "timeAdvanceRequest", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3811,6 +4000,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "timeAdvanceRequestAvailable", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3893,6 +4086,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "nextMessageRequest", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3975,6 +4172,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "nextMessageRequestAvailable", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4057,6 +4258,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "flushQueueRequest", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4128,6 +4333,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "enableAsynchronousDelivery", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4183,6 +4391,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "disableAsynchronousDelivery", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4238,6 +4449,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "queryGALT", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4286,7 +4500,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		return new DoubleTime( helper.getState().getCurrentTime() );
+		DoubleTime result = new DoubleTime( helper.getState().getCurrentTime() );
+		
+		helper.reportServiceInvocation( "queryLogicalTime", true, result );
+		
+		return result;
 	}
 
 	// 8.18
@@ -4302,7 +4520,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkRestore();
 		
 		DoubleTime time = new DoubleTime( helper.getState().getCurrentTime() );
-		return new TimeQueryReturn( true, time );
+		TimeQueryReturn result = new TimeQueryReturn( true, time );
+		
+		helper.reportServiceInvocation( "queryLITS", true, result );
+		
+		return result;
 	}
 
 	// 8.19
@@ -4338,6 +4560,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "modifyLookahead", 
+		                                response,
+		                                theLookahead );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4397,7 +4623,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		return new DoubleTimeInterval( helper.getState().getLookahead() );
+		DoubleTimeInterval result = new DoubleTimeInterval( helper.getState().getLookahead() );
+		
+		helper.reportServiceInvocation( "queryLookahead", true, result );
+		
+		return result;
 	}
 
 	// 8.21
@@ -4831,11 +5061,14 @@ return "";
 		OCMetadata cls = helper.getFOM().getObjectClass( theName );
 		if( cls == null )
 		{
+			helper.reportServiceInvocation( "getObjectClassHandle", false, "name not found", theName );
 			throw new NameNotFound( theName );
 		}
 		else
 		{
-			return new HLA1516eHandle( cls.getHandle() );
+			ObjectClassHandle result = new HLA1516eHandle( cls.getHandle() );
+			helper.reportServiceInvocation( "getObjectClassHandle", true, result, theName );
+			return result;
 		}
 	}
 
@@ -4853,11 +5086,14 @@ return "";
 		OCMetadata cls = helper.getFOM().getObjectClass( handle );
 		if( cls == null )
 		{
+			helper.reportServiceInvocation( "getObjectClassName", false, "unknown handle", theHandle );
 			throw new RTIinternalError( "unknown handle: " + theHandle );
 		}
 		else
 		{
-			return cls.getQualifiedName();
+			String result = cls.getQualifiedName();
+			helper.reportServiceInvocation( "getObjectClassName", true, result, theHandle );
+			return result;
 		}
 	}
 
@@ -4871,9 +5107,22 @@ return "";
 		helper.checkJoined();
 		LOCInstance instance = helper.getState().getRepository().getObject( theObject.hashCode() );
 		if( instance == null )
+		{
+			helper.reportServiceInvocation( "getKnownObjectClassHandle", 
+			                                false, 
+			                                "object instance not known", 
+			                                theObject );
 			throw new ObjectInstanceNotKnown( "handle: " + theObject );
+		}
 		else
-			return new HLA1516eHandle( instance.getDiscoveredClassHandle() );
+		{
+			ObjectClassHandle result = new HLA1516eHandle( instance.getDiscoveredClassHandle() );
+			helper.reportServiceInvocation( "getKnownObjectClassHandle", 
+			                                true, 
+			                                result, 
+			                                theObject );
+			return result;
+		}
 	}
 
 	// 10.9
@@ -4933,17 +5182,33 @@ return "";
 		OCMetadata cls = helper.getFOM().getObjectClass( cHandle );
 		if( cls == null )
 		{
+			helper.reportServiceInvocation( "getAttributeHandle", 
+			                                false, 
+			                                "invalid object class handle", 
+			                                whichClass,
+			                                theName );
 			throw new InvalidObjectClassHandle( "handle: " + whichClass );
 		}
 		
 		ACMetadata aClass = helper.getFOM().getAttributeClass( cHandle, theName );
 		if( aClass == null )
 		{
+			helper.reportServiceInvocation( "getAttributeHandle", 
+			                                false, 
+			                                "name not found", 
+			                                whichClass,
+			                                theName );
 			throw new NameNotFound( "name: " + theName );
 		}
 		else
 		{
-			return new HLA1516eHandle( aClass.getHandle() );
+			AttributeHandle result = new HLA1516eHandle( aClass.getHandle() );
+			helper.reportServiceInvocation( "getAttributeHandle", 
+			                                true, 
+			                                result, 
+			                                whichClass,
+			                                theName );
+			return result;
 		}
 	}
 
@@ -4968,14 +5233,16 @@ return "";
 		else
 		{
 			String name = cls.getAttributeName( acHandle );
+			helper.reportServiceInvocation( "getAttributeName", 
+			                                name != null, 
+			                                name != null ? name : "attribute not defined", 
+			                                whichClass,
+			                                theHandle );
+			
 			if( name == null )
-			{
 				throw new AttributeNotDefined( "handle: " + theHandle );
-			}
 			else
-			{
 				return name;
-			}
 		}
 	}
 
@@ -5014,6 +5281,11 @@ return "";
 		
 		// get the class
 		ICMetadata cls = helper.getFOM().getInteractionClass( theName );
+		helper.reportServiceInvocation( "getInteractionClassHandle", 
+		                                cls != null, 
+		                                cls != null ? cls.getHandle() : "name not found", 
+		                                theName );
+		
 		if( cls == null )
 		{
 			throw new NameNotFound( theName );
@@ -5036,9 +5308,14 @@ return "";
 		// get the class
 		int handle = HLA1516eHandle.validatedHandle( theHandle );
 		ICMetadata cls = helper.getFOM().getInteractionClass( handle );
+		helper.reportServiceInvocation( "getInteractionClassName", 
+		                                cls != null, 
+		                                cls != null ? cls.getQualifiedName() : "invalid interaction class handle", 
+		                                theHandle );
+		
 		if( cls == null )
 		{
-			throw new RTIinternalError( "handle: " + theHandle );
+			throw new InvalidInteractionClassHandle( "handle: " + theHandle );
 		}
 		else
 		{
@@ -5060,18 +5337,34 @@ return "";
 		ICMetadata cls = helper.getFOM().getInteractionClass( cHandle );
 		if( cls == null )
 		{
-			throw new RTIinternalError( "handle: " + cHandle );
+			helper.reportServiceInvocation( "getParameterHandle", 
+			                                false, 
+			                                "invalid interaction class handle", 
+			                                whichClass,
+			                                theName );
+			throw new InvalidInteractionClassHandle( "handle: " + cHandle );
 		}
 		else
 		{
 			int handle = cls.getParameterHandle( theName );
 			if( handle == ObjectModel.INVALID_HANDLE )
 			{
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                false, 
+				                                "parameter name not found", 
+				                                whichClass,
+				                                theName );
 				throw new NameNotFound( "name: " + theName );
 			}
 			else
 			{
-				return new HLA1516eHandle( handle );
+				ParameterHandle result = new HLA1516eHandle( handle );
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                true, 
+				                                result, 
+				                                whichClass,
+				                                theName );
+				return result;
 			}
 		}
 	}
@@ -5092,17 +5385,32 @@ return "";
 		ICMetadata cls = helper.getFOM().getInteractionClass( icHandle );
 		if( cls == null )
 		{
-			throw new RTIinternalError( "handle: " + icHandle );
+			helper.reportServiceInvocation( "getParameterHandle", 
+			                                false, 
+			                                "invalid interaction class handle", 
+			                                whichClass,
+			                                theHandle );
+			throw new InvalidInteractionClassHandle( "handle: " + icHandle );
 		}
 		else
 		{
 			String name = cls.getParameterName( pcHandle );
 			if( name == null )
 			{
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                false, 
+				                                "parameter not defined", 
+				                                whichClass,
+				                                theHandle );
 				throw new InteractionParameterNotDefined( "handle: " + pcHandle );
 			}
 			else
 			{
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                true, 
+				                                name, 
+				                                whichClass,
+				                                theHandle );
 				return name;
 			}
 		}
@@ -5375,7 +5683,23 @@ return "";
 	    throws CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		return helper.evokeSingle( approximateMinimumTimeInSeconds );
+		try
+		{
+			boolean result = helper.evokeSingle( approximateMinimumTimeInSeconds );
+			this.helper.reportServiceInvocation( "evokeCallback", 
+			                                     true, 
+			                                     result, 
+			                                     approximateMinimumTimeInSeconds );
+			return result;
+		}
+		catch ( CallNotAllowedFromWithinCallback cnafwc )
+		{
+			this.helper.reportServiceInvocation( "evokeCallback", 
+			                                     false, 
+			                                     "call not allowed from within callback", 
+			                                     approximateMinimumTimeInSeconds );
+			throw cnafwc;
+		}
 	}
 
 	// 10.42
@@ -5384,8 +5708,26 @@ return "";
 	    throws CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		return helper.evokeMultiple( approximateMinimumTimeInSeconds,
-		                             approximateMaximumTimeInSeconds );
+		try
+		{
+			boolean result = helper.evokeMultiple( approximateMinimumTimeInSeconds,
+			                                       approximateMaximumTimeInSeconds );
+			this.helper.reportServiceInvocation( "evokeMultipleCallbacks", 
+			                                     true, 
+			                                     result, 
+			                                     approximateMinimumTimeInSeconds,
+			                                     approximateMaximumTimeInSeconds );
+			
+			return result;
+		}
+		catch( CallNotAllowedFromWithinCallback cnafwc )
+		{
+			this.helper.reportServiceInvocation( "evokeMultipleCallbacks", 
+			                                     false, 
+			                                     "call not allowed from within callback", 
+			                                     approximateMinimumTimeInSeconds );
+			throw cnafwc;
+		}
 	}
 
 	// 10.43
@@ -5394,6 +5736,9 @@ return "";
 		helper.checkSave();
 		helper.checkRestore();
 		helper.getState().setCallbacksEnabled( true );
+		
+		this.helper.reportServiceInvocation( "enableCallbacks", true, null );
+		
 		logger().debug( "enableCallbacks invoked(): callbacks turned on" );
 	}
 
@@ -5403,6 +5748,9 @@ return "";
 		helper.checkSave();
 		helper.checkRestore();
 		helper.getState().setCallbacksEnabled( false );
+		
+		this.helper.reportServiceInvocation( "disableCallbacks", true, null );
+		
 		logger().debug( "disableCallbacks invoked(): callbacks turned off" );
 	}
 

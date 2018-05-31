@@ -86,7 +86,7 @@ public class PublishObjectClassHandler extends RTIMessageHandler
 			             ocMoniker(classHandle),
 			             acMoniker(attributes) );
 		}
-
+		
 		context.success();
 	}
 

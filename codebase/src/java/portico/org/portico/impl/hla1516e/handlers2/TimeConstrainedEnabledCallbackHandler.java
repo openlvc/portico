@@ -20,6 +20,7 @@ import org.portico.impl.hla1516e.types.time.DoubleTime;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.messaging.MessageContext;
 
+import hla.rti1516e.LogicalTime;
 import hla.rti1516e.exceptions.FederateInternalError;
 
 public class TimeConstrainedEnabledCallbackHandler extends LRC1516eCallbackHandler
@@ -48,9 +49,10 @@ public class TimeConstrainedEnabledCallbackHandler extends LRC1516eCallbackHandl
 	@Override
 	public void callback( MessageContext context ) throws FederateInternalError
 	{
-		DoubleTime currentTime = new DoubleTime( lrcState.getCurrentTime() );
+		LogicalTime<?,?> currentTime = new DoubleTime( lrcState.getCurrentTime() );
 		logger.trace( "CALLBACK timeConstrainedEnabled(time="+currentTime+")" );
 		fedamb().timeConstrainedEnabled( currentTime );
+		helper.reportServiceInvocation( "timeConstrainedEnabled", true, null, currentTime );
 		logger.trace( "         timeConstrainedEnabled() callback complete" );
 		context.success();
 	}

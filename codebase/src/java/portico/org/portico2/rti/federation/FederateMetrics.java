@@ -44,6 +44,7 @@ public class FederateMetrics
 	private int objectsRemoved;
 	private int objectsRegistered;
 	private int objectsDiscovered;
+	private int serviceInvocations;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -59,6 +60,7 @@ public class FederateMetrics
 		this.objectsRemoved = 0;
 		this.objectsRegistered = 0;
 		this.objectsDiscovered = 0;
+		this.serviceInvocations = 0;
 	}
 
 	//----------------------------------------------------------
@@ -141,6 +143,11 @@ public class FederateMetrics
 	public void objectDiscovered()
 	{
 		++this.objectsDiscovered;
+	}
+	
+	public int serviceInvoked()
+	{
+		return ++this.serviceInvocations;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////

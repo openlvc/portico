@@ -61,9 +61,12 @@ public class SyncAnnounceCallbackHandler extends LRC1516eCallbackHandler
 		}
 
 		// We're either in the set, or there is no set (federtaion wide callback)
+		String label = announcement.getLabel();
+		byte[] tag = announcement.getTag();
 		logger.trace( "CALLBACK announceSynchronizationPoint(label="+announcement.getLabel()+")" );
 		fedamb().announceSynchronizationPoint( announcement.getLabel(), announcement.getTag() );
-
+		
+		helper.reportServiceInvocation( "announceSynchronizationPoint", true, null, label, tag );
 		context.success();
 		
 		logger.trace( "         announceSynchronizationPoint() callback complete" );

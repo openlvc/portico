@@ -15,7 +15,9 @@
 package org.portico2.lrc;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +26,8 @@ import org.portico.impl.ISpecHelper;
 import org.portico.lrc.compat.JConcurrentAccessAttempted;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.model.ICMetadata;
+import org.portico.lrc.model.Mom;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
 import org.portico2.common.configuration.LrcConfiguration;
@@ -34,6 +38,8 @@ import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.MessageSink;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.messaging.VetoException;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.rti.services.mom.data.MomEncodingHelpers;
 
 public class LRC
 {
@@ -562,10 +568,116 @@ public class LRC
 		return this.incoming;
 	}
 
+	/**
+	 * Reports the invocation of a RTIambassador or FederateAmbassador service (whether successful or 
+	 * not) to the federation.
+	 * <p/>
+	 * If the federate this LRC is managing has Service Invocation reporting enabled (See 
+	 * {@link LRCState#isServiceReporting()}), then the service invocation will be reported via the
+	 * <code>HLAmanager.HLAfederate.HLAreport.HLAreportServiceInvocation</code> interaction, regardless
+	 * of whether the invocation was successful, or resulted in an error.
+	 * <p/>
+	 * Additionally, if the federate this LRC is managing has Exception reporting enabled (See
+	 * {@link LRCState#isExceptionReporting()}), then any service invocations that resulted in an error
+	 * will be reported via the <code>HLAmanager.HLAfederate.HLAreport.HLAreportException</code> 
+	 * interaction.
+	 * <p/>
+	 * If neither Service Invocation reporting, or Exception reporting are enabled, calling this method
+	 * will result in a noop.
+	 * 
+	 * @param serviceName The name of the service invoked
+	 * @param success <code>true</code> if the service was invoked successfully, otherwise 
+	 *                <code>false</code> if the service invocation raised an error
+	 * @param returnValue the value that was returned due to a successful invocation of the service. 
+	 *                    Ignored if the <code>success</code> parameter is <code>false</code>
+	 * @param errorMessage the error message that was raised due to an unsuccessful invocation of the 
+	 *                     service. Ignored if the <code>success</code> parameter is <code>true</code>
+	 * @param parameters the parameters that the service was invoked with
+	 */
+	public final void reportServiceInvocation( String serviceName,
+	                                           boolean success,
+	                                           Object returnValue,
+	                                           String errorMessage,
+	                                           Object... parameters )
+	{
+		boolean serviceReporting = this.state.isServiceReporting();
+		boolean exceptionReporting = this.state.isExceptionReporting();
+		
+		// HLAreportException
+		if( exceptionReporting && !success )
+		{
+			Map<String,Object> params = new HashMap<String,Object>();
+			params.put( "HLAfederate", state.getFederateHandle() );
+			params.put( "HLAservice", serviceName );
+			params.put( "HLAexception", errorMessage );
+			
+			// TODO cache the handle
+			int reportHandle =
+			    Mom.getMomInteractionHandle( this.specHelper.getHlaVersion(),
+			                                 "HLAmanager.HLAfederate.HLAreport.HLAreportException" );
+			ICMetadata reportExceptionType = state.getFOM().getInteractionClass( reportHandle );
+			HashMap<Integer,byte[]> hlaParams =
+			    MomEncodingHelpers.encodeInteractionParameters( specHelper.getHlaVersion(),
+			                                                    reportExceptionType, 
+			                                                    params );
+			
+			// Create the report service invocation message
+			SendInteraction message = new SendInteraction( reportExceptionType.getHandle(), 
+			                                               null, 
+			                                               hlaParams );
+			message.setIsFromRti( true );
+			message.setTargetFederation( state.getFederationHandle() );
+			connection2.sendDataMessage( message );
+		}
+		
+		// HLAreportServiceInvocation
+		if( serviceReporting )
+		{
+			// Return Arguments
+			Object[] returnArguments = null;
+			if( success && returnValue != null )
+				returnArguments = new Object[]{ returnValue };
+			else
+				returnArguments = new Object[0];
+
+			// Exception
+			String exception = null;
+			if( !success )
+				exception = errorMessage;
+
+			int serial = state.getNextServiceInvocationSerial();
+			Map<String,Object> params = new HashMap<String,Object>();
+			params.put( "HLAfederate", state.getFederateHandle() );
+			params.put( "HLAservice", serviceName );
+			params.put( "HLAsuccessIndicator", success );
+			params.put( "HLAsuppliedArguments", parameters );
+			params.put( "HLAreturnedArguments", returnArguments );
+			params.put( "HLAexception", exception );
+			params.put( "HLAserialNumber", serial );
+
+			// TODO cache the handle
+			int rsiHandle =
+			    Mom.getMomInteractionHandle( this.specHelper.getHlaVersion(),
+			                                 "HLAmanager.HLAfederate.HLAreport.HLAreportServiceInvocation" );
+			ICMetadata reportServiceInvocationType = state.getFOM().getInteractionClass( rsiHandle );
+			HashMap<Integer,byte[]> hlaParams =
+			    MomEncodingHelpers.encodeInteractionParameters( specHelper.getHlaVersion(),
+			                                                    reportServiceInvocationType, 
+			                                                    params );
+			
+			// Create the report service invocation message
+			SendInteraction message = new SendInteraction( reportServiceInvocationType.getHandle(), 
+			                                               null, 
+			                                               hlaParams );
+			message.setIsFromRti( true );
+			message.setTargetFederation( state.getFederationHandle() );
+			connection2.sendDataMessage( message );
+		}
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
 	
 	///////////////////////////////////////////////////////////////
 	///////// Private Class: ImmediateCallbackDispatcher //////////
