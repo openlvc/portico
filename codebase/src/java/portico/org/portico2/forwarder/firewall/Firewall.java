@@ -14,7 +14,6 @@
  */
 package org.portico2.forwarder.firewall;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -82,7 +81,12 @@ public class Firewall
 	private void buildPatternMap( Set<String> strings, Map<String,Pattern> store )
 	{
 		for( String temp : strings )
-			store.put( temp, Pattern.compile(temp.replace("*",".*?")) );
+		{
+			//  Case Insensitive: (?i)
+			// Wildcard Sequence: .*?
+			String regex = "(?i)"+temp.replace( "*" , ".*?" );
+			store.put( temp, Pattern.compile(regex) );
+		}
 	}
 
 	//----------------------------------------------------------
@@ -124,21 +128,22 @@ public class Firewall
 		
 		// figure out the pattern set we need to match against depending on whether the
 		// flow is upstream or downstream, and whether it is an interaction of reflection
-		Collection<Pattern> patterns = null;
+		Map<String,Pattern> patterns = null;
 		if( direction == Direction.Upstream )
 		{
-			if( objectUpdate ) patterns = allowedExportObjects.values();
-			else               patterns = allowedExportInteractions.values();
+			if( objectUpdate ) patterns = allowedExportObjects;
+			else               patterns = allowedExportInteractions;
 		}
 		else
 		{
-			if( objectUpdate ) patterns = allowedImportObjects.values();
-			else               patterns = allowedImportInteractions.values();
+			if( objectUpdate ) patterns = allowedImportObjects;
+			else               patterns = allowedImportInteractions;
 		}
 		
 		// check all the patterns to see if we have a match
-		for( Pattern pattern : patterns )
+		for( String rule : patterns.keySet() )
 		{
+			Pattern pattern = patterns.get( rule ); 
 			if( pattern.matcher(qualifiedName).matches() )
 			{
 				if( logger.isTraceEnabled() )
@@ -147,7 +152,7 @@ public class Firewall
     				              direction.flowDirection(),
     				              objectUpdate ? "Reflection" : "Interaction",
     				              qualifiedName,
-    				              pattern );
+    				              rule );
 				}
 				return true;
 			}

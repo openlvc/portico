@@ -258,8 +258,9 @@ fwd.firewall.enabled = false
 #       If a data message is received from the RTI and it does NOT match one of the listed
 #       types, it will be dropped, and won't pass to the local cluster.
 #
-#       The text HLAobjectRoot (or ObjectRoot) is optional. The wildcard '*' character matches
-#       for all child types. Use '\' as the last character of a line to use multiple lines.
+#       Class names MUST be fully qualified to match, but are case-insensitive.
+#       The wildcard '*' character matches any relevant character sequence in a name.
+#       Use '\' as the last character of a line to spread your config out over many.
 #
 fwd.firewall.import.object = HLAobjectRoot.*
 fwd.firewall.import.interaction = HLAinteractionRoot.*
@@ -273,8 +274,9 @@ fwd.firewall.import.interaction = HLAinteractionRoot.*
 #       If a data message is received from the local cluster and it does NOT match one of
 #       the listed types, it will be dropped, and won't pass to the RTI.
 #
-#       The text HLAobjectRoot (or ObjectRoot) is optional. The wildcard '*' character matches
-#       for all child types. Use '\' as the last character of a line to use multiple lines.
+#       Class names MUST be fully qualified to match, but are case-insensitive.
+#       The wildcard '*' character matches any relevant character sequence in a name.
+#       Use '\' as the last character of a line to spread your config out over many.
 #
 fwd.firewall.export.object = HLAobjectRoot.*
 fwd.firewall.export.interaction = HLAinteractionRoot.*
