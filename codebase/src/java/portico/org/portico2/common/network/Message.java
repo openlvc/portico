@@ -62,6 +62,12 @@ public class Message
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
+	private final void deflateRequest()
+	{
+		this.buffer = MessageHelpers.deflate2( request, calltype, requestId );
+		this.header = new Header( buffer, 0 );
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -69,8 +75,17 @@ public class Message
 	public final Header getHeader() { return this.header; }
 	public final byte[] getBuffer() { return this.buffer; }
 	public final CallType getCallType() { return this.calltype; }
-	
+	public final boolean hasRequest() { return this.request != null; }
+	public final PorticoMessage getRequest() { return this.request; }
 
+	/**
+	 * Tells the message to take the contents of the buffer and inflate it into a full
+	 * {@link PorticoMessage} object, returning the result. The request object is lazy
+	 * loaded, so if you call {@link #getRequest()} before this method has been called,
+	 * the message class will implicitly call it on your behalf.
+	 * 
+	 * @return The {@link PorticoMessage} that represents the contained byte[] buffer (if present).
+	 */
 	public final PorticoMessage inflateAsPorticoMessage()
 	{
 		this.request = MessageHelpers.inflate2( buffer, PorticoMessage.class ); 

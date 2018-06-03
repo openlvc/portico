@@ -100,6 +100,24 @@ public class BitHelpers
 		checkOverflow( value.length, buffer, offset );
 		System.arraycopy( value, 0, buffer, offset, value.length );
 	}
+	
+	/**
+	 * Copies the provided byte[] value into the buffer starting from the specified offset.
+	 * Will copy the given number of bytes (in length) from the source array.
+	 * Checks to ensure there is enough room to write into first, throwing a
+	 * {@link BufferOverflowException} if there is not.
+	 * 
+	 * @param value The byte[] to write into the buffer
+	 * @param target The buffer to write into
+	 * @param offset The offset to commence at
+	 * @param length The number of bytes to write from the source array
+	 * @throws BufferOverflowException If there is not enough space to write the value into
+	 */
+	public static void putByteArray( byte[] value, byte[] target, int offset, int length )
+	{
+		checkOverflow( length, target, offset );
+		System.arraycopy( value, 0, target, offset, length );
+	}
 
 	/**
 	 * Reads and returns a sub-byte[] from the given buffer. Starting at the offset position

@@ -57,7 +57,7 @@ public class MessageHelpersTest
 		ObjectModel model = FOM.parseFOM( ClassLoader.getSystemResource("fom/testfom.fed") );
 		CreateFederation original = new CreateFederation( "sharedTest", model );
 
-		byte[] deflated = MessageHelpers.deflate2( original, CallType.ControlSync );
+		byte[] deflated = MessageHelpers.deflate2( original, CallType.ControlSync, 0 );
 		
 		CreateFederation inflated = MessageHelpers.inflate2( deflated, CreateFederation.class );
 		ObjectModel iModel = inflated.getModel();
@@ -111,7 +111,7 @@ public class MessageHelpersTest
 	{
 		// deflate a PorticoMessage
 		DestroyFederation request = new DestroyFederation( "testFederation" );
-		byte[] data = MessageHelpers.deflate2( request, CallType.ControlSync );
+		byte[] data = MessageHelpers.deflate2( request, CallType.ControlSync, 0 );
 		
 		// pad the data
 		byte[] padded = new byte[data.length+1];

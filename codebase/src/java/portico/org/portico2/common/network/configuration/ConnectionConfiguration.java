@@ -63,6 +63,14 @@ public abstract class ConnectionConfiguration
 	 */
 	public abstract void parseConfiguration( String prefix, Properties properties );
 
+	/**
+	 * Each connection should support a default set of configuration properties.
+	 * This method will return the crypto configuration settings.
+	 * 
+	 * @return The crpyto configuration for the connection
+	 */
+	public abstract CryptoConfiguration getCryptoConfiguration();
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////

@@ -50,6 +50,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 	private int bundlingMaxSize;
 	private int bundlingMaxTime;
 	
+	private CryptoConfiguration cryptoConfiguration;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -66,6 +68,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 		this.isBundling = false;
 		this.bundlingMaxSize = 64000; // 64k
 		this.bundlingMaxTime = 20000; // 20ms
+		
+		this.cryptoConfiguration = new CryptoConfiguration();
 	}
 	
 	public TcpConfiguration( String name, TransportType type )
@@ -90,12 +94,20 @@ public class TcpConfiguration extends ConnectionConfiguration
 		return this.type;
 	}
 
+	@Override
+	public CryptoConfiguration getCryptoConfiguration()
+	{
+		return this.cryptoConfiguration;
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/// Configuration Loading   ////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{
+		cryptoConfiguration.parseConfiguration( prefix, properties );
+
 		prefix += ".";
 		String temp = properties.getProperty( prefix+"type" );
 		if( temp != null )

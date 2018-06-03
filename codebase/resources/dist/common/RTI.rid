@@ -9,9 +9,31 @@
 # To make use of this file, put it in the directory that your federate is executed from, or set the
 # RTI_RID_FILE environment variable to point at wherever it is located.
 #
-# -------------------------
-# Network Symbolic Names
-# -------------------------
+# --------------------------------------
+# Network Connections
+# --------------------------------------
+# The configuration properties for all network connections are grouped under a common name.
+# Although this configuration often uses the name of the transport, that is not required,
+# nor is there any link between the name and the transport that it uses. For example:
+#
+# rti.network.[$NAME].transport = multicast
+# rti.network.[$NAME].otherPropertyA = ...
+# rti.network.[$NAME].otherPropertyB = ...
+#
+# All the properties under the prefix 'rti.network.[$NAME]' are considered part of the same
+# configuration. In this file, you'll often see that name is the _same_ as the transport
+# (e.g. rti.network.multicast.transport = multicast). There is _NO RELATION_ between the
+# name and the transport. It is done in this file only to provide the most natural default
+# configuration.
+#
+# Where allowed (such as in the RTI), you can create multiple connections with the same
+# transport, but different configurations. For example, you could listen on two different
+# multicast networks, or for incoming TCP connections on two different NICs. To do this,
+# duplicate the configurations and just change the name.
+#
+# --------------------------------------
+# Network Interface Symbolic Names
+# --------------------------------------
 # For any place where an IP address or name could validly be entered, you can instead use a more
 # generic, symbolic string. When a symbolic name is used, Portico will substitute it for the first
 # address or NIC it can find that matches. The following symbolic names are available:
@@ -20,11 +42,11 @@
 #  - LINK_LOCAL: 169.254.1.0 - 169.254.254.255 inclusive
 #  - SITE_LOCAL: 10.0.0.0/8 (255.0.0.0), 172.16.0.0/12 (255.240.0.0), 192.168.0.0/16 (255.255.0.0)
 #  - GLOBAL:     Any address not in the above
+#
 
-
-# ====================================================
-#               Common Configuration
-# ====================================================
+# ==================================================================================
+# ///  Common Configuration  ///////////////////////////////////////////////////////
+# ==================================================================================
 
 # (C.1) Common Logging Properties
 #        Specify the log level and directory. Settings are common across RTI, LRC and Forwarder.
@@ -77,6 +99,11 @@ rti.home = ./
 #        named the connections after their transport type, but this isn't required (and lets you
 #        have multiple connections with the same transport, but, say, different ports if you want).
 #
+#        Encryption: If you want to use encryption with any of the connections, there are a set
+#                    of default properties you can add to the config for any type. We have
+#                    included them as defaults under each connection example we have provided.
+#                    however the full documentation is only provided on the "multicsat" types.
+#
 rti.network.connections = multicast, tcp, jvm
 
 
@@ -89,6 +116,7 @@ rti.network.jvm.transport = jvm
 
 # (R.5) Multicast Connection Configuration
 #
+#  Transport: Signals that this is a multicast connection
 #    Address: A valid multicast or broadcast group, or the symbolic name BROADCAST
 #       Port: Any valid port number
 #        NIC: The address or host name of the NIC we should use to send/receive traffic, or
@@ -99,9 +127,29 @@ rti.network.multicast.address   = 239.1.2.3
 rti.network.multicast.port      = 20913
 rti.network.multicast.nic       = SITE_LOCAL
 
+#rti.network.multicast.bundling = false
+#rti.network.multicast.bundling.maxSize = 64K
+#rti.network.multicast.bundling.maxTime = 30
+#rti.network.multicast.flow.credits = 2M
+#rti.network.multicast.flow.threshold = 0.4
+#rti.network.multicast.frag.size = 60K
+
+	# (R.5a) Encryption Settings
+	#
+	#     Encrypt: Is encryption on or off?
+	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
+	#              require the use of the Java unlimited strength policies (google it)
+	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
+	#        Mode: Encryption mode. Supports ECB, CBC, CFB, CTR
+	#      
+	rti.network.multicast.crypto.enabled  = true
+	rti.network.multicast.crypto.keylen   = 128
+	rti.network.multicast.crypto.cipher   = AES/CFB/NoPadding
+
 
 # (R.6) Unicast Network Connection
 #
+#  Transport: Signals that this is a TCP Server connection that will listen for clients
 #       Port: The port number to listen on.
 #        NIC: A valid host name or IP address used by the NIC we should use to receive connections,
 #             or one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
@@ -287,90 +335,6 @@ fwd.firewall.export.interaction = HLAinteractionRoot.*
 #                       Legacy Configuration Options                           #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# =========================================
-# 4. JGroups Network Settings
-# =========================================
-# Portico uses the JGroups library for its inter-federate network communication.
-# These settings control various parameters of the network layer and JGroups itself.
-
-# (4.1) JGroups UDP Address and Port
-#        Address and port to use for communication between federates.
-#        DEFAULT: 239.20.9.13:20913
-#
-# portico.jgroups.udp.address = 239.20.9.13
-# portico.jgroups.udp.port = 20913
-
-
-# (4.2) JGroups Bind Address
-#        The address/NIC Portico should use. Can use an IP address associated with a NIC, or
-#        one of the following special values:
-#
-#            GLOBAL: Pick a global IP address if available. If not, falls back to a SITE_LOCAL IP address.
-#        SITE_LOCAL: Picks a site local (non routable) IP address, e.g. from the 192.168.0.0 or 10.0.0.0 address range.
-#        LINK_LOCAL: Picks a link-local IP address, from 169.254.1.0 through 169.254.254.255.
-#      NON_LOOPBACK: Picks any non loopback address.
-#          LOOPBACK: Pick a loopback address, e.g. 127.0.0.1.
-#   match-interface: Pick an address which matches a pattern against the interface name, e.g. match-interface:eth.*
-#     match-address: Pick an address which matches a pattern against the host address, e.g. match-address:192.168.*
-#        match-host: Pick an address which matches a pattern against the host name, e.g. match-host:linux.*
-#
-#        DEFAULT: SITE_LOCAL
-#
-# portico.jgroups.udp.bindAddress = SITE_LOCAL
-
-
-# (4.3) JGroups UDP Sent/Receive Buffer Size
-#        Incoming/Outgoing buffer sizes. Default receive buffer is quite large to allow ample
-#        space on fast networks and avoid dropped packets.
-#
-# portico.jgroups.udp.receiveBuffer = 25M
-# portico.jgroups.udp.sendBuffer = 640K
-
-
-# (4.4) JGroups Bundling Support
-#         If you are sending lots of smaller messages, higher overall throughput can be obtained by
-#         bundling them together into a fewer number of larger messages. However, doing so comes at
-#         the cost of latency. Messages are buffered until either the timeout period (milliseconds)
-#         is reached, or the total size of the messages exceeds the specified threshold. Bundling
-#         is enabled by default. For latency-critical tasks, disable it or reduce the max-timeout.
-#
-# portico.jgroups.bundling = true
-# portico.jgroups.bundling.maxSize = 64K
-# portico.jgroups.bundling.maxTime = 30
-
-
-# (4.5) JGroups Flow Control
-#         Flow control is used to rate limit transmission so that slow receivers don't get overrun,
-#         causing them to drop messages and requiring expensive retransmission.
-#
-#         This value sets the maximum number of bytes that can be sent by a federate before it
-#         needs to receive more credits from other cluster members. These credits are not sent
-#         until the other federates have processed enough of the prior sent messages. The ratio
-#         setting defines how far through its current credits a sender can get before it should
-#         issue a request for more.
-#
-#         Setting the credit limit higher will allow a federate to send more messages before it
-#         gets blocked. Consider adjusting this value in conjunction with the buffer sizes, as
-#         they will dictate storage capacity on the sender side.
-#
-#         Note: If you start experiencing unstable behaviour, turn this value down. Flow control
-#               can be sensitive to the number of messages you try to send out in a hurry. If
-#               bundling is enabled, you can use a higher value because although you are sending
-#               more messages, the actual number hitting the network is smaller.
-#
-# portico.jgroups.flow.credits = 2M
-# portico.jgroups.flow.threshold = 0.4
-
-
-# (4.6) Packet Fragmentation Size
-#         Messages larger than this size will be broken down into smaller ones for transmission,
-#         reducing potentially lengthy delays retransmitting whole large messages when a single
-#         datagram is lost.
-#         Note: The max bundling size must be greater than this value.
-#
-# portico.jgroups.frag.size = 60K
-
-
 # (4.7) JGroups Traffic Auditing
 #         If this option is enabled a special log file will be produced for each federate listing
 #         the messages it has sent and received, along with their size and other useful details.
@@ -405,67 +369,6 @@ fwd.firewall.export.interaction = HLAinteractionRoot.*
 # portico.jgroups.auditor.filter.direction = 
 # portico.jgroups.auditor.filter.message   = 
 # portico.jgroups.auditor.filter.fomtype   = 
-
-# =========================================
-# 5. WAN Connection Options
-# =========================================
-
-# (5.1) WAN Mode Enable/Disable
-#       If true, WAN mode will be enabled and this federate will act as both a
-#       local participant, and also as a bridge for all the local federates.
-#       Messages exchanged on the local JGroups channel will be forwarded to a
-#       central router (see 5.2) to be reflected out to other sites. Messagest
-#       received from the router will be pushed out to the local JGroups channel
-#       so everyone here can process them.
-#
-#       Note that this mode does not support bundling. If enabled in the RID, it
-#       will be active on the local JGroups network, but ignored for the WAN.
-#
-#       Note: Router must be running before federate startup. If not - federates
-#             will fail to start.
-#
-#       Default: false
-#       
-# portico.wan.enabled = false
-
-# (5.2) Router Address/Port
-#       Specifies the address and port of the WAN router to use. Note that the
-#       syntax is "address:port".
-#
-#       Default: 127.0.0.1:23114
-#
-# portico.wan.router = 127.0.0.1:23114
-
-# (5.2) Enable / Disable Bundling
-#       Bundling enables higher throughput by grouping together a number of
-#       smaller messages and sending them as one. This makes much more efficient
-#       use of the network and provides considerable improvements to throughput
-#       at a minor cost to latency.
-#
-#       If enabled, the subsequent options will control how it is applied.
-#
-#       Default: true
-#
-# portico.wan.bundle.enabled = true
-
-# (5.3) Max Bundle Size
-#       Messages sent over the WAN will be grouped into bundles and sents as
-#       a batch when their total size exceeds this value. Specify a size with
-#       a suffix of 'b', 'k' or 'm' (or 'g' if you dare!)
-#
-#       Default: 64k
-#
-# portico.wan.bundle.maxsize = 64K
-
-# (5.4) Max Bundle Timeout
-#       The maximum amount of time we will hold messages in the bundler for while
-#       waiting for more messages to arrive and bundle together. From the time that
-#       a message is received, the bundler will hold it for no longer than this
-#       value (specified in milliseconds).
-#
-#       Default: 20
-#
-# portico.wan.bundle.timeout = 20
 
 
 # =========================================

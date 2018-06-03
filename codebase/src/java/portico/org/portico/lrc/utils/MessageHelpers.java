@@ -56,22 +56,6 @@ public class MessageHelpers
 	/////////////////////////  Message Marshalling and Unmarshalling  /////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Same as {@link #deflate2(PorticoMessage, CallType, int)} but it passes 0 for the request
-	 * ID. This should _NOT_ be used for calls of type {@link CallType#ControlSync} or response
-	 * messages {@link CallType#ControlResp} as they both <b>require</b> a request id in order
-	 * to function properly. 
-	 * 
-	 * @param message The message we are deserializing
-	 * @param calltype The type of call that this is (should never be {@link CallType#ControlSync}
-	 *                 or {@link CallType#ControlResp}.
-	 * @return The deflated message in a byte[], ready for transmissions
-	 */
-	public static final byte[] deflate2( PorticoMessage message, CallType calltype )
-	{
-		return deflate2( message, calltype, 0 );
-	}
-	
-	/**
 	 * This method will take the given message and turn it into a <code>byte[]</code>.
 	 * <p/>
 	 * 
@@ -85,8 +69,14 @@ public class MessageHelpers
 	 * {@link PorticoMessage#marshal(java.io.ObjectOutput)} being called). This should not be
 	 * used unless you know what you are doing and have added the message id to the hardcoded
 	 * private method {@link #manuallyUnmarshal(ObjectInputStream, LRC)}).
+	 * 
+	 * @param message    The message to encode
+	 * @param calltype   The type of Portico call this is (Data, ControlSync, ...)
+	 * @param requestId  The id of the request if it is a control message (0 if it is not)
 	 */
-	public static final byte[] deflate2( PorticoMessage message, CallType calltype, int requestId )
+	public static final byte[] deflate2( PorticoMessage message,
+	                                     CallType calltype,
+	                                     int requestId )
 	{
 		// Step 1. Write the body of the message
 		//         We write the body first because we need to know its length to include
@@ -131,7 +121,7 @@ public class MessageHelpers
 		
 		// create the output stream with the given size (or resizable if -1 is provided)
 		int payloadLength = buffer.length - Header.HEADER_LENGTH;
-		Header.writeHeader( buffer, 0, message, calltype, requestId, false, payloadLength );
+		Header.writeHeader( buffer, 0, message, calltype, requestId, payloadLength );
 		return buffer;
 	}
 
@@ -167,11 +157,11 @@ public class MessageHelpers
 	 * @param targetFederate ID of target federate  (package in header)
 	 * @return A byte[] version of the message ready for transmission
 	 */
-	public static final byte[] deflate2( ResponseMessage message,
-	                                    int requestId,
-	                                    int targetFederation,
-	                                    int sourceFederate,
-	                                    int targetFederate )
+	private static final byte[] deflate2( ResponseMessage message,
+	                                      int requestId,
+	                                      int targetFederation,
+	                                      int sourceFederate,
+	                                      int targetFederate )
 	{
 		// Step 1. Write the body of the message
 		//         We write the body first because we need to know its length to include

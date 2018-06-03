@@ -17,6 +17,7 @@ package org.portico2.common.network;
 import org.portico.utils.bithelpers.BitHelpers;
 import org.portico.utils.bithelpers.BufferUnderflowException;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.crypto.CipherMode;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.object.msg.UpdateAttributes;
@@ -83,20 +84,20 @@ public class Header
 	//////////////////////////////////////////////////////////////////////////////////////
 	//
 	//  0                   1                   2                   3
-    //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // | CType | FedID |    MsgType    |           RequestId           |    // Main Header
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |         Source Handle         |         Target Handle         |    // Routing
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |F|O|  Padding  |                     Handle                    |    // Optional Forwarding Data
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |E|M|P| TailPad |                Message Length                 |    // Payload Header
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    // |                                                               |    // Raw, Unfiltered Data
-    // +                           Payload...                          +
-    // |                                                               |
-    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	// | CType | FedID |   MessageID   |           RequestId           |    // Main Header
+	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	// |         Source Handle         |         Target Handle         |    // Routing
+	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	// |F|O|M|E|Cipher.|        Filtering Handle       | Message Len.. |    // Payload Header
+	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	// |      Message Length (cont)    |            Padding            |    // Payload Header (cont)
+	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	// |                                                               |    // Payload Data
+	// +                           Payload...                          +
+	// |                                                               |
+	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     //
     //  == Main Header ==
     //  (00-03)   | 4-bit  | Call Type: enum, {Data,ControlSync,ControlAsync,ControlResp,Bundle,Reserverd,Reserved,Reserverd}
@@ -108,17 +109,14 @@ public class Header
     //  (32-47)   | 16-bit | Source Handle: handle of source federate 
     //  (48-63)   | 16-bit | Target Handle: handle of target federate
     //
-    // == Optional Forwarding Information ==
+    // == Payload Header ==
     //  (64-64)   | 1-bit  | Forwarding Data Present? boolean, Is forwarding/filtering info present
     //  (65-65)   | 1-bit  | Type of handle: boolean, 0 if object, 1 if interaction
-    //  (66-79)   | 14-bit | Padding
-    //  (80-95)   | 16-bit | Class Handle: uint, range=65k, Object of Interaction Class the payload is concerned with
-    //
-    // == Payload Header ==
-    //  (96-96)   | 1-bit  | Encrypted: boolean, Is the payload encrypted? 
-    //  (97-97)   | 1-bit  | Manual Marshal: boolean, Was the message manually marshalled?
-    //  (98-98)   | 1-bit  | Padding
-    //  (99-103)  | 5-bit  | Tail padding: range=32, Amount of tail padding is on the payload to byte-align it
+    //  (66-66)   | 1-bit  | Manual Marshal: boolean, Was the message manually marshalled?
+    //  (67-67)   | 1-bit  | Encrypted: boolean, Is the payload encrypted?
+    //  (68-71)   | 4-bit  | Cipher Mode: ID into CipherMode enumeration
+    //  (72-87)   | 16-bit | Filtering Handle: uint, range=65k, Object of Interaction Class the payload is concerned with
+    //  (88-103)  | 16-bit | Nonce: IV used for encryption
     //  (104-127) | 24-bit | Message length: range=16,777,216 (16MB)
     //
     // == Payload ==
@@ -128,6 +126,9 @@ public class Header
 	//////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators    ///////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
+	//
+	// Main Header Section
+	//
 	public final CallType getCallType()
 	{
 		return CallType.fromId( BitHelpers.readUint4(buffer,offset,0) );
@@ -158,6 +159,9 @@ public class Header
 		BitHelpers.putUint4( (byte)federationHandle, buffer, offset, 4 );
 	}
 	
+	//
+	// Routing Section
+	//
 	public final int getSourceFederate()
 	{
 		return BitHelpers.readUint16( buffer, offset+4 );
@@ -194,6 +198,11 @@ public class Header
 		BitHelpers.putUint16( requestId, buffer, offset+2 );
 	}
 
+	//
+	// Payload Header
+	//
+
+	// Has Filtering?
 	public final boolean hasFilteringData()
 	{
 		return BitHelpers.readBooleanBit( buffer, offset+8, 0 );
@@ -204,6 +213,7 @@ public class Header
 		BitHelpers.putBooleanBit( hasFiltering, buffer, offset+8, 0 );
 	}
 
+	// Filtering handle is object class handle?
 	public final boolean isFilteringHandleObject()
 	{
 		return BitHelpers.readBooleanBit( buffer, offset+8, 1 ) == false;
@@ -224,6 +234,40 @@ public class Header
 			BitHelpers.putBooleanBit( true, buffer, offset+8, 1 );
 	}
 	
+	// Manual Marshal
+	public final boolean isManualMarshal()
+	{
+		return BitHelpers.readBooleanBit( buffer, offset+8, 2 );
+	}
+	
+	public final void writeIsManualMarshal( boolean isManualMarshal )
+	{
+		BitHelpers.putBooleanBit( isManualMarshal, buffer, offset+8, 2 );		
+	}
+	
+	// Encrypted
+	public final boolean isEncrypted()
+	{
+		return BitHelpers.readBooleanBit( buffer, offset+8, 3 );
+	}
+	
+	public final void writeIsEncrypted( boolean isEncrypted )
+	{
+		BitHelpers.putBooleanBit( false, buffer, offset+8, 3 );
+	}
+	
+	// Cipher Mode
+	public final CipherMode getCipherMode()
+	{
+		return CipherMode.fromId( BitHelpers.readUint4(buffer,offset+8,4) );
+	}
+	
+	public final void writeCipherMode( CipherMode cipherMode )
+	{
+		BitHelpers.putUint4( (byte)cipherMode.getId(), buffer, offset+8, 4 );
+	}
+	
+	// Filtering Handle
 	public final int getFilteringHandle()
 	{
 		return (int)BitHelpers.readUint24( buffer, offset+9 );
@@ -234,39 +278,23 @@ public class Header
 		BitHelpers.putUint24( handle, buffer, offset+9 );
 	}
 	
-	public final boolean isEncrypted()
-	{
-		return BitHelpers.readBooleanBit( buffer, offset+12, 0 );
-	}
-	
-	public final void writeIsEncrypted( boolean isEncrypted )
-	{
-		BitHelpers.putBooleanBit( false, buffer, offset+12, 0 );
-	}
-	
-	public final boolean isManualMarshal()
-	{
-		return BitHelpers.readBooleanBit( buffer, offset+12, 1 );
-	}
-	
-	public final void writeIsManualMarshal( boolean isManualMarshal )
-	{
-		BitHelpers.putBooleanBit( isManualMarshal, buffer, offset+12, 1 );		
-	}
-	
+	// Message Size
 	public final int getPayloadLength()
 	{
-		return (int)BitHelpers.readUint24( buffer, offset+13 );
-	}
-	
-	public final int getFullMessageLength()
-	{
-		return getPayloadLength()+HEADER_LENGTH;
+		return (int)BitHelpers.readUint24( buffer, offset+11 );
 	}
 	
 	public final void writePayloadLength( int payloadLength )
 	{
-		BitHelpers.putUint24( payloadLength, buffer, offset+13 );
+		BitHelpers.putUint24( payloadLength, buffer, offset+11 );
+	}
+
+	public final int getFullMessageLength()
+	{
+		if( isEncrypted() )
+			return getPayloadLength() + 16 + HEADER_LENGTH;
+		else
+			return getPayloadLength()+HEADER_LENGTH;
 	}
 
 	//----------------------------------------------------------
@@ -277,8 +305,14 @@ public class Header
 	                                PorticoMessage message,  // message with lots of info needed
 	                                CallType calltype,       // the type of call this is
 	                                int requestId,           // id for request correlation
-	                                boolean encrypted,       // should the payload be encrypted?
 	                                int payloadLength )      // length of the payload
+//	public static void writeHeader( byte[] buffer,           // buffer to write into
+//	                                int byteOffset,          // offset to start at within buffer
+//	                                PorticoMessage message,  // message with lots of info needed
+//	                                CallType calltype,       // the type of call this is
+//	                                int requestId,           // id for request correlation
+//	                                CipherMode cipherMode,   // if null, we're not encrypting
+//	                                int payloadLength )      // length of the payload
 	{
 		Header header = new Header( buffer, byteOffset );
 		
@@ -298,12 +332,15 @@ public class Header
 		header.writeSourceAndTargetFederate( message.getSourceFederate(),
 		                                     message.getTargetFederate() );
 
-		// Optional Forwarding
-		//    1-bit, Forwarding Data Present?  (boolean)
+		// Payload Header
+		//    1-bit, Filtering Data Present?   (boolean)
 		//    1-bit, Object Class Handle?      (boolean)
-		//    6-bit, Padding
-		//   24-bit, Object/Interaction Handle (uint24)
-		//
+		//    1-bit, Manually Marshalled?      (boolean)
+		//    1-bit, Encrypted?                (boolean)
+		//    4-bit, Cipher Mode               (uint4)
+		//   16-bit, Object/Interaction Handle (uint16)
+		//   24-bit, Message Length            (uint24)
+		//   16-bit, Padding
 		if( calltype == CallType.DataMessage )
 		{
 			header.writeHasFilteringData( true );
@@ -321,16 +358,22 @@ public class Header
 					break;
 			}
 		}
+
+		// Manual Marshalling?
+		header.writeIsManualMarshal( message.supportsManualMarshal() );
+		
+		// Encryption Information
+//		if( cipherMode == null )
+//		{
+//			header.writeIsEncrypted( false );
+//		}
+//		else
+//		{
+//			header.writeIsEncrypted( true );
+//			header.writeCipherMode( cipherMode );
+//		}
 		
 		// Payload Information
-		//    1-bit, Encrypted?                (boolean)
-		//    1-bit, Manually Marshalled?      (boolean)
-		//    1-bit, Padding
-		//    5-bit, Tail Padding              (uint5)
-		//   24-bit, Message Length            (uint24)
-		header.writeIsEncrypted( false );
-		header.writeIsManualMarshal( message.supportsManualMarshal() );
-		// FIXME Tail padding?
 		header.writePayloadLength( payloadLength );
 	}
 	
@@ -364,8 +407,7 @@ public class Header
 		//   None
 		
 		// Payload Information
-		//header.writeIsEncrypted( false );      // default (0)
-		//header.writeIsManualMarshal( false );  // default (0)
+		// Encryption information written in encryption IProtocol
 		header.writePayloadLength( payloadLength );
 	}
 	                                

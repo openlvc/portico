@@ -41,6 +41,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	private int port;
 	private String nic;
 
+	private CryptoConfiguration cryptoConfiguration;
+
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -50,6 +52,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 		this.address = DEFAULT_ADDRESS;
 		this.port    = DEFAULT_PORT;
 		this.nic     = DEFAULT_NIC;
+		
+		this.cryptoConfiguration = new CryptoConfiguration();
 	}
 
 	//----------------------------------------------------------
@@ -59,9 +63,16 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	/**
 	 * Read Only
 	 */
+	@Override
 	public TransportType getTransportType()
 	{
 		return TransportType.Multicast;
+	}
+
+	@Override
+	public CryptoConfiguration getCryptoConfiguration()
+	{
+		return this.cryptoConfiguration;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +81,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{
+		this.cryptoConfiguration.parseConfiguration( prefix, properties );
+		
 		prefix += ".";
 		String temp = properties.getProperty( prefix+KEY_ADDRESS );
 		if( temp != null )
