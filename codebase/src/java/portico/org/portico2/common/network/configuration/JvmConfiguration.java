@@ -25,6 +25,7 @@ public class JvmConfiguration extends ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private CryptoConfiguration cryptoConfiguration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -32,6 +33,7 @@ public class JvmConfiguration extends ConnectionConfiguration
 	public JvmConfiguration( String name )
 	{
 		super( name );
+		this.cryptoConfiguration = new CryptoConfiguration();
 	}
 
 	//----------------------------------------------------------
@@ -44,6 +46,12 @@ public class JvmConfiguration extends ConnectionConfiguration
 	public TransportType getTransportType()
 	{
 		return TransportType.JVM;
+	}
+	
+	@Override
+	public CryptoConfiguration getCryptoConfiguration()
+	{
+		return this.cryptoConfiguration;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////

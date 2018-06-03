@@ -20,6 +20,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.crypto.EncryptionProtocol;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
@@ -109,9 +110,13 @@ public class Connection
 		this.transport = configuration.getTransportType().newTransport();
 		this.transport.configure( configuration, this );
 		
-		// populate the protocol stack
+		/////////////////////////////////
+		// populate the protocol stack //
+		/////////////////////////////////
 		this.protocolStack.empty();
-		// FIXME do population!!
+		// Insert the encryption settings
+		if( configuration.getCryptoConfiguration().isEnabled() )
+			protocolStack.addProtocol( new EncryptionProtocol() );
 	}
 
 	/**
@@ -284,6 +289,11 @@ public class Connection
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	public ConnectionConfiguration getConfiguration()
+	{
+		return this.configuration;
+	}
+
 	public Logger getLogger()
 	{
 		return this.logger;
