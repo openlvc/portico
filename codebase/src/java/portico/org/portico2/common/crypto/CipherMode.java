@@ -27,8 +27,8 @@ public enum CipherMode
 	 */
 	//ECB( 0, "AES/ECB/PKCS7Padding", true, 16 ),// Electronic Codebook            // no IV
 	//CBC( 0, "AES/CBC/PKCS7Padding", true, 16 ),// Cipher Block Chaining          // variable payload
-	CFB( 0, "AES/CFB/NoPadding" ),               // Cipher Feedback  **default**
-	CTR( 1, "AES/CTR/NoPadding" ),               // Counter Mode
+	CFB( 0, "AES/CFB/NoPadding" ),               // Cipher Feedback 
+	CTR( 1, "AES/CTR/NoPadding" ),               // Counter Mode     **default**
 	CTS( 2, "AES/CBC/CS3Padding" );              // CBC with Ciphertext Stealing (CTS)
 	
 	//----------------------------------------------------------
@@ -60,9 +60,22 @@ public enum CipherMode
 		return this.configString;
 	}
 
-	public int getId()
+	public final int getId()
 	{
 		return this.id; // gets downcast to _HALF_ a byte (unsigned). Range 0-15.
+	}
+
+	public final int getCipherTextSize( int plainTextSize )
+	{
+		// currently, all supported modes generate a cipher text that is the
+		// same size as the original plain text
+		return plainTextSize;
+	}
+
+	public final int getIvSize()
+	{
+		// currently, we only support AES which has a 128-bit block size, so that's what IV is
+		return 16;
 	}
 
 	//----------------------------------------------------------
@@ -72,16 +85,16 @@ public enum CipherMode
 	{
 		switch( id )
 		{
-			case 0: return CFB;
-			case 1: return CTR;
-			case 2: return CTS;
+			case 1: return CFB;
+			case 2: return CTR;
+			case 3: return CTS;
 			default: throw new IllegalArgumentException( "Cipher Mode id not known: "+id );
 		}
 	}
 
 	public static CipherMode defaultMode()
 	{
-		return CipherMode.CFB;
+		return CipherMode.CTR;
 	}
 
 	public static CipherMode fromConfigString( String configString )

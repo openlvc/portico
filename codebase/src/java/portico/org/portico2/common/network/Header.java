@@ -14,6 +14,7 @@
  */
 package org.portico2.common.network;
 
+import org.portico.utils.StringUtils;
 import org.portico.utils.bithelpers.BitHelpers;
 import org.portico.utils.bithelpers.BufferUnderflowException;
 import org.portico.utils.messaging.PorticoMessage;
@@ -253,7 +254,7 @@ public class Header
 	
 	public final void writeIsEncrypted( boolean isEncrypted )
 	{
-		BitHelpers.putBooleanBit( false, buffer, offset+8, 3 );
+		BitHelpers.putBooleanBit( isEncrypted, buffer, offset+8, 3 );
 	}
 	
 	// Cipher Mode
@@ -291,12 +292,56 @@ public class Header
 
 	public final int getFullMessageLength()
 	{
-		if( isEncrypted() )
-			return getPayloadLength() + 16 + HEADER_LENGTH;
-		else
-			return getPayloadLength()+HEADER_LENGTH;
+		return getPayloadLength()+HEADER_LENGTH;
 	}
 
+	@Override
+	public String toString()
+	{
+		//  Header: call=CALLTYPE, federation=1, message=MESSAGE_TYPE, requestId=1234
+		// Routing: source=<>, target=<>
+		// Payload: flags=ManualMarshal(true); Filtering(Object=1234)
+		//          encrypted=false, Cipher=<>
+		//          payload=1234 bytes
+
+		// Header
+		String line1 = String.format( " Header: call=%s, federation=%d, message=%s, requestId=%d\n",
+		                              getCallType(), getFederation(), getMessageType(), getRequestId() );
+
+		// Routing
+		String line2 = String.format( "Routing: source=%s, target=%s\n",
+		                              StringUtils.sourceHandleToString(getSourceFederate()),
+		                              StringUtils.targetHandleToString(getTargetFederate()) );
+
+		// Payload Data
+		String filterString = "not present";
+		if( hasFilteringData() )
+		{
+			filterString = String.format( "%s=%d",
+			                              isFilteringHandleObject() ? "Object" : "Interaction",
+			                              getFilteringHandle() );
+		}
+
+		String line3 = String.format( "Payload: flags=ManualMarshal(%s);Filtering(%s)\n",
+		                              isManualMarshal(), filterString );
+
+		String line4 = String.format( "         encrypted=%s, cipher=%s\n",
+		                              isEncrypted(), isEncrypted() ? getCipherMode() : "None" );
+		
+		String line5 = String.format( "         payload=%s\n",
+		                              StringUtils.humanReadableSize(getPayloadLength()) );
+		
+		// An utterly frivolous use of cycles
+		StringBuilder builder = new StringBuilder();
+		builder.append( "\n" );
+		builder.append( line1 );
+		builder.append( line2 );
+		builder.append( line3 );
+		builder.append( line4 );
+		builder.append( line5 );
+		return builder.toString();
+		
+	}
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
@@ -306,13 +351,6 @@ public class Header
 	                                CallType calltype,       // the type of call this is
 	                                int requestId,           // id for request correlation
 	                                int payloadLength )      // length of the payload
-//	public static void writeHeader( byte[] buffer,           // buffer to write into
-//	                                int byteOffset,          // offset to start at within buffer
-//	                                PorticoMessage message,  // message with lots of info needed
-//	                                CallType calltype,       // the type of call this is
-//	                                int requestId,           // id for request correlation
-//	                                CipherMode cipherMode,   // if null, we're not encrypting
-//	                                int payloadLength )      // length of the payload
 	{
 		Header header = new Header( buffer, byteOffset );
 		
@@ -363,15 +401,7 @@ public class Header
 		header.writeIsManualMarshal( message.supportsManualMarshal() );
 		
 		// Encryption Information
-//		if( cipherMode == null )
-//		{
-//			header.writeIsEncrypted( false );
-//		}
-//		else
-//		{
-//			header.writeIsEncrypted( true );
-//			header.writeCipherMode( cipherMode );
-//		}
+		// This is written in by the EncryptionProtocol if it is used.
 		
 		// Payload Information
 		header.writePayloadLength( payloadLength );

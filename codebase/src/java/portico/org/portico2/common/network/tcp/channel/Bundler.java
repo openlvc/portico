@@ -262,8 +262,11 @@ public class Bundler
 	{
 		if( logger.isTraceEnabled() == false )
 			return;
-		
-		if( header.getCallType() == CallType.ControlResp )
+
+		// Log some generation information about the message. If it is a response message,
+		// log the result. We can only do this if the message is unencrypted. If it isn't,
+		// we have to fall back to the header-only encryption.
+		if( header.isEncrypted() == false && header.getCallType() == CallType.ControlResp )
 		{
 			ResponseMessage response = MessageHelpers.inflate2( payload, ResponseMessage.class );
 			logger.trace( "(outgoing) type=%s (id=%d), success=%s, result=%s, size=%d",
