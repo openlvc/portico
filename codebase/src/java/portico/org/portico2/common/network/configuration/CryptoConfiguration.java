@@ -30,6 +30,7 @@ public class CryptoConfiguration
 	public static final String KEY_ENABLED    = ".crypto.enabled";
 	public static final String KEY_KEY_LENGTH = ".crypto.keylen"; // Need Java unlimited strength policies to use >128
 	public static final String KEY_CIPHER     = ".crypto.cipher";
+	public static final String KEY_SHARED_KEY = ".crypto.key";
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -37,6 +38,7 @@ public class CryptoConfiguration
 	private boolean isEnabled;
 	private int keyLength;
 	private CipherMode cipherMode;
+	private String sharedKey;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -46,6 +48,7 @@ public class CryptoConfiguration
 		this.isEnabled  = false;
 		this.keyLength  = 128;
 		this.cipherMode = CipherMode.defaultMode();
+		this.sharedKey  = null;
 	}
 
 	protected CryptoConfiguration( String prefix, Properties properties )
@@ -68,6 +71,9 @@ public class CryptoConfiguration
 		
 		if( properties.containsKey(prefix+KEY_CIPHER) )
 			this.cipherMode = CipherMode.fromConfigString(properties.getProperty(prefix+KEY_CIPHER) );
+		
+		if( properties.containsKey(prefix+KEY_SHARED_KEY) )
+			this.sharedKey = properties.getProperty( prefix+KEY_SHARED_KEY );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -81,6 +87,9 @@ public class CryptoConfiguration
 	public void setKeyLength( int keylen )       { this.keyLength = keylen; }
 	public void setCipherMode( CipherMode mode ) { this.cipherMode = mode; }
 	public void setCipherConfig( String cipherConfig ) { this.cipherMode = CipherMode.fromConfigString(cipherConfig); }
+	
+	public String getSharedKey() { return this.sharedKey; }
+	public void setSharedKey( String sharedKey ) { this.sharedKey = sharedKey; }
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

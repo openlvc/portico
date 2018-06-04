@@ -404,27 +404,38 @@ public class StringUtils
 	 */
 	public static String formatAsWireshark( byte[] bytes )
 	{
+		return formatAsWireshark( bytes, 0, bytes.length );
+	}
+
+	/**
+	 * Convert the given byte[] into a "wireshark formatted" hex/ascii grid. Example output format
+	 * for single row:
+	 * <p/>
+	 * <code>00 11 22 33 44 55 66 77  88 99 AA BB CC DD EE FF  ........ ........</code>
+	 */
+	public static String formatAsWireshark( byte[] bytes, int offset, int length )
+	{
 		StringBuilder builder = new StringBuilder();
 		// write the first one outside the loop otherwise the modulo check
 		// will pass on 0 and we'll have a leading "  "
-		builder.append( String.format(" %02X",bytes[0]) );
+		builder.append( String.format(" %02X",bytes[offset]) );
 		
 		boolean newline = true;
-		for( int i = 1; i < bytes.length; i++ )
+		for( int i = 1; i < length; i++ )
 		{
 			if( i % 8 == 0 )
 			{
 				newline = !newline;
 				if( newline )
-					appendRowSummary( builder, bytes, i, 16 );
+					appendRowSummary( builder, bytes, offset+i, 16 );
 				else
 					builder.append( "  " );
 			}
 			
-			builder.append( String.format(" %02X",bytes[i]) );
+			builder.append( String.format(" %02X",bytes[offset+i]) );
 		}
 		
-		appendRowSummary( builder, bytes, bytes.length, bytes.length % 16 );
+		appendRowSummary( builder, bytes, offset+length, length % 16 );
 		return builder.toString();
 	}
 	

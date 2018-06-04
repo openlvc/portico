@@ -14,7 +14,23 @@
  */
 package org.portico.lrc.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.logging.Log4jConfiguration;
+import org.portico2.common.logging.Log4jConfigurator;
+import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.messaging.MessageType;
+import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.CallType;
+import org.portico2.common.network.Connection;
+import org.portico2.common.network.Header;
+import org.portico2.common.network.IApplicationReceiver;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.configuration.JvmConfiguration;
 import org.portico2.common.services.federation.msg.RtiProbe;
 import org.testng.annotations.Test;
 
@@ -46,6 +62,45 @@ public class MessageHelpersTest
 	}
 	
 	@Test
+	public void testDeflateInflateWithEncryption()
+	{
+		// Create and set up the configurations
+		ConnectionConfiguration configuration = new JvmConfiguration( "jvm" );
+		configuration.getCryptoConfiguration().setEnabled( true );
+		configuration.getCryptoConfiguration().setSharedKey( "evelyn" );
+		
+		// Create and set up the connections
+		AppReceiver outgoingReceiver = new AppReceiver();
+		AppReceiver incomingReceiver = new AppReceiver();
+
+		Connection outgoing = new Connection();
+		Connection incoming = new Connection();
+
+		outgoing.configure( configuration, outgoingReceiver );
+		incoming.configure( configuration, incomingReceiver );
+		
+		outgoing.connect();
+		incoming.connect();
+		
+		RtiProbe before = new RtiProbe();
+		System.out.println( "Sending" );
+		MessageContext context = new MessageContext( before );
+		outgoing.sendControlRequest( context );
+		System.out.println( "Sent" );
+		if( context.isSuccessResponse() )
+			System.out.println( "Success!" );
+		else
+			System.out.println( "Failure!" );
+
+		RtiProbe after = (RtiProbe)incomingReceiver.receivedRequests.get( 0 );		
+		System.out.println( "Before: "+before );
+		System.out.println( "After : "+after );
+		
+		incoming.disconnect();
+		outgoing.disconnect();
+	}
+	
+	@Test
 	public void testDeflateInflateResponseMessage()
 	{
 		
@@ -54,8 +109,35 @@ public class MessageHelpersTest
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	private static class AppReceiver implements IApplicationReceiver
+	{
+		private List<PorticoMessage> receivedRequests = new ArrayList<>();
+		private List<ResponseMessage> receivedResponses = new ArrayList<>() ;
+		
+		public Logger getLogger() { return LogManager.getFormatterLogger( "portico" ); }
+		public boolean isReceivable( Header header ) { return true; }
+
+		public void receiveControlRequest( MessageContext context )
+		{
+			PorticoMessage request = context.getRequest();
+			this.receivedRequests.add( request );
+			if( request.getType() == MessageType.RtiProbe )
+				context.success( "This. Is. Sparta!" );
+		}
+
+		public void receiveDataMessage( PorticoMessage message )
+		{
+			this.receivedRequests.add( message );
+		}
+	}
+	
+	
 	public static void main( String[] args )
 	{
-		new MessageHelpersTest().testDeflateInflateRtiProbe();
+		Log4jConfiguration logging = new Log4jConfiguration( "portico" );
+		logging.turnConsoleOn();
+		logging.setLevel( "TRACE" );
+		Log4jConfigurator.activate( logging );
+		new MessageHelpersTest().testDeflateInflateWithEncryption();
 	}
 }

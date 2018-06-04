@@ -509,31 +509,50 @@ public class BitHelpers
 	////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////// Unsigned Integer Methods /////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Put the given boolean value into the bit at <code>bitPos</code> (0-7).
+	 * The value will be written into the byte in the buffer at the byte offset.
+	 * 
+	 * @param value      The value to write
+	 * @param buffer     The buffer to write into
+	 * @param byteOffset The offset within the buffer to find the byte we should write into
+	 * @param bitPos     The bit to set (0-7)
+	 */
 	public static void putBooleanBit( boolean value, byte[] buffer, int byteOffset, int bitPos )
 	{
 		checkOverflow( 1, buffer, byteOffset );
 		
-		byte mask = (byte)(1 << (byte)bitPos-1);
+		byte mask = (byte)(1 << bitPos);
 		if( value )
 			buffer[byteOffset] = (byte)(buffer[byteOffset] | mask); // turn the bit on
 		else
 			buffer[byteOffset] = (byte)(buffer[byteOffset] & ~mask); // turn the bit off
 	}
-	
+
+	/**
+	 * Return <code>true</code> if the value of the bit we're looking up is 1, <code>false</code>
+	 * if it is 0. We look up the byte within the buffer at the identified offset. We then look
+	 * up the bit at <code>bitPos</code> in that byte (0-7).
+	 * 
+	 * @param buffer     The buffer to find the byte in
+	 * @param byteOffset The offset within the buffer to find the specific byte
+	 * @param bitPos     The bit index within the byte (0-7)
+	 * @return True if the bit is 1, false if it is 0.
+	 */
 	public static boolean readBooleanBit( byte[] buffer, int byteOffset, int bitPos )
 	{
 		checkUnderflow( 1, buffer, byteOffset );
 		
-		if( bitPos < 1 || bitPos > 8 )
-			throw new IllegalArgumentException( "BitPos can only be between 1 and 8" );
+		if( bitPos < 0 || bitPos > 7 )
+			throw new IllegalArgumentException( "BitPos can only be between 0 and 7" );
 		
 		// 1. Generate a mask with only the bit we're measuring turned on
-		byte mask  = (byte)(1 << (byte)bitPos-1);
+		byte mask  = (byte)(1 << bitPos);
 		
 		// 2. And against the mask. All bits except bitPos turned off. bitPos will be off
 		//    if it was, and on if it was
 		byte value = (byte)((buffer[byteOffset] & mask));
-		if( bitPos == 8 )
+		if( bitPos == 7 )
 		{
 			// can't properly shift the 8th pos because java is using it
 			// as the - (negative) symbol. shifting brings in 1's rather than
@@ -544,7 +563,7 @@ public class BitHelpers
 		{
 			// Bit at bitPos is now either on or off; need to drain it so we can
 			// compare it to a known value
-			value = (byte)(value >>> bitPos-1);
+			value = (byte)(value >>> bitPos);
 			return value == 1;
 		}
 	}

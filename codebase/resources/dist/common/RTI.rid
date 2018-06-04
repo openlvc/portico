@@ -124,7 +124,7 @@ rti.network.jvm.transport = jvm
 #
 rti.network.multicast.transport = multicast
 rti.network.multicast.address   = 239.1.2.3
-rti.network.multicast.port      = 20913
+rti.network.multicast.port      = 11111
 rti.network.multicast.nic       = SITE_LOCAL
 
 #rti.network.multicast.bundling = false
@@ -145,6 +145,7 @@ rti.network.multicast.nic       = SITE_LOCAL
 	rti.network.multicast.crypto.enabled  = true
 	rti.network.multicast.crypto.keylen   = 128
 	rti.network.multicast.crypto.cipher   = AES/CFB/NoPadding
+	rti.network.multicast.crypto.key      = evelyn
 
 
 # (R.6) Unicast Network Connection
@@ -157,6 +158,13 @@ rti.network.multicast.nic       = SITE_LOCAL
 rti.network.tcp.transport = tcp-server
 rti.network.tcp.port      = 52295
 rti.network.tcp.nic       = SITE_LOCAL
+
+	# (R.6a) Encryption Settings
+	#
+	rti.network.tcp.crypto.enabled  = true
+	rti.network.tcp.crypto.keylen   = 128
+	rti.network.tcp.crypto.cipher   = AES/CFB/NoPadding
+	rti.network.tcp.crypto.key      = evelyn
 
 
 # ==================================================================================
@@ -195,8 +203,21 @@ lrc.network.jvm.transport = jvm
 #
 lrc.network.multicast.transport = multicast
 lrc.network.multicast.address   = 239.1.2.3
-lrc.network.multicast.port      = 20913
+lrc.network.multicast.port      = 11111
 lrc.network.multicast.nic       = SITE_LOCAL
+
+	# (L.3a) Encryption Settings
+	#
+	#     Encrypt: Is encryption on or off?
+	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
+	#              require the use of the Java unlimited strength policies (google it)
+	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
+	#        Mode: Encryption mode. Supports ECB, CBC, CFB, CTR
+	#      
+	rti.network.multicast.crypto.enabled  = true
+	rti.network.multicast.crypto.keylen   = 128
+	rti.network.multicast.crypto.cipher   = AES/CFB/NoPadding
+	rti.network.multicast.crypto.key      = evelyn
 
 # (L.4) TCP Connection Properties
 #
@@ -274,7 +295,7 @@ fwd.network.upstream.nic       = SITE_LOCAL
 #
 fwd.network.downstream.transport = multicast
 fwd.network.downstream.address   = 239.1.2.3
-fwd.network.downstream.port      = 20913
+fwd.network.downstream.port      = 22222
 fwd.network.downstream.nic       = SITE_LOCAL
 
 

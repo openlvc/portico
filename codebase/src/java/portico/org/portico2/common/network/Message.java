@@ -79,6 +79,18 @@ public class Message
 	public final PorticoMessage getRequest() { return this.request; }
 
 	/**
+	 * Replace the existing buffer with the given one, updating the header to source
+	 * from the new buffer as well.
+	 * 
+	 * @param buffer The new buffer we want to use.
+	 */
+	public final void replaceBuffer( byte[] buffer )
+	{
+		this.buffer = buffer;
+		this.header = new Header( buffer, 0 );
+	}
+
+	/**
 	 * Tells the message to take the contents of the buffer and inflate it into a full
 	 * {@link PorticoMessage} object, returning the result. The request object is lazy
 	 * loaded, so if you call {@link #getRequest()} before this method has been called,
@@ -107,7 +119,7 @@ public class Message
 		if( this.request == null )
 			throw new IllegalArgumentException( "You cannot deflate a ResponseMessage without a request" );
 		
-		this.buffer = MessageHelpers.deflate2( response, this.requestId, this.request );
+		replaceBuffer( MessageHelpers.deflate2(response,this.requestId,this.request) );
 	}
 	
 	//----------------------------------------------------------
