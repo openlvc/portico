@@ -87,6 +87,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	private Map<Integer,ConsumerWithException<Map<String,Object>,MomException>> handlers;
 	private boolean supportsMomException;
 	private ICMetadata reportMomExceptionMetadata;
+	private PCMetadata federateMetadata;
 	private PCMetadata serviceMetadata;
 	private PCMetadata exceptionMetadata;
 	private PCMetadata parameterErrorMetadata;
@@ -211,9 +212,8 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 				SetServiceReporting enableReporting = new SetServiceReporting( true );
 				queueUnicast( enableReporting, federateHandle );
 				
-				logger.debug( "Service invocation reporting for " +
-				              federate.getFederateName()+" ["+federateHandle+"]" +
-				              " has been ENABLED" );
+				logger.debug( "Asking " + federate.getFederateName()+" ["+federateHandle+"]" +
+				              " LRC to ENABLE service reporting" );
 			}
 			else
 			{
@@ -227,9 +227,8 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 			SetServiceReporting disableReporting = new SetServiceReporting( false );
 			disableReporting.setTargetFederate( federateHandle );
 			queueUnicast( disableReporting, federateHandle );
-			logger.debug( "Service invocation reporting for " +
-			              federate.getFederateName()+" ["+federateHandle+"]" +
-			              " has been DISABLED" );
+			logger.debug( "Asking " + federate.getFederateName()+" ["+federateHandle+"]" +
+	              " LRC to DISABLE service reporting" );
 		}
 	}
 	
@@ -320,7 +319,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 			// Send one interaction for each object class subscribed to
 			for( int classHandle : subscribedOCs )
 			{
-				Set<Integer> attributes = interests.getPublishedAttributes( federateHandle, classHandle );
+				Set<Integer> attributes = interests.getSubscribedAttributes( federateHandle, classHandle );
 				ocResponseParams.put( "HLAobjectClass", classHandle );
 				ocResponseParams.put( "HLAactive", true );               // TODO Not supported yet
 				ocResponseParams.put( "HLAmaxUpdateRate", "None" );      // TODO Not supported yet
@@ -503,25 +502,29 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		
 		Repository repository = federation.getRepository(); 
 		ROCInstance instance = repository.getObject( instanceHandle );
-		boolean knownToFederate = false;
 		
 		if( instance != null )
 		{
 			OCMetadata knownAs = instance.getDiscoveredType( federateHandle );
+			OCMetadata registeredAs = instance.getRegisteredType();
 			if( knownAs != null )
 			{
-				OCMetadata registeredAs = instance.getRegisteredType();
 				responseParams.put( "HLAregisteredClass", registeredAs.getHandle() );
 				responseParams.put( "HLAknownClass", knownAs.getHandle() );
-				
-				Set<RACInstance> ownedAttributes = instance.getAllAttributesOwnedBy( federateHandle );
-				int[] ownedAttributeHandles = new int[ownedAttributes.size()];
-				int index = 0;
-				for( RACInstance ownedAttribute : ownedAttributes )
-					ownedAttributeHandles[index++] = ownedAttribute.getHandle();
-				
-				responseParams.put( "HLAownedInstanceAttributeList", ownedAttributeHandles );
 			}
+			else if( instance.isOwner(federateHandle) )
+			{
+				responseParams.put( "HLAregisteredClass", registeredAs.getHandle() );
+				responseParams.put( "HLAknownClass", ObjectModel.INVALID_HANDLE );
+			}
+			
+			Set<RACInstance> ownedAttributes = instance.getAllAttributesOwnedBy( federateHandle );
+			int[] ownedAttributeHandles = new int[ownedAttributes.size()];
+			int index = 0;
+			for( RACInstance ownedAttribute : ownedAttributes )
+				ownedAttributeHandles[index++] = ownedAttribute.getHandle();
+			
+			responseParams.put( "HLAownedInstanceAttributeList", ownedAttributeHandles );
 		}
 		
 		if( !responseParams.containsKey("HLAownedInstanceAttributeList") )
@@ -560,9 +563,10 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	private void handleFederationRequestSynchronizationPoints( Map<String,Object> requestParams )
 		throws MomException
 	{
-		// Get the labels of all syncpoints 
+		// Get the labels of all "in-progress" syncpoints 
 		SyncPointManager syncPointMan = this.federation.getSyncPointManager();
 		Collection<SyncPoint> syncPoints = syncPointMan.getAllPoints();
+		syncPoints.removeIf( (SyncPoint sp)-> sp.isSynchronized() );
 		
 		String[] labels = new String[syncPoints.size()];
 		int index = 0;
@@ -695,7 +699,7 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 	{
 		// Get the handle from the canonical name
 		int reportExceptionId = Mom.getMomInteractionHandle( CANONICAL_VERSION, 
-		                                                     "HLAmanager.HLAfederate.HLAreport.HLAreportMomException" );
+		                                                     "HLAmanager.HLAfederate.HLAreport.HLAreportMOMexception" );
 		
 		// Get the interaction metadata from the federation's object model
 		this.reportMomExceptionMetadata = fom().getInteractionClass( reportExceptionId );
@@ -711,6 +715,8 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 				int paramId = paramMetadata.getHandle();
 				String canonicalName = Mom.getMomParameterName( CANONICAL_VERSION, 
 				                                                paramId );
+				if( canonicalName.equals("HLAfederate") )
+					this.federateMetadata = paramMetadata;
 				if( canonicalName.equals("HLAservice") )
 					this.serviceMetadata = paramMetadata;
 				else if( canonicalName.equals("HLAexception") )
@@ -815,12 +821,15 @@ public class MomSendInteractionHandler extends RTIMessageHandler
 		ICMetadata requestMetadata = fom().getInteractionClass( requestId );
 		String service = requestMetadata.getQualifiedName();
 		String message = exception.getMessage();
+		
 		boolean paramError = exception.isParameterError();
 		
 		logger.info( "Reporting MOM Exception [Service="+service+",ParamError="+paramError+"]: "+message );
 		if( this.supportsMomException )
 		{
 			HashMap<Integer,byte[]> params = new HashMap<Integer,byte[]>();
+			params.put( federateMetadata.getHandle(), 
+			            MomEncodingHelpers.encode(federateMetadata.getDatatype(), request.getSourceFederate()) );
 			params.put( serviceMetadata.getHandle(), 
 			            MomEncodingHelpers.encode(serviceMetadata.getDatatype(), service) );
 			params.put( exceptionMetadata.getHandle(), 

@@ -17,7 +17,8 @@ package hlaunit.ieee1516.mom;
 
 import java.util.HashMap;
 
-import org.portico.lrc.PorticoConstants;
+import org.portico.impl.HLAVersion;
+import org.portico.lrc.model.Mom;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterClass;
@@ -191,7 +192,7 @@ public class MomFederationTest extends Abstract1516Test
 
 		// wait for a discovery of an instance //
 		// need a better way than to assume specific info about handles
-		int objectHandle = PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE;
+		int objectHandle = Mom.getMomObjectClassHandle( HLAVersion.IEEE1516, "HLAmanager.HLAfederation" );
 		defaultFederate.fedamb.waitForDiscovery( objectHandle );
 		
 		// ask for the MOM to provide an update //

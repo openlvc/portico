@@ -16,7 +16,8 @@ package hlaunit.ieee1516e.mom;
 
 import java.util.HashMap;
 
-import org.portico.lrc.PorticoConstants;
+import org.portico.impl.HLAVersion;
+import org.portico.lrc.model.Mom;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterClass;
@@ -234,7 +235,7 @@ public class MomFederationTest extends Abstract1516eTest
 	///////////////////////////////////////
 	// TEST: testMomFederationInstance() //
 	///////////////////////////////////////
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void testMomFederationInstance()
 	{
 		// subscribe to the MOM Federation class attributes //
@@ -251,11 +252,10 @@ public class MomFederationTest extends Abstract1516eTest
 		                                "HLAnextSaveName",
 		                                "HLAnextSaveTime",
 		                                "HLAautoProvide" );
-
+		
 		// wait for a discovery of an instance //
-		// need a better way than to assume specific info about handles
-		int objectHandle = PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE;
-		defaultFederate.fedamb.waitForDiscovery( objectHandle );
+		int classHandle = Mom.getMomObjectClassHandle( HLAVersion.IEEE1516e, "HLAmanager.HLAfederation" );
+		int objectHandle = defaultFederate.fedamb.waitForClassDiscovery( classHandle );
 		
 		// ask for the MOM to provide an update //
 		defaultFederate.quickProvide( objectHandle, federationHandles );
@@ -276,7 +276,7 @@ public class MomFederationTest extends Abstract1516eTest
 	/////////////////////////////////////
 	// TEST: testMomFederateInstance() //
 	/////////////////////////////////////
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void testMomFederateInstance()
 	{
 		// subscirbe to the MOM Federate class attributes //

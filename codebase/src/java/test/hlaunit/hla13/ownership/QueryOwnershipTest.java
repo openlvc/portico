@@ -22,7 +22,9 @@ import hla.rti.SaveInProgress;
 import hlaunit.hla13.common.Abstract13Test;
 import hlaunit.hla13.common.Test13Federate;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.PorticoConstants;
+import org.portico.lrc.model.Mom;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -43,6 +45,7 @@ public class QueryOwnershipTest extends Abstract13Test
 	private Test13Federate secondFederate;
 	private int aaHandle, abHandle, acHandle, baHandle;
 	private int theObject;
+	private int momFederationHandle;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -55,7 +58,7 @@ public class QueryOwnershipTest extends Abstract13Test
 	public void beforeClass()
 	{
 		super.beforeClass();
-		
+		this.momFederationHandle = Mom.getMomObjectClassHandle( HLAVersion.HLA13, "Manager.Federation" );
 		this.secondFederate = new Test13Federate( "secondFederate", this );
 	}
 	
@@ -83,9 +86,9 @@ public class QueryOwnershipTest extends Abstract13Test
 		secondFederate.fedamb.waitForDiscovery( this.theObject );
 		
 		defaultFederate.quickSubscribe( "ObjectRoot.Manager.Federation", "FederationName" );
-		defaultFederate.fedamb.waitForDiscovery( PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE );
+		defaultFederate.fedamb.waitForDiscovery( this.momFederationHandle );
 		secondFederate.quickSubscribe( "ObjectRoot.Manager.Federation", "FederationName" );
-		secondFederate.fedamb.waitForDiscovery( PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE );
+		secondFederate.fedamb.waitForDiscovery( this.momFederationHandle );
 		secondFederate.fedamb.waitForDiscovery( theObject );
 	}
 
@@ -163,10 +166,9 @@ public class QueryOwnershipTest extends Abstract13Test
 		                     secondFederate.federateHandle );
 
 		// check the MOM object
-		int mom = PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE;
 		int federationName = defaultFederate.quickACHandle("Manager.Federation", "FederationName");
-		Assert.assertEquals( defaultFederate.quickQueryOwnership(mom,federationName), OWNER_RTI );
-		Assert.assertEquals( secondFederate.quickQueryOwnership(mom,federationName), OWNER_RTI );
+		Assert.assertEquals( defaultFederate.quickQueryOwnership(this.momFederationHandle,federationName), OWNER_RTI );
+		Assert.assertEquals( secondFederate.quickQueryOwnership(this.momFederationHandle,federationName), OWNER_RTI );
 	}
 
 	//////////////////////////////////////////////////////////

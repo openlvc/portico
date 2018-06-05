@@ -20,7 +20,8 @@ import java.util.HashMap;
 import hla.rti.AttributeHandleSet;
 import hla.rti.jlc.EncodingHelpers;
 
-import org.portico.lrc.PorticoConstants;
+import org.portico.impl.HLAVersion;
+import org.portico.lrc.model.Mom;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterClass;
@@ -209,7 +210,7 @@ public class MomFederationTest extends Abstract13Test
 
 		// wait for a discovery of an instance //
 		// need a better way than to assume specific info about handles
-		int objectHandle = PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE;
+		int objectHandle = Mom.getMomObjectClassHandle( HLAVersion.HLA13, "Manager.Federation" );
 		defaultFederate.fedamb.waitForDiscovery( objectHandle );
 		
 		// ask for the MOM to provide an update //

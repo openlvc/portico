@@ -18,6 +18,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
@@ -198,15 +199,19 @@ public class MomManager implements SaveRestoreTarget
 		OCMetadata federateMetadata = instance.getRegisteredType();
 		Map<Integer,OCMetadata> subscriptions =
 		    interests.getAllSubscribersWithTypes( federateMetadata );
-
-		Set<Integer> subscribers = subscriptions.keySet();
-		for( int subscriber : subscribers )
-			this.objectDiscovered( subscriber, instance );
+		
+		for( Entry<Integer,OCMetadata> subscriberEntry : subscriptions.entrySet() )
+		{
+			int subscriberHandle = subscriberEntry.getKey();
+			OCMetadata subscriberType = subscriberEntry.getValue();
+			instance.discover( subscriberHandle, subscriberType );
+			this.objectDiscovered( subscriberHandle, instance );
+		}
 
 		if( subscriptions.size() > 0 )
 		{
 			DiscoverObject discover = new DiscoverObject( instance );
-			this.queueManycast( discover, subscribers );
+			this.queueManycast( discover, subscriptions.keySet() );
 		}
 	}
 

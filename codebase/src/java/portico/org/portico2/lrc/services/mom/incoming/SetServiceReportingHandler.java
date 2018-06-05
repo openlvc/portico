@@ -54,6 +54,8 @@ public class SetServiceReportingHandler extends LRCMessageHandler
 		SetServiceReporting request = context.getRequest( SetServiceReporting.class );
 		LRCState state = lrc.getState();
 		state.setServiceReporting( request.isServiceReporting() );
+		logger.debug( "Service invocation reporting has been " + 
+		              (request.isServiceReporting() ? "ENABLED" : "DISABLED") );
 		
 		context.success();
 	}

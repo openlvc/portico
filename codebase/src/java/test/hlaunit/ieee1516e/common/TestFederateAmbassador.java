@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Function;
 
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.testng.Assert;
@@ -412,6 +413,39 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 			}
 			
 			waitForEvent();
+		}
+	}
+	
+	public int waitForClassDiscovery( int classHandle )
+	{
+		Function<Integer,TestObject> getFirst = (c)->{
+			for( TestObject o : this.discovered )
+			{
+				if( o.getClassHandle() == c )
+					return o;
+			}
+			return null;
+		};
+		TestObject o = getFirst.apply( classHandle );
+		if( o != null )
+			return o.getHandle();
+		
+		// we haven't discovered this instance yet, wait for it //
+		long finishTime = getTimeout();
+		while( o == null && finishTime > System.currentTimeMillis() )
+		{
+			waitForEvent();
+			o = getFirst.apply( classHandle );
+		}
+		
+		if( o != null )
+		{
+			return o.getHandle();
+		}
+		else
+		{
+			throw new TimeoutException( "Timeout waiting for discovery of instance with class handle [" +
+			                            classHandle + "]" );
 		}
 	}
 	

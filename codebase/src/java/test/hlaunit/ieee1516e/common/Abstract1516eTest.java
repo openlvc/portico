@@ -14,6 +14,8 @@
  */
 package hlaunit.ieee1516e.common;
 
+import java.util.Properties;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
@@ -86,7 +88,9 @@ public abstract class Abstract1516eTest
 	protected void commonBeforeClass()
 	{
 		// Create the RTI
-		this.rti = new RTI( RID.loadRid() );
+		Properties overrides = new Properties();
+		//overrides.put( "portico.loglevel", "TRACE" );
+		this.rti = new RTI( RID.loadRid(overrides) );
 		
 		// Create the default federate
 		this.defaultFederate = new TestFederate( "defaultFederate", this );

@@ -94,7 +94,7 @@ public class MomObjectModelTest extends Abstract1516eTest
 	/**
 	 * Confirm that we can access MOM class and attribute handles.
 	 */
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void testHla1516eMomHandles()
 	{
 		// get the handles for each type //

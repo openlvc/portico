@@ -225,6 +225,9 @@ public class MomEncodingHelpers
 
 	public byte[] encodeHandle( Object data )
 	{
+		if( data == null )
+			return new byte[0];
+		
 		if( data instanceof Number )
 		{
 			HLA1516eHandle handle = new HLA1516eHandle( ((Number)data).intValue() );
@@ -264,6 +267,9 @@ public class MomEncodingHelpers
 	
 	public byte[] encodeHandleList( Object data )
 	{
+		if( data == null )
+			data = new int[0];
+		
 		if( data instanceof Collection<?> )
 		{
 			@SuppressWarnings("unchecked")
