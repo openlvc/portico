@@ -85,10 +85,6 @@ public class PorticoConstants
 	/** The maximum number of regions a federate is allowed to register. This value is calculated
 	    as {@link Integer#MAX_VALUE} / {@link #MAX_FEDERATES} */
 	public static final int MAX_REGIONS = Integer.MAX_VALUE / MAX_FEDERATES;
-	
-	/** The handle given to the MOM object instances registered in federations to represent the
-	    federation itself. */
-	public static final int MOM_FEDERATION_OBJECT_HANDLE = 0;
 
 	///////////////////////////////////////////////
 	//////////// System Property Names ////////////
