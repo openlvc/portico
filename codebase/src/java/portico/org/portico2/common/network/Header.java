@@ -93,7 +93,7 @@ public class Header
 	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	// |F|O|M|E|Cipher.|        Filtering Handle       | Message Len.. |    // Payload Header
 	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	// |      Message Length (cont)    |            Padding            |    // Payload Header (cont)
+	// |      Message Length (cont)    |           Auth Token          |    // Payload Header (cont)
 	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	// |                                                               |    // Payload Data
 	// +                           Payload...                          +
@@ -117,7 +117,7 @@ public class Header
     //  (67-67)   | 1-bit  | Encrypted: boolean, Is the payload encrypted?
     //  (68-71)   | 4-bit  | Cipher Mode: ID into CipherMode enumeration
     //  (72-87)   | 16-bit | Filtering Handle: uint, range=65k, Object of Interaction Class the payload is concerned with
-    //  (88-103)  | 16-bit | Nonce: IV used for encryption
+    //  (88-103)  | 16-bit | Auth Token: Authentication Token used to identify an authenticated federate
     //  (104-127) | 24-bit | Message length: range=16,777,216 (16MB)
     //
     // == Payload ==
@@ -294,6 +294,16 @@ public class Header
 	{
 		return getPayloadLength()+HEADER_LENGTH;
 	}
+	
+	public final short getAuthToken()
+	{
+		return BitHelpers.readShortBE( buffer, offset+14 );
+	}
+	
+	public final void writeAuthToken( short token )
+	{
+		BitHelpers.putShortBE( token, buffer, offset+14 );
+	}
 
 	@Override
 	public String toString()
@@ -321,14 +331,16 @@ public class Header
 			                              isFilteringHandleObject() ? "Object" : "Interaction",
 			                              getFilteringHandle() );
 		}
+		
+		String line3 = String.format( "Auth Token: "+String.format("%04x",getAuthToken()) );
 
-		String line3 = String.format( "Payload: flags=ManualMarshal(%s);Filtering(%s)\n",
+		String line4 = String.format( "Payload: flags=ManualMarshal(%s);Filtering(%s)\n",
 		                              isManualMarshal(), filterString );
 
-		String line4 = String.format( "         encrypted=%s, cipher=%s\n",
+		String line5 = String.format( "         encrypted=%s, cipher=%s\n",
 		                              isEncrypted(), isEncrypted() ? getCipherMode() : "None" );
 		
-		String line5 = String.format( "         payload=%s\n",
+		String line6 = String.format( "         payload=%s\n",
 		                              StringUtils.humanReadableSize(getPayloadLength()) );
 		
 		// An utterly frivolous use of cycles
@@ -339,6 +351,7 @@ public class Header
 		builder.append( line3 );
 		builder.append( line4 );
 		builder.append( line5 );
+		builder.append( line6 );
 		return builder.toString();
 		
 	}
@@ -378,7 +391,7 @@ public class Header
 		//    4-bit, Cipher Mode               (uint4)
 		//   16-bit, Object/Interaction Handle (uint16)
 		//   24-bit, Message Length            (uint24)
-		//   16-bit, Padding
+		//   16-bit, Auth Token                (int16)
 		if( calltype == CallType.DataMessage )
 		{
 			header.writeHasFilteringData( true );
@@ -402,6 +415,9 @@ public class Header
 		
 		// Encryption Information
 		// This is written in by the EncryptionProtocol if it is used.
+		
+		// Auth Token
+		// This is written in by the AuthenticationProtocol if it is used.
 		
 		// Payload Information
 		header.writePayloadLength( payloadLength );
@@ -438,6 +454,8 @@ public class Header
 		
 		// Payload Information
 		// Encryption information written in encryption IProtocol
+		// Auth token information written in authentication header
+		// Write payload size
 		header.writePayloadLength( payloadLength );
 	}
 	                                

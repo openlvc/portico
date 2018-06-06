@@ -31,6 +31,7 @@ public class RtiProbe extends PorticoMessage
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private IdData idData;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -38,6 +39,7 @@ public class RtiProbe extends PorticoMessage
 	public RtiProbe()
 	{
 		super.setTargetFederate( PorticoConstants.RTI_HANDLE );
+		this.idData = new IdData();
 	}
 
 	//----------------------------------------------------------
@@ -52,4 +54,15 @@ public class RtiProbe extends PorticoMessage
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
+	////////////////////////////////////////////////////////////////////////////////////
+	///  Public Inner Class: IdData   //////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////
+	public class IdData
+	{
+		public byte[] publicKey;
+		public String identifier;
+		public char[] password;
+	}
+	
 }
