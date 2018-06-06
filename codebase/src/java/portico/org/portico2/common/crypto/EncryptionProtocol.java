@@ -22,17 +22,16 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
-import org.portico2.common.network.IProtocol;
 import org.portico2.common.network.Message;
+import org.portico2.common.network.Protocol;
 import org.portico2.common.network.configuration.CryptoConfiguration;
 
-public class EncryptionProtocol implements IProtocol
+public class EncryptionProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -43,7 +42,6 @@ public class EncryptionProtocol implements IProtocol
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private CryptoConfiguration configuration;
-	private Logger logger;
 
 	private boolean isEnabled;
 	private CipherMode cipherMode;
@@ -56,8 +54,8 @@ public class EncryptionProtocol implements IProtocol
 	//----------------------------------------------------------
 	public EncryptionProtocol()
 	{
+		super();
 		this.configuration = null;   // set in configure()
-		this.logger = null;          // set in configure()
 		
 		// Runtime Properties
 		this.isEnabled = false;      // set in configure()
@@ -75,10 +73,9 @@ public class EncryptionProtocol implements IProtocol
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void configure( Connection hostConnection ) throws JConfigurationException
+	protected void doConfigure( Connection hostConnection ) throws JConfigurationException
 	{
 		this.configuration = hostConnection.getConfiguration().getCryptoConfiguration();
-		this.logger = hostConnection.getLogger();
 
 		// Runtime Settings
 		this.isEnabled = configuration.isEnabled();
@@ -120,41 +117,41 @@ public class EncryptionProtocol implements IProtocol
 	///  Message Passing   /////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public boolean down( Message message )
+	public void down( Message message )
 	{
-		if( !isEnabled )
-			return true;
-
-		try
+		if( isEnabled )
 		{
-			encrypt( message );
+			try
+			{
+				encrypt( message );
+			}
+			catch( Exception e )
+			{
+				logger.warn( e.getMessage(), e );
+			}
+			
+			// pass down the stack
+			passDown( message );
 		}
-		catch( Exception e )
-		{
-			logger.warn( e.getMessage(), e );
-			return false;
-		}
-		
-		return true;
 	}
 
 	@Override
-	public boolean up( Message message )
+	public void up( Message message )
 	{
-		if( !isEnabled )
-			return true;
-		
-		try
+		if( isEnabled )
 		{
-			decrypt( message );
+			try
+			{
+				decrypt( message );
+			}
+			catch( Exception e )
+			{
+				logger.warn( e.getMessage(), e );
+			}
+			
+			// keep passing up the stack
+			passUp( message );
 		}
-		catch( Exception e )
-		{
-			logger.warn( e.getMessage(), e );
-			return false;
-		}
-		
-		return true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////

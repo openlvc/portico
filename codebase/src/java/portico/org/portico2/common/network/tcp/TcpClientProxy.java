@@ -25,7 +25,6 @@ import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.StringUtils;
 import org.portico2.common.PorticoConstants;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.ProtocolStack;
 import org.portico2.common.network.tcp.channel.ITcpChannelListener;
 import org.portico2.common.network.tcp.channel.Metrics;
 import org.portico2.common.network.tcp.channel.TcpChannel;
@@ -50,8 +49,6 @@ public class TcpClientProxy implements ITcpChannelListener
 	private DataOutputStream outstream;
 	private TcpChannel channel;
 	
-	private ProtocolStack protocolStack;
-	
 	private long hostID;
 	private boolean running;
 
@@ -60,7 +57,7 @@ public class TcpClientProxy implements ITcpChannelListener
 	//----------------------------------------------------------
 	public TcpClientProxy( TcpServerTransport server, Socket socket ) throws IOException
 	{
-		this.logger = server.logger;
+		this.logger = server.getLogger();
 
 		// network members
 		this.parent = server;
@@ -69,8 +66,6 @@ public class TcpClientProxy implements ITcpChannelListener
 		this.outstream = new DataOutputStream( socket.getOutputStream() );
 		this.channel = new TcpChannel( this );
 
-		this.protocolStack = server.connection.getProtocolStack();
-		
 		this.hostID = ID_GENERATOR.incrementAndGet();
 		this.running = false;
 	}
@@ -179,7 +174,7 @@ public class TcpClientProxy implements ITcpChannelListener
 	{
 		// pass up the protocol stack and into the RTI
 		Message message = new Message( payload );
-		protocolStack.up( message );
+		parent.up( message );
 		
 		// We must also loop it around to all the other clients that are attached
 		// directly to us. The RTI will loop it around to any other _connections_,

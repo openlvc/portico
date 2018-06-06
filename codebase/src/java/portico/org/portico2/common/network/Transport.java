@@ -16,49 +16,71 @@ package org.portico2.common.network;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.configuration.TransportType;
 
 /**
- * A {@link ITransport} implementation performs two functions:
- * <ol>
- *   <li>Sends {@link Message} objects out over some underlying mechanism.</li>
- *   <li>Receives byte[] from the underlying communications mechanism and passes them up
- *       to a {@link Connection} wrapped in a {@link Message} object.</li>
- * </ol>
+ * The {@link Transport} class is the parent of all implementations of a particular network
+ * protocol/sending approach. Concrete implementations are expected to take a message and 
+ * put it onto the network (or share it with the federation somehow), and to take messages
+ * received over the transport and pass them up the protocol stack.<p/>
  * 
- * That's it. The specifics of how it achieves this are left to the implementation.
- * In use, the {@link Connection} will pass a message down through its internal protocol stack
- * and then drop it into the transport for sending. When incoming, the connection should pass
- * messages up through {@link ProtocolStack#up(Message)}, which will then hand the message off
- * to the application. The protocol stack can be accessed from inside the connection object.
+ * To support this, {@link Transport} extends {@link Protocol} and for each connection,
+ * a single {@link Transport} implementation will <i>always</i> be the last element of
+ * the {@link ProtocolStack}.
  */
-public interface ITransport
+public abstract class Transport extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 
 	//----------------------------------------------------------
+	//                   INSTANCE VARIABLES
+	//----------------------------------------------------------
+	protected TransportType type;
+
+	//----------------------------------------------------------
+	//                      CONSTRUCTORS
+	//----------------------------------------------------------
+	protected Transport( TransportType type )
+	{
+		this.type = type;
+	}
+
+	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	public TransportType getType();
+	public final TransportType getType()
+	{
+		return this.type;
+	}
+
+	@Override // from Protocol
+	public String getName()
+	{
+		return "Transport: "+type;
+	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Configure the transport based on the incoming configuration data. We also provide a
-	 * reference to the {@link Connection} that the transport serves so that it can reference
-	 * it back for incoming messages.
+	 * Configure the tranport, linking it into the given host connection. From here you can
+	 * get references to other components of the {@link Connection}, most notably its
+	 * configuration object.
+	 * <p/>
+	 * 
+	 * This method will be called by the method {@link Protocol#configure(Connection)}, which
+	 * itself called by the {@link Connection}. When it is called, the components of the parent
+	 * {@link Protocol} class will have already been initialized (super.hostConnection and
+	 * super.logger).
 	 * 
 	 * @param configuration Configuration data that was extracted from the RID
 	 * @param connection The {@link Connection} that this transport is contained within
 	 * @throws JConfigurationException Thown if there is an error in the configuration data
 	 */
-	public void configure( ConnectionConfiguration configuration, Connection connection )
-		throws JConfigurationException;
+	protected abstract void doConfigure( Connection connection );
 
 	/**
 	 * Establish a link to the underlying transport and commence processing messages.
@@ -71,7 +93,7 @@ public interface ITransport
 	 * 
 	 * @throws JRTIinternalError If there is a problem encountered during startup
 	 */
-	public void open() throws JRTIinternalError;
+	public abstract void open() throws JRTIinternalError;
 	
 	/**
 	 * Called when the {@link Connection} that we are in is closing down. All active links
@@ -83,17 +105,16 @@ public interface ITransport
 	 * 
 	 * @throws JRTIinternalError If there is a problem encountered during close out
 	 */
-	public void close() throws JRTIinternalError;
+	public abstract void close() throws JRTIinternalError;
 
 	/**
 	 * @return Whether the transport is open or not.
 	 */
-	public boolean isOpen();
+	public abstract boolean isOpen();
 	
 	///////////////////////////////////////////////////////////////////////////////////////
-	///  Transport Messaging Methods   ////////////////////////////////////////////////////
+	///  Protocol Messaging Methods   /////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
-	
 	/**
 	 * Take the given message and send it to the medium that the transport uses.
 	 * Inside the {@link Message} instance you'll be able to find all the information
@@ -108,7 +129,18 @@ public interface ITransport
 	 * 
 	 * @param message The message that should be sent
 	 */
-	public void send( Message message );
-	
-	
+	public abstract void down( Message message );
+
+	/**
+	 * Take the given message and pass it back up the protocol stack that we are in
+	 * to the next one in the chain.
+	 */
+	public final void up( Message message )
+	{
+		passUp( message );
+	}
+
+	//----------------------------------------------------------
+	//                     STATIC METHODS
+	//----------------------------------------------------------
 }

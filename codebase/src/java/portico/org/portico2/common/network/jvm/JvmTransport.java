@@ -14,17 +14,14 @@
  */
 package org.portico2.common.network.jvm;
 
-import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.ITransport;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.ProtocolStack;
-import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.Transport;
 import org.portico2.common.network.configuration.TransportType;
 
-public class JvmTransport implements ITransport
+public class JvmTransport extends Transport
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -34,34 +31,24 @@ public class JvmTransport implements ITransport
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private boolean isConnected;
-	private Logger logger;
-	private Connection connection;
-	private ProtocolStack protocolStack;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-
+	public JvmTransport()
+	{
+		super( TransportType.JVM );
+	}
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
-	public TransportType getType()
-	{
-		return TransportType.JVM;
-	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void configure( ConnectionConfiguration configuration, Connection connection )
-		throws JConfigurationException
+	protected void doConfigure( Connection connection ) throws JConfigurationException
 	{
-		this.connection = connection;
-		this.logger = connection.getLogger();
-		this.protocolStack = connection.getProtocolStack();
-		
 		// drop the response wait time
 		connection.getResponseCorrelator().setTimeout( 100 );
 	}
@@ -100,14 +87,14 @@ public class JvmTransport implements ITransport
 	///  Transport Messaging Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void send( Message message )
+	public void down( Message message )
 	{
 		JvmExchange.instance().sendMessage( this, message.getBuffer() );
 	}
 
 	protected void receive( byte[] message )
 	{
-		protocolStack.up( new Message(message) );
+		up( new Message(message) );
 	}
 
 	//----------------------------------------------------------

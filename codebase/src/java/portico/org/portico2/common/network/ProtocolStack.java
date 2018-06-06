@@ -14,11 +14,20 @@
  */
 package org.portico2.common.network;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico.lrc.compat.JRTIinternalError;
 
+/**
+ * The {@link ProtocolStack} manages the set of {@link Protocol} implementations that
+ * are contained, ensuring that each is linked to its next component both up and down
+ * the stack. <p/>
+ * 
+ * The {@link ProtocolStack} will ensure that the final component in the stack is <i>always</i>
+ * the {@link Transport} that has been loaded for the connection.  </p>
+ * 
+ * To pass a message to the network, hand it off to {@link #down(Message)}. To pass a message
+ * up the stack, hand it {@link #up(Message)}. 
+ */
 public class ProtocolStack
 {
 	//----------------------------------------------------------
@@ -29,7 +38,8 @@ public class ProtocolStack
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private Connection connection;
-	private List<IProtocol> protocols;
+	private Protocol first;
+	private Transport last;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -37,7 +47,12 @@ public class ProtocolStack
 	protected ProtocolStack( Connection connection )
 	{
 		this.connection = connection;
-		this.protocols = new ArrayList<>();
+		this.first = new Connector();
+		this.last = connection.transport;
+
+		// Make it so that the connector and the transport cross-reference each other
+		this.first.setNext( this.last );
+		this.last.setPrevious( this.first );
 	}
 
 	//----------------------------------------------------------
@@ -47,106 +62,95 @@ public class ProtocolStack
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Lifecycle Management Methods   ////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public void open()
+	public void open() throws JRTIinternalError
 	{
-		List<IProtocol> failed = new ArrayList<>();
-		
-		for( IProtocol protocol : protocols )
+		Protocol current = this.first;
+		do
 		{
-			try
-			{
-				protocol.open();
-			}
-			catch( Exception e )
-			{
-				connection.getLogger().warn( "Exception while opening protocol "+protocol.getName()+": "+
-				                             e.getMessage(), e );
-				failed.add( protocol );
-			}
+			if( current instanceof Transport == false )
+				current.open();
+			
+			current = current.next();
 		}
-		
-		protocols.removeAll( failed );
+		while( current != null );
 	}
-
+	
 	public void close()
 	{
-		for( IProtocol protocol : protocols )
+		Protocol current = this.first;
+		do
 		{
-			try
+			if( current instanceof Transport == false )
 			{
-				protocol.close();
+				try
+				{
+					current.close();
+				}
+				catch( Exception e )
+				{
+					connection.getLogger().warn( "Exception while closing protocol "+
+					                             current.getName()+": "+e.getMessage(), e );					
+				}
 			}
-			catch( Exception e )
-			{
-				connection.getLogger().warn( "Exception while closing protocol "+protocol.getName()+": "+
-				                             e.getMessage(), e );
-			}
+			
+			current = current.next();
 		}
+		while( current != null );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Management Methods   //////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	
 	public final void down( Message message )
 	{
-		// pass the message to each protocol
-		for( int i = 0; i < protocols.size(); i++ )
-		{
-			if( protocols.get(i).down(message) == false )
-				return;
-		}
-
-		// pass to the transport
-		this.connection.transport.send( message );
+		first.down( message );
 	}
 	
 	public void up( Message message )
 	{
-		for( int i = protocols.size()-1; i >=0; i-- )
-		{
-			if( protocols.get(i).up(message) == false )
-				return;
-		}
-		
-		// pass to connection for final processing
-		this.connection.receive( message );
+		last.up( message );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Protocol Management Methods   /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public void addProtocol( IProtocol protocol ) throws JConfigurationException
+	/**
+	 * Adds the given protocol to the end of the stack, directly ahead of the Transport.
+	 * This will also 
+	 * 
+	 * @param protocol The protocol implementation to add
+	 * @throws JConfigurationException 
+	 */
+	public void addProtocol( Protocol protocol ) throws JConfigurationException
 	{
-		// check to make sure we don't have this protocol already
-		for( IProtocol temp : protocols )
+		// check to amke sure we don't have this protocol already
+		Protocol current = this.first;
+		do
 		{
-			if( temp.getName().equalsIgnoreCase(protocol.getName()) )
+			if( current.getName().equalsIgnoreCase(protocol.getName()) )
 				throw new JConfigurationException( "Already have instance of protocol in stack: %s", protocol.getName() );
+			
+			current = current.next();
 		}
+		while( current.hasNext() );
 		
-		// configure the protocol and add it
+		// configure the protocol and insert it into the stack
 		protocol.configure( connection );
 		if( connection.transport.isOpen() )
 			protocol.open();
-		protocols.add( protocol );
-	}
-	
-	public IProtocol removeProtocol( IProtocol protocol )
-	{
-		if( protocols.remove(protocol) == false )
-			return null;
-		
-		protocol.close();
-		return protocol;
-	}
 
-	/**
-	 * Remove all existing protocols from the protocol stack
-	 */
-	protected void empty()
-	{
-		this.protocols.clear();
+		// get reference to protocol that should be above us (the one last currently points to)
+		Protocol above = last.previous();
+		
+		// link the up/down directions for the incoming protocol
+		protocol.setPrevious( above );
+		protocol.setNext( last );
+		
+		// tell the transport that the new protocol is now above it
+		last.setPrevious( protocol );
+		
+		// tell the protocol above us that we are its next stop
+		above.setNext( protocol );
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -157,5 +161,24 @@ public class ProtocolStack
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	private final class Connector extends Protocol
+	{
+		public void open()  {}
+		public void close() {}
+		public String getName() { return "ApplicationConnector"; }
+		protected void doConfigure( Connection hostConnection ) {}
+
+		public final void down( Message message )
+		{
+			passDown( message );
+		}
+
+		public final void up( Message message )
+		{
+			// pass the message back to the main Connection class where
+			// it can forward on to the AppReceiver
+			connection.receive( message );
+		}
+	}
 	
 }

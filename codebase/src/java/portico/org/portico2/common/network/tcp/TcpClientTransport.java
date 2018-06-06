@@ -26,17 +26,15 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.StringUtils;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.ITransport;
+import org.portico2.common.network.Transport;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.ProtocolStack;
-import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.configuration.TcpConfiguration;
 import org.portico2.common.network.configuration.TransportType;
 import org.portico2.common.network.tcp.channel.ITcpChannelListener;
 import org.portico2.common.network.tcp.channel.Metrics;
 import org.portico2.common.network.tcp.channel.TcpChannel;
 
-public class TcpClientTransport implements ITransport, ITcpChannelListener
+public class TcpClientTransport extends Transport implements ITcpChannelListener
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -45,9 +43,7 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Logger logger;
 	private boolean isConnected;
-	private ProtocolStack protocolStack;
 	
 	// Configuration Options
 	private TcpConfiguration configuration;
@@ -63,9 +59,9 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 	//----------------------------------------------------------
 	public TcpClientTransport()
 	{
-		this.logger = null;
+		super( TransportType.TcpClient );
+
 		this.isConnected = false;
-		this.protocolStack = null;      // set in configure()
 		
 		// Configuration Options
 		this.configuration  = null;     // set in configure()
@@ -81,23 +77,13 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	@Override
-	public TransportType getType()
-	{
-		return TransportType.TcpClient;
-	}
-
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void configure( ConnectionConfiguration configuration, Connection connection )
-		throws JConfigurationException
+	protected void doConfigure( Connection connection ) throws JConfigurationException
 	{
-		this.logger = connection.getLogger();
-		this.configuration = (TcpConfiguration)configuration;
-		this.protocolStack = connection.getProtocolStack();
-
+		this.configuration = (TcpConfiguration)connection.getConfiguration();
 		this.serverAddress = new InetSocketAddress( this.configuration.getAddress(),
 		                                            this.configuration.getPort() );
 		
@@ -235,7 +221,7 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 	///  Message SENDING Methods   ////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void send( Message message )
+	public void down( Message message )
 	{
 		channel.send( message.getBuffer() );
 	}
@@ -252,7 +238,7 @@ public class TcpClientTransport implements ITransport, ITcpChannelListener
 		//if( receiver.isReceivable(incoming.getTargetFederate()) == false )
 		//	return;
 
-		protocolStack.up( new Message(payload) );
+		up( new Message(payload) );
 	}
 
 	/**

@@ -22,6 +22,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 import org.portico.lrc.LRC;
+import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
@@ -262,7 +263,9 @@ public class MessageHelpers
 		}
 		catch( Exception e )
 		{
-			throw new RuntimeException( "couldn't convert byte[] into "+expectedType.getSimpleName(), e );
+			Header header = new Header( data, 0 );
+			throw new JRTIinternalError( "Couldn't convert byte[] ("+header.getMessageType()+") into "+
+			                             expectedType.getSimpleName(), e );
 		}		
 	}	
 	
