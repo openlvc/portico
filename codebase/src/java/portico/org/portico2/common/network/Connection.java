@@ -51,12 +51,20 @@ import org.portico2.common.services.federation.msg.RtiProbe;
 public class Connection
 {
 	//----------------------------------------------------------
+	//                      ENUMERATIONS
+	//----------------------------------------------------------
+	/** Every connection sits inside some sort of component. This enum identifies
+	    the host component that the connection is embedded in. */
+	public enum Host{ LRC, RTI, Forwarder; }
+
+	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private Host host;
 	private String name;
 	private ConnectionConfiguration configuration;
 	private IApplicationReceiver appReceiver;
@@ -69,8 +77,9 @@ public class Connection
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public Connection()
+	public Connection( Host host )
 	{
+		this.host = host;
 		this.name = "unknown";       // set in configure()
 		this.configuration = null;   // set in configure()
 		this.appReceiver = null;     // set in configure()
@@ -289,6 +298,11 @@ public class Connection
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	public Host getHost()
+	{
+		return this.host;
+	}
+	
 	public ConnectionConfiguration getConfiguration()
 	{
 		return this.configuration;

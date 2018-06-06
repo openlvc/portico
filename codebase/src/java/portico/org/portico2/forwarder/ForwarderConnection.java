@@ -24,6 +24,7 @@ import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
+import org.portico2.common.network.Connection.Host;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.forwarder.tracking.StateTracker;
 
@@ -61,7 +62,7 @@ public class ForwarderConnection implements IApplicationReceiver
 
 		// Connection Settings
 		this.configuration = configuration;
-		this.connection = new Connection();
+		this.connection = new Connection( Host.Forwarder );
 		this.connection.configure( configuration, this );
 	}
 

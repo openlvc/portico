@@ -25,6 +25,7 @@ import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
+import org.portico2.common.network.Connection.Host;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
 
 public class LRCConnection implements IApplicationReceiver
@@ -49,7 +50,7 @@ public class LRCConnection implements IApplicationReceiver
 		this.configuration = configuration;
 		
 		// Create the underlying connection and configure it
-		this.connection = new Connection();
+		this.connection = new Connection( Host.LRC );
 		this.connection.configure( configuration, this );
 	}
 
