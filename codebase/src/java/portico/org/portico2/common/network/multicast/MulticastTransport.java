@@ -18,17 +18,15 @@ import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.ITransport;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.ProtocolStack;
-import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.Transport;
 import org.portico2.common.network.configuration.MulticastConfiguration;
 import org.portico2.common.network.configuration.TransportType;
 
 /**
  * The {@link MulticastTransport} uses a JGroups-based multicast channel to exchange messages.
  */
-public class MulticastTransport implements ITransport, IJGroupsListener
+public class MulticastTransport extends Transport implements IJGroupsListener
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -38,9 +36,7 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private boolean isConnected;
-	private Logger logger;
 	private MulticastConfiguration configuration;
-	private ProtocolStack protocolStack;
 	
 	private JGroupsConfiguration jgroupsConfiguration;
 	private JGroupsChannel jgroupsChannel;
@@ -50,10 +46,9 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 	//----------------------------------------------------------
 	public MulticastTransport()
 	{
+		super( TransportType.Multicast );
 		this.isConnected = false;
-		this.logger = null;               // set in configure()
 		this.configuration = null;        // set in configure()
-		this.protocolStack = null;        // set in configure()
 		this.jgroupsConfiguration = null; // set in configure()
 		this.jgroupsChannel = null;       // set in connect()
 	}
@@ -65,12 +60,10 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 	 * Extract the RID configuration and store locally. Generate the JGroups configuration.
 	 */
 	@Override
-	public void configure( ConnectionConfiguration configuration, Connection connection )
+	protected void doConfigure( Connection connection )
 		throws JConfigurationException
 	{
-		this.logger = connection.getLogger();
-		this.configuration = (MulticastConfiguration)configuration;
-		this.protocolStack = connection.getProtocolStack();
+		this.configuration = (MulticastConfiguration)connection.getConfiguration();
 		
 		// create a JGroups channel configuration from what was provided
 		this.jgroupsConfiguration = new JGroupsConfiguration( configuration.getName() );
@@ -119,15 +112,9 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 	///  Message SENDING methods   ////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void send( Message message )
+	public void down( Message message )
 	{
 		this.jgroupsChannel.send( message.getBuffer() );
-	}
-
-	@Override
-	public TransportType getType()
-	{
-		return TransportType.Multicast;
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -136,9 +123,9 @@ public class MulticastTransport implements ITransport, IJGroupsListener
 	@Override
 	public void receive( JGroupsChannel channel, byte[] payload )
 	{
-		protocolStack.up( new Message(payload) );
+		up( new Message(payload) );
 	}
-	
+
 	@Override
 	public Logger provideLogger()
 	{

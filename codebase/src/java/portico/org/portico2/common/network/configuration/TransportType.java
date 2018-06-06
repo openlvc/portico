@@ -18,7 +18,7 @@ import java.util.Properties;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico2.common.network.ITransport;
+import org.portico2.common.network.Transport;
 import org.portico2.common.network.jvm.JvmTransport;
 import org.portico2.common.network.multicast.MulticastTransport;
 import org.portico2.common.network.tcp.TcpClientTransport;
@@ -98,7 +98,7 @@ public enum TransportType
 	 *         Note that this instance has not yet been configured and will only have been
 	 *         initialized with defaults.
 	 */
-	public ITransport newTransport()
+	public Transport newTransport()
 	{
 		switch( this )
 		{

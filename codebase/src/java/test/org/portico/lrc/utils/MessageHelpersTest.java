@@ -73,8 +73,8 @@ public class MessageHelpersTest
 		AppReceiver outgoingReceiver = new AppReceiver();
 		AppReceiver incomingReceiver = new AppReceiver();
 
-		Connection outgoing = new Connection();
-		Connection incoming = new Connection();
+		Connection outgoing = new Connection(null);
+		Connection incoming = new Connection(null);
 
 		outgoing.configure( configuration, outgoingReceiver );
 		incoming.configure( configuration, incomingReceiver );

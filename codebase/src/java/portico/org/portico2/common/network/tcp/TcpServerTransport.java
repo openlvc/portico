@@ -25,13 +25,12 @@ import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.ITransport;
+import org.portico2.common.network.Transport;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.configuration.TcpConfiguration;
 import org.portico2.common.network.configuration.TransportType;
 
-public class TcpServerTransport implements ITransport
+public class TcpServerTransport extends Transport
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -41,8 +40,6 @@ public class TcpServerTransport implements ITransport
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private TcpConfiguration configuration;
-	protected Connection connection;
-	protected Logger logger;
 	
 	// Configuration Options
 	private InetSocketAddress socketAddress;
@@ -61,9 +58,9 @@ public class TcpServerTransport implements ITransport
 	//----------------------------------------------------------
 	public TcpServerTransport()
 	{
+		super( TransportType.TcpServer );
+
 		this.configuration = null;      // set in configure()
-		this.connection = null;         // set in configure()
-		this.logger = null;             // set in configure()
 		
 		// Configuration Options
 		this.socketAddress  = null;     // set in configure()
@@ -82,22 +79,14 @@ public class TcpServerTransport implements ITransport
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	@Override
-	public TransportType getType()
-	{
-		return TransportType.TcpServer;
-	}
-
 	///////////////////////////////////////////////////////////////////////////////////////
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void configure( ConnectionConfiguration configuration, Connection connection )
+	protected void doConfigure( Connection connection )
 		throws JConfigurationException
 	{
-		this.configuration = (TcpConfiguration)configuration;
-		this.connection = connection;
-		this.logger = connection.getLogger();
+		this.configuration = (TcpConfiguration)connection.getConfiguration();
 		
 		this.socketAddress = new InetSocketAddress( this.configuration.getAddress(),
 		                                            this.configuration.getPort() );
@@ -185,7 +174,7 @@ public class TcpServerTransport implements ITransport
 	///  Transport Messaging Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public void send( Message message )
+	public void down( Message message )
 	{
 		// TODO Optimize me - we should only hand off to those representing certain federate Ids
 
@@ -212,6 +201,11 @@ public class TcpServerTransport implements ITransport
 	{
 		this.clients.remove( proxy );
 		logger.debug( "Disconnected TCP client: "+proxy );
+	}
+	
+	protected Logger getLogger()
+	{
+		return super.logger;
 	}
 
 	//----------------------------------------------------------

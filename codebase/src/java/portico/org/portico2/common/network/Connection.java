@@ -76,7 +76,7 @@ public class Connection
 	private IApplicationReceiver appReceiver;
 	private Logger logger;
 
-	protected ITransport transport;
+	protected Transport transport;
 	private ProtocolStack protocolStack;
 	private ResponseCorrelator<ResponseMessage> responseCorrelator;
 
@@ -93,7 +93,7 @@ public class Connection
 		this.logger = null;          // set in configure()
 
 		this.transport = null;       // set in configure()
-		this.protocolStack = new ProtocolStack( this );
+		this.protocolStack = null;   // set in configure()
 		this.responseCorrelator = new ResponseCorrelator<>();
 	}
 
@@ -124,12 +124,12 @@ public class Connection
 		
 		// create the transport
 		this.transport = configuration.getTransportType().newTransport();
-		this.transport.configure( configuration, this );
+		this.transport.configure( this );
 		
 		/////////////////////////////////
 		// populate the protocol stack //
 		/////////////////////////////////
-		this.protocolStack.empty();
+		this.protocolStack = new ProtocolStack( this );
 		// Insert the encryption settings
 		if( configuration.getCryptoConfiguration().isEnabled() )
 			protocolStack.addProtocol( new EncryptionProtocol() );

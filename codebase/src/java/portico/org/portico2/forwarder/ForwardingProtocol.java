@@ -16,12 +16,11 @@ package org.portico2.forwarder;
 
 import java.util.EnumSet;
 
-import org.apache.logging.log4j.Logger;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
-import org.portico2.common.network.IProtocol;
 import org.portico2.common.network.Message;
+import org.portico2.common.network.Protocol;
 import org.portico2.common.network.ProtocolStack;
 import org.portico2.forwarder.firewall.Firewall;
 import org.portico2.forwarder.tracking.StateTracker;
@@ -50,7 +49,7 @@ import org.portico2.forwarder.tracking.StateTracker;
  * them (via a reference to the exchanger itself) and then inserts them into the connection after it
  * has been created, thus giving us a fastpath!
  */
-public class ForwardingProtocol implements IProtocol
+public class ForwardingProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -72,10 +71,7 @@ public class ForwardingProtocol implements IProtocol
 	                                     // of the forwarder that a connection is on
 	private Exchanger exchanger;
 
-	private Connection hostConnection;	
-	private Logger logger;
-	private ProtocolStack targetStack; // where we want to dump messages
-	
+	private ProtocolStack targetStack;   // where we want to dump messages
 	private StateTracker stateTracker;
 	private Firewall firewall;
 
@@ -88,10 +84,7 @@ public class ForwardingProtocol implements IProtocol
 		this.directionOfTravel = side.reverse();
 		this.exchanger = exchanger;
 
-		this.hostConnection = null; // set in open()
-		this.logger = null;         // set in open()
 		this.targetStack = null;    // set in open()
-		
 		this.stateTracker = null;   // set in open()
 		this.firewall = null;       // set in open()
 	}
@@ -103,12 +96,12 @@ public class ForwardingProtocol implements IProtocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public void configure( Connection hostConnection )
+	@Override
+	protected void doConfigure( Connection hostConnection )
 	{
-		this.hostConnection = hostConnection;
-		this.logger = hostConnection.getLogger();
 	}
 
+	@Override
 	public void open()
 	{
 		ForwardingProtocol sibling = side == Direction.Upstream ? exchanger.downstreamForwarder :
@@ -120,6 +113,7 @@ public class ForwardingProtocol implements IProtocol
 		this.firewall = exchanger.firewall;
 	}
 
+	@Override
 	public void close()
 	{
 		// no-op
@@ -129,20 +123,22 @@ public class ForwardingProtocol implements IProtocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Passing   /////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public final boolean down( Message message )
+	@Override
+	public final void down( Message message )
 	{
-		// No-op for us. We only intercept messages coming in and forward them over so that
-		// they can go out the other side.
-		return true;
+		// No-op for us. Just pass on to the next.
+		passDown( message );
 	}
 
-	public final boolean up( Message message )
+	@Override
+	public final void up( Message message )
 	{
-		// short-circuit the whole thing
+		// short-circuit the whole thing and just hand the
+		// message directly across to the other side
 		if( firewall.isEnabled() == false )
 		{
 			targetStack.down( message );
-			return false;
+			return;
 		}
 
 		// different course of action depending on the call type
@@ -209,12 +205,13 @@ public class ForwardingProtocol implements IProtocol
 		}
 		
 		// Never pass messages up the stack any further. We don't do local processing.
-		return false;
+		return;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	@Override
 	public String getName()
 	{
 		return "Forwarding ("+side+")";
