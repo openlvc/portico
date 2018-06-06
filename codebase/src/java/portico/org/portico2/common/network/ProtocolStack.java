@@ -127,7 +127,7 @@ public class ProtocolStack
 		
 		// configure the protocol and add it
 		protocol.configure( connection );
-		if( connection.isOpen() )
+		if( connection.transport.isOpen() )
 			protocol.open();
 		protocols.add( protocol );
 	}

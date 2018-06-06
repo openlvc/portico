@@ -57,6 +57,10 @@ public class Connection
 	    the host component that the connection is embedded in. */
 	public enum Host{ LRC, RTI, Forwarder; }
 
+	/** Every connection can be in one of three states. It is either not connected
+	    to anything, Connected to an RTI but not joined, or Connected _and_ Joined. */
+	public enum Status{ Disconnected, Connected, Joined; }
+
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
@@ -65,6 +69,8 @@ public class Connection
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private Host host;
+	private Status status;  // value must be set and managed _EXTERNALLY_ by host type
+
 	private String name;
 	private ConnectionConfiguration configuration;
 	private IApplicationReceiver appReceiver;
@@ -80,6 +86,7 @@ public class Connection
 	public Connection( Host host )
 	{
 		this.host = host;
+		this.status = Status.Disconnected;
 		this.name = "unknown";       // set in configure()
 		this.configuration = null;   // set in configure()
 		this.appReceiver = null;     // set in configure()
@@ -323,9 +330,24 @@ public class Connection
 		return this.responseCorrelator;
 	}
 
-	public boolean isOpen()
+	public Status getStatus()
 	{
-		return transport.isOpen();
+		return this.status;
+	}
+	
+	public boolean isConnected()
+	{
+		return this.status != Status.Disconnected;
+	}
+	
+	public boolean isJoined()
+	{
+		return this.status == Status.Joined;
+	}
+	
+	public void setStatus( Status status )
+	{
+		this.status = status;
 	}
 
 	//----------------------------------------------------------

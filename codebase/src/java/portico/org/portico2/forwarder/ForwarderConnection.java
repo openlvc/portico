@@ -25,6 +25,7 @@ import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
 import org.portico2.common.network.Connection.Host;
+import org.portico2.common.network.Connection.Status;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.forwarder.tracking.StateTracker;
 
@@ -74,12 +75,18 @@ public class ForwarderConnection implements IApplicationReceiver
 	{
 		// 1. Tell the connection to attach
 		this.connection.connect();
+		
+		// 2. Record that we are attached!
+		this.connection.setStatus( Status.Connected );
 	}
 	
 	public void disconnect()
 	{
 		// Tell the connection to detatch
 		this.connection.disconnect();
+		
+		// Record that we are no longer connected
+		this.connection.setStatus( Status.Disconnected );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////

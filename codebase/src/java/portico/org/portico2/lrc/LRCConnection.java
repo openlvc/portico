@@ -26,6 +26,7 @@ import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
 import org.portico2.common.network.Connection.Host;
+import org.portico2.common.network.Connection.Status;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
 
 public class LRCConnection implements IApplicationReceiver
@@ -69,12 +70,18 @@ public class LRCConnection implements IApplicationReceiver
 			this.connection.disconnect();
 			throw new JConnectionFailed( "Could not find RTI running anywhere" );
 		}
+		
+		// 3. Record that we are now connected to the RTI
+		connection.setStatus( Status.Connected );
 	}
 	
 	public void disconnect()
 	{
 		// 1. Tell the connection to detatch
 		this.connection.disconnect();
+		
+		// 2. Record that we are no longer connected
+		connection.setStatus( Status.Disconnected );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
