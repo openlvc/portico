@@ -22,6 +22,7 @@ import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Connection.Host;
+import org.portico2.common.network.Connection.Status;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
@@ -73,12 +74,18 @@ public class RtiConnection implements IApplicationReceiver
 			disconnect();
 			throw new JRTIinternalError( "An RTI is already running" );
 		}
+		
+		// 3. Record that we are up and everything is good
+		connection.setStatus( Status.Connected );
 	}
 	
 	public void disconnect()
 	{
 		// 1. Tell the connection to detatch
 		this.connection.disconnect();
+		
+		// 2. Record that we are no longer connected
+		connection.setStatus( Status.Disconnected );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
