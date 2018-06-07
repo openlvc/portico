@@ -17,6 +17,7 @@ package org.portico2.rti;
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.compat.JFederateNameAlreadyInUse;
+import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
@@ -78,10 +79,28 @@ public class RtiInbox
 			{
 				int federationHandle = request.getTargetFederation();
 				Federation targetFederation = federationManager.getFederation( federationHandle );
+				
 				if( targetFederation != null )
-					targetFederation.getIncomingSink().process( context );
+				{
+					// Requesting federate must be a member of the target federation to submit federation 
+					// messages to it
+					int sourceFederate = request.getSourceFederate();
+					if( targetFederation.containsFederate(sourceFederate) )
+					{
+						targetFederation.getIncomingSink().process( context );
+					}
+					else
+					{
+						String message = String.format( "Federate [%d] is not a member of federation [%s]", 
+						                                sourceFederate,
+						                                targetFederation.getFederationName() );
+						context.error( new JFederateNotExecutionMember(message) );
+					}
+				}
 				else
+				{
 					context.error( new JRTIinternalError("No federation with handle: "+federationHandle) );
+				}
 			}
 			catch( Exception e )
 			{
@@ -151,6 +170,18 @@ public class RtiInbox
 			                             message.getTargetFederation(),
 			                             message.getClass().getSimpleName() );
 		}
+		
+		// Requesting federate must be a member of the target federation to submit federation 
+		// messages to it
+		int sourceFederate = message.getSourceFederate();
+		if( !targetFederation.containsFederate( message.getSourceFederate()) )
+		{
+			String exMessage = String.format( "Federate [%d] is not a member of federation [%s]", 
+			                                  sourceFederate,
+			                                  targetFederation.getFederationName() );
+			throw new JFederateNotExecutionMember( exMessage );
+		}
+			
 		targetFederation.queueDataMessage( message, sender );
 	}
 
@@ -268,8 +299,8 @@ public class RtiInbox
 			// Check to see if it has federates
 			if( federation.containsFederates() )
 			{
-				logger.error( "FAILURE Can't destory fedearation, it has federates joined: name="+name );
-				throw new JFederatesCurrentlyJoined( "Federates joined to fedeation ["+name+"]" );
+				logger.error( "FAILURE Can't destroy federation, it has federates joined: name="+name );
+				throw new JFederatesCurrentlyJoined( "Federates joined to federation ["+name+"]" );
 			}
 
 			// Remove the federation

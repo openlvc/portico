@@ -287,10 +287,7 @@ public class MomFederate
 	private byte[] getReflectionsReceived( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		ObjectClassBasedCount[] updated = federate.getMetrics().getReflectionsReceived();
-		int grandTotal = 0;
-		for( ObjectClassBasedCount classCount : updated )
-			grandTotal += classCount.getCount();
+		int grandTotal = federate.getMetrics().getTotalReflectionsReceived();
 		
 		return MomEncodingHelpers.encode( type, grandTotal );
 	}
@@ -298,10 +295,7 @@ public class MomFederate
 	private byte[] getUpdatesSent( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		ObjectClassBasedCount[] updated = federate.getMetrics().getUpdatesSent();
-		int grandTotal = 0;
-		for( ObjectClassBasedCount classCount : updated )
-			grandTotal += classCount.getCount();
+		int grandTotal = federate.getMetrics().getTotalUpdatesSent();
 		
 		return MomEncodingHelpers.encode( type, grandTotal );
 	}
@@ -309,10 +303,7 @@ public class MomFederate
 	private byte[] getInteractionsReceived( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		InteractionCount[] received = federate.getMetrics().getInteractionsReceived();
-		int grandTotal = 0;
-		for( InteractionCount classCount : received )
-			grandTotal += classCount.getCount();
+		int grandTotal = federate.getMetrics().getTotalInteractionsReceived();
 		
 		return MomEncodingHelpers.encode( type, grandTotal );
 	}
@@ -320,10 +311,7 @@ public class MomFederate
 	private byte[] getInteractionsSent( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		InteractionCount[] received = federate.getMetrics().getInteractionsSent();
-		int grandTotal = 0;
-		for( InteractionCount classCount : received )
-			grandTotal += classCount.getCount();
+		int grandTotal = federate.getMetrics().getTotalInteractionsSent();
 		
 		return MomEncodingHelpers.encode( type, grandTotal );
 	}
@@ -338,10 +326,7 @@ public class MomFederate
 	private byte[] getObjectsUpdated( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		ObjectClassBasedCount[] updated = federate.getMetrics().getObjectInstancesUpdated();
-		int grandTotal = 0;
-		for( ObjectClassBasedCount classCount : updated )
-			grandTotal += classCount.getCount();
+		int grandTotal = federate.getMetrics().getTotalObjectInstancesUpdated();
 		
 		return MomEncodingHelpers.encode( type, grandTotal );
 	}
@@ -349,10 +334,7 @@ public class MomFederate
 	private byte[] getObjectsReflected( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		ObjectClassBasedCount[] reflected = federate.getMetrics().getObjectInstancesReflected();
-		int grandTotal = 0;
-		for( ObjectClassBasedCount classCount : reflected )
-			grandTotal += classCount.getCount();
+		int grandTotal = federate.getMetrics().getTotalObjectInstancesReflected();
 		
 		return MomEncodingHelpers.encode( type, grandTotal );
 	}

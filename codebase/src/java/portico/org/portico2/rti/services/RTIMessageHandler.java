@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
+import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
@@ -612,7 +613,15 @@ public abstract class RTIMessageHandler implements IMessageHandler
 		return dimensionHandle+" <unknown>";
 	}
 
-
+	/**
+	 * Checks whether the federate is a member of the context federation, and if not throws a 
+	 * {@link JFederateNotExecutionMember} exception 
+	 */
+	protected void checkIsMember( int federate ) throws JFederateNotExecutionMember
+	{
+		if( !federation.containsFederate( federate ) )
+			throw new JFederateNotExecutionMember();
+	}
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

@@ -358,6 +358,11 @@ public class Federation
 			federateConnections.remove( connection );
 	}
 
+	public Set<Federate> getFederates()
+	{
+		return new HashSet<>( this.federates.values() );
+	}
+	
 	public Federate getFederate( String name )
 	{
 		for( Federate federate: federates.values() )

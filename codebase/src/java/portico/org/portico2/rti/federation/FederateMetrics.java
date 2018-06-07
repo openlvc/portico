@@ -167,6 +167,16 @@ public class FederateMetrics
 		return results;
 	}
 	
+	public int getTotalReflectionsReceived()
+	{
+		ObjectClassBasedCount[] reflections = getReflectionsReceived();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : reflections )
+			grandTotal += classCount.getCount();
+		
+		return grandTotal;
+	}
+	
 	public ObjectClassBasedCount[] getObjectInstancesReflected()
 	{
 		ObjectClassBasedCount[] results = new ObjectClassBasedCount[this.reflectionsReceived.size()];
@@ -175,6 +185,16 @@ public class FederateMetrics
 			results[index++] = tracker.getTotalUniqueInstances();
 		
 		return results;
+	}
+	
+	public int getTotalObjectInstancesReflected()
+	{
+		ObjectClassBasedCount[] reflected = this.getObjectInstancesReflected();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : reflected )
+			grandTotal += classCount.getCount();
+		
+		return grandTotal;
 	}
 	
 	/**
@@ -190,6 +210,16 @@ public class FederateMetrics
 		return results;
 	}
 	
+	public int getTotalUpdatesSent()
+	{
+		ObjectClassBasedCount[] updated = this.getUpdatesSent();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : updated )
+			grandTotal += classCount.getCount();
+		
+		return grandTotal;
+	}
+	
 	/**
 	 * @return the number of times the federate has invoked the UpdateAttributeValues service
 	 */
@@ -201,6 +231,16 @@ public class FederateMetrics
 			results[index++] = tracker.getTotalUniqueInstances();
 		
 		return results;
+	}
+	
+	public int getTotalObjectInstancesUpdated()
+	{
+		ObjectClassBasedCount[] updated = this.getObjectInstancesUpdated();
+		int grandTotal = 0;
+		for( ObjectClassBasedCount classCount : updated )
+			grandTotal += classCount.getCount();
+		
+		return grandTotal;
 	}
 	
 	/**
@@ -217,6 +257,16 @@ public class FederateMetrics
 		return results;
 	}
 	
+	public int getTotalInteractionsReceived()
+	{
+		InteractionCount[] received = this.getInteractionsReceived();
+		int grandTotal = 0;
+		for( InteractionCount classCount : received )
+			grandTotal += classCount.getCount();
+		
+		return grandTotal;
+	}
+	
 	/**
 	 * @return the number of times the federate has invoked the SendInteractions service for each
 	 *         interaction class
@@ -229,6 +279,16 @@ public class FederateMetrics
 			results[index++] = classCount;
 		
 		return results;
+	}
+	
+	public int getTotalInteractionsSent()
+	{
+		InteractionCount[] received = this.getInteractionsSent();
+		int grandTotal = 0;
+		for( InteractionCount classCount : received )
+			grandTotal += classCount.getCount();
+		
+		return grandTotal;
 	}
 	
 	/**
