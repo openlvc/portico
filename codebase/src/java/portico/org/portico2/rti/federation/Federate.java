@@ -38,8 +38,6 @@ public class Federate
 	private RtiConnection federateConnection;
 	private FederateMetrics metrics;
 	private List<FomModule> fomModules;
-	
-	private TimeStatus timeStatus;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -51,8 +49,6 @@ public class Federate
 		this.metrics = new FederateMetrics();
 		this.federateHandle = PorticoConstants.NULL_HANDLE;
 		this.fomModules = new ArrayList<FomModule>();
-		
-		this.timeStatus = new TimeStatus();
 	}
 
 	//----------------------------------------------------------
@@ -80,11 +76,6 @@ public class Federate
 	public RtiConnection getConnection()
 	{
 		return this.federateConnection;
-	}
-
-	public TimeStatus getTimeStatus()
-	{
-		return this.timeStatus;
 	}
 	
 	public FederateMetrics getMetrics()

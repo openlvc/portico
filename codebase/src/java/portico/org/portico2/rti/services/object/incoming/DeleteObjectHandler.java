@@ -71,7 +71,7 @@ public class DeleteObjectHandler extends RTIMessageHandler
 		if( request.isTimestamped() )
 		{
 			Federate federate = federation.getFederate( sourceFederate );
-			TimeStatus timeStatus = federate.getTimeStatus();
+			TimeStatus timeStatus = timeManager.getTimeStatus( sourceFederate );
 			double time = request.getTimestamp();
 			// check that the time is greater than or equal to the current LBTS of this federate
 			if( time < timeStatus.getLbts() )
