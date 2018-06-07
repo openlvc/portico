@@ -50,8 +50,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 	private int bundlingMaxSize;
 	private int bundlingMaxTime;
 	
-	private CryptoConfiguration cryptoConfiguration;
-	private AuthConfiguration authConfiguration;
+	private SharedKeyConfiguration sharedKeyConfiguration;
+	private PublicKeyConfiguration publicKeyConfiguration;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -70,8 +70,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 		this.bundlingMaxSize = 64000; // 64k
 		this.bundlingMaxTime = 20000; // 20ms
 		
-		this.cryptoConfiguration = new CryptoConfiguration();
-		this.authConfiguration = new AuthConfiguration();
+		this.sharedKeyConfiguration = new SharedKeyConfiguration();
+		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
 	
 	public TcpConfiguration( String name, TransportType type )
@@ -97,15 +97,15 @@ public class TcpConfiguration extends ConnectionConfiguration
 	}
 
 	@Override
-	public CryptoConfiguration getCryptoConfiguration()
+	public SharedKeyConfiguration getSharedKeyConfiguration()
 	{
-		return this.cryptoConfiguration;
+		return this.sharedKeyConfiguration;
 	}
 
 	@Override
-	public AuthConfiguration getAuthConfiguration()
+	public PublicKeyConfiguration getPublicKeyConfiguration()
 	{
-		return this.authConfiguration;
+		return this.publicKeyConfiguration;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +114,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{
-		cryptoConfiguration.parseConfiguration( prefix, properties );
+		this.sharedKeyConfiguration.parseConfiguration( prefix, properties );
+		this.publicKeyConfiguration.parseConfiguration( prefix, properties );
 
 		prefix += ".";
 		String temp = properties.getProperty( prefix+"type" );

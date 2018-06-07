@@ -29,9 +29,9 @@ import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.Protocol;
-import org.portico2.common.network.configuration.CryptoConfiguration;
+import org.portico2.common.network.configuration.SharedKeyConfiguration;
 
-public class EncryptionProtocol extends Protocol
+public class SharedKeyProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -41,7 +41,7 @@ public class EncryptionProtocol extends Protocol
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private CryptoConfiguration configuration;
+	private SharedKeyConfiguration configuration;
 
 	private boolean isEnabled;
 	private CipherMode cipherMode;
@@ -52,7 +52,7 @@ public class EncryptionProtocol extends Protocol
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public EncryptionProtocol()
+	public SharedKeyProtocol()
 	{
 		super();
 		this.configuration = null;   // set in configure()
@@ -75,7 +75,7 @@ public class EncryptionProtocol extends Protocol
 	@Override
 	protected void doConfigure( Connection hostConnection ) throws JConfigurationException
 	{
-		this.configuration = hostConnection.getConfiguration().getCryptoConfiguration();
+		this.configuration = hostConnection.getConfiguration().getSharedKeyConfiguration();
 
 		// Runtime Settings
 		this.isEnabled = configuration.isEnabled();
@@ -280,7 +280,7 @@ public class EncryptionProtocol extends Protocol
 	@Override
 	public String getName()
 	{
-		return "Encrypter";
+		return "SharedKey";
 	}
 	
 	//----------------------------------------------------------

@@ -30,7 +30,7 @@ import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.CallType;
 import org.portico2.common.network.Connection;import org.portico2.common.network.Message;
 import org.portico2.common.network.Protocol;
-import org.portico2.common.network.configuration.AuthConfiguration;
+import org.portico2.common.network.configuration.PublicKeyConfiguration;
 import org.portico2.common.services.federation.msg.Authenticate;
 import org.portico2.common.services.federation.msg.CreateFederation;
 import org.portico2.rti.RTI;
@@ -41,7 +41,7 @@ import org.portico2.rti.federation.FederationManager;
  * Does Authentication and encryption of non-federation messages. Delegates encryption of
  * federation messages to 
  */
-public class RTIAuthenticationProtocol extends Protocol
+public class RTIPublicKeyProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -51,7 +51,7 @@ public class RTIAuthenticationProtocol extends Protocol
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private AuthConfiguration configuration;
+	private PublicKeyConfiguration configuration;
 	private AuthStore authStore;
 	private boolean isEnabled;
 
@@ -69,7 +69,7 @@ public class RTIAuthenticationProtocol extends Protocol
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public RTIAuthenticationProtocol()
+	public RTIPublicKeyProtocol()
 	{
 		this.configuration = null;   // set in doConfigure()
 		this.authStore = new AuthStore();
@@ -97,7 +97,7 @@ public class RTIAuthenticationProtocol extends Protocol
 	@Override
 	protected void doConfigure( Connection hostConnection )
 	{
-		this.configuration = hostConnection.getConfiguration().getAuthConfiguration();
+		this.configuration = hostConnection.getConfiguration().getPublicKeyConfiguration();
 		//this.isEnabled = configuration.isEnabled(); // FIXME TEMP ON
 		this.isEnabled = true;
 
@@ -220,8 +220,18 @@ public class RTIAuthenticationProtocol extends Protocol
 		if( message.getMessageType().isFederationMessage() == false )
 		{
 			short authToken = message.getHeader().getAuthToken();
-			if( authToken != PorticoConstants.NO_AUTH_TOKEN )
+			if( authToken == PorticoConstants.NO_AUTH_TOKEN )
+			{
+				if( configuration.isEnforced() && message.getMessageType() != MessageType.RtiProbe )
+				{
+					logger.warn( "Dropped message (%s): Missing authentication information", message.getMessageType() );
+					return;
+				}
+			}
+			else
+			{
 				AuthUtils.decryptLongRsaMessage( rtiPrivate, message );
+			}
 		}
 		
 		passUp( message );

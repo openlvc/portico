@@ -19,25 +19,27 @@ import java.util.Properties;
 
 import org.portico2.common.network.protocols.symmetric.CipherMode;
 
-public class AuthConfiguration
+public class PublicKeyConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final String KEY_ENABLED      = ".auth.enabled";
-	public static final String KEY_PRIVATE      = ".auth.privatekey";
-	public static final String KEY_PRIVATE_PASS = ".auth.privatepass";
-	public static final String KEY_RTI_PUBLIC   = ".auth.rtipublic";
-	//public static final String KEY_ID_TOKEN     = ".auth.idtoken";  // not used yet
-	//public static final String KEY_PASSWORD     = ".auth.password"; // not used yet
+	public static final String KEY_ENABLED      = ".publickey.enabled";
+	public static final String KEY_ENFORCED     = ".publickey.enforced";
+	public static final String KEY_PRIVATE      = ".publickey.privatekey";
+	public static final String KEY_PRIVATE_PASS = ".publickey.privatepass";
+	public static final String KEY_RTI_PUBLIC   = ".publickey.rtipublic";
+	//public static final String KEY_ID_TOKEN     = ".publickey.idtoken";  // not used yet
+	//public static final String KEY_PASSWORD     = ".publickey.password"; // not used yet
 	
-	public static final String KEY_SESSION_KEYLEN = ".auth.sessionKeylength";
-	public static final String KEY_SESSION_CIPHER = ".auth.sessionCipher";
+	public static final String KEY_SESSION_KEYLEN = ".publickey.sessionKeylength";
+	public static final String KEY_SESSION_CIPHER = ".publickey.sessionCipher";
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private boolean isEnabled;
+	private boolean isEnforced;
 	private File privateKey;
 	private char[] privateKeyPassword;
 	private File rtiPublicKey;
@@ -50,9 +52,10 @@ public class AuthConfiguration
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected AuthConfiguration()
+	protected PublicKeyConfiguration()
 	{
 		this.isEnabled  = false;
+		this.isEnforced = false;
 		this.privateKey = new File( "./id_rsa" );  // must be set
 		this.privateKeyPassword = null; // if null, use no password
 		this.rtiPublicKey = new File( "./id_rsa.pem"); // must be set
@@ -61,7 +64,7 @@ public class AuthConfiguration
 		this.sessionKeylength = 128;
 	}
 
-	protected AuthConfiguration( String prefix, Properties properties )
+	protected PublicKeyConfiguration( String prefix, Properties properties )
 	{
 		this();
 		parseConfiguration( prefix, properties );
@@ -75,7 +78,10 @@ public class AuthConfiguration
 	{
 		if( properties.containsKey(prefix+KEY_ENABLED) )
 			this.isEnabled = Boolean.valueOf( properties.getProperty(prefix+KEY_ENABLED) );
-		
+
+		if( properties.containsKey(prefix+KEY_ENFORCED) )
+			this.isEnforced = Boolean.valueOf( properties.getProperty(prefix+KEY_ENFORCED) );
+
 		if( properties.containsKey(prefix+KEY_PRIVATE) )
 			this.privateKey = new File( properties.getProperty(prefix+KEY_PRIVATE) );
 		
@@ -102,6 +108,7 @@ public class AuthConfiguration
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	public boolean    isEnabled() { return this.isEnabled; }
+	public boolean    isEnforced() { return this.isEnforced; }
 	public File       getPrivateKey() { return this.privateKey; }
 	public char[]     getPrivateKeyPassword() { return this.privateKeyPassword; }
 	public File       getRtiPublicKey() { return this.rtiPublicKey; }
@@ -109,6 +116,7 @@ public class AuthConfiguration
 	public int        getSessionKeyLength() { return this.sessionKeylength; }
 	
 	public void setEnabled( boolean enabled )            { this.isEnabled = enabled; }
+	public void setEnforced( boolean enforced )          { this.isEnforced = enforced; }
 	public void setPrivateKey( File privateKey )         { this.privateKey = privateKey; }
 	public void setPrivateKeyPassword( char[] password ) { this.privateKeyPassword = password; }
 	public void setRtiPublicKey( File rtiPublic )        { this.rtiPublicKey = rtiPublic; }

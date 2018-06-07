@@ -41,8 +41,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	private int port;
 	private String nic;
 
-	private CryptoConfiguration cryptoConfiguration;
-	private AuthConfiguration authConfiguration;
+	private SharedKeyConfiguration sharedKeyConfiguration;
+	private PublicKeyConfiguration publicKeyConfiguration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -54,8 +54,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 		this.port    = DEFAULT_PORT;
 		this.nic     = DEFAULT_NIC;
 		
-		this.cryptoConfiguration = new CryptoConfiguration();
-		this.authConfiguration = new AuthConfiguration();
+		this.sharedKeyConfiguration = new SharedKeyConfiguration();
+		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
 
 	//----------------------------------------------------------
@@ -72,15 +72,15 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	}
 
 	@Override
-	public CryptoConfiguration getCryptoConfiguration()
+	public SharedKeyConfiguration getSharedKeyConfiguration()
 	{
-		return this.cryptoConfiguration;
+		return this.sharedKeyConfiguration;
 	}
 
 	@Override
-	public AuthConfiguration getAuthConfiguration()
+	public PublicKeyConfiguration getPublicKeyConfiguration()
 	{
-		return this.authConfiguration;
+		return this.publicKeyConfiguration;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{
-		this.cryptoConfiguration.parseConfiguration( prefix, properties );
+		this.sharedKeyConfiguration.parseConfiguration( prefix, properties );
+		this.publicKeyConfiguration.parseConfiguration( prefix, properties );
 		
 		prefix += ".";
 		String temp = properties.getProperty( prefix+KEY_ADDRESS );

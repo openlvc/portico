@@ -214,8 +214,16 @@ public class TcpChannel
 			              connectionInfo );
 		}
 		
-		// Handle the message
-		appListener.receive( this, messageOnly );
+		try
+		{
+    		// Handle the message
+    		appListener.receive( this, messageOnly );
+		}
+		catch( Exception e )
+		{
+			logger.warn( "Error while processing message: "+e.getMessage() );
+			logger.trace( "Exception Details", e );
+		}
 		
 		// return bytes read
 		return length;

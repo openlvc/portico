@@ -65,19 +65,19 @@ public abstract class ConnectionConfiguration
 
 	/**
 	 * Each connection should support a default set of configuration properties.
-	 * This method will return the crypto configuration settings.
+	 * This method will return the shared key protocol configuration settings.
 	 * 
-	 * @return The crpyto configuration for the connection
+	 * @return The shared key configuration for the connection
 	 */
-	public abstract CryptoConfiguration getCryptoConfiguration();
+	public abstract SharedKeyConfiguration getSharedKeyConfiguration();
 
 	/**
 	 * Each connection should support a default set of configuration properties.
-	 * This method will return the authentication protocol configuration settings.
+	 * This method will return the public key protocol configuration settings.
 	 * 
-	 * @return The authentication protocol configuration for the connection
+	 * @return The public key protocol configuration for the connection
 	 */
-	public abstract AuthConfiguration getAuthConfiguration();
+	public abstract PublicKeyConfiguration getPublicKeyConfiguration();
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////

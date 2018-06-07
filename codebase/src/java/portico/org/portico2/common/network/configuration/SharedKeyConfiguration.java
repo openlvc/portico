@@ -22,15 +22,15 @@ import org.portico2.common.network.protocols.symmetric.CipherMode;
  * This class extract encryption configuration information properties from the RID file
  * and makes it available to the application.
  */
-public class CryptoConfiguration
+public class SharedKeyConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final String KEY_ENABLED    = ".crypto.enabled";
-	public static final String KEY_KEY_LENGTH = ".crypto.keylen"; // Need Java unlimited strength policies to use >128
-	public static final String KEY_CIPHER     = ".crypto.cipher";
-	public static final String KEY_SHARED_KEY = ".crypto.key";
+	public static final String KEY_ENABLED    = ".sharedkey.enabled";
+	public static final String KEY_KEY_LENGTH = ".sharedkey.keylen"; // Need Java unlimited strength policies to use >128
+	public static final String KEY_CIPHER     = ".sharedkey.cipher";
+	public static final String KEY_SHARED_KEY = ".sharedkey.key";
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -43,7 +43,7 @@ public class CryptoConfiguration
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public CryptoConfiguration() // FIXME protected
+	public SharedKeyConfiguration() // FIXME protected
 	{
 		this.isEnabled  = false;
 		this.keyLength  = 128;
@@ -51,7 +51,7 @@ public class CryptoConfiguration
 		this.sharedKey  = null;
 	}
 
-	protected CryptoConfiguration( String prefix, Properties properties )
+	protected SharedKeyConfiguration( String prefix, Properties properties )
 	{
 		this();
 		parseConfiguration( prefix, properties );

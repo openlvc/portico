@@ -33,11 +33,11 @@ import org.portico2.common.network.Connection.Status;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.Protocol;
 import org.portico2.common.network.ResponseCorrelator;
-import org.portico2.common.network.configuration.AuthConfiguration;
+import org.portico2.common.network.configuration.PublicKeyConfiguration;
 import org.portico2.common.services.federation.msg.Authenticate;
 import org.portico2.common.services.federation.msg.WelcomePack;
 
-public class LRCAuthenticationProtocol extends Protocol
+public class LRCPublicKeyProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -47,7 +47,7 @@ public class LRCAuthenticationProtocol extends Protocol
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private AuthConfiguration configuration;
+	private PublicKeyConfiguration configuration;
 
 	private boolean isEnabled;
 	private AuthStatus authStatus;
@@ -71,7 +71,7 @@ public class LRCAuthenticationProtocol extends Protocol
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public LRCAuthenticationProtocol()
+	public LRCPublicKeyProtocol()
 	{
 		this.configuration = null;   // set in doConfigure()
 		this.isEnabled = false;      // set in doConfigure()
@@ -104,7 +104,7 @@ public class LRCAuthenticationProtocol extends Protocol
 	@Override
 	protected void doConfigure( Connection hostConnection ) throws JConfigurationException
 	{
-		this.configuration = hostConnection.getConfiguration().getAuthConfiguration();
+		this.configuration = hostConnection.getConfiguration().getPublicKeyConfiguration();
 		//this.isEnabled = configuration.isEnabled(); // FIXME TEMP ON
 		this.isEnabled = true;
 		

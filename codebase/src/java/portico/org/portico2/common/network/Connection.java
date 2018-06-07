@@ -23,7 +23,7 @@ import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.protocols.symmetric.EncryptionProtocol;
+import org.portico2.common.network.protocols.symmetric.SharedKeyProtocol;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 /**
@@ -141,16 +141,12 @@ public class Connection
 		// populate the protocol stack //
 		/////////////////////////////////
 		this.protocolStack = new ProtocolStack( this );
-		// FIXME Auth Protocol needs proper configuration
-//		if( configuration.getAuthConfiguration().isEnabled() )
-//		{
-			if( host == Host.RTI || host == Host.LRC )
-				protocolStack.addProtocol( ProtocolFactory.instance().createProtocol("authentication",host) );
-//		}
+		if( configuration.getPublicKeyConfiguration().isEnabled() )
+			protocolStack.addProtocol( ProtocolFactory.instance().createProtocol("publickey",host) );
 
 		// Insert the encryption settings
-		if( configuration.getCryptoConfiguration().isEnabled() )
-			protocolStack.addProtocol( new EncryptionProtocol() );
+		if( configuration.getSharedKeyConfiguration().isEnabled() )
+			protocolStack.addProtocol( new SharedKeyProtocol() );
 		
 	}
 

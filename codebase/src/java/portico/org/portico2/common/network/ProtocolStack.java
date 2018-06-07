@@ -165,7 +165,7 @@ public class ProtocolStack
 			
 			current = current.next();
 		}
-		while( current.hasNext() );
+		while( current != null );
 		
 		// configure the protocol and insert it into the stack
 		protocol.configure( connection );

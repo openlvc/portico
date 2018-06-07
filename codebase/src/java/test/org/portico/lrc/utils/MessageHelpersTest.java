@@ -82,8 +82,8 @@ public class MessageHelpersTest
 	{
 		// Create and set up the configurations
 		ConnectionConfiguration configuration = new JvmConfiguration( "jvm" );
-		configuration.getCryptoConfiguration().setEnabled( true );
-		configuration.getCryptoConfiguration().setSharedKey( "evelyn" );
+		configuration.getSharedKeyConfiguration().setEnabled( true );
+		configuration.getSharedKeyConfiguration().setSharedKey( "evelyn" );
 		
 		// Create and set up the connections
 		AppReceiver outgoingReceiver = new AppReceiver();
