@@ -95,7 +95,8 @@ public class RtiCli implements Runnable
 			}
 			else
 			{
-				console.printf( "\n" );
+				// Nah. Looks better without the space! More *nix!
+				//console.printf( "\n" );
 			}
 		}
 	}

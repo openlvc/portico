@@ -53,6 +53,8 @@ public class CommandFactory
 			return new ListEnvironmentVariables();
 		else if( command.equals("exit") )
 			return new Shutdown();
+		else if( command.equals("quit") )
+			return new Shutdown();
 		else if( command.equals("ls") )
 			return new ListContextContents();
 		else if( command.equals("mkfederation") )
