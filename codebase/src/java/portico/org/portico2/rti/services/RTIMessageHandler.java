@@ -221,13 +221,14 @@ public abstract class RTIMessageHandler implements IMessageHandler
 	{
 		Federate sender = federation.getFederate( senderHandle );
 		message.setSourceFederate( senderHandle );
-
+		
+		
 		// only set the time if it hasn't already been set AND the federate is regulating
 		if( (message.getTimestamp() == PorticoConstants.NULL_TIME) &&
-			sender.getTimeStatus().isRegulating() &&
+			timeManager.isRegulating( senderHandle ) &&
 			message.isSpecDefinedMessage() )
 		{
-			message.setTimestamp( sender.getTimeStatus().getCurrentTime() );
+			message.setTimestamp( timeManager.getCurrentTime(senderHandle) );
 		}
 		
 		return message;

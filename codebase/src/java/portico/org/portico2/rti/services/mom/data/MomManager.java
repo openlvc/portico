@@ -39,6 +39,7 @@ import org.portico2.rti.federation.Federate;
 import org.portico2.rti.federation.Federation;
 import org.portico2.rti.services.object.data.ROCInstance;
 import org.portico2.rti.services.object.data.Repository;
+import org.portico2.rti.services.time.data.TimeManager;
 
 /**
  * The MOM manager takes care of all the MOM related tasks for a {@link Federation}.
@@ -184,8 +185,11 @@ public class MomManager implements SaveRestoreTarget
 		repository.addObject( instance );
 
 		// wrap the HLA object instance in a MomFederation so we can track it
-		MomFederate momFederate =
-		    new MomFederate( federate, instance, federation.getHlaVersion(), this.logger );
+		MomFederate momFederate = new MomFederate( federate, 
+		                                           instance, 
+		                                           federation.getHlaVersion(),
+		                                           federation.getTimeManager(),
+		                                           this.logger );
 		this.momFederation.addFederate( momFederate );
 
 		if( this.isRestoring() )
@@ -342,12 +346,13 @@ public class MomManager implements SaveRestoreTarget
 			return;
 		
 		// NOTE: Assumes the federate has not been removed yet
+		TimeManager timeManager = federation.getTimeManager();
 		Federate lostFederate = federation.getFederate( federate );
 		
 		Map<String,Object> params = new HashMap<>();
 		params.put( "HLAfederate", federate );
 		params.put( "HLAfederateName", lostFederate.getFederateName() );
-		params.put( "HLAtimeStamp", lostFederate.getTimeStatus().getCurrentTime() );
+		params.put( "HLAtimeStamp", timeManager.getCurrentTime(federate) );
 		params.put( "HLAfaultDescription", faultDescription );
 		int federateLostHandle = Mom.getMomInteractionHandle( CANONICAL_VERSION,
 		                                                      "HLAmanager.HLAfederate.HLAreport.HLAreportFederateLost");

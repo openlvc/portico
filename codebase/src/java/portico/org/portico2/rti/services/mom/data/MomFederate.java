@@ -31,9 +31,11 @@ import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.datatype.IDatatype;
 import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.time.data.TimeStatus;
 import org.portico2.rti.federation.Federate;
 import org.portico2.rti.services.object.data.RACInstance;
 import org.portico2.rti.services.object.data.ROCInstance;
+import org.portico2.rti.services.time.data.TimeManager;
 
 /**
  * Contains links between the {@link OCInstance} used to represent the federate in the federation
@@ -54,6 +56,7 @@ public class MomFederate
 	private Federate federate;
 	private Logger momLogger;
 	private HLAVersion version;
+	private TimeManager timeManager;
 	private Map<String,Function<ACMetadata,byte[]>> attributeEncoders;
 
 	//----------------------------------------------------------
@@ -61,12 +64,14 @@ public class MomFederate
 	//----------------------------------------------------------
 	public MomFederate( Federate federate, 
 	                    ROCInstance federateObject, 
-	                    HLAVersion version, 
+	                    HLAVersion version,
+	                    TimeManager timeManager,
 	                    Logger momLogger )
 	{
 		this.federate = federate;
 		this.federateObject = federateObject;
 		this.version = version;
+		this.timeManager = timeManager;
 		this.momLogger = momLogger;
 		
 		// Map encoding functions against the canonical name of the attribute they provide data for
@@ -221,19 +226,20 @@ public class MomFederate
 	private byte[] getTimeConstrained( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().isConstrained() );
+		return MomEncodingHelpers.encode( type, timeManager.isConstrained(getFederateHandle()) );
 	}
 
 	private byte[] getTimeRegulating( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().isRegulating() );
+		return MomEncodingHelpers.encode( type, timeManager.isRegulating(getFederateHandle()) );
 	}
 
 	private byte[] getAsynchronousDelivery( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().isAsynchronous() );
+		TimeStatus status = timeManager.getTimeStatus( getFederateHandle() );
+		return MomEncodingHelpers.encode( type, status.isAsynchronous() );
 	}
 
 	private byte[] getFederateState( ACMetadata metadata )
@@ -249,19 +255,19 @@ public class MomFederate
 	private byte[] getFederateTime( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().getCurrentTime() );
+		return MomEncodingHelpers.encode( type, timeManager.getCurrentTime(getFederateHandle()) );
 	}
 
 	private byte[] getLookahead( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().getLookahead() );
+		return MomEncodingHelpers.encode( type, timeManager.getLookahead(getFederateHandle()) );
 	}
 
 	private byte[] getLBTS( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().getLbts() );
+		return MomEncodingHelpers.encode( type, timeManager.getLBTS(getFederateHandle()) );
 	}
 
 	private byte[] getMinNextEventTime( ACMetadata metadata )
@@ -366,13 +372,13 @@ public class MomFederate
 	private byte[] getTimeGrantedTime( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().getCurrentTime() );
+		return MomEncodingHelpers.encode( type, timeManager.getCurrentTime(getFederateHandle()) );
 	}
 
 	private byte[] getTimeAdvancingTime( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getTimeStatus().getRequestedTime() );
+		return MomEncodingHelpers.encode( type, timeManager.getRequestedTime(getFederateHandle()) );
 	}
 	
 	private byte[] notYetSupported( String property )
