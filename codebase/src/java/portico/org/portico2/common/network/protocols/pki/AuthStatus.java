@@ -12,63 +12,29 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.protocols.auth;
+package org.portico2.common.network.protocols.pki;
 
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import org.portico2.common.PorticoConstants;
-
-/**
- * Only used within RTI.
- */
-public class AuthStore
+public enum AuthStatus
 {
 	//----------------------------------------------------------
-	//                    STATIC VARIABLES
+	//                        VALUES
 	//----------------------------------------------------------
-	private static final Random RANDOM = new Random();
+	NotAuthenticated, Authenticating, Authenticated;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Map<Short,PublicKey> authTokens;  // key=authToken
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected AuthStore()
-	{
-		this.authTokens = new HashMap<>();
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-	
-	////////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators   //////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	public short authenticate( PublicKey publicKey )
-	{
-		int authToken = RANDOM.nextInt( PorticoConstants.MAX_AUTH_TOKEN );
-		while( authTokens.containsKey((short)authToken) )
-			authToken = RANDOM.nextInt( PorticoConstants.MAX_AUTH_TOKEN );
-		
-		authTokens.put( (short)authToken, publicKey );
-		return (short)authToken;
-	}
-
-	public PublicKey getKeyForToken( short token )
-	{
-		return authTokens.get( token );
-	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
+
 }

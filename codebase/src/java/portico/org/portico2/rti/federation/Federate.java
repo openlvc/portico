@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.services.time.data.TimeStatus;
 import org.portico2.rti.RtiConnection;
 import org.portico2.rti.services.mom.data.FomModule;
 

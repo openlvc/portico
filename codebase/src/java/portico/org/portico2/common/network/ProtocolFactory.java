@@ -18,9 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.network.protocols.auth.LRCAuthenticationProtocol;
-import org.portico2.common.network.protocols.auth.RTIAuthenticationProtocol;
-import org.portico2.common.network.protocols.crypto.EncryptionProtocol;
+import org.portico2.common.network.protocols.pki.LRCAuthenticationProtocol;
+import org.portico2.common.network.protocols.pki.RTIAuthenticationProtocol;
+import org.portico2.common.network.protocols.symmetric.EncryptionProtocol;
 
 /**
  * The {@link ProtocolFactory} stores references to all the various protocols that

@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.protocols.auth;
+package org.portico2.common.network.protocols.pki;
 
 import java.io.File;
 import java.io.FileReader;
@@ -42,7 +42,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.protocols.crypto.CipherMode;
+import org.portico2.common.network.protocols.symmetric.CipherMode;
 
 /**
  * This is a set of functions used by the Authentication protocol to do encryption/decryption

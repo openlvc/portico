@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.protocols.crypto;
+package org.portico2.common.network.protocols.symmetric;
 
 import java.security.GeneralSecurityException;
 import java.security.Security;

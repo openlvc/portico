@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.protocols.auth;
+package org.portico2.common.network.protocols.pki;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;

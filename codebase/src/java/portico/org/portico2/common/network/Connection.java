@@ -23,7 +23,7 @@ import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.protocols.crypto.EncryptionProtocol;
+import org.portico2.common.network.protocols.symmetric.EncryptionProtocol;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 /**
