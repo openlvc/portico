@@ -14,44 +14,43 @@
  */
 package org.portico2.common.network.configuration;
 
+import java.io.File;
 import java.util.Properties;
 
-import org.portico2.common.network.protocols.crypto.CipherMode;
-
-/**
- * This class extract encryption configuration information properties from the RID file
- * and makes it available to the application.
- */
-public class CryptoConfiguration
+public class AuthConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final String KEY_ENABLED    = ".crypto.enabled";
-	public static final String KEY_KEY_LENGTH = ".crypto.keylen"; // Need Java unlimited strength policies to use >128
-	public static final String KEY_CIPHER     = ".crypto.cipher";
-	public static final String KEY_SHARED_KEY = ".crypto.key";
-	
+	public static final String KEY_ENABLED      = ".auth.enabled";
+	public static final String KEY_PRIVATE      = ".auth.privatekey";
+	public static final String KEY_PRIVATE_PASS = ".auth.privatepass";
+	public static final String KEY_RTI_PUBLIC   = ".auth.rtipublic";
+	//public static final String KEY_ID_TOKEN     = ".auth.idtoken";  // not used yet
+	//public static final String KEY_PASSWORD     = ".auth.password"; // not used yet
+
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private boolean isEnabled;
-	private int keyLength;
-	private CipherMode cipherMode;
-	private String sharedKey;
-
+	private File privateKey;
+	private char[] privateKeyPassword;
+	private File rtiPublicKey;
+	//private String idToken;
+	//private char[] password;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public CryptoConfiguration() // FIXME protected
+	public AuthConfiguration() // FIXME Make Protected
 	{
 		this.isEnabled  = false;
-		this.keyLength  = 128;
-		this.cipherMode = CipherMode.defaultMode();
-		this.sharedKey  = null;
+		this.privateKey = new File( "./id_rsa" );  // must be set
+		this.privateKeyPassword = null; // if null, use no password
+		this.rtiPublicKey = new File( "./id_rsa.pem"); // must be set
 	}
 
-	protected CryptoConfiguration( String prefix, Properties properties )
+	protected AuthConfiguration( String prefix, Properties properties )
 	{
 		this();
 		parseConfiguration( prefix, properties );
@@ -66,30 +65,34 @@ public class CryptoConfiguration
 		if( properties.containsKey(prefix+KEY_ENABLED) )
 			this.isEnabled = Boolean.valueOf( properties.getProperty(prefix+KEY_ENABLED) );
 		
-		if( properties.containsKey(prefix+KEY_KEY_LENGTH) )
-			this.keyLength = Integer.valueOf( properties.getProperty(prefix+KEY_KEY_LENGTH) );
+		if( properties.containsKey(prefix+KEY_PRIVATE) )
+			this.privateKey = new File( properties.getProperty(prefix+KEY_PRIVATE) );
 		
-		if( properties.containsKey(prefix+KEY_CIPHER) )
-			this.cipherMode = CipherMode.fromConfigString(properties.getProperty(prefix+KEY_CIPHER) );
+		if( properties.containsKey(prefix+KEY_PRIVATE_PASS) )
+		{
+			String pass = properties.getProperty( prefix+KEY_PRIVATE_PASS );
+			if( pass.equalsIgnoreCase("<none>") )
+				pass = null;
+			else
+				this.privateKeyPassword = pass.toCharArray();
+		}
 		
-		if( properties.containsKey(prefix+KEY_SHARED_KEY) )
-			this.sharedKey = properties.getProperty( prefix+KEY_SHARED_KEY );
+		if( properties.containsKey(prefix+KEY_RTI_PUBLIC) )
+			this.rtiPublicKey = new File( properties.getProperty(prefix+KEY_RTI_PUBLIC) );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	public boolean    isEnabled() { return this.isEnabled; }
-	public int        getKeyLength() { return this.keyLength; }
-	public CipherMode getCipherConfig() { return this.cipherMode; }
+	public File       getPrivateKey() { return this.privateKey; }
+	public char[]     getPrivateKeyPassword() { return this.privateKeyPassword; }
+	public File       getRtiPublicKey() { return this.rtiPublicKey; }
 	
-	public void setEnabled( boolean enabled )    { this.isEnabled = enabled; }
-	public void setKeyLength( int keylen )       { this.keyLength = keylen; }
-	public void setCipherMode( CipherMode mode ) { this.cipherMode = mode; }
-	public void setCipherConfig( String cipherConfig ) { this.cipherMode = CipherMode.fromConfigString(cipherConfig); }
-	
-	public String getSharedKey() { return this.sharedKey; }
-	public void setSharedKey( String sharedKey ) { this.sharedKey = sharedKey; }
+	public void setEnabled( boolean enabled )            { this.isEnabled = enabled; }
+	public void setPrivateKey( File privateKey )         { this.privateKey = privateKey; }
+	public void setPrivateKeyPassword( char[] password ) { this.privateKeyPassword = password; }
+	public void setRtiPublicKey( File rtiPublic )        { this.rtiPublicKey = rtiPublic; }
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

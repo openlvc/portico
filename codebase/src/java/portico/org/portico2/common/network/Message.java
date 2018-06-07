@@ -16,6 +16,7 @@ package org.portico2.common.network;
 
 import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
 
 public class Message
@@ -36,6 +37,7 @@ public class Message
 	
 	// cached version of inflated messages
 	private PorticoMessage request;
+	private MessageType messageType;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -43,6 +45,7 @@ public class Message
 	public Message( PorticoMessage request, CallType calltype, int requestId )
 	{
 		this.request = request;
+		this.messageType = request.getType();
 		this.calltype = calltype;
 		this.requestId = requestId;
 		
@@ -56,6 +59,7 @@ public class Message
 		this.header = new Header( buffer, 0 );
 		this.requestId = header.getRequestId();
 		this.calltype = this.header.getCallType();
+		this.messageType = this.header.getMessageType();
 	}
 
 	//----------------------------------------------------------
@@ -77,6 +81,7 @@ public class Message
 	public final CallType getCallType() { return this.calltype; }
 	public final boolean hasRequest() { return this.request != null; }
 	public final PorticoMessage getRequest() { return this.request; }
+	public final MessageType getMessageType() { return this.messageType; }
 
 	/**
 	 * Replace the existing buffer with the given one, updating the header to source
@@ -88,6 +93,7 @@ public class Message
 	{
 		this.buffer = buffer;
 		this.header = new Header( buffer, 0 );
+		this.header.writePayloadLength( buffer.length-Header.HEADER_LENGTH );
 	}
 
 	/**

@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.crypto;
+package org.portico2.common.network.protocols.crypto;
 
 import java.security.GeneralSecurityException;
 import java.security.Security;
@@ -119,7 +119,7 @@ public class EncryptionProtocol extends Protocol
 	@Override
 	public void down( Message message )
 	{
-		if( isEnabled )
+		if( isEnabled || !isEnabled ) // FIXME TEMP ADDITION
 		{
 			try
 			{
@@ -138,7 +138,7 @@ public class EncryptionProtocol extends Protocol
 	@Override
 	public void up( Message message )
 	{
-		if( isEnabled )
+		if( isEnabled || !isEnabled ) // FIXME TEMP ADDITION
 		{
 			try
 			{

@@ -17,6 +17,7 @@ package org.portico2.common.network;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -61,6 +62,7 @@ public class ResponseCorrelator<T>
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	public static final int MAX_REQUEST_ID = 65535;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -93,6 +95,12 @@ public class ResponseCorrelator<T>
 	public int register()
 	{
 		int id = idGenerator.incrementAndGet();
+		if( id > MAX_REQUEST_ID )
+		{
+			id = 0;
+			idGenerator.set( 0 );
+		}
+
 		responseMap.put( id, new Holder() );
 		return id;
 	}
@@ -164,6 +172,11 @@ public class ResponseCorrelator<T>
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static final int getUnregisteredRandomID()
+	{
+		return new Random().nextInt( MAX_REQUEST_ID );
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Private Inner Class: Holder   /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////

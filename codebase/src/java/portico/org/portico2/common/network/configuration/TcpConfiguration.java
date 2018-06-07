@@ -51,6 +51,7 @@ public class TcpConfiguration extends ConnectionConfiguration
 	private int bundlingMaxTime;
 	
 	private CryptoConfiguration cryptoConfiguration;
+	private AuthConfiguration authConfiguration;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -70,6 +71,7 @@ public class TcpConfiguration extends ConnectionConfiguration
 		this.bundlingMaxTime = 20000; // 20ms
 		
 		this.cryptoConfiguration = new CryptoConfiguration();
+		this.authConfiguration = new AuthConfiguration();
 	}
 	
 	public TcpConfiguration( String name, TransportType type )
@@ -98,6 +100,12 @@ public class TcpConfiguration extends ConnectionConfiguration
 	public CryptoConfiguration getCryptoConfiguration()
 	{
 		return this.cryptoConfiguration;
+	}
+
+	@Override
+	public AuthConfiguration getAuthConfiguration()
+	{
+		return this.authConfiguration;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////

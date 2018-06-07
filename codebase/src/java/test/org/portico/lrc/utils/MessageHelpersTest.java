@@ -62,6 +62,22 @@ public class MessageHelpersTest
 	}
 	
 	@Test
+	public void testHeader()
+	{
+		int[] requestIds = new int[] { 0, 1, 65535, 65536, 65537, Integer.MAX_VALUE };
+		
+		byte[] bytes = new byte[Header.HEADER_LENGTH];
+		Header header = new Header( bytes, 0 );
+		
+		for( int i = 0; i < requestIds.length; i++ )
+		{
+			System.out.println( "RequestId: "+requestIds[i] );
+			header.writeRequestId( requestIds[i] );
+			System.out.println(" ReadId   : "+header.getRequestId() );
+		}
+	}
+	
+	@Test
 	public void testDeflateInflateWithEncryption()
 	{
 		// Create and set up the configurations
@@ -138,6 +154,7 @@ public class MessageHelpersTest
 		logging.turnConsoleOn();
 		logging.setLevel( "TRACE" );
 		Log4jConfigurator.activate( logging );
-		new MessageHelpersTest().testDeflateInflateWithEncryption();
+		//new MessageHelpersTest().testDeflateInflateWithEncryption();
+		new MessageHelpersTest().testHeader();
 	}
 }
