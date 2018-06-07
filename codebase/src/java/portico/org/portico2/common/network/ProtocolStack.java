@@ -114,6 +114,39 @@ public class ProtocolStack
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Protocol Management Methods   /////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	public void addBefore( Protocol protocol, Protocol aheadOf )
+	{
+		if( aheadOf == first )
+			throw new JConfigurationException( "Cannot add protocol before implicit \"Application\"" );
+		
+		// check to make sure we don't already have a protocol by this name
+		// and check to make sure we do have the one we want to add before
+		Protocol current = this.first;
+		boolean foundTarget = false;
+		do
+		{
+			if( current == aheadOf )
+				foundTarget = true;
+			
+			if( current.getName().equalsIgnoreCase(protocol.getName()) )
+				throw new JConfigurationException( "Already have instance of protocol in stack: %s", protocol.getName() );
+			
+			current = current.next();
+		}
+		while( current.hasNext() );
+		
+		// make sure we have the protocol we're adding before
+		if( foundTarget == false )
+			throw new JConfigurationException( "Could not find protocol we are meant to add before: "+aheadOf );
+		
+		// slot the new one in before the given one
+		Protocol after = aheadOf.next();
+		protocol.setPrevious( aheadOf );  // give the new protocol its link to the one above it
+		protocol.setNext( after );        // give the new protocol the link to the last in line
+		aheadOf.setNext( protocol );      // tell the protocol above us that we are its next stop
+		after.setPrevious( protocol );    // tell the transport that the new protocol is now above it
+	}
+	
 	/**
 	 * Adds the given protocol to the end of the stack, directly ahead of the Transport.
 	 * This will also 
@@ -143,14 +176,10 @@ public class ProtocolStack
 		Protocol above = last.previous();
 		
 		// link the up/down directions for the incoming protocol
-		protocol.setPrevious( above );
-		protocol.setNext( last );
-		
-		// tell the transport that the new protocol is now above it
-		last.setPrevious( protocol );
-		
-		// tell the protocol above us that we are its next stop
-		above.setNext( protocol );
+		protocol.setPrevious( above );  // give the new protocol its link to the one above it
+		protocol.setNext( last );       // give the new protocol the link to the last in line
+		above.setNext( protocol );      // tell the protocol above us that we are its next stop
+		last.setPrevious( protocol );   // tell the transport that the new protocol is now above it
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////

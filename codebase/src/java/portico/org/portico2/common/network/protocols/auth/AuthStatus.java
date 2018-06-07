@@ -12,66 +12,29 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.configuration;
+package org.portico2.common.network.protocols.auth;
 
-import java.util.Properties;
-
-public class JvmConfiguration extends ConnectionConfiguration
+public enum AuthStatus
 {
 	//----------------------------------------------------------
-	//                    STATIC VARIABLES
+	//                        VALUES
 	//----------------------------------------------------------
+	NotAuthenticated, Authenticating, Authenticated;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private CryptoConfiguration cryptoConfiguration;
-	private AuthConfiguration authConfiguration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public JvmConfiguration( String name )
-	{
-		super( name );
-		this.cryptoConfiguration = new CryptoConfiguration();
-		this.authConfiguration = new AuthConfiguration();
-	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	/**
-	 * Read Only
-	 */
-	public TransportType getTransportType()
-	{
-		return TransportType.JVM;
-	}
-	
-	@Override
-	public CryptoConfiguration getCryptoConfiguration()
-	{
-		return this.cryptoConfiguration;
-	}
-	
-	@Override
-	public AuthConfiguration getAuthConfiguration()
-	{
-		return this.authConfiguration;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	@Override
-	public void parseConfiguration( String prefix, Properties properties )
-	{
-		// no-op
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+
 }

@@ -42,6 +42,7 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	private String nic;
 
 	private CryptoConfiguration cryptoConfiguration;
+	private AuthConfiguration authConfiguration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -54,6 +55,7 @@ public class MulticastConfiguration extends ConnectionConfiguration
 		this.nic     = DEFAULT_NIC;
 		
 		this.cryptoConfiguration = new CryptoConfiguration();
+		this.authConfiguration = new AuthConfiguration();
 	}
 
 	//----------------------------------------------------------
@@ -73,6 +75,12 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	public CryptoConfiguration getCryptoConfiguration()
 	{
 		return this.cryptoConfiguration;
+	}
+
+	@Override
+	public AuthConfiguration getAuthConfiguration()
+	{
+		return this.authConfiguration;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////

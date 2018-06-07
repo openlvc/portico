@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-2.10.0/log4j-api-2.10.0.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-2.10.0/log4j-core-2.10.0.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/bouncycastle/fips/1.0.1/bc-fips-1.0.1.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/bouncycastle/fips/1.0.1/bcpkix-fips-1.0.1.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>

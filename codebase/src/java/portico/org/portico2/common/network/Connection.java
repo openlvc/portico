@@ -20,10 +20,10 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.messaging.PorticoMessage;
-import org.portico2.common.crypto.EncryptionProtocol;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
+import org.portico2.common.network.protocols.crypto.EncryptionProtocol;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 /**
@@ -130,9 +130,14 @@ public class Connection
 		// populate the protocol stack //
 		/////////////////////////////////
 		this.protocolStack = new ProtocolStack( this );
+		// FIXME Auth Protocol needs proper configuration
+		if( host == Host.RTI || host == Host.LRC )
+			protocolStack.addProtocol( ProtocolFactory.instance().createProtocol("authentication",host) );
+
 		// Insert the encryption settings
 		if( configuration.getCryptoConfiguration().isEnabled() )
 			protocolStack.addProtocol( new EncryptionProtocol() );
+		
 	}
 
 	/**
@@ -330,7 +335,7 @@ public class Connection
 		return this.responseCorrelator;
 	}
 
-	public Status getStatus()
+	public final Status getStatus()
 	{
 		return this.status;
 	}

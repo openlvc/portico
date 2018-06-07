@@ -181,6 +181,16 @@ public class ResponseMessage implements Serializable
 		}
 	}
 
+	public short getSuccessResultAsShort()
+	{
+		return (short)((ExtendedSuccessResponse)this).getResult();
+	}
+	
+	public short getSuccessResultAsShort( String key )
+	{
+		return (short)getSuccessResultMap().get( key );
+	}
+	
 	public int getSuccessResultAsInt()
 	{
 		return (int)((ExtendedSuccessResponse)this).getResult();
@@ -305,4 +315,10 @@ public class ResponseMessage implements Serializable
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	public static ResponseMessage success( Object result )
+	{
+		ResponseMessage response = new ExtendedSuccessResponse();
+		response.setResult( result );
+		return response;
+	}
 }

@@ -71,6 +71,14 @@ public abstract class ConnectionConfiguration
 	 */
 	public abstract CryptoConfiguration getCryptoConfiguration();
 
+	/**
+	 * Each connection should support a default set of configuration properties.
+	 * This method will return the authentication protocol configuration settings.
+	 * 
+	 * @return The authentication protocol configuration for the connection
+	 */
+	public abstract AuthConfiguration getAuthConfiguration();
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////

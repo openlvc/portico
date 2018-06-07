@@ -18,8 +18,8 @@ import org.portico.utils.StringUtils;
 import org.portico.utils.bithelpers.BitHelpers;
 import org.portico.utils.bithelpers.BufferUnderflowException;
 import org.portico.utils.messaging.PorticoMessage;
-import org.portico2.common.crypto.CipherMode;
 import org.portico2.common.messaging.MessageType;
+import org.portico2.common.network.protocols.crypto.CipherMode;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 

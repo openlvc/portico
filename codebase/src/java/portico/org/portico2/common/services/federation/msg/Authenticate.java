@@ -12,66 +12,53 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.configuration;
+package org.portico2.common.services.federation.msg;
 
-import java.util.Properties;
+import java.security.PublicKey;
 
-public class JvmConfiguration extends ConnectionConfiguration
+import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
+
+public class Authenticate extends PorticoMessage
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	private static final long serialVersionUID = 98121116105109L;
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private CryptoConfiguration cryptoConfiguration;
-	private AuthConfiguration authConfiguration;
+	private byte[] encoded;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public JvmConfiguration( String name )
+	public Authenticate( PublicKey key )
 	{
-		super( name );
-		this.cryptoConfiguration = new CryptoConfiguration();
-		this.authConfiguration = new AuthConfiguration();
+		this.encoded = key.getEncoded();
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	/**
-	 * Read Only
-	 */
-	public TransportType getTransportType()
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public MessageType getType()
 	{
-		return TransportType.JVM;
+		return MessageType.Authenticate;
 	}
 	
-	@Override
-	public CryptoConfiguration getCryptoConfiguration()
+	public byte[] getKeyBytes()
 	{
-		return this.cryptoConfiguration;
-	}
-	
-	@Override
-	public AuthConfiguration getAuthConfiguration()
-	{
-		return this.authConfiguration;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	@Override
-	public void parseConfiguration( String prefix, Properties properties )
-	{
-		// no-op
+		return this.encoded;
 	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 }
+

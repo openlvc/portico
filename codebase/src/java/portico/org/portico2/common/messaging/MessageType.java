@@ -29,6 +29,7 @@ public enum MessageType
 	ResignFederation        ( (short)5 ),
 	DestroyFederation       ( (short)6 ),
 	ListFederations         ( (short)7 ),
+	Authenticate            ( (short)8 ),   // Used by Authentication protocol
 
 	// Non-HLA Messages (010-039)
 	SuccessResponse         ( (short)14 ),
@@ -156,7 +157,7 @@ public enum MessageType
 	 */
 	public boolean isFederationMessage()
 	{
-		return id > 9;
+		return id > 10;
 	}
 
 	public final short getId()
