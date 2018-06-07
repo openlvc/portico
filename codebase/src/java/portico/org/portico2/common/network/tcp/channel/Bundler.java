@@ -24,10 +24,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.logging.log4j.Logger;
-import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.StringUtils;
-import org.portico2.common.messaging.ResponseMessage;
-import org.portico2.common.network.CallType;
 import org.portico2.common.network.Header;
 
 /**
@@ -266,18 +263,18 @@ public class Bundler
 		// Log some generation information about the message. If it is a response message,
 		// log the result. We can only do this if the message is unencrypted. If it isn't,
 		// we have to fall back to the header-only encryption.
-		if( header.isEncrypted() == false && header.getCallType() == CallType.ControlResp )
-		{
-			ResponseMessage response = MessageHelpers.inflate2( payload, ResponseMessage.class );
-			logger.trace( "(outgoing) type=%s (id=%d), success=%s, result=%s, size=%d",
-			              header.getCallType(),
-			              header.getRequestId(),
-			              ""+response.isSuccess(),
-			              response.getResult(),
-			              payload.length );
-		}
-		else
-		{
+//		if( header.isEncrypted() == false && header.getCallType() == CallType.ControlResp )
+//		{
+//			ResponseMessage response = MessageHelpers.inflate2( payload, ResponseMessage.class );
+//			logger.trace( "(outgoing) type=%s (id=%d), success=%s, result=%s, size=%d",
+//			              header.getCallType(),
+//			              header.getRequestId(),
+//			              ""+response.isSuccess(),
+//			              response.getResult(),
+//			              payload.length );
+//		}
+//		else
+//		{
 			// we have the PorticoMessage original, let's log some stuff!
 			logger.trace( "(outgoing) type=%s (id=%d), ptype=%s, from=%s, to=%s, size=%d",
 			              header.getCallType(),
@@ -286,7 +283,7 @@ public class Bundler
 			              StringUtils.sourceHandleToString( header.getSourceFederate() ),
 			              StringUtils.targetHandleToString( header.getTargetFederate()),
 			              payload.length );
-		}
+//		}
 	}
 
 	/**

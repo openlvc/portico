@@ -63,7 +63,7 @@ public class ForwarderConnection implements IApplicationReceiver
 
 		// Connection Settings
 		this.configuration = configuration;
-		this.connection = new Connection( Host.Forwarder );
+		this.connection = new Connection( Host.Forwarder, exchanger.getForwarder() );
 		this.connection.configure( configuration, this );
 	}
 

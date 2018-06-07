@@ -55,8 +55,8 @@ public enum MessageType
 	// Object Management (060-079)
 	RegisterObject          ( (short)60 ),
 	DiscoverObject          ( (short)61 ),
-	UpdateAttributes        ( (short)254 ), // 254
-	SendInteraction         ( (short)255 ), // 255
+	UpdateAttributes        ( (short)254, true ), // 254
+	SendInteraction         ( (short)255, true ), // 255
 	DeleteObject            ( (short)64 ),
 	LocalDeleteObject       ( (short)65 ),
 	ReserveObjectName       ( (short)66 ),
@@ -135,6 +135,7 @@ public enum MessageType
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private short id;
+	private boolean isDataMessage;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -142,6 +143,12 @@ public enum MessageType
 	private MessageType( short id )
 	{
 		this.id = id;
+	}
+	
+	private MessageType( short id, boolean isDataMessage )
+	{
+		this( id );
+		this.isDataMessage = isDataMessage;
 	}
 
 	//----------------------------------------------------------
@@ -160,6 +167,11 @@ public enum MessageType
 		return id > 10;
 	}
 
+	public boolean isDataMessage()
+	{
+		return this.isDataMessage;
+	}
+	
 	public final short getId()
 	{
 		return this.id;

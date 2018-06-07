@@ -18,18 +18,29 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
-import java.util.Random;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.PorticoConstants;
 import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
-import org.portico2.common.network.Connection;
-import org.portico2.common.network.Message;
+import org.portico2.common.network.CallType;
+import org.portico2.common.network.Connection;import org.portico2.common.network.Message;
 import org.portico2.common.network.Protocol;
 import org.portico2.common.network.configuration.AuthConfiguration;
 import org.portico2.common.services.federation.msg.Authenticate;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.rti.RTI;
+import org.portico2.rti.federation.Federation;
+import org.portico2.rti.federation.FederationManager;
 
+/**
+ * Does Authentication and encryption of non-federation messages. Delegates encryption of
+ * federation messages to 
+ */
 public class RTIAuthenticationProtocol extends Protocol
 {
 	//----------------------------------------------------------
@@ -41,24 +52,39 @@ public class RTIAuthenticationProtocol extends Protocol
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private AuthConfiguration configuration;
-
+	private AuthStore authStore;
 	private boolean isEnabled;
+
+	// Links to the RTI
+	private FederationManager federationManager;
 	
 	// Keys
 	private PrivateKey rtiPrivate;
 	private PublicKey  rtiPublic;
-
+	
+	// Symmetric Keys
+	private Cipher encryptCipher;
+	private Cipher decryptCipher;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public RTIAuthenticationProtocol()
 	{
 		this.configuration = null;   // set in doConfigure()
+		this.authStore = new AuthStore();
 		this.isEnabled = false;      // set in doConfigure()
+
+		// Links to RTI
+		this.federationManager = null; // set in doConfigure()
 		
 		// Keys
 		this.rtiPrivate = null;      // set in doConfigure()
 		this.rtiPublic = null;       // set in doConfigure()
+		
+		// Symmetric
+		this.encryptCipher = null;   // set in doConfigure()
+		this.decryptCipher = null;   // set in doConfigure()
 	}
 
 	//----------------------------------------------------------
@@ -74,12 +100,26 @@ public class RTIAuthenticationProtocol extends Protocol
 		this.configuration = hostConnection.getConfiguration().getAuthConfiguration();
 		//this.isEnabled = configuration.isEnabled(); // FIXME TEMP ON
 		this.isEnabled = true;
+
+		// get a reference to the federation manager
+		this.federationManager = hostConnection.getHostReference(RTI.class).getFederationManager();
 		
 		// load the private key file
 		KeyPair pair = AuthUtils.readPrivateKeyPemFile( configuration.getPrivateKey(),
 		                                               configuration.getPrivateKeyPassword() );
 		this.rtiPrivate = pair.getPrivate();
 		this.rtiPublic = pair.getPublic();
+		
+		// Symmetric
+		try
+		{
+			this.encryptCipher = Cipher.getInstance( configuration.getSessionCipher().getConfigString(), "BCFIPS" );
+			this.decryptCipher = Cipher.getInstance( configuration.getSessionCipher().getConfigString(), "BCFIPS" );
+		}
+		catch( Exception e )
+		{
+			throw new JConfigurationException( e.getMessage(), e );
+		}
 	}
 
 	@Override
@@ -103,7 +143,24 @@ public class RTIAuthenticationProtocol extends Protocol
 			return;
 		}
 		
-		// FIXME Start Here - Identify when this is a response that requires encryption and do it
+		// Encrypt the message with the federates public key if the following is TRUE:
+		//   - Message is a Response
+		//   - Original request was NOT a federation message
+		//   - Original request had an AUTH token
+		//
+		if( message.getCallType() == CallType.ControlResp )
+		{
+			if( message.getOriginalHeader().getMessageType() == MessageType.CreateFederation )
+				federationCreated( message );
+
+			if( message.getOriginalHeader().getMessageType().isFederationMessage() == false )
+				encryptResponseRsa( message );
+		}
+		else
+		{
+			if( message.getMessageType().isFederationMessage() )
+				; // symencrypt
+		}
 		
 		// Let this one slide down to the next sucka
 		passDown( message );
@@ -118,6 +175,19 @@ public class RTIAuthenticationProtocol extends Protocol
 			return;
 		}
 
+		// A Federation Message, won't be public key, only symc key
+		// Check to see if we have a key for the federation and encrypt it
+		if( message.getMessageType().isFederationMessage() )
+		{
+			if( message.getHeader().isEncrypted() )
+			{
+				decryptSymmetric(message); // symdecrypt
+			}
+
+			passUp( message );
+			return;
+		}
+		
 		//
 		// Authentication Request
 		// We have received an Auth request. We need to process this entirely
@@ -152,8 +222,6 @@ public class RTIAuthenticationProtocol extends Protocol
 			short authToken = message.getHeader().getAuthToken();
 			if( authToken != PorticoConstants.NO_AUTH_TOKEN )
 				AuthUtils.decryptLongRsaMessage( rtiPrivate, message );
-			else
-				System.out.println( "RECEIVED "+message.getMessageType()+", but no auth token" );
 		}
 		
 		passUp( message );
@@ -161,8 +229,29 @@ public class RTIAuthenticationProtocol extends Protocol
 
 	
 	////////////////////////////////////////////////////////////////////////////////////////
-	///  Encryption and Decryption Methods   ///////////////////////////////////////////////
+	///  Federation Management Methods   ///////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	private void federationCreated( Message message )
+	{
+		// What is the handle of the federation that was created
+		ResponseMessage response = message.getResponse();
+		if( response.isError() )
+			return;
+
+		int federationHandle = response.getSuccessResultAsInt( CreateFederation.KEY_FEDERATION_HANDLE );
+		
+		// Get the federation associated with that handle from within the RTI
+		Federation federation = federationManager.getFederation( federationHandle );
+		
+		// Generate a new session key and store it in the federation
+		SecretKey sessionKey = AuthUtils.generateSymmetricKey( configuration.getSessionKeyLength() );
+		federation.setFedetrationKey( sessionKey );
+	}
+	
+	private void federateDisconnected( Message message )
+	{
+		// revoke the auth token
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Authentication Process Methods   //////////////////////////////////////////////////
@@ -176,7 +265,7 @@ public class RTIAuthenticationProtocol extends Protocol
 		PublicKey fedPublic = AuthUtils.decodePublicKey( request.getKeyBytes() );
 		
 		// do something
-		short authToken = (short)(new Random().nextInt(65536)-32768);
+		short authToken = (short)authStore.authenticate( fedPublic );
 		logger.error( "Generated auth token %04x", authToken );
 		
 		// Step 3. Send back a response containing the auth token
@@ -185,6 +274,60 @@ public class RTIAuthenticationProtocol extends Protocol
 		
 		// Step x. Encrypt the contents with the federate's public key
 		AuthUtils.encryptLongRsaMessage( fedPublic, message );
+	}
+
+	/**
+	 * Add the auth token from the original request to the response and encrypt
+	 * the contents of the message with the federate's public key. If we can't
+	 * find a key, log and error and terminate processing. The return value indicates
+	 * whether we should continue processing this message or not. If false, the
+	 * message should not be passed down.
+	 * 
+	 * @param message The message to add the auth token header to and encrypt
+	 * @return False if we should stop processing this and not pass it down.
+	 */
+	private boolean encryptResponseRsa( Message message )
+	{
+		short authToken = message.getOriginalHeader().getAuthToken();
+		
+		if( authToken == PorticoConstants.NO_AUTH_TOKEN )
+			return true; // let is pass, but not auth token to encrypt with
+
+		// we have an Auth token, find the public key to use
+		PublicKey fedPublic = authStore.getKeyForToken( authToken );
+		if( fedPublic == null )
+		{
+			logger.error( "Could not find key for Auth Token: %04x. Dropping response (%s) to (%s)",
+			              (short)authToken,
+			              message.getMessageType(),
+			              message.getOriginalHeader().getMessageType() );
+			return false;
+		}
+
+		// encrypt the message
+		AuthUtils.encryptLongRsaMessage( fedPublic, message );
+		
+		// record the auth token in the response header
+		message.getHeader().writeAuthToken( authToken );
+		return true;
+	}
+
+	private void encryptSymmetric( Message message )
+	{
+		Federation federation = federationManager.getFederation( message.getHeader().getFederation() );
+		if( federation == null )
+			return;
+
+		AuthUtils.encryptWithSymmetricKey( federation.getFederationKey(), encryptCipher, message );
+	}
+	
+	private void decryptSymmetric( Message message )
+	{
+		Federation federation = federationManager.getFederation( message.getHeader().getFederation() );
+		if( federation == null )
+			return;
+
+		AuthUtils.decryptWithSymmetricKey( federation.getFederationKey(), decryptCipher, message );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////

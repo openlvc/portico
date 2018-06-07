@@ -51,6 +51,7 @@ public class WelcomePack implements Externalizable
 	private ObjectModel fom;
 
 	// Federation State
+	private byte[] federationKey;
 	private Set<String> syncpoints;
 
 	//----------------------------------------------------------
@@ -65,6 +66,7 @@ public class WelcomePack implements Externalizable
 		this.fom = null;
 		
 		// Federation State
+		this.federationKey = new byte[0];
 		this.syncpoints = new HashSet<>();
 	}
 
@@ -77,6 +79,7 @@ public class WelcomePack implements Externalizable
 	public int         getFederateHandle()   { return this.federateHandle; }
 	public String      getFederationName()   { return this.federationName; }
 	public String      getFederateName()     { return this.federateName; }
+	public byte[]      getFederationKey()    { return this.federationKey; }
 	public Set<String> getSyncPoints( )      { return this.syncpoints; }
 
 	public void setFederationHandle( int handle ) { this.federationHandle = handle; }
@@ -84,6 +87,7 @@ public class WelcomePack implements Externalizable
 	public void setFederationName  ( String name ){ this.federationName = name; }
 	public void setFederateName    ( String name ){ this.federateName = name; }
 	public void setFOM             ( ObjectModel fom ) { this.fom = fom; }
+	public void setFederationKey   ( byte[] federationKey ) { this.federationKey = federationKey; }
 	public void setSyncPoints      ( Set<String> points ) { this.syncpoints = points; }
 	
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +100,12 @@ public class WelcomePack implements Externalizable
 		this.federationName = input.readUTF();
 		this.federateName = input.readUTF();
 		this.fom = (ObjectModel)input.readObject();
+		
+		// session key
+		int keylen = input.readInt();
+		this.federationKey = new byte[keylen];
+		if( keylen > 0 )
+			input.read( federationKey );
 		
 		// sync points
 		int count = input.readInt();
@@ -110,6 +120,11 @@ public class WelcomePack implements Externalizable
 		output.writeUTF( federationName );
 		output.writeUTF( federateName );
 		output.writeObject( fom );
+		
+		// session key
+		output.writeInt( federationKey.length );
+		if( federationKey.length > 0 )
+			output.write( federationKey );
 		
 		// sync points
 		output.writeInt( syncpoints.size() );

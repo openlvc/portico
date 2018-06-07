@@ -17,6 +17,8 @@ package org.portico2.common.network.configuration;
 import java.io.File;
 import java.util.Properties;
 
+import org.portico2.common.network.protocols.crypto.CipherMode;
+
 public class AuthConfiguration
 {
 	//----------------------------------------------------------
@@ -28,6 +30,9 @@ public class AuthConfiguration
 	public static final String KEY_RTI_PUBLIC   = ".auth.rtipublic";
 	//public static final String KEY_ID_TOKEN     = ".auth.idtoken";  // not used yet
 	//public static final String KEY_PASSWORD     = ".auth.password"; // not used yet
+	
+	public static final String KEY_SESSION_KEYLEN = ".auth.sessionKeylength";
+	public static final String KEY_SESSION_CIPHER = ".auth.sessionCipher";
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -39,15 +44,21 @@ public class AuthConfiguration
 	//private String idToken;
 	//private char[] password;
 	
+	private CipherMode sessionCipher;
+	private int sessionKeylength;
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public AuthConfiguration() // FIXME Make Protected
+	protected AuthConfiguration()
 	{
 		this.isEnabled  = false;
 		this.privateKey = new File( "./id_rsa" );  // must be set
 		this.privateKeyPassword = null; // if null, use no password
 		this.rtiPublicKey = new File( "./id_rsa.pem"); // must be set
+		
+		this.sessionCipher = CipherMode.defaultMode();
+		this.sessionKeylength = 128;
 	}
 
 	protected AuthConfiguration( String prefix, Properties properties )
@@ -79,6 +90,12 @@ public class AuthConfiguration
 		
 		if( properties.containsKey(prefix+KEY_RTI_PUBLIC) )
 			this.rtiPublicKey = new File( properties.getProperty(prefix+KEY_RTI_PUBLIC) );
+		
+		if( properties.containsKey(prefix+KEY_SESSION_CIPHER) )
+			this.sessionCipher = CipherMode.fromConfigString(properties.getProperty(prefix+KEY_SESSION_CIPHER) );
+
+		if( properties.containsKey(prefix+KEY_SESSION_KEYLEN) )
+			this.sessionKeylength = Integer.valueOf( properties.getProperty(prefix+KEY_SESSION_KEYLEN) );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -88,11 +105,15 @@ public class AuthConfiguration
 	public File       getPrivateKey() { return this.privateKey; }
 	public char[]     getPrivateKeyPassword() { return this.privateKeyPassword; }
 	public File       getRtiPublicKey() { return this.rtiPublicKey; }
+	public CipherMode getSessionCipher() { return this.sessionCipher; }
+	public int        getSessionKeyLength() { return this.sessionKeylength; }
 	
 	public void setEnabled( boolean enabled )            { this.isEnabled = enabled; }
 	public void setPrivateKey( File privateKey )         { this.privateKey = privateKey; }
 	public void setPrivateKeyPassword( char[] password ) { this.privateKeyPassword = password; }
 	public void setRtiPublicKey( File rtiPublic )        { this.rtiPublicKey = rtiPublic; }
+	public void setSessionCipher( CipherMode mode )      { this.sessionCipher = mode; }
+	public void setSessionKeylength( int keylen )        { this.sessionKeylength = keylen; }
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

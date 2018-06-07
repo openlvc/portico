@@ -24,6 +24,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.crypto.SecretKey;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
@@ -33,6 +35,7 @@ import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.PorticoConstants;
+import org.portico2.common.configuration.RID;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.MessageSink;
 import org.portico2.common.services.ddm.data.RegionStore;
@@ -61,6 +64,7 @@ public class Federation
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private RTI         rti; // the RTI we exist in
+	private RID         rid; // configuration for the RTI
 	private String      federationName;
 	private int         federationHandle;
 	private HLAVersion  federationVersion;
@@ -75,6 +79,9 @@ public class Federation
 	private AtomicInteger federateHandleCounter;
 	private Map<Integer,Federate> federates;
 	private Set<RtiConnection> federateConnections;
+	
+	// Auth Settings //
+	public SecretKey federationKey;
 	
 	// Message Processing //
 	private MessageSink incomingSink;
@@ -144,6 +151,9 @@ public class Federation
 		this.federates = new HashMap<>();
 		this.federateConnections = new HashSet<>();
 		
+		// Auth Settings //
+		this.federationKey = null; // must be manually set
+		
 		// Message Processing //
 		this.incomingSink = new MessageSink( name+"-incoming", logger );
 		this.outgoingQueue = new LinkedBlockingQueue<>();
@@ -190,6 +200,9 @@ public class Federation
 	public ObjectModel getFOM()       { return this.fom; }
 	public Logger getLogger()         { return this.logger; }
 
+	public SecretKey getFederationKey() { return this.federationKey; }
+	public void setFedetrationKey( SecretKey key ) { this.federationKey = key; }
+	
 	public MessageSink getIncomingSink()
 	{
 		return this.incomingSink;

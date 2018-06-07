@@ -52,7 +52,7 @@ public class RtiConnection implements IApplicationReceiver
 		this.configuration = configuration;
 		
 		// Create the underlying connection and configure it
-		this.connection = new Connection( Host.RTI );
+		this.connection = new Connection( Host.RTI, rti );
 		this.connection.configure( configuration, this );
 	}
 

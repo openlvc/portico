@@ -144,6 +144,10 @@ public class Exchanger
 		return this.logger;
 	}
 
+	public Forwarder getForwarder()
+	{
+		return this.forwarder;
+	}
 	
 	
 //	/*

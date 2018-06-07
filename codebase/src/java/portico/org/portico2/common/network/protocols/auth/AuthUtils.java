@@ -144,7 +144,37 @@ public class AuthUtils
 			throw new JRTIinternalError( "Could not encrypt: "+e.getMessage(), e );
 		}
 	}
+	
+	public static void encryptWithSymmetricKey( SecretKey key, Cipher cipher, Message message )
+	{	
+		try
+		{
+			// Initialize Cipher
+			cipher.init( Cipher.ENCRYPT_MODE, key );
+			byte[] iv = cipher.getIV();
+			
+			// Create the target buffer
+			int payloadLength = message.getHeader().getPayloadLength();
+			byte[] encrypted = new byte[Header.HEADER_LENGTH+iv.length+payloadLength];
 
+			// Do the payload encryption
+			cipher.doFinal( message.getBuffer(), Header.HEADER_LENGTH, payloadLength, encrypted, Header.HEADER_LENGTH+iv.length );
+			
+			// Copy in the header and IV
+			System.arraycopy( message.getBuffer(), 0, encrypted, 0, Header.HEADER_LENGTH );
+			System.arraycopy( iv, 0, encrypted, Header.HEADER_LENGTH, iv.length );
+			
+			// Replace the buffer in the message
+			message.replaceBuffer( encrypted );
+			message.getHeader().writeIsEncrypted( true );
+			message.getHeader().writePayloadLength( payloadLength+iv.length );
+		}
+		catch( Exception e )
+		{
+			throw new JRTIinternalError( "Could not encrypt: "+e.getMessage(), e );
+		}
+	}
+	
 	/**
 	 * 
 	 * @param key
@@ -174,6 +204,39 @@ public class AuthUtils
     
     		// Encrypt
     		return decrypter.doFinal( buffer, offset+ivLength, length-ivLength );
+		}
+		catch( Exception e )
+		{
+			throw new JRTIinternalError( "Could not decrypt: "+e.getMessage(), e );
+		}
+	}
+
+	public static void decryptWithSymmetricKey( SecretKey key, Cipher cipher, Message message )
+	{
+		byte[] buffer = message.getBuffer();
+		
+		try
+		{
+			// Read off the IV
+			int ivLength = cipher.getBlockSize();
+			IvParameterSpec iv = new IvParameterSpec( buffer, Header.HEADER_LENGTH, ivLength );
+			
+    		// Initialize Cipher
+    		cipher.init( Cipher.DECRYPT_MODE, key, iv );
+    
+    		// Do decryption
+    		final int payloadLength = message.getHeader().getPayloadLength()-ivLength;
+    		final int payloadOffset = Header.HEADER_LENGTH+ivLength;
+    		byte[] decrypted = new byte[Header.HEADER_LENGTH+payloadLength];
+    		cipher.doFinal( buffer, payloadOffset, payloadLength, decrypted, Header.HEADER_LENGTH );
+    		
+    		// Copy the header over
+    		System.arraycopy( buffer, 0, decrypted, 0, Header.HEADER_LENGTH );
+    		
+    		// Replace the buffer in the message
+    		message.replaceBuffer( decrypted );
+    		message.getHeader().writeIsEncrypted( false );
+    		message.getHeader().writePayloadLength( payloadLength );
 		}
 		catch( Exception e )
 		{

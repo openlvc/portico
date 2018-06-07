@@ -119,7 +119,7 @@ public class EncryptionProtocol extends Protocol
 	@Override
 	public void down( Message message )
 	{
-		if( isEnabled || !isEnabled ) // FIXME TEMP ADDITION
+		if( isEnabled )
 		{
 			try
 			{
@@ -138,7 +138,7 @@ public class EncryptionProtocol extends Protocol
 	@Override
 	public void up( Message message )
 	{
-		if( isEnabled || !isEnabled ) // FIXME TEMP ADDITION
+		if( isEnabled )
 		{
 			try
 			{

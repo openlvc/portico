@@ -19,8 +19,13 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.CallType;
 import org.portico2.common.network.Connection;
@@ -30,6 +35,7 @@ import org.portico2.common.network.Protocol;
 import org.portico2.common.network.ResponseCorrelator;
 import org.portico2.common.network.configuration.AuthConfiguration;
 import org.portico2.common.services.federation.msg.Authenticate;
+import org.portico2.common.services.federation.msg.WelcomePack;
 
 public class LRCAuthenticationProtocol extends Protocol
 {
@@ -52,8 +58,15 @@ public class LRCAuthenticationProtocol extends Protocol
 	private PublicKey  fedPublic;
 	private PublicKey  rtiPublic;
 
+	// Symmetric Encryption
+	private SecretKey  sessionKey;
+	private Cipher     encryptCipher;
+	private Cipher     decryptCipher;
+
 	// Authentication process state
 	private int authenticationRequestId;
+	private int joinRequestId;
+	private int resignRequestId;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -70,8 +83,15 @@ public class LRCAuthenticationProtocol extends Protocol
 		this.fedPublic = null;       // set in doConfigure()
 		this.rtiPublic = null;       // set in doConfigure()
 		
+		// Symmetric Encryption
+		this.sessionKey = null;      // set when federate joins
+		this.encryptCipher = null;   // set in doConfigure()
+		this.decryptCipher = null;   // set in doConfigure()
+		
 		// Authentication process state
 		this.authenticationRequestId = -1; // set in authenticate()
+		this.joinRequestId = -1;           // set when we see a join request go out
+		this.resignRequestId = -1;         // set when we see a resign request go out
 	}
 
 	//----------------------------------------------------------
@@ -82,7 +102,7 @@ public class LRCAuthenticationProtocol extends Protocol
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection hostConnection )
+	protected void doConfigure( Connection hostConnection ) throws JConfigurationException
 	{
 		this.configuration = hostConnection.getConfiguration().getAuthConfiguration();
 		//this.isEnabled = configuration.isEnabled(); // FIXME TEMP ON
@@ -96,6 +116,17 @@ public class LRCAuthenticationProtocol extends Protocol
 		
 		// load the rti public key file
 		this.rtiPublic = AuthUtils.readPublicKeyPemFile( configuration.getRtiPublicKey() );
+		
+		// Symmetric Keys
+		try
+		{
+			this.encryptCipher = Cipher.getInstance( configuration.getSessionCipher().getConfigString(), "BCFIPS" );
+			this.decryptCipher = Cipher.getInstance( configuration.getSessionCipher().getConfigString(), "BCFIPS" );
+		}
+		catch( Exception e )
+		{
+			throw new JConfigurationException( e.getMessage(), e );
+		}
 	}
 
 	@Override
@@ -120,32 +151,50 @@ public class LRCAuthenticationProtocol extends Protocol
 			passDown(message);
 			return;
 		}
-		
-		// If we are disconnected currently, do nothing
-		if( hostConnection.getStatus() == Status.Disconnected )
+
+		if( message.getMessageType().isFederationMessage() )
 		{
-			passDown( message );
-			return;
+			// if this is a federation message and we are authenticated, we need
+			// to be encrypting it with the session key
+			encryptSymmetric( message );
 		}
-		
-		// We are connected, but what we do depends on whether we are authenticated yet
-		if( authStatus == AuthStatus.NotAuthenticated )
+		else
 		{
-			// We ARE NOT Authenticated
-			// Run that process and then drop through
-			authenticate();
-		}
-		
-		if( authStatus == AuthStatus.Authenticated )
-		{
-			// We ARE Authenticated.
-			// Insert the Auth Header
-			message.getHeader().writeAuthToken( authToken );
+			// If we are disconnected this will be an RtiProbe, still, just pass
+			// it straight down
+			if( hostConnection.getStatus() == Status.Disconnected )
+			{
+				passDown( message );
+				return;
+			}
+
+			// We only both authenticating when non-federation messages are sent.
+			// To join a federation you need to at least send an RtiProbe (which
+			// we ignore) and then a JoinRequest (Control), so you can't do any
+			// data messages without getting past us here, and this lets us quickly
+			// keep data messages on a fast-path
+			// We are connected, but what we do depends on whether we are authenticated yet
+			if( authStatus == AuthStatus.NotAuthenticated )
+			{
+				// We ARE NOT Authenticated
+				// Run that process and then drop through
+				authenticate();
+			}
 			
-			// If the message is a NOT a federaion message, then we need to encrypt
-			// it with the RTI's public key.
-			if( !message.getMessageType().isFederationMessage() )
+			if( authStatus == AuthStatus.Authenticated )
+			{
+				// We ARE Authenticated.
+				// Insert the Auth Header
+				message.getHeader().writeAuthToken( authToken );
+				
+				// If the message is a NOT a federation message, then we need to encrypt
+				// it with the RTI's public key.
 				AuthUtils.encryptLongRsaMessage(rtiPublic,message);
+				
+				// If this is a message of keen interest for us, store the request id
+				if( message.getMessageType() == MessageType.JoinFederation )
+					this.joinRequestId = message.getRequestId();
+			}
 		}
 		
 		// Let this one slide down to the next sucka
@@ -171,8 +220,15 @@ public class LRCAuthenticationProtocol extends Protocol
 		//         includes an auth-token header that is the same as ours.
 		if( authStatus == AuthStatus.Authenticated )
 		{
+			if( message.getHeader().isEncrypted() )
+				; // symdecrypt
+			
 			if( message.getHeader().getAuthToken() == this.authToken )
 				AuthUtils.decryptLongRsaMessage( fedPrivate, message );
+			
+			// is this one of the special messages are are interested in?
+			if( message.getRequestId() == this.joinRequestId )
+				joinedFederation( message );
 		}
 		//
 		// Status: Authenticating...
@@ -271,6 +327,39 @@ public class LRCAuthenticationProtocol extends Protocol
 			}
 		}
 		
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Encryption Methods   //////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	private void encryptSymmetric( Message message )
+	{
+		if( sessionKey == null )
+			return;
+
+		AuthUtils.encryptWithSymmetricKey( sessionKey, encryptCipher, message );
+	}
+	
+	private void decryptSymmetric( Message message )
+	{
+		if( sessionKey == null )
+			return;
+
+		AuthUtils.decryptWithSymmetricKey( sessionKey, decryptCipher, message );
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Messages Requiring Special Handling   /////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	private void joinedFederation( Message message )
+	{
+		// get the session key
+		ResponseMessage response = message.inflateAsResponse();
+		WelcomePack welcome = (WelcomePack)response.getResult();
+		byte[] federationKey = welcome.getFederationKey();
+		
+		// turn the bytes into a key
+		this.sessionKey = AuthUtils.decodeSymmetricKey( federationKey, 0, federationKey.length );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////

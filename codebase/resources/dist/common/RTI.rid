@@ -142,10 +142,10 @@ rti.network.multicast.nic       = SITE_LOCAL
 	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
 	#        Mode: Encryption mode. Supports ECB, CBC, CFB, CTR
 	#      
-	rti.network.multicast.crypto.enabled  = true
+	rti.network.multicast.crypto.enabled  = false
 	rti.network.multicast.crypto.keylen   = 128
 	rti.network.multicast.crypto.cipher   = AES/CFB/NoPadding
-	rti.network.multicast.crypto.key      = evelyn
+	rti.network.multicast.crypto.key      = password
 
 
 # (R.6) Unicast Network Connection
@@ -161,10 +161,10 @@ rti.network.tcp.nic       = SITE_LOCAL
 
 	# (R.6a) Encryption Settings
 	#
-	rti.network.tcp.crypto.enabled  = true
+	rti.network.tcp.crypto.enabled  = false
 	rti.network.tcp.crypto.keylen   = 128
 	rti.network.tcp.crypto.cipher   = AES/CFB/NoPadding
-	rti.network.tcp.crypto.key      = evelyn
+	rti.network.tcp.crypto.key      = password
 
 
 # ==================================================================================
@@ -214,10 +214,10 @@ lrc.network.multicast.nic       = SITE_LOCAL
 	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
 	#        Mode: Encryption mode. Supports ECB, CBC, CFB, CTR
 	#      
-	rti.network.multicast.crypto.enabled  = true
+	rti.network.multicast.crypto.enabled  = false
 	rti.network.multicast.crypto.keylen   = 128
 	rti.network.multicast.crypto.cipher   = AES/CFB/NoPadding
-	rti.network.multicast.crypto.key      = evelyn
+	rti.network.multicast.crypto.key      = password
 
 # (L.4) TCP Connection Properties
 #

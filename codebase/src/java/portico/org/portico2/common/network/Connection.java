@@ -69,6 +69,7 @@ public class Connection
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private Host host;
+	private Object hostReference;
 	private Status status;  // value must be set and managed _EXTERNALLY_ by host type
 
 	private String name;
@@ -83,9 +84,19 @@ public class Connection
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public Connection( Host host )
+	/**
+	 * Creates a new connection that will list inside the host type identified by the
+	 * {@lik Host} enum. Additionally, we also pass in a reference to the actual host
+	 * object itself. Anything special that absolutely NEEDS access back to the host
+	 * can cast this to the appropriate type using the <code>Host.cast()</code> methods.
+	 * 
+	 * @param host The host type we are part of
+	 * @param hostReference A reference to the host itself
+	 */
+	public Connection( Host host, Object hostReference )
 	{
 		this.host = host;
+		this.hostReference = hostReference;
 		this.status = Status.Disconnected;
 		this.name = "unknown";       // set in configure()
 		this.configuration = null;   // set in configure()
@@ -131,8 +142,11 @@ public class Connection
 		/////////////////////////////////
 		this.protocolStack = new ProtocolStack( this );
 		// FIXME Auth Protocol needs proper configuration
-		if( host == Host.RTI || host == Host.LRC )
-			protocolStack.addProtocol( ProtocolFactory.instance().createProtocol("authentication",host) );
+//		if( configuration.getAuthConfiguration().isEnabled() )
+//		{
+			if( host == Host.RTI || host == Host.LRC )
+				protocolStack.addProtocol( ProtocolFactory.instance().createProtocol("authentication",host) );
+//		}
 
 		// Insert the encryption settings
 		if( configuration.getCryptoConfiguration().isEnabled() )
@@ -313,6 +327,11 @@ public class Connection
 	public Host getHost()
 	{
 		return this.host;
+	}
+	
+	public <T> T getHostReference( Class<T> clazz )
+	{
+		return clazz.cast( this.hostReference );
 	}
 	
 	public ConnectionConfiguration getConfiguration()

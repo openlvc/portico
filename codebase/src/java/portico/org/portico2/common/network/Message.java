@@ -30,6 +30,7 @@ public class Message
 	//----------------------------------------------------------
 	private CallType calltype;
 	private int requestId;
+	private MessageType messageType;
 	
 	// serialized version of the message
 	private byte[] buffer;
@@ -37,20 +38,24 @@ public class Message
 	
 	// cached version of inflated messages
 	private PorticoMessage request;
-	private MessageType messageType;
+	private Header requestHeader; 
+	private ResponseMessage response;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public Message( PorticoMessage request, CallType calltype, int requestId )
 	{
-		this.request = request;
-		this.messageType = request.getType();
 		this.calltype = calltype;
 		this.requestId = requestId;
-		
+		this.messageType = request.getType();
+
 		this.buffer = MessageHelpers.deflate2( request, calltype, requestId );
 		this.header = new Header( buffer, 0 );
+
+		this.request = request;
+		this.requestHeader = null;    // set in deflateAndStoreResponse()
+		this.response = null;         // set in deflateAndStoreResponse()                       
 	}
 	
 	public Message( byte[] buffer )
@@ -79,10 +84,19 @@ public class Message
 	public final Header getHeader() { return this.header; }
 	public final byte[] getBuffer() { return this.buffer; }
 	public final CallType getCallType() { return this.calltype; }
-	public final boolean hasRequest() { return this.request != null; }
-	public final PorticoMessage getRequest() { return this.request; }
 	public final MessageType getMessageType() { return this.messageType; }
+	public final boolean hasRequest() { return this.request != null; }
+	public final PorticoMessage getOriginalRequest() { return this.request; }
+	
+	/** @return Header for original request if this message now holds a response
+	            as converted via {@link #deflateAndStoreResponse(ResponseMessage)}.
+	            Returns <code>null</code> if this message is a request still. */
+	public final Header getOriginalHeader() { return this.requestHeader; }
 
+	public final boolean hasResponse() { return this.response != null; }
+	public final ResponseMessage getResponse() { return this.response; }
+
+	
 	/**
 	 * Replace the existing buffer with the given one, updating the header to source
 	 * from the new buffer as well.
@@ -94,12 +108,16 @@ public class Message
 		this.buffer = buffer;
 		this.header = new Header( buffer, 0 );
 		this.header.writePayloadLength( buffer.length-Header.HEADER_LENGTH );
+		
+		// reset things that need to be reset
+		this.calltype = this.header.getCallType();
+		this.messageType = this.header.getMessageType();
 	}
 
 	/**
 	 * Tells the message to take the contents of the buffer and inflate it into a full
 	 * {@link PorticoMessage} object, returning the result. The request object is lazy
-	 * loaded, so if you call {@link #getRequest()} before this method has been called,
+	 * loaded, so if you call {@link #getOriginalRequest()} before this method has been called,
 	 * the message class will implicitly call it on your behalf.
 	 * 
 	 * @return The {@link PorticoMessage} that represents the contained byte[] buffer (if present).
@@ -125,7 +143,9 @@ public class Message
 		if( this.request == null )
 			throw new IllegalArgumentException( "You cannot deflate a ResponseMessage without a request" );
 		
-		replaceBuffer( MessageHelpers.deflate2(response,this.requestId,this.request) );
+		this.response = response;
+		this.requestHeader = new Header( buffer, 0 ); // store the old header
+		this.replaceBuffer( MessageHelpers.deflate2(response,this.requestId,this.request) );
 	}
 	
 	//----------------------------------------------------------

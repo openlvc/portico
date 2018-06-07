@@ -51,7 +51,7 @@ public class LRCConnection implements IApplicationReceiver
 		this.configuration = configuration;
 		
 		// Create the underlying connection and configure it
-		this.connection = new Connection( Host.LRC );
+		this.connection = new Connection( Host.LRC, lrc );
 		this.connection.configure( configuration, this );
 	}
 

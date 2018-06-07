@@ -42,9 +42,15 @@ public class PorticoConstants
 	
 	/** The handle to use for messages that target multiple federates */
 	public static final int TARGET_MANY_HANDLE = -2;
-	
+
+	//
+	// Authentication
+	//
 	/** Constant representing the value of the Auth token header if there is no token. */
 	public static final int NO_AUTH_TOKEN = 0;
+	
+	/** Upper limit of auth token size */
+	public static final int MAX_AUTH_TOKEN = 65536;
 	
 	//////////////////////////////////////////////
 	///////// Portico General Properties /////////
