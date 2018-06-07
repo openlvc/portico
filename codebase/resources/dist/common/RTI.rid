@@ -278,7 +278,7 @@ lrc.network.multicast.address   = 239.1.2.3
 lrc.network.multicast.port      = 20913
 lrc.network.multicast.nic       = SITE_LOCAL
 
-	# (R.6a) Public Key Authentication and Encryption
+	# (L.3a) Public Key Authentication and Encryption
 	#
 	#        Federates connect to the RTI using PKI. The federate must have the
 	#        RTI's public key on file locally. When connecting to the RTI and
@@ -306,7 +306,7 @@ lrc.network.multicast.nic       = SITE_LOCAL
 	lrc.network.multicast.publickey.sessionKeylen = 128
 
 
-	# (R.6b) Shared Key Encryption Settings
+	# (L.3b) Shared Key Encryption Settings
 	#
 	#        Let the connection make use of a shared-key for encryption
 	#

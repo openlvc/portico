@@ -134,17 +134,51 @@ rti.network.multicast.nic       = SITE_LOCAL
 #rti.network.multicast.flow.threshold = 0.4
 #rti.network.multicast.frag.size = 60K
 
-	# (R.5a) Encryption Settings
+	# (R.5a) Public Key Authentication and Encryption
 	#
-	#     Encrypt: Is encryption on or off?
+	#        Federates connect to the RTI using PKI. The federate must have the
+	#        RTI's public key on file locally. When connecting to the RTI and
+	#        performing non-federation calls (Create, Destroy, Join, Resign, ...),
+	#        the messages are encrypted with the RTIs public key. On connect, they
+	#        also exchange keys, with return messages from the RTI encrypted using
+	#        the federates public key. Once a federation is joined, the federate
+	#        is given access to a federation-wide shared key and that is used instead.
+	#        (Less CPU load and needed so federates can read each other's broadcasts).
+	#
+	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
+	#
+	#          Enabled: Is encryption on or off?
+	#         Enforced: Enforce that all connections use a public key. When set to false,
+	#                   federates can connect even if they do not provide creds. Only used by RTI.
+	#       PrivateKey: Points to the file containing the federate's private key (PEM format)
+	#        RtiPublic: Points to the file containing the RTI public key (PEM format) Only used by LRC.
+	#    SessionCipher: Cipher configuration for federation messages
+	#    SessionKeylen: Bit-length of shared key for federation messages
+	#      
+	rti.network.multicast.publickey.enabled       = false
+	rti.network.multicast.publickey.enforced      = false
+	rti.network.multicast.publickey.privatekey    = ./id_rsa
+	rti.network.multicast.publickey.rtipublic     = ./rti_public.pem
+	rti.network.multicast.publickey.sessionCipher = AES/CFB/NoPadding
+	rti.network.multicast.publickey.sessionKeylen = 128
+
+
+	# (R.5b) Symmetric Encryption Settings
+	#
+	#        Let the connection make use of a shared-key for encryption
+	#
+	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
+	#
+	#     Enabled: Is encryption on or off?
 	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
 	#              require the use of the Java unlimited strength policies (google it)
 	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
-	#        Mode: Encryption mode. Supports ECB, CBC, CFB, CTR
+	#         Key: The pre-shared key. Must be the same on all ends
 	#      
-	rti.network.multicast.crypto.enabled  = true
-	rti.network.multicast.crypto.keylen   = 128
-	rti.network.multicast.crypto.cipher   = AES/CFB/NoPadding
+	rti.network.multicast.sharedkey.enabled  = false
+	rti.network.multicast.sharedkey.keylen   = 128
+	rti.network.multicast.sharedkey.cipher   = AES/CFB/NoPadding
+	rti.network.multicast.sharedkey.key      = password
 
 
 # (R.6) Unicast Network Connection
@@ -157,6 +191,52 @@ rti.network.multicast.nic       = SITE_LOCAL
 rti.network.tcp.transport = tcp-server
 rti.network.tcp.port      = 52295
 rti.network.tcp.nic       = SITE_LOCAL
+
+	# (R.6a) Public Key Authentication and Encryption
+	#
+	#        Federates connect to the RTI using PKI. The federate must have the
+	#        RTI's public key on file locally. When connecting to the RTI and
+	#        performing non-federation calls (Create, Destroy, Join, Resign, ...),
+	#        the messages are encrypted with the RTIs public key. On connect, they
+	#        also exchange keys, with return messages from the RTI encrypted using
+	#        the federates public key. Once a federation is joined, the federate
+	#        is given access to a federation-wide shared key and that is used instead.
+	#        (Less CPU load and needed so federates can read each other's broadcasts).
+	#
+	#        NOTE: Only one of Public Key or Symmetric options can be enabled at once.
+	#
+	#          Enabled: Is encryption on or off?
+	#         Enforced: Enforce that all connections use a public key. When set to false,
+	#                   federates can connect even if they do not provide creds. Only used by RTI.
+	#       PrivateKey: Points to the file containing the federate's private key (PEM format)
+	#        RtiPublic: Points to the file containing the RTI public key (PEM format) Only used by LRC.
+	#    SessionCipher: Cipher configuration for federation messages
+	#    SessionKeylen: Bit-length of shared key for federation messages
+	#      
+	rti.network.tcp.publickey.enabled       = false
+	rti.network.tcp.publickey.enforced      = false
+	rti.network.tcp.publickey.privatekey    = ./id_rsa
+	rti.network.tcp.publickey.rtipublic     = ./rti_public.pem
+	rti.network.tcp.publickey.sessionCipher = AES/CFB/NoPadding
+	rti.network.tcp.publickey.sessionKeylen = 128
+
+
+	# (R.6b) Symmetric Encryption Settings
+	#
+	#        Let the connection make use of a shared-key for encryption
+	#
+	#        NOTE: Only one of Public Key or Symmetric options can be enabled at once.
+	#
+	#     Enabled: Is encryption on or off?
+	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
+	#              require the use of the Java unlimited strength policies (google it)
+	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
+	#         Key: The pre-shared key. Must be the same on all ends
+	#      
+	rti.network.tcp.sharedkey.enabled  = false
+	rti.network.tcp.sharedkey.keylen   = 128
+	rti.network.tcp.sharedkey.cipher   = AES/CFB/NoPadding
+	rti.network.tcp.sharedkey.key      = password
 
 
 # ==================================================================================
@@ -197,6 +277,52 @@ lrc.network.multicast.transport = multicast
 lrc.network.multicast.address   = 239.1.2.3
 lrc.network.multicast.port      = 20913
 lrc.network.multicast.nic       = SITE_LOCAL
+
+	# (L.3a) Public Key Authentication and Encryption
+	#
+	#        Federates connect to the RTI using PKI. The federate must have the
+	#        RTI's public key on file locally. When connecting to the RTI and
+	#        performing non-federation calls (Create, Destroy, Join, Resign, ...),
+	#        the messages are encrypted with the RTIs public key. On connect, they
+	#        also exchange keys, with return messages from the RTI encrypted using
+	#        the federates public key. Once a federation is joined, the federate
+	#        is given access to a federation-wide shared key and that is used instead.
+	#        (Less CPU load and needed so federates can read each other's broadcasts).
+	#
+	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
+	#
+	#          Enabled: Is encryption on or off?
+	#         Enforced: Enforce that all connections use a public key. When set to false,
+	#                   federates can connect even if they do not provide creds. Only used by RTI.
+	#       PrivateKey: Points to the file containing the federate's private key (PEM format)
+	#        RtiPublic: Points to the file containing the RTI public key (PEM format) Only used by LRC.
+	#    SessionCipher: Cipher configuration for federation messages
+	#    SessionKeylen: Bit-length of shared key for federation messages
+	#      
+	lrc.network.multicast.publickey.enabled       = false
+	lrc.network.multicast.publickey.privatekey    = ./id_rsa
+	lrc.network.multicast.publickey.rtipublic     = ./rti_public.pem
+	lrc.network.multicast.publickey.sessionCipher = AES/CFB/NoPadding
+	lrc.network.multicast.publickey.sessionKeylen = 128
+
+
+	# (L.3b) Shared Key Encryption Settings
+	#
+	#        Let the connection make use of a shared-key for encryption
+	#
+	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
+	#
+	#     Enabled: Is encryption on or off?
+	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
+	#              require the use of the Java unlimited strength policies (google it)
+	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
+	#         Key: The pre-shared key. Must be the same on all ends
+	#      
+	lrc.network.multicast.sharedkey.enabled  = false
+	lrc.network.multicast.sharedkey.keylen   = 128
+	lrc.network.multicast.sharedkey.cipher   = AES/CFB/NoPadding
+	lrc.network.multicast.sharedkey.key      = password
+
 
 # (L.4) TCP Connection Properties
 #
@@ -274,7 +400,7 @@ fwd.network.upstream.nic       = SITE_LOCAL
 #
 fwd.network.downstream.transport = multicast
 fwd.network.downstream.address   = 239.1.2.3
-fwd.network.downstream.port      = 20913
+fwd.network.downstream.port      = 22222
 fwd.network.downstream.nic       = SITE_LOCAL
 
 
