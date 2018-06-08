@@ -124,11 +124,10 @@ IDatatype* DatatypeRetrieval::createBasicType( const pugi::xml_node& node )
 	throw( RTIinternalError )
 {
 	// Get the attributes from the node
-	std::wstring typeName = node.attribute( L"name" ).as_string();
-	int size = node.attribute( L"size" ).as_int();
-
-	std::wstring endiannessString = node.attribute( L"endianness" ).as_string();
-	Endianness end = endiannessString == L"LITTLE" ? ENDIANNESS_LITTLE : ENDIANNESS_BIG;
+	std::wstring typeName = node.select_node(L"name").node().text().as_string();
+	int size = node.select_node(L"size").node().text().as_int();
+	std::wstring endiannessString = node.select_node(L"endian").node().text().as_string();
+	Endianness end = endiannessString == L"Little" ? ENDIANNESS_LITTLE : ENDIANNESS_BIG;
 	
 	return new BasicType( typeName, size, end );
 
@@ -137,8 +136,9 @@ IDatatype* DatatypeRetrieval::createBasicType( const pugi::xml_node& node )
 IDatatype* DatatypeRetrieval::createSimpleType( const pugi::xml_node& node )
 	throw( RTIinternalError )
 {
-	std::wstring typeName = node.attribute( L"name" ).as_string();
-	std::wstring representation = node.attribute( L"representation" ).as_string();
+	std::wstring typeName = node.select_node(L"name").node().text().as_string();
+	std::wstring representation = node.select_node(L"representation").node().text().as_string();
+
 	IDatatype* basicType = getDatatype( representation );
 
 	return new SimpleType( typeName, basicType );
@@ -149,8 +149,8 @@ IDatatype* DatatypeRetrieval::createEnumeratedType( const pugi::xml_node& node )
 {
 	std::list<Enumerator> enumerators;
 
-	std::wstring name = node.attribute( L"name" ).as_string();
-	std::wstring representation = node.attribute( L"representation" ).as_string();
+	std::wstring name = node.select_node(L"name").node().text().as_string();
+	std::wstring representation = node.select_node(L"representation").node().text().as_string();
 
 	// get type from attribute chain
 	IDatatype* basicType = getDatatype( representation );
@@ -161,8 +161,8 @@ IDatatype* DatatypeRetrieval::createEnumeratedType( const pugi::xml_node& node )
 	{
 		const pugi::xpath_node& enumResult = *resultIt++;
 		const pugi::xml_node& enumerator = enumResult.node();
-		std::wstring enumeratorName = enumerator.attribute( L"name" ).as_string();
-		std::wstring enumeratorValue = enumerator.attribute( L"values" ).as_string();
+		std::wstring enumeratorName = enumerator.select_node(L"name").node().text().as_string();
+		std::wstring enumeratorValue = enumerator.select_node( L"value" ).node().text().as_string();
 
 		//add to enumerator list
 		enumerators.push_back( Enumerator(enumeratorName, enumeratorValue) );
@@ -176,23 +176,21 @@ IDatatype* DatatypeRetrieval::createArrayType( const pugi::xml_node& node )
 {
 	std::list<Dimension> dimensionList;
 
-	std::wstring name = node.attribute( L"name" ).as_string();
-	std::wstring representation = node.attribute( L"dataType" ).as_string();
+	std::wstring name = node.select_node(L"name").node().text().as_string();
+	std::wstring representation = node.select_node( L"dataType" ).node().text().as_string();
 
 	//get rep from name
 	IDatatype* datatype = getDatatype( representation );
 
-	pugi::xpath_node_set cardinalityResults = node.select_nodes( L"./cardinality" );
-	pugi::xpath_node_set::iterator resultIt = cardinalityResults.begin();
-	while( resultIt != cardinalityResults.end() )
-	{
-		const pugi::xpath_node& cardinalityResult = *resultIt++;
-		const pugi::xml_node& dimension = cardinalityResult.node();
+	pugi::xml_node cardinalityNode = node.select_node( L"./cardinality" ).node();
 
+	std::wstring cardinalities = cardinalityNode.text().as_string();
+	std::wstringstream tokenizer( cardinalities );
+	std::wstring cardinality;
+    while( std::getline(tokenizer, cardinality, L',') ) 
+	{
 		int lowerBounds = Dimension::CARDINALITY_DYNAMIC;
 		int upperBounds = Dimension::CARDINALITY_DYNAMIC;
-		std::wstring cardinality = dimension.text().as_string();
-
 		if( cardinality != L"Dynamic" )
 		{
 			// check to see if we have the  '..' delimiter specifying bounds	
@@ -208,13 +206,13 @@ IDatatype* DatatypeRetrieval::createArrayType( const pugi::xml_node& node )
 			}
 			else // its just an integer
 			{
-				lowerBounds = dimension.text().as_int();
+				std::wstringstream( cardinality ) >> lowerBounds;
 				upperBounds = lowerBounds;
 			}
 		}
 
 		dimensionList.push_back( Dimension(lowerBounds, upperBounds) );
-	}
+    }
 
 	// create the datatype
 	return new ArrayType( name, datatype, dimensionList );
@@ -225,7 +223,7 @@ IDatatype* DatatypeRetrieval::createFixedRecordType( const pugi::xml_node& node 
 {
 	std::list<Field> fieldList;
 
-	std::wstring name = node.attribute( L"name" ).as_string();
+	std::wstring name = node.select_node(L"name").node().text().as_string();
 
 	// Get all the fields in this fixed record type
 	pugi::xpath_node_set fieldResults = node.select_nodes( L"./field" );
@@ -235,8 +233,8 @@ IDatatype* DatatypeRetrieval::createFixedRecordType( const pugi::xml_node& node 
 		const pugi::xpath_node& fieldResult = *resultIt++;
 		const pugi::xml_node& field = fieldResult.node();
 
-		std::wstring representation = field.attribute( L"dataType" ).as_string();
-		std::wstring fieldName = field.attribute( L"name" ).as_string();
+		std::wstring fieldName = field.select_node( L"name" ).node().text().as_string();
+		std::wstring representation = field.select_node( L"dataType" ).node().text().as_string();
 
 		// get type from attribute chain
 		IDatatype* datatype = getDatatype( representation );
@@ -252,9 +250,9 @@ IDatatype* DatatypeRetrieval::createVariantRecordType( const pugi::xml_node& nod
 {
 	std::list<Alternative> alternativesList;
 
-	std::wstring name = node.attribute( L"name" ).as_string();
-	std::wstring discriminantName = node.attribute( L"discriminant" ).as_string();
-	std::wstring discriminantDatatypeName = node.attribute( L"dataType").as_string();
+	std::wstring name = node.select_node( L"./name" ).node().text().as_string();
+	std::wstring discriminantName = node.select_node( L"./discriminant" ).node().text().as_string();
+	std::wstring discriminantDatatypeName = node.select_node( L"./dataType").node().text().as_string();
 
 	IDatatype* discriminantDatatype = getDatatype( discriminantDatatypeName );
 	EnumeratedType* discriminantAsEnum = dynamic_cast<EnumeratedType*>( discriminantDatatype );
@@ -267,20 +265,17 @@ IDatatype* DatatypeRetrieval::createVariantRecordType( const pugi::xml_node& nod
 		const pugi::xpath_node& alternativeResult = *alternativeIt++;
 		const pugi::xml_node& alternativeNode = alternativeResult.node();
 
-		std::wstring alternativeName = alternativeNode.attribute(L"name").as_string();
-		std::wstring alternativeDatatypeName = alternativeNode.attribute( L"dataType" ).as_string();
+		std::wstring alternativeName = alternativeNode.select_node(L"./name").node().text().as_string();
+		std::wstring alternativeDatatypeName = alternativeNode.select_node( L"./dataType" ).node().text().as_string();
 		IDatatype* alternativeDatatype = getDatatype( alternativeDatatypeName );
 		std::list<Enumerator> enumeratorList;
 
 		// Get the enums for the alternatives
-		pugi::xpath_node_set enumeratorResults = alternativeNode.select_nodes( L"./enumerator" );
-		pugi::xpath_node_set::iterator enumeratorIt = enumeratorResults.begin();
-		while(enumeratorIt != enumeratorResults.end() )
+		std::wstring enumerators = alternativeNode.select_node( L"./enumerator" ).node().text().as_string();
+		std::wstringstream tokenizer( enumerators );
+		std::wstring enumeratorName;
+		while( std::getline(tokenizer, enumeratorName, L',') ) 
 		{
-			const pugi::xpath_node& enumeratorResult = *enumeratorIt++;
-			const pugi::xml_node& enumeratorNode = enumeratorResult.node();
-			std::wstring enumeratorName = enumeratorNode.text().as_string();
-
 			Enumerator enumerator = this->getEnumeratorByName( discriminantAsEnum, 
 			                                                   enumeratorName );
 			enumeratorList.push_back( enumerator );
@@ -319,37 +314,37 @@ pugi::xml_node DatatypeRetrieval::getDatatypeNode( const std::wstring& name )
 	 throw( RTIinternalError )
 {
 	// Search Basic Types
-	std::wstring queryString = L"/objectModel/dataTypes/basicDataRepresentations/basicData[@name='" + name + L"']";
+	std::wstring queryString = L"/objectModel/dataTypes/basicDataRepresentations/basicData/name[text()='" + name + L"']/..";
 	pugi::xpath_node_set nodeSet = this->fomxml.select_nodes( queryString.c_str() );
 	if( nodeSet.size() != 0 )
 		return nodeSet[0].node();
 
 	// Search Simple Types
-	queryString = L"/objectModel/dataTypes/simpleDataTypes/simpleData[@name='" + name + L"']";
+	queryString = L"/objectModel/dataTypes/simpleDataTypes/simpleData/name[text()='" + name + L"']/..";
 	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
 	if( nodeSet.size() != 0 )
 		return nodeSet[0].node();
 
 	// Search Enumerated Types
-	queryString = L"/objectModel/dataTypes/enumeratedDataTypes/enumeratedData[@name='" + name + L"']";
+	queryString = L"/objectModel/dataTypes/enumeratedDataTypes/enumeratedData/name[text()='" + name + L"']/..";
 	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
 	if( nodeSet.size() != 0 )
 		return nodeSet[0].node();
 
 	// Search Array Types
-	queryString = L"/objectModel/dataTypes/arrayDataTypes/arrayData[@name='" + name + L"']";
+	queryString = L"/objectModel/dataTypes/arrayDataTypes/arrayData/name[text()='" + name + L"']/..";
 	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
 	if( nodeSet.size() != 0 )
 		return nodeSet[0].node();
 
 	// Fixed Record Types
-	queryString = L"/objectModel/dataTypes/fixedRecordDataTypes/fixedRecordData[@name='" + name + L"']";
+	queryString = L"/objectModel/dataTypes/fixedRecordDataTypes/fixedRecordData/name[text()='" + name + L"']/..";
 	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
 	if( nodeSet.size() != 0 )
 		return nodeSet[0].node();
 
 	// Variant Record Types
-	queryString = L"/objectModel/dataTypes/variantRecordDataTypes/variantRecordData[@name='" + name + L"']";
+	queryString = L"/objectModel/dataTypes/variantRecordDataTypes/variantRecordData/name[text()='" + name + L"']/..";
 	nodeSet = this->fomxml.select_nodes( queryString.c_str() );
 	if( nodeSet.size() != 0 )
 		return nodeSet[0].node();

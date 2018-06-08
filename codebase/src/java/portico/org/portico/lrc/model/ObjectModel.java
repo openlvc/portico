@@ -379,6 +379,9 @@ public class ObjectModel implements Serializable
 				this.privilegeToDelete = root.getAttributeHandle( "HLAprivilegeToDeleteObject" );
 			}
 		}
+		
+		// If the new ocroot has no privilegeToDelete, then make sure it is added
+		this.addPrivilegeToDeleteIfNotPresent();
 	}
 
 	/**
@@ -395,14 +398,14 @@ public class ObjectModel implements Serializable
 	 */
 	public void addPrivilegeToDeleteIfNotPresent()
 	{
-		// TODO: As this is for 1516e shouldn't this be HLAprivilegeToDelete? getDeclaredAttribute
-		// does no cross-version name resolution
-		ACMetadata temp = ocroot.getDeclaredAttribute( "privilegeToDelete" );
+		String name = this.version == HLAVersion.HLA13 ? "privilegeToDelete" : 
+		                                                 "HLAprivilegeToDeleteObject";
+		ACMetadata temp = ocroot.getDeclaredAttribute( name );
 		if( temp == null )
 		{
 			// TODO: This HLAprivilegeToDelete is NA in 1516 but HLAtoken in 1516e. This method
 			// looks to only ever called for 1516e foms, so I've hardcoded it for HLAtoken 
-			temp = this.newAttribute( "privilegeToDelete", getDatatype("HLAtoken") );
+			temp = this.newAttribute( name, getDatatype("HLAtoken") );
 			ocroot.addAttribute( temp );
 			this.privilegeToDelete = temp.getHandle();
 		}
@@ -516,7 +519,7 @@ public class ObjectModel implements Serializable
 	{
 		return this.privilegeToDelete;
 	}
-
+	
 	/**
 	 * This method will get the ACMetadata for the privilege to delete attribute. As the standards
 	 * board changed the name of the attribute from 1.3 to 1516 (for no other good reason than

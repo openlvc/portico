@@ -83,7 +83,8 @@ public class CreateFederationHandler extends LRCMessageHandler
 		// Ditch the MIM if it is present and then re-insert with specific handles so that we can
 		// look up MOM handles without using names (thus support cross spec-version naming schemes).
 		ObjectModel.mommify( combinedFOM );
-
+		ObjectModel.resolveSymbols( combinedFOM ); 
+		
 		// we have our grand unified FOM!
 		request.setModel( combinedFOM, modules );
 		

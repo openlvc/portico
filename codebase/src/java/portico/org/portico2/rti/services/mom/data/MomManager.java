@@ -110,7 +110,8 @@ public class MomManager implements SaveRestoreTarget
 		// create a HLA object instance for the federation
 		Repository repository = this.federation.getRepository();
 		ROCInstance instance =
-		    repository.createObject( federationClass, federation.getFederationName(),
+		    repository.createObject( federationClass, 
+		                             federation.getFederationName(),
 		                             PorticoConstants.RTI_HANDLE,
 		                             federationClass.getAllAttributeHandles() );
 		repository.addObject( instance );
