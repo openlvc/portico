@@ -24,6 +24,7 @@ import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.PorticoConstants;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.federation.msg.CreateFederation;
 import org.portico2.common.services.federation.msg.DestroyFederation;
@@ -85,7 +86,8 @@ public class RtiInbox
 					// Requesting federate must be a member of the target federation to submit federation 
 					// messages to it
 					int sourceFederate = request.getSourceFederate();
-					if( targetFederation.containsFederate(sourceFederate) )
+					if( sourceFederate == PorticoConstants.RTI_HANDLE || 
+						targetFederation.containsFederate(sourceFederate) )
 					{
 						targetFederation.getIncomingSink().process( context );
 					}
@@ -174,15 +176,18 @@ public class RtiInbox
 		// Requesting federate must be a member of the target federation to submit federation 
 		// messages to it
 		int sourceFederate = message.getSourceFederate();
-		if( !targetFederation.containsFederate( message.getSourceFederate()) )
+		if( sourceFederate == PorticoConstants.RTI_HANDLE || 
+			targetFederation.containsFederate(message.getSourceFederate()) )
+		{
+			targetFederation.queueDataMessage( message, sender );
+		}
+		else
 		{
 			String exMessage = String.format( "Federate [%d] is not a member of federation [%s]", 
 			                                  sourceFederate,
 			                                  targetFederation.getFederationName() );
 			throw new JFederateNotExecutionMember( exMessage );
 		}
-			
-		targetFederation.queueDataMessage( message, sender );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
