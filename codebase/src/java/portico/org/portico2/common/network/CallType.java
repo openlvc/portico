@@ -31,12 +31,17 @@ package org.portico2.common.network;
  * affect performance the most.
  * <p/>
  * 
+ * A notification is effectively an asynchronous control message (no response required). It will
+ * typically be addressed to a subset of the federation, most often only one federate. It is also
+ * typically an RTI->Federate message, representing things like discovery notifications and so on. 
+ * 
  * This enumeration identifies the type of message that is being sent:
  * <ul>
- *   <li><b>DataMessage</b>:  A message that should use the fastest available transport. Broadcast.</li>
- *   <li><b>ControlSync</b>:  A control request message that requires a response (typically fed->rti)</li>
- *   <li><b>ControlAsync</b>: A control request that does not require a response (typically rti->fed)</li>
- *   <li><b>ControlResp</b>:  A response to a control message</li>
+ *   <li><b>DataMessage</b>: A message that should be broadcast to all participants.</li>
+ *   <li><b>Notification</b>: A one-way message that does not require a response (typically rti->fed)</li>
+ *   <li><b>ControlRequest</b>: A control request message that requires a response (typically fed->rti)</li>
+ *   <li><b>ControlResponseOK</b>: A success response to a control request.</li>
+ *   <li><b>ControlResponseErr</b>:An error response to a control request.</li>
  * </ul>
  * 
  */
@@ -46,9 +51,10 @@ public enum CallType
 	//                        VALUES
 	//----------------------------------------------------------
 	DataMessage (0),
-	ControlSync (1),
-	ControlAsync(2),
-	ControlResp (3);
+	Notification(1),
+	ControlRequest(2),
+	ControlResponseOK(3),
+	ControlResponseErr(4);
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -80,9 +86,10 @@ public enum CallType
 		switch( id )
 		{
 			case 0: return DataMessage;
-			case 1: return ControlSync;
-			case 2: return ControlAsync;
-			case 3: return ControlResp;
+			case 1: return Notification;
+			case 2: return ControlRequest;
+			case 3: return ControlResponseOK;
+			case 4: return ControlResponseErr;
 			default: throw new IllegalArgumentException( "CallType id not known: "+id );
 		}
 	}

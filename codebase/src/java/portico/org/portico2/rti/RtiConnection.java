@@ -135,6 +135,12 @@ public class RtiConnection implements IApplicationReceiver
 	}
 	
 	@Override
+	public void receiveNotification( PorticoMessage incoming ) throws JException
+	{
+		rti.getInbox().receiveDataMessage( incoming, this );
+	}
+	
+	@Override
 	public final boolean isReceivable( Header header )
 	{
 		return true;

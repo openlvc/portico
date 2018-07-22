@@ -79,7 +79,7 @@ public class MessageHelpers
 	                                     CallType calltype,
 	                                     int requestId )
 	{
-		// Step 1. Write the body of the message
+		// Step 1. Write empty header (update later) and then full body
 		//         We write the body first because we need to know its length to include
 		//         in the header. For efficiency, we write an empty block of bytes into
 		//         the payload as space for the header. We'll overwrite them after.
@@ -93,6 +93,7 @@ public class MessageHelpers
 			ObjectOutput out = new ObjectOutputStream( baos );
 			if( message.supportsManualMarshal() )
 			{
+				// TODO Move this into the header
 				out.writeBoolean( true );
 				out.writeShort( message.getType().getId() );
 				message.marshal( out );
@@ -119,7 +120,6 @@ public class MessageHelpers
 		//         the empty space we put into the buffer when first marshalling the
 		//         payload.
 		
-		
 		// create the output stream with the given size (or resizable if -1 is provided)
 		int payloadLength = buffer.length - Header.HEADER_LENGTH;
 		Header.writeHeader( buffer, 0, message, calltype, requestId, payloadLength );
@@ -130,16 +130,17 @@ public class MessageHelpers
 	 * This method just calls {@link #deflate2(ResponseMessage, int, int, int, int)}. It takes
 	 * all the information it needs for the header from the given request message.
 	 * 
-	 * @param message The response message to deflate
+	 * @param response The response message to deflate
 	 * @param requestId The ID of the request we are responding to
 	 * @param request The original request message (from which we get federate id, source/target, ...)
 	 * @return A byte[] version of the message ready for transmission
 	 */
-	public static final byte[] deflate2( ResponseMessage message,
+	public static final byte[] deflate2( ResponseMessage response,
 	                                     int requestId,
 	                                     PorticoMessage request )
 	{
-		return deflate2( message,
+		return deflate2( response,
+		                 request,
 		                 requestId,
 		                 request.getTargetFederation(),
 		                 request.getTargetFederate(),   // flipped from request
@@ -151,14 +152,15 @@ public class MessageHelpers
 	 * is a lot of information that they don't require compared to a request message. This method
 	 * takes only the response message and the metadata that needs to be packaged into the header.
 	 * 
-	 * @param message The message object to deflate
+	 * @param response The message object to deflate
 	 * @param requestId The ID of the request we are responding to
 	 * @param targetFederation ID of the federation (package in header)
 	 * @param sourceFederate ID of sender federate  (package in header)
 	 * @param targetFederate ID of target federate  (package in header)
 	 * @return A byte[] version of the message ready for transmission
 	 */
-	private static final byte[] deflate2( ResponseMessage message,
+	private static final byte[] deflate2( ResponseMessage response,
+	                                      PorticoMessage request,
 	                                      int requestId,
 	                                      int targetFederation,
 	                                      int sourceFederate,
@@ -177,11 +179,11 @@ public class MessageHelpers
 			// marshal the message
 			ObjectOutput out = new ObjectOutputStream( baos );
 			out.writeBoolean( false );
-			out.writeObject( message );
+			out.writeObject( response );
 		}
 		catch( IOException ioex )
 		{
-			throw new RuntimeException( "couldn't convert object ["+message.getClass()+"] into byte[]", ioex );
+			throw new RuntimeException( "couldn't convert object ["+response.getClass()+"] into byte[]", ioex );
 		}
 		
 		// Step 2. Get the buffer.
@@ -196,14 +198,7 @@ public class MessageHelpers
 		//         payload.
 		// create the output stream with the given size (or resizable if -1 is provided)
 		int payloadLength = buffer.length - Header.HEADER_LENGTH;
-		Header.writeResponseHeader( buffer,
-		                            0,
-		                            requestId,
-		                            message.isSuccess(),
-		                            targetFederation,
-		                            sourceFederate,
-		                            targetFederate,
-		                            payloadLength );
+		Header.writeResponseHeader( buffer, 0, requestId, response, request, payloadLength );
 		return buffer;
 	}
 

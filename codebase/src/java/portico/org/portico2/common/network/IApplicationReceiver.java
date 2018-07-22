@@ -78,6 +78,19 @@ public interface IApplicationReceiver
 	 * @throws JRTIinternalError If there is a problem of any kind
 	 */
 	public void receiveControlRequest( MessageContext context ) throws JRTIinternalError;
+
+	/**
+	 * A notification is an async control request. Unlike a data message, it is not broadcast
+	 * to everyone, nor should it ever come over a path that trades reliability for speed.
+	 * 
+	 * This type of message is typically used for important notification calls sent to a 
+	 * federate (or federates) from the RTI such as object discovery callbacks, sync point
+	 * notifications, time advance grants and so on.
+	 * 
+	 * @param message The notification message that was received.
+	 * @throws JRTIinternalError If there is an error processing the message.
+	 */
+	public void receiveNotification( PorticoMessage message ) throws JRTIinternalError;
 	
 	/**
 	 * A broadcast/data message has been received from the connection and should

@@ -18,9 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico2.common.network.protocols.encryption.EncryptionProtocol;
 import org.portico2.common.network.protocols.pki.LRCPublicKeyProtocol;
 import org.portico2.common.network.protocols.pki.RTIPublicKeyProtocol;
-import org.portico2.common.network.protocols.symmetric.SharedKeyProtocol;
 
 /**
  * The {@link ProtocolFactory} stores references to all the various protocols that
@@ -52,11 +52,11 @@ public class ProtocolFactory
 		
 		// Register all the supported protocols
 		// RTI
-		rti.put( "sharedkey", SharedKeyProtocol.class );
+		rti.put( "encryption", EncryptionProtocol.class );
 		rti.put( "publickey", RTIPublicKeyProtocol.class );
 		
 		// LRC
-		lrc.put( "sharedkey", SharedKeyProtocol.class );
+		lrc.put( "encryption", EncryptionProtocol.class );
 		lrc.put( "publickey", LRCPublicKeyProtocol.class );
 		
 		// Forwarder

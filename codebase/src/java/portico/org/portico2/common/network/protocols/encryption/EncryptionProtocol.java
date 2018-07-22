@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.protocols.symmetric;
+package org.portico2.common.network.protocols.encryption;
 
 import java.security.GeneralSecurityException;
 import java.security.Security;
@@ -31,7 +31,7 @@ import org.portico2.common.network.Message;
 import org.portico2.common.network.Protocol;
 import org.portico2.common.network.configuration.SharedKeyConfiguration;
 
-public class SharedKeyProtocol extends Protocol
+public class EncryptionProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -52,7 +52,7 @@ public class SharedKeyProtocol extends Protocol
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public SharedKeyProtocol()
+	public EncryptionProtocol()
 	{
 		super();
 		this.configuration = null;   // set in configure()
@@ -92,6 +92,8 @@ public class SharedKeyProtocol extends Protocol
 		{
 			throw new JConfigurationException( "Error while setting up ciphers: "+e.getMessage(), e );
 		}
+		
+		// Shared key is extracted in open() call
 	}
 
 	@Override
@@ -172,13 +174,13 @@ public class SharedKeyProtocol extends Protocol
 	private synchronized void encrypt( Message message ) throws JRTIinternalError
 	{
 		// Incoming Message Structure:
-		//    Header  [16 Bytes]
+		//    Header  [12 Bytes]
 		//    Payload [xx Bytes]
 		//
 		// Encrypted Message Structure:
-		//    Header      [16 Bytes]
-		//    IV/Nonce    [16 Bytes]  -- CipherMode.getIvSize()
+		//    Header      [12 Bytes]
 		//    Cipher Text [xx Bytes]  -- CipherMode.getCipherTextSize()
+		//    IV/Nonce    [16 Bytes]  -- CipherMode.getIvSize()
 		//
 
 		// Step 1. Get the original message buffer.
@@ -198,19 +200,19 @@ public class SharedKeyProtocol extends Protocol
 			// Initialize the encrypter. This will generate a new IV.
 			encryptCipher.init( Cipher.ENCRYPT_MODE, sessionKey );
 			
-			// Write the IV first
-			System.arraycopy( encryptCipher.getIV(),                  // Source
-			                  0,                                      // Source Offset
-			                  target,                                 // Destination
-			                  Header.HEADER_LENGTH,                   // IV Offset
-			                  ivSize );                               // Num bytes to copy
-			
-			// Write the CT next
+			// Write the Cipher Text first
 			encryptCipher.doFinal( original,                          // Source
 			                       Header.HEADER_LENGTH,              // Source Offset
 			                       payloadLength,                     // Length to read
 			                       target,                            // Destination
-			                       Header.HEADER_LENGTH+ivSize );     // Destination Offset
+			                       Header.HEADER_LENGTH );            // Destination Offset
+			
+			// Write the IV last
+			System.arraycopy( encryptCipher.getIV(),                  // Source
+			                  0,                                      // Source Offset
+			                  target,                                 // Destination
+			                  Header.HEADER_LENGTH+payloadLength,     // IV Offset
+			                  ivSize );                               // Num bytes to copy
 		}
 		catch( GeneralSecurityException gse )
 		{
@@ -223,7 +225,6 @@ public class SharedKeyProtocol extends Protocol
 		// Step 5. Store the updated payload back in the message and update the header
 		message.replaceBuffer( target );
 		message.getHeader().writeIsEncrypted( true );
-		message.getHeader().writeCipherMode( cipherMode );
 		message.getHeader().writePayloadLength( payloadLength + ivSize );
 	}
 	
@@ -237,27 +238,27 @@ public class SharedKeyProtocol extends Protocol
 		byte[] original = message.getBuffer();
 		int payloadLength = message.getHeader().getPayloadLength();
 		
-		// Step 2. Create a new buffer of reduced size to hold the plain text
+		// Step 2. Create a new buffer of reduced size to hold just the plain text
 		int ivSize = cipherMode.getIvSize();
 		byte[] target = new byte[original.length-ivSize];
 
 		// Step 3. Decryption
-		//         Extract the IV from the front of payload and then decrypt the contents
+		//         Extract the IV from the tail of the payload and then decrypt the contents
 		//         in place, replacing the original buffer with the plain text version.
 		try
 		{
-			// Read the IV in from the payload                  [ <--- Offset ---> ]
-			IvParameterSpec iv = new IvParameterSpec( original, Header.HEADER_LENGTH, ivSize );
+			// Read the IV from the tail of the payload         [ <---- Offset ----> ]
+			IvParameterSpec iv = new IvParameterSpec( original, original.length-ivSize, ivSize );
 			
 			// Initialize the decrypter
 			decryptCipher.init( Cipher.DECRYPT_MODE, sessionKey, iv );
 
 			// Decrypt the contents
 			decryptCipher.doFinal( original,
-			                       Header.HEADER_LENGTH+ivSize, // Offset to CT payload
-			                       payloadLength-ivSize,
-			                       target,
-			                       Header.HEADER_LENGTH );
+			                       Header.HEADER_LENGTH,   // Offset to CT payload
+			                       payloadLength-ivSize,   // Size of section to decrypt
+			                       target,                 // Output buffer
+			                       Header.HEADER_LENGTH ); // Offset into output
 		}
 		catch( GeneralSecurityException gse )
 		{
@@ -280,7 +281,7 @@ public class SharedKeyProtocol extends Protocol
 	@Override
 	public String getName()
 	{
-		return "SharedKey";
+		return "Encryption";
 	}
 	
 	//----------------------------------------------------------

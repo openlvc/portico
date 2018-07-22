@@ -42,7 +42,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.protocols.symmetric.CipherMode;
+import org.portico2.common.network.protocols.encryption.CipherMode;
 
 /**
  * This is a set of functions used by the Authentication protocol to do encryption/decryption

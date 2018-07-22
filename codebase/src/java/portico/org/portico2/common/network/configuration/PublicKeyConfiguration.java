@@ -17,7 +17,7 @@ package org.portico2.common.network.configuration;
 import java.io.File;
 import java.util.Properties;
 
-import org.portico2.common.network.protocols.symmetric.CipherMode;
+import org.portico2.common.network.protocols.encryption.CipherMode;
 
 public class PublicKeyConfiguration
 {

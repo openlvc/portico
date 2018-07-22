@@ -66,12 +66,13 @@ public abstract class PorticoMessage implements Serializable, Cloneable
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	protected boolean isFromRti; // true if this message was generated or forwarded by the RTI
 	protected int sourceFederate;
 	protected int targetFederate;
 	protected int targetFederation;
-	protected double timestamp;
+	protected boolean isFromRti; // true if this message was generated or forwarded by the RTI
 	protected boolean immediate; // does this message require immediate processing?
+
+	protected double timestamp;
 	
 	protected Set<Integer> multipleTargets; // only used if we have multiple targets for a message
 

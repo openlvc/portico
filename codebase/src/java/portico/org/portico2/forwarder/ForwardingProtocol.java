@@ -54,12 +54,12 @@ public class ForwardingProtocol extends Protocol
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final EnumSet SyncPassthrough  = EnumSet.of( MessageType.CreateFederation,
+	private static final EnumSet ControlRequestPassthrough  = EnumSet.of( MessageType.CreateFederation,
 	                                                            MessageType.JoinFederation,
 	                                                            MessageType.RegisterObject,
 	                                                            MessageType.DeleteObject );
 	
-	private static final EnumSet AsyncPassthrough = EnumSet.of( MessageType.DiscoverObject,
+	private static final EnumSet NotificationPassthrough = EnumSet.of( MessageType.DiscoverObject,
 	                                                            MessageType.DeleteObject );
 
 	//----------------------------------------------------------
@@ -152,9 +152,9 @@ public class ForwardingProtocol extends Protocol
 				// Check the rulez!
 				Header header = message.getHeader();
 				if( firewall.acceptUpdate(directionOfTravel,
-				                          header.isFilteringHandleObject(),
+				                          header.isFilteringObjectClass(),
 				                          header.getFederation(),
-				                          header.getFilteringHandle()) )
+				                          header.getFilteringId()) )
 				{
 					targetStack.down( message );
 				}
@@ -162,34 +162,35 @@ public class ForwardingProtocol extends Protocol
 				break;
 			}
 			
-			case ControlSync:
+			case ControlRequest:
 			{
 				// We _must_ forward all control messages to the other side; no questions.
 				// However, there is a small subset we want to snoop on, so check for that.
 
 				// Do we care about this type?
-				if( SyncPassthrough.contains(message.getHeader().getMessageType()) )
-					stateTracker.receiveSyncControlRequest( message );
+				if( ControlRequestPassthrough.contains(message.getHeader().getMessageType()) )
+					stateTracker.receiveControlRequest( message );
 				
 				// Pass to the other side
 				targetStack.down( message );
 				break;
 			}
 			
-			case ControlAsync:
+			case Notification:
 			{
 				// We _must_ forward all control messages to the other side; no questions.
 				// However, there is a small subset we want to snoop on, so check for that.
 
 				// Do we care about this type?
-				if( AsyncPassthrough.contains(message.getHeader().getMessageType()) )
-					stateTracker.receiveAsyncControlRequest( message );
+				if( NotificationPassthrough.contains(message.getHeader().getMessageType()) )
+					stateTracker.receiveNotification( message );
 				
 				targetStack.down( message );
 				break;
 			}
 
-			case ControlResp:
+			case ControlResponseOK:
+			case ControlResponseErr:
 			{
 				// We only track a control response if we took a look at the original
 				// request and decided that we needed to see the response

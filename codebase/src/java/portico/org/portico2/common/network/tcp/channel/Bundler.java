@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.logging.log4j.Logger;
 import org.portico.utils.StringUtils;
+import org.portico2.common.network.CallType;
 import org.portico2.common.network.Header;
 
 /**
@@ -220,7 +221,7 @@ public class Bundler
 			// if actual message bundling is turned off, flush right away
 			//   -OR-
 			// if the header is time critical (ControlSync, or ControlResp)
-			if( this.isEnabled == false || header.isControlMessage() )
+			if( this.isEnabled == false || header.getCallType() != CallType.DataMessage )
 			{
 				flush();
 				return;

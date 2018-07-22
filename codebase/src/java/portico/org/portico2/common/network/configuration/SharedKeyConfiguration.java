@@ -16,7 +16,7 @@ package org.portico2.common.network.configuration;
 
 import java.util.Properties;
 
-import org.portico2.common.network.protocols.symmetric.CipherMode;
+import org.portico2.common.network.protocols.encryption.CipherMode;
 
 /**
  * This class extract encryption configuration information properties from the RID file
@@ -88,6 +88,7 @@ public class SharedKeyConfiguration
 	public void setCipherMode( CipherMode mode ) { this.cipherMode = mode; }
 	public void setCipherConfig( String cipherConfig ) { this.cipherMode = CipherMode.fromConfigString(cipherConfig); }
 	
+	public boolean hasSharedKey() { return this.sharedKey != null; }
 	public String getSharedKey() { return this.sharedKey; }
 	public void setSharedKey( String sharedKey ) { this.sharedKey = sharedKey; }
 

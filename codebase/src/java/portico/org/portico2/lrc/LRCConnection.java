@@ -125,6 +125,13 @@ public class LRCConnection implements IApplicationReceiver
 	}
 
 	@Override
+	public void receiveNotification( PorticoMessage incoming ) throws JException
+	{
+		// Drop this into the LRC message queue for processing
+		lrc.getState().getQueue().offer( incoming );
+	}
+	
+	@Override
 	public final boolean isReceivable( Header header )
 	{
 		// Just filter out ones targeting the RTI for now. We can filter the rest later.

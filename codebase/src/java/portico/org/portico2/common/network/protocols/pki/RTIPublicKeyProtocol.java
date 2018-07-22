@@ -136,105 +136,111 @@ public class RTIPublicKeyProtocol extends Protocol
 	@Override
 	public void down( Message message )
 	{
-		// Skip if not enabled
-		if( !isEnabled )
-		{
-			passDown(message);
-			return;
-		}
-		
-		// Encrypt the message with the federates public key if the following is TRUE:
-		//   - Message is a Response
-		//   - Original request was NOT a federation message
-		//   - Original request had an AUTH token
-		//
-		if( message.getCallType() == CallType.ControlResp )
-		{
-			if( message.getOriginalHeader().getMessageType() == MessageType.CreateFederation )
-				federationCreated( message );
-
-			if( message.getOriginalHeader().getMessageType().isFederationMessage() == false )
-				encryptResponseRsa( message );
-		}
-		else
-		{
-			if( message.getMessageType().isFederationMessage() )
-				; // symencrypt
-		}
-		
-		// Let this one slide down to the next sucka
+		// FIXME Temporary while committing large changes to header structure and moving to XML config
 		passDown( message );
+
+//		// Skip if not enabled
+//		if( !isEnabled )
+//		{
+//			passDown(message);
+//			return;
+//		}
+//		
+//		// Encrypt the message with the federates public key if the following is TRUE:
+//		//   - Message is a Response
+//		//   - Original request was NOT a federation message
+//		//   - Original request had an AUTH token
+//		//
+//		if( message.getCallType() == CallType.ControlResp )
+//		{
+//			if( message.getOriginalHeader().getMessageType() == MessageType.CreateFederation )
+//				federationCreated( message );
+//
+//			if( message.getOriginalHeader().getMessageType().isFederationMessage() == false )
+//				encryptResponseRsa( message );
+//		}
+//		else
+//		{
+//			if( message.getMessageType().isFederationMessage() )
+//				; // symencrypt
+//		}
+//		
+//		// Let this one slide down to the next sucka
+//		passDown( message );
 	}
 	
 	@Override
 	public void up( Message message )
 	{
-		if( !isEnabled )
-		{
-			passUp( message );
-			return;
-		}
-
-		// A Federation Message, won't be public key, only symc key
-		// Check to see if we have a key for the federation and encrypt it
-		if( message.getMessageType().isFederationMessage() )
-		{
-			if( message.getHeader().isEncrypted() )
-			{
-				decryptSymmetric(message); // symdecrypt
-			}
-
-			passUp( message );
-			return;
-		}
-		
-		//
-		// Authentication Request
-		// We have received an Auth request. We need to process this entirely
-		// locally within the protocol. We'll decrypt the message using our
-		// private key and then do an authentication process, returning a token
-		// that can be used later.
-		//
-		if( message.getMessageType() == MessageType.Authenticate )
-		{
-			logger.debug( "Received authentication request, processing" );
-			
-			// decrypt the contents
-			AuthUtils.decryptLongRsaMessage( rtiPrivate, message );
-			
-			// do the authentication, re-populating the message with a response that
-			// has been encrypted with the federate's public key
-			authenticate( message );
-
-			// pass the result back down and bug out!
-			passDown( message );
-			return;
-		}
-		
-		//
-		// Auth Token Present
-		// The auth token is present on this message _and_ it is a non-federation
-		// message which means it will be encrytped with our public key. Decrypt
-		// it and let is pass up the stack
-		//
-		if( message.getMessageType().isFederationMessage() == false )
-		{
-			short authToken = message.getHeader().getAuthToken();
-			if( authToken == PorticoConstants.NO_AUTH_TOKEN )
-			{
-				if( configuration.isEnforced() && message.getMessageType() != MessageType.RtiProbe )
-				{
-					logger.warn( "Dropped message (%s): Missing authentication information", message.getMessageType() );
-					return;
-				}
-			}
-			else
-			{
-				AuthUtils.decryptLongRsaMessage( rtiPrivate, message );
-			}
-		}
-		
+		// FIXME Temporary while committing large changes to header structure and moving to XML config
 		passUp( message );
+
+//		if( !isEnabled )
+//		{
+//			passUp( message );
+//			return;
+//		}
+//
+//		// A Federation Message, won't be public key, only symc key
+//		// Check to see if we have a key for the federation and encrypt it
+//		if( message.getMessageType().isFederationMessage() )
+//		{
+//			if( message.getHeader().isEncrypted() )
+//			{
+//				decryptSymmetric(message); // symdecrypt
+//			}
+//
+//			passUp( message );
+//			return;
+//		}
+//		
+//		//
+//		// Authentication Request
+//		// We have received an Auth request. We need to process this entirely
+//		// locally within the protocol. We'll decrypt the message using our
+//		// private key and then do an authentication process, returning a token
+//		// that can be used later.
+//		//
+//		if( message.getMessageType() == MessageType.Authenticate )
+//		{
+//			logger.debug( "Received authentication request, processing" );
+//			
+//			// decrypt the contents
+//			AuthUtils.decryptLongRsaMessage( rtiPrivate, message );
+//			
+//			// do the authentication, re-populating the message with a response that
+//			// has been encrypted with the federate's public key
+//			authenticate( message );
+//
+//			// pass the result back down and bug out!
+//			passDown( message );
+//			return;
+//		}
+//		
+//		//
+//		// Auth Token Present
+//		// The auth token is present on this message _and_ it is a non-federation
+//		// message which means it will be encrytped with our public key. Decrypt
+//		// it and let is pass up the stack
+//		//
+//		if( message.getMessageType().isFederationMessage() == false )
+//		{
+//			short authToken = message.getHeader().getAuthToken();
+//			if( authToken == PorticoConstants.NO_AUTH_TOKEN )
+//			{
+//				if( configuration.isEnforced() && message.getMessageType() != MessageType.RtiProbe )
+//				{
+//					logger.warn( "Dropped message (%s): Missing authentication information", message.getMessageType() );
+//					return;
+//				}
+//			}
+//			else
+//			{
+//				AuthUtils.decryptLongRsaMessage( rtiPrivate, message );
+//			}
+//		}
+//		
+//		passUp( message );
 	}
 
 	
@@ -298,27 +304,27 @@ public class RTIPublicKeyProtocol extends Protocol
 	 */
 	private boolean encryptResponseRsa( Message message )
 	{
-		short authToken = message.getOriginalHeader().getAuthToken();
-		
-		if( authToken == PorticoConstants.NO_AUTH_TOKEN )
-			return true; // let is pass, but not auth token to encrypt with
-
-		// we have an Auth token, find the public key to use
-		PublicKey fedPublic = authStore.getKeyForToken( authToken );
-		if( fedPublic == null )
-		{
-			logger.error( "Could not find key for Auth Token: %04x. Dropping response (%s) to (%s)",
-			              (short)authToken,
-			              message.getMessageType(),
-			              message.getOriginalHeader().getMessageType() );
-			return false;
-		}
-
-		// encrypt the message
-		AuthUtils.encryptLongRsaMessage( fedPublic, message );
-		
-		// record the auth token in the response header
-		message.getHeader().writeAuthToken( authToken );
+//		short authToken = message.getOriginalHeader().getAuthToken();
+//		
+//		if( authToken == PorticoConstants.NO_AUTH_TOKEN )
+//			return true; // let is pass, but not auth token to encrypt with
+//
+//		// we have an Auth token, find the public key to use
+//		PublicKey fedPublic = authStore.getKeyForToken( authToken );
+//		if( fedPublic == null )
+//		{
+//			logger.error( "Could not find key for Auth Token: %04x. Dropping response (%s) to (%s)",
+//			              (short)authToken,
+//			              message.getMessageType(),
+//			              message.getOriginalHeader().getMessageType() );
+//			return false;
+//		}
+//
+//		// encrypt the message
+//		AuthUtils.encryptLongRsaMessage( fedPublic, message );
+//		
+//		// record the auth token in the response header
+//		message.getHeader().writeAuthToken( authToken );
 		return true;
 	}
 

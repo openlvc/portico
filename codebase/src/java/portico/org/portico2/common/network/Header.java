@@ -14,12 +14,11 @@
  */
 package org.portico2.common.network;
 
-import org.portico.utils.StringUtils;
 import org.portico.utils.bithelpers.BitHelpers;
 import org.portico.utils.bithelpers.BufferUnderflowException;
 import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageType;
-import org.portico2.common.network.protocols.symmetric.CipherMode;
+import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.services.object.msg.SendInteraction;
 import org.portico2.common.services.object.msg.UpdateAttributes;
 
@@ -55,7 +54,8 @@ public class Header
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final int HEADER_LENGTH = 16;
+	/** Size in bytes of the fixed portion of a message header (size that is always present) */ 
+	public static final int HEADER_LENGTH = 12;
 	public static final byte[] EMPTY_HEADER = new byte[HEADER_LENGTH];
 
 	//----------------------------------------------------------
@@ -67,13 +67,13 @@ public class Header
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public Header( byte[] buffer, int offset )
+	public Header( byte[] buffer, int byteOffset )
 	{
 		if( buffer.length < HEADER_LENGTH )
 			throw new BufferUnderflowException( "Header requires at least "+HEADER_LENGTH+" bytes; found "+buffer.length );
 		
 		this.buffer = buffer;
-		this.offset = offset;
+		this.offset = byteOffset;
 	}
 
 	//----------------------------------------------------------
@@ -83,380 +83,346 @@ public class Header
 	//////////////////////////////////////////////////////////////////////////////////////
 	///  Header Structure    /////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////
+	// Source for "protocol" python command line utility
+	//   "Flags:8,Payload Length:24"
+	//   "CType:4,FedID:4,MessageType:8,RequestId/FilteringId:16"
+	//   "Source Handle:16,Target Handle:16"
+	//   "Payload...:128"
+	//   "(Optional) Authentication Token:32,(Optional) Encryption Nonce:128"
 	//
-	//  0                   1                   2                   3
-	//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	// | CType | FedID |   MessageID   |           RequestId           |    // Main Header
-	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	// |         Source Handle         |         Target Handle         |    // Routing
-	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	// |F|O|M|E|Cipher.|        Filtering Handle       | Message Len.. |    // Payload Header
-	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	// |      Message Length (cont)    |           Auth Token          |    // Payload Header (cont)
-	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	// |                                                               |    // Payload Data
-	// +                           Payload...                          +
-	// |                                                               |
-	// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    //  0                   1                   2                   3
+    //  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |     Flags     |                 Payload Length                |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // | CType | FedID |  MessageType  |     RequestId/FilteringId     |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |         Source Handle         |         Target Handle         |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |                                                               |
+    // +                                                               +
+    // |                                                               |
+    // +                           Payload...                          +
+    // |                                                               |
+    // +                                                               +
+    // |                                                               |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |                (Optional) Authentication Token                |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |                                                               |
+    // +                                                               +
+    // |                                                               |
+    // +                  (Optional) Encryption Nonce                  +
+    // |                                                               |
+    // +                                                               +
+    // |                                                               |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	//
+    //  == Lead Line ==
+    //  (00-00)   | 1-bit  | Bundle?
+    //  (01-01)   | 1-bit  | Encrypted? If true, Nonce/IV must be present
+    //  (02-02)   | 1-bit  | Filtering data present?
+    //  (03-03)   | 1-bit  | Filtering handle is object? // 0=Object, 1=Interaction
+    //  (04-04)   | 1-bit  | Authenticated? If sender is authenticated, a token is included in the body
+    //  (05-05)   | 1-bit  | Manually Marshalled? If true, the message uses manual marshalling
+    //  (06-06)   | 1-bit  | Spare
+    //  (07-07)   | 1-bit  | Spare
+    //  (08-31)   | 24-bit | Payload Length: Range=16,777,216 (16MB) {EXCLUDES HEADER SIZE}
     //
-    //  == Main Header ==
-    //  (00-03)   | 4-bit  | Call Type: enum, {Data,ControlSync,ControlAsync,ControlResp,Bundle,Reserverd,Reserved,Reserverd}
-    //  (04-07)   | 4-bit  | Federation ID: half-byte, range=1-16
-    //  (08-15)   | 8-bit  | Message Type: byte, ID for the specific message type
-    //  (16-31)   | 16-bit | Request ID: uint, range=64k 
+    //  == Identification Line ==
+    //  (32-35)   | 4-bit  | Call Type: uint4, Enum, {DataMessage,Notification,ControlRequest,ControlResponseOK,ControlResponseErr}
+    //  (36-39)   | 4-bit  | Federation ID: uint4, range=1-16 
+    //  (40-47)   | 8-bit  | Message Type: uint8, ID for the specific message type (uint8)
+    //  (48-63)   | 16-bit | Request ID: uint16, range=64k 
     //
-    //  == Routing ==
-    //  (32-47)   | 16-bit | Source Handle: handle of source federate 
-    //  (48-63)   | 16-bit | Target Handle: handle of target federate
-    //
-    // == Payload Header ==
-    //  (64-64)   | 1-bit  | Forwarding Data Present? boolean, Is forwarding/filtering info present
-    //  (65-65)   | 1-bit  | Type of handle: boolean, 0 if object, 1 if interaction
-    //  (66-66)   | 1-bit  | Manual Marshal: boolean, Was the message manually marshalled?
-    //  (67-67)   | 1-bit  | Encrypted: boolean, Is the payload encrypted?
-    //  (68-71)   | 4-bit  | Cipher Mode: ID into CipherMode enumeration
-    //  (72-87)   | 16-bit | Filtering Handle: uint, range=65k, Object of Interaction Class the payload is concerned with
-    //  (88-103)  | 16-bit | Auth Token: Authentication Token used to identify an authenticated federate
-    //  (104-127) | 24-bit | Message length: range=16,777,216 (16MB)
+    //  == Routing Line ==
+    //  (64-79)   | 16-bit | Source Handle: uint16, handle of source federate 
+    //  (80-95)   | 16-bit | Target Handle: uint16, handle of target federate
     //
     // == Payload ==
-    //  (128-xxx) | Varies | Payload Data, padded out to nearest 32-bit boundary.
-    //
-
-	//////////////////////////////////////////////////////////////////////////////////////
-	///  Accessors and Mutators    ///////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////
+    //  (96-xxx)  | Varies | Payload Data, padded out to nearest 32-bit boundary.
+    //                       If neither Auth or Encryption is set, this will start
+    //                       earlier (as those headers won't be present).
 	//
-	// Main Header Section
-	//
-	public final CallType getCallType()
+	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Flags   ///////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	// Flags
+	// 01 Bundle                       // adds guaranteed + ??
+	// 01 Encrypted                    // adds guaranteed +128
+	// 01 Authenticated                // adds guaranteed +32
+	// 01 Manually Marshalled
+	// 01 Filtering                    // Handle stored in RequestID/FilteringID combo field
+	// 01 Object Handle (Filtering)    //
+	// 01 Spare
+	// 01 Spare
+	public final boolean isBundle()
 	{
-		return CallType.fromId( BitHelpers.readUint4(buffer,offset,0) );
+		return BitHelpers.readBooleanBit( buffer, offset, 0 );
 	}
 	
-	public final boolean isDataMessage()
+	public final void writeIsBundle( boolean isBundle )
 	{
-		return BitHelpers.readUint4(buffer,offset,0) == 0;
+		BitHelpers.putBooleanBit( isBundle, buffer, offset, 0 );
 	}
 	
-	public final boolean isControlMessage()
-	{
-		return !isDataMessage();
-	}
-	
-	public final void writeCallType( CallType calltype )
-	{
-		BitHelpers.putUint4( (byte)calltype.getId(), buffer, offset, 0 );
-	}
-	
-	public final int getFederation()
-	{
-		return BitHelpers.readUint4( buffer, offset, 4 );
-	}
-	
-	public final void writeFederation( int federationHandle )
-	{
-		BitHelpers.putUint4( (byte)federationHandle, buffer, offset, 4 );
-	}
-	
-	//
-	// Routing Section
-	//
-	public final int getSourceFederate()
-	{
-		return BitHelpers.readUint16( buffer, offset+4 );
-	}
-	
-	public final void writeSourceAndTargetFederate( int sourceFederate, int targetFederate )
-	{
-		BitHelpers.putUint16( sourceFederate, buffer, offset+4 );
-		BitHelpers.putUint16( targetFederate, buffer, offset+6 );
-	}
-	
-	public final int getTargetFederate()
-	{
-		return BitHelpers.readUint16( buffer, offset+6 );
-	}
-	
-	public final MessageType getMessageType()
-	{
-		return MessageType.fromId( BitHelpers.readUint8(buffer,offset+1) );
-	}
-	
-	public final void writeMessageType( MessageType type )
-	{
-		BitHelpers.putUint8( type.getId(), buffer, offset+1 );
-	}
-	
-	public final int getRequestId()
-	{
-		return BitHelpers.readUint16( buffer, offset+2 );
-	}
-	
-	public final void writeRequestId( int requestId )
-	{
-		BitHelpers.putUint16( requestId, buffer, offset+2 );
-	}
-
-	//
-	// Payload Header
-	//
-
-	// Has Filtering?
-	public final boolean hasFilteringData()
-	{
-		return BitHelpers.readBooleanBit( buffer, offset+8, 0 );
-	}
-	
-	public final void writeHasFilteringData( boolean hasFiltering )
-	{
-		BitHelpers.putBooleanBit( hasFiltering, buffer, offset+8, 0 );
-	}
-
-	// Filtering handle is object class handle?
-	public final boolean isFilteringHandleObject()
-	{
-		return BitHelpers.readBooleanBit( buffer, offset+8, 1 ) == false;
-	}
-	
-	public final boolean isFilteringHandleInteraction()
-	{
-		return BitHelpers.readBooleanBit( buffer, offset+8, 1 ) == true;
-	}
-
-	public final void writeFilteringHandleIsObject( boolean isObjectHandle )
-	{
-		// 0 if Object Handle
-		// 1 if Interaction Class Handle
-		if( isObjectHandle )
-			BitHelpers.putBooleanBit( false, buffer, offset+8, 1 );
-		else
-			BitHelpers.putBooleanBit( true, buffer, offset+8, 1 );
-	}
-	
-	// Manual Marshal
-	public final boolean isManualMarshal()
-	{
-		return BitHelpers.readBooleanBit( buffer, offset+8, 2 );
-	}
-	
-	public final void writeIsManualMarshal( boolean isManualMarshal )
-	{
-		BitHelpers.putBooleanBit( isManualMarshal, buffer, offset+8, 2 );		
-	}
-	
-	// Encrypted
 	public final boolean isEncrypted()
 	{
-		return BitHelpers.readBooleanBit( buffer, offset+8, 3 );
+		return BitHelpers.readBooleanBit( buffer, offset, 1 );
 	}
 	
 	public final void writeIsEncrypted( boolean isEncrypted )
 	{
-		BitHelpers.putBooleanBit( isEncrypted, buffer, offset+8, 3 );
+		BitHelpers.putBooleanBit( isEncrypted, buffer, offset, 1 );
 	}
 	
-	// Cipher Mode
-	public final CipherMode getCipherMode()
+	public final boolean isAuthenticated()
 	{
-		return CipherMode.fromId( BitHelpers.readUint4(buffer,offset+8,4) );
+		return BitHelpers.readBooleanBit( buffer, offset, 2 );
 	}
 	
-	public final void writeCipherMode( CipherMode cipherMode )
+	public final void writeIsAuthenticated( boolean isAuthenticated )
 	{
-		BitHelpers.putUint4( (byte)cipherMode.getId(), buffer, offset+8, 4 );
+		BitHelpers.putBooleanBit( isAuthenticated, buffer, offset, 2 );
 	}
-	
-	// Filtering Handle
-	public final int getFilteringHandle()
+
+	public final boolean isManualMarshal()
 	{
-		return (int)BitHelpers.readUint24( buffer, offset+9 );
+		return BitHelpers.readBooleanBit( buffer, offset, 3 );
 	}
 	
-	public final void writeFilteringHandle( int handle )
+	public final void writeIsManualMarshal( boolean isManualMarshal )
 	{
-		BitHelpers.putUint24( handle, buffer, offset+9 );
+		BitHelpers.putBooleanBit( isManualMarshal, buffer, offset, 3 );
 	}
 	
-	// Message Size
+	public final boolean isFiltering()
+	{
+		return BitHelpers.readBooleanBit( buffer, offset, 4 );
+	}
+	
+	public final void writeIsFiltering( boolean isFiltering )
+	{
+		BitHelpers.putBooleanBit( isFiltering, buffer, offset, 4 );
+	}
+	
+	public final boolean isFilteringObjectClass()
+	{
+		return BitHelpers.readBooleanBit( buffer, offset, 5 );
+	}
+	
+	public final void writeIsFilteringObjectClass( boolean isFilteringObjectClass )
+	{
+		BitHelpers.putBooleanBit( isFilteringObjectClass, buffer, offset, 5 );
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Message/Header Length Methods   ///////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	public final int getPayloadLength()
 	{
-		return (int)BitHelpers.readUint24( buffer, offset+11 );
+		return (int)BitHelpers.readUint24( buffer, offset+1 );
 	}
 	
-	public final void writePayloadLength( int payloadLength )
+	public void writePayloadLength( int payloadLength )
 	{
-		BitHelpers.putUint24( payloadLength, buffer, offset+11 );
-	}
-
-	public final int getFullMessageLength()
-	{
-		return getPayloadLength()+HEADER_LENGTH;
+		BitHelpers.putUint24( payloadLength, buffer, offset+1 );
 	}
 	
-	public final short getAuthToken()
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Identifier Line Methods   /////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	// The Identifier line is the second row of 4 bytes within the fixed portin of
+	// each header. It contains ID information such as the Call Type, Message Type,
+	// Federation ID and either the Request ID (if a control message) or the class
+	// handle used for filtering (if it is a data message). 
+	public final CallType getCallType()
 	{
-		return BitHelpers.readShortBE( buffer, offset+14 );
+		return CallType.fromId( BitHelpers.readUint4(buffer,offset+4,0) );
 	}
 	
-	public final void writeAuthToken( short token )
+	public final void writeCallType( CallType calltype )
 	{
-		BitHelpers.putShortBE( token, buffer, offset+14 );
+		BitHelpers.putUint4( (byte)calltype.getId(), buffer, offset+4, 0 );
+	}
+	
+	public final int getFederation()
+	{
+		return BitHelpers.readUint4( buffer, offset+4, 4 );
+	}
+	
+	public final void writeFederation( int federationHandle )
+	{
+		BitHelpers.putUint4( (byte)federationHandle, buffer, offset+4, 4 );
+	}
+	
+	public final MessageType getMessageType()
+	{
+		return MessageType.fromId( BitHelpers.readUint8(buffer,offset+5) );
+	}
+	
+	public final void writeMessageType( MessageType type )
+	{
+		BitHelpers.putUint8( type.getId(), buffer, offset+5 );
 	}
 
-	@Override
-	public String toString()
+	public final int getRequestId()
 	{
-		//  Header: call=CALLTYPE, federation=1, message=MESSAGE_TYPE, requestId=1234
-		// Routing: source=<>, target=<>
-		// Payload: flags=ManualMarshal(true); Filtering(Object=1234)
-		//          encrypted=false, Cipher=<>
-		//          payload=1234 bytes
-
-		// Header
-		String line1 = String.format( " Header: call=%s, federation=%d, message=%s, requestId=%d\n",
-		                              getCallType(), getFederation(), getMessageType(), getRequestId() );
-
-		// Routing
-		String line2 = String.format( "Routing: source=%s, target=%s\n",
-		                              StringUtils.sourceHandleToString(getSourceFederate()),
-		                              StringUtils.targetHandleToString(getTargetFederate()) );
-
-		// Payload Data
-		String filterString = "not present";
-		if( hasFilteringData() )
-		{
-			filterString = String.format( "%s=%d",
-			                              isFilteringHandleObject() ? "Object" : "Interaction",
-			                              getFilteringHandle() );
-		}
-		
-		String line3 = String.format( "Auth Token: "+String.format("%04x",getAuthToken()) );
-
-		String line4 = String.format( "Payload: flags=ManualMarshal(%s);Filtering(%s)\n",
-		                              isManualMarshal(), filterString );
-
-		String line5 = String.format( "         encrypted=%s, cipher=%s\n",
-		                              isEncrypted(), isEncrypted() ? getCipherMode() : "None" );
-		
-		String line6 = String.format( "         payload=%s\n",
-		                              StringUtils.humanReadableSize(getPayloadLength()) );
-		
-		// An utterly frivolous use of cycles
-		StringBuilder builder = new StringBuilder();
-		builder.append( "\n" );
-		builder.append( line1 );
-		builder.append( line2 );
-		builder.append( line3 );
-		builder.append( line4 );
-		builder.append( line5 );
-		builder.append( line6 );
-		return builder.toString();
-		
+		return BitHelpers.readUint16( buffer, offset+6 );    // caution, doubles up with FilterId
 	}
+	
+	public final void writeRequestId( int requestId )
+	{
+		BitHelpers.putUint16( requestId, buffer, offset+6 ); // caution, doubles up with FilterId
+	}
+
+	public final int getFilteringId()
+	{
+		return BitHelpers.readUint16( buffer, offset+6 );    // caution, doubles up with RequestId
+	}
+	
+	public final void writeFilteringId( int filteringId )
+	{
+		BitHelpers.putUint16( filteringId, buffer, offset+6 ); // caution, doubles up with RequestId
+	}
+
+
+	// Convenience Methods
+	public final boolean isDataMessage()
+	{
+		return BitHelpers.readUint4(buffer,offset+4,0) == 0;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Routing Line Methods   ////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	public final int getSourceFederate()
+	{
+		return BitHelpers.readUint16( buffer, offset+8 );
+	}
+	
+	public final int getTargetFederate()
+	{
+		return BitHelpers.readUint16( buffer, offset+10 );
+	}
+
+	public final void writeSourceAndTargetFederate( int sourceFederate, int targetFederate )
+	{
+		BitHelpers.putUint16( sourceFederate, buffer, offset+8 );
+		BitHelpers.putUint16( targetFederate, buffer, offset+10 );
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
 	public static void writeHeader( byte[] buffer,           // buffer to write into
 	                                int byteOffset,          // offset to start at within buffer
 	                                PorticoMessage message,  // message with lots of info needed
 	                                CallType calltype,       // the type of call this is
-	                                int requestId,           // id for request correlation
-	                                int payloadLength )      // length of the payload
+	                                int reqOrFilteringId,    // id for request correlation OR filtering
+	                                int payloadLength )      // length of the payload only
 	{
 		Header header = new Header( buffer, byteOffset );
-		
-		// Main Header
-		//    4-bit, Call Type     (enum)
-		//    4-bit, Federation ID (uint4)
-		//    8-bit, Message ID    (uint8)
-		//   16-bit, Request ID    (uint16)
-		header.writeCallType( calltype );
-		header.writeFederation( message.getTargetFederation() );
-		header.writeMessageType( message.getType() );
-		header.writeRequestId( requestId );
-		
-		// Routing
-		//   16-bit, Source FederateHandle (uint16)
-		//   16-bit, Target FederateHandle (uint16)
-		header.writeSourceAndTargetFederate( message.getSourceFederate(),
-		                                     message.getTargetFederate() );
 
-		// Payload Header
-		//    1-bit, Filtering Data Present?   (boolean)
-		//    1-bit, Object Class Handle?      (boolean)
-		//    1-bit, Manually Marshalled?      (boolean)
-		//    1-bit, Encrypted?                (boolean)
-		//    4-bit, Cipher Mode               (uint4)
-		//   16-bit, Object/Interaction Handle (uint16)
-		//   24-bit, Message Length            (uint24)
-		//   16-bit, Auth Token                (int16)
+		//
+		// Lead Line
+		//
+		// -- Flags --
+		// Bundle Flag
+		// This is not supported yet
+		
+		// Encryption Flag
+		// This is written in by the EncryptionProtocol if it is used.
+		
+		// Authentication Flag
+		// This is written in by the AuthenticationProtocol if it is used.
+
+		// Manual Marshal Support
+		header.writeIsManualMarshal( message.supportsManualMarshal() );
+
+		// Filtering Flags
 		if( calltype == CallType.DataMessage )
 		{
-			header.writeHasFilteringData( true );
+			// If this is a data message, we must write in the Filtering ID/Handle information
+			header.writeIsFiltering( true );
 			switch( message.getType() )
 			{
 				case UpdateAttributes:
-					header.writeFilteringHandleIsObject( true );
-					header.writeFilteringHandle( ((UpdateAttributes)message).getObjectId() );
+					header.writeIsFilteringObjectClass( true );
+					header.writeFilteringId( ((UpdateAttributes)message).getObjectId() );
 					break;
 				case SendInteraction:
-					header.writeFilteringHandleIsObject( false );
-					header.writeFilteringHandle( ((SendInteraction)message).getInteractionId() );
+					header.writeIsFilteringObjectClass( false );
+					header.writeFilteringId( ((SendInteraction)message).getInteractionId() );
 					break;
 				default:
 					break;
 			}
 		}
 
-		// Manual Marshalling?
-		header.writeIsManualMarshal( message.supportsManualMarshal() );
-		
-		// Encryption Information
-		// This is written in by the EncryptionProtocol if it is used.
-		
-		// Auth Token
-		// This is written in by the AuthenticationProtocol if it is used.
-		
-		// Payload Information
+		// Payload Length
 		header.writePayloadLength( payloadLength );
+
+		//
+		// Identification Line
+		//
+		//    4-bit, Call Type     (enum)
+		//    4-bit, Federation ID (uint4)
+		//    8-bit, Message Type  (uint8)
+		//   16-bit, Request ID    (uint16)
+		header.writeCallType( calltype );
+		header.writeFederation( message.getTargetFederation() );
+		header.writeMessageType( message.getType() );
+		header.writeRequestId( reqOrFilteringId );
+		
+		// Routing
+		//   16-bit, Source FederateHandle (uint16)
+		//   16-bit, Target FederateHandle (uint16)
+		header.writeSourceAndTargetFederate( message.getSourceFederate(),
+		                                     message.getTargetFederate() );
 	}
-	
+
 	public static void writeResponseHeader( byte[] buffer,
 	                                        int byteOffset,
 	                                        int requestId,
-	                                        boolean isSuccess,
-	                                        int targetFederation,
-	                                        int sourceFederate,
-	                                        int targetFederate,
+	                                        ResponseMessage response,
+	                                        PorticoMessage request,
 	                                        int payloadLength )
 	{
 		Header header = new Header( buffer, byteOffset );
 		// TODO Put something here to zero-out the header. It currently is zero'd out by
 		//      virtue of the way MessageHelpers.deflate() works, but that isn't guaranteed
 		//      to stay that way if we look at more efficient buffer use
+
+		// Lead Line
+		//
+		// -- Flags --
+		// Bundle Flag
+		// This is not supported yet
 		
-		// Main Header
-		header.writeCallType( CallType.ControlResp );
-		header.writeFederation( targetFederation );
-		header.writeMessageType( isSuccess ? MessageType.SuccessResponse : MessageType.ErrorResponse );
-		header.writeRequestId( requestId );
+		// Encryption Flag
+		// This is written in by the EncryptionProtocol if it is used.
 		
-		// Routing
-		header.writeSourceAndTargetFederate( sourceFederate, targetFederate );
-		
-		// Optional Forwarding
-		header.writeHasFilteringData( false );
-		//header.writeFilteringDataIsObjectClass( false );
-		//header.writeFilteringClassHandle( 0 );
-		//   None
-		
-		// Payload Information
-		// Encryption information written in encryption IProtocol
-		// Auth token information written in authentication header
-		// Write payload size
+		// Authentication Flag
+		// This is written in by the AuthenticationProtocol if it is used.
+
+		// Manual Marshal Support
+		header.writeIsManualMarshal( false );
+
+		// Payload Length
 		header.writePayloadLength( payloadLength );
+
+		// Identification Line
+		header.writeCallType( response.isSuccess() ? CallType.ControlResponseOK :
+		                                             CallType.ControlResponseErr );
+		header.writeFederation( request.getTargetFederation() );
+		header.writeMessageType( request.getType() );
+		header.writeRequestId( requestId ); // TODO Could this move into PorticoMessage?
+		
+		// Routing -- Flipped from request
+		header.writeSourceAndTargetFederate( request.getTargetFederate(), request.getSourceFederate() );
 	}
-	                                
+	
 }

@@ -57,13 +57,14 @@ public class MessageHelpersTest
 	public void testDeflateInflateRtiProbe()
 	{
 		RtiProbe before = new RtiProbe();
-		byte[] buffer = MessageHelpers.deflate2( before, CallType.ControlSync, 0 );
+		byte[] buffer = MessageHelpers.deflate2( before, CallType.ControlRequest, 0 );
 		RtiProbe after = MessageHelpers.inflate2( buffer, RtiProbe.class );
 	}
 	
 	@Test
 	public void testHeader()
 	{
+		/**
 		int[] requestIds = new int[] { 0, 1, 65535, 65536, 65537, Integer.MAX_VALUE };
 		
 		byte[] bytes = new byte[Header.HEADER_LENGTH];
@@ -74,7 +75,7 @@ public class MessageHelpersTest
 			System.out.println( "RequestId: "+requestIds[i] );
 			header.writeRequestId( requestIds[i] );
 			System.out.println(" ReadId   : "+header.getRequestId() );
-		}
+		}*/
 	}
 	
 	@Test
@@ -128,7 +129,8 @@ public class MessageHelpersTest
 	private static class AppReceiver implements IApplicationReceiver
 	{
 		private List<PorticoMessage> receivedRequests = new ArrayList<>();
-		private List<ResponseMessage> receivedResponses = new ArrayList<>() ;
+		private List<PorticoMessage> receivedNotifications = new ArrayList<>();
+		private List<ResponseMessage> receivedResponses = new ArrayList<>();
 		
 		public Logger getLogger() { return LogManager.getFormatterLogger( "portico" ); }
 		public boolean isReceivable( Header header ) { return true; }
@@ -144,6 +146,11 @@ public class MessageHelpersTest
 		public void receiveDataMessage( PorticoMessage message )
 		{
 			this.receivedRequests.add( message );
+		}
+		
+		public void receiveNotification( PorticoMessage message )
+		{
+			this.receivedNotifications.add( message );
 		}
 	}
 	

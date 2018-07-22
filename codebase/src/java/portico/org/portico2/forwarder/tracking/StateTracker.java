@@ -61,7 +61,7 @@ public class StateTracker
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Processing Methods   //////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public final void receiveSyncControlRequest( Message message )
+	public final void receiveControlRequest( Message message )
 	{
 		outstandingRequests.put( message.getHeader().getRequestId(), message );
 		
@@ -79,7 +79,7 @@ public class StateTracker
 //		}
 	}
 	
-	public final void receiveAsyncControlRequest( Message message )
+	public final void receiveNotification( Message message )
 	{
 		switch( message.getHeader().getMessageType() )
 		{

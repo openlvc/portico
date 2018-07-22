@@ -186,20 +186,20 @@ public class TcpChannel
 	private final int receiveSingle( byte[] payload, int offset ) throws IOException
 	{
 		Header header = new Header( payload, offset );
-		int length = header.getFullMessageLength();
+		int messageLength = header.getPayloadLength() + Header.HEADER_LENGTH;
 		
 		// Extract the contents for this single message from the payload
 		// If the payload is the same length as the message, they're one and the same
 		byte[] messageOnly = payload;
-		if( payload.length != length )
+		if( payload.length != messageLength )
 		{
-			messageOnly = new byte[length];
-			System.arraycopy( payload, offset, messageOnly, 0, length ); // TODO Remove this wasteful copy
+			messageOnly = new byte[messageLength];
+			System.arraycopy( payload, offset, messageOnly, 0, messageLength ); // TODO Remove this wasteful copy
 		}
 		
 		// Keep some stats
 		++metrics.messagesReceived;
-		metrics.bytesReceived += length;
+		metrics.bytesReceived += messageLength;
 		
 		// Log the message
 		if( logger.isTraceEnabled() )
@@ -210,7 +210,7 @@ public class TcpChannel
 			              header.getMessageType(),
 			              StringUtils.sourceHandleToString( header.getSourceFederate() ),
 			              StringUtils.targetHandleToString( header.getTargetFederate() ),
-			              length,
+			              messageLength,
 			              connectionInfo );
 		}
 		
@@ -226,7 +226,7 @@ public class TcpChannel
 		}
 		
 		// return bytes read
-		return length;
+		return messageLength;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////

@@ -113,6 +113,16 @@ public class ForwarderConnection implements IApplicationReceiver
 	}
 
 	@Override
+	public void receiveNotification( PorticoMessage message ) throws JException
+	{
+		// No-op
+		logger.warn( "Received Notification - should never get here (%s) source=%s, target=%s",
+		             message.getType(),
+		             message.getSourceFederate(),
+		             message.getTargetFederate() );
+	}
+
+	@Override
 	public final boolean isReceivable( Header header )
 	{
 		// accept everything

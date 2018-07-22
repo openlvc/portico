@@ -23,7 +23,7 @@ import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.protocols.symmetric.SharedKeyProtocol;
+import org.portico2.common.network.protocols.encryption.EncryptionProtocol;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 /**
@@ -146,7 +146,7 @@ public class Connection
 
 		// Insert the encryption settings
 		if( configuration.getSharedKeyConfiguration().isEnabled() )
-			protocolStack.addProtocol( new SharedKeyProtocol() );
+			protocolStack.addProtocol( new EncryptionProtocol() );
 		
 	}
 
@@ -223,6 +223,21 @@ public class Connection
 	}
 
 	/**
+	 * Builds and sends a notification message down the protocol stack to the transport.
+	 * This message will carry the call type {@link CallType#Notification} to signal that
+	 * it is a control message that does not require a response.
+	 * 
+	 * @param message The message that should be sent out, populated with the target federate
+	 *                and any other appropriate information.
+	 * @throws JException If there is a problem sending the message
+	 */
+	public void sendNotification( PorticoMessage message ) throws JException
+	{
+		Message outgoing = new Message( message, CallType.Notification, 0 );
+		protocolStack.down( outgoing );
+	}
+	
+	/**
 	 * Control messages are ones that expect a response. When a component wants to send a
 	 * control message it packs it into a {@link MessageContext} and passes it to the connection.
 	 * This call is expected to BLOCK while a response is sought. At the conclusion of this
@@ -233,30 +248,25 @@ public class Connection
 	 */
 	public void sendControlRequest( MessageContext context ) throws JRTIinternalError
 	{
-		// if async, just send and mark context a success
+		// FIXME -- REMOVE ME -- Left here on purpose to flag an issue.
+		if( context.getRequest().isAsync() )
+			throw new JRTIinternalError( "Async Messages no longer supported - move to Notificatins" );
+		
+		// Get an ID for the request
+		int requestId = responseCorrelator.register();
+		
+		// Send the message
 		PorticoMessage request = context.getRequest();
-		if( request.isAsync() )
-		{
-			protocolStack.down( new Message(request, CallType.ControlAsync, 0) );
-			context.success();
-		}
-		else
-		{
-			// Get an ID for the request
-			int requestId = responseCorrelator.register();
-			
-			// Send the message
-			protocolStack.down( new Message(request,CallType.ControlSync,requestId) );
-			
-			// Wait for the response
-			ResponseMessage response = responseCorrelator.waitFor( requestId );
+		protocolStack.down( new Message(request,CallType.ControlRequest,requestId) );
 
-			// Package the response
-			if( response != null )
-				context.setResponse( response );
-			else
-				context.error( "No response received (request:"+request.getType()+") - RTI/Federates still running?" );
-		}
+		// Wait for the response
+		ResponseMessage response = responseCorrelator.waitFor( requestId );
+
+		// Package the response
+		if( response != null )
+			context.setResponse( response );
+		else
+			context.error( "No response received (request:"+request.getType()+") - RTI/Federates still running?" );
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////
@@ -276,11 +286,14 @@ public class Connection
 			case DataMessage:
 				appReceiver.receiveDataMessage( message.inflateAsPorticoMessage() );
 				break;
-			case ControlSync:
-			case ControlAsync:
+			case Notification:
+				appReceiver.receiveNotification( message.inflateAsPorticoMessage() );
+				break;
+			case ControlRequest:
 				receiveControlRequest( message );
 				break;
-			case ControlResp:
+			case ControlResponseOK:
+			case ControlResponseErr:
 				responseCorrelator.offer( header.getRequestId(), message.inflateAsResponse() );
 				break;
 			default: break;
