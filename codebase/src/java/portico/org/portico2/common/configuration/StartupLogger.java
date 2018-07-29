@@ -49,7 +49,7 @@ public class StartupLogger
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static void logGenericStartupHeader( Logger logger, RID rid )
+	public static void logGenericStartupHeader( Logger logger, org.portico2.common.configuration.xml.RID rid )
 	{
 		// get the system information
 		SystemInformation info = SystemInformation.LOCAL;
@@ -101,7 +101,7 @@ public class StartupLogger
 		return buf.toString();
 	}
 	
-	private static void logConfigurationInformation( Logger logger, RID rid )
+	private static void logConfigurationInformation( Logger logger, org.portico2.common.configuration.xml.RID rid )
 	{
 		// log the command line arguments
 		CommandLine commandline = rid.getCommandLine();
@@ -140,38 +140,38 @@ public class StartupLogger
 			return;
 		
 		// firstly, to make printing nice, figure out the longest property name
-		List<String> keys = new ArrayList<String>(); // sort later and then use this to pull out in order
-		int longestName = 0;
-		for( Object key : rid.getConfigurationProperties().keySet() )
-		{
-			if( key.toString().length() > longestName )
-				longestName = key.toString().length();
-			
-			keys.add( key.toString() );
-		}
-		
-		logger.debug( "" );
-		logger.debug( " ==============================" );
-		logger.debug( " == Configuration Properties ==" );
-		logger.debug( " ==============================" );
-		
-		//String formatString = " %"+longestName+"s = %s %s";
-		String formatString = " %s = %s %s";
-		Collections.sort( keys );
-		for( String key : keys )
-		{
-			// was this specified on the command line? If so we'll include that info
-			boolean isCommandLine = false;
-			for( Argument argument : commandline.keySet() )
-			{
-				if( argument.getProperty().equals(key.toString()) )
-					isCommandLine = true;
-			}
-			
-			String value = rid.getConfigurationProperties().get(key).toString();
-			String cline = isCommandLine ? " (command line)" : "";
-			logger.debug( String.format(formatString,key.toString(),value,cline) );
-		}
+//		List<String> keys = new ArrayList<String>(); // sort later and then use this to pull out in order
+//		int longestName = 0;
+//		for( Object key : rid.getConfigurationProperties().keySet() )
+//		{
+//			if( key.toString().length() > longestName )
+//				longestName = key.toString().length();
+//			
+//			keys.add( key.toString() );
+//		}
+//		
+//		logger.debug( "" );
+//		logger.debug( " ==============================" );
+//		logger.debug( " == Configuration Properties ==" );
+//		logger.debug( " ==============================" );
+//		
+//		//String formatString = " %"+longestName+"s = %s %s";
+//		String formatString = " %s = %s %s";
+//		Collections.sort( keys );
+//		for( String key : keys )
+//		{
+//			// was this specified on the command line? If so we'll include that info
+//			boolean isCommandLine = false;
+//			for( Argument argument : commandline.keySet() )
+//			{
+//				if( argument.getProperty().equals(key.toString()) )
+//					isCommandLine = true;
+//			}
+//			
+//			String value = rid.getConfigurationProperties().get(key).toString();
+//			String cline = isCommandLine ? " (command line)" : "";
+//			logger.debug( String.format(formatString,key.toString(),value,cline) );
+//		}
 		
 		logger.debug( "" );	
 	}

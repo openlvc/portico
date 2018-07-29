@@ -48,7 +48,7 @@ import org.portico.lrc.compat.JSaveInProgress;
 import org.portico.lrc.compat.JTimeAdvanceAlreadyInProgress;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.utils.StringUtils;
-import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.xml.RID;
 import org.portico2.common.messaging.ErrorResponse;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;

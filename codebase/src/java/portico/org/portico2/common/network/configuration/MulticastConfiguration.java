@@ -18,7 +18,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
+import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
 import org.portico2.common.utils.NetworkUtils;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Element;
 
 public class MulticastConfiguration extends ConnectionConfiguration
 {
@@ -41,6 +45,7 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	private int port;
 	private String nic;
 
+	private ProtocolStackConfiguration protocolStack;
 	private SharedKeyConfiguration sharedKeyConfiguration;
 	private PublicKeyConfiguration publicKeyConfiguration;
 
@@ -54,6 +59,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 		this.port    = DEFAULT_PORT;
 		this.nic     = DEFAULT_NIC;
 		
+		this.protocolStack = new ProtocolStackConfiguration();
+
 		this.sharedKeyConfiguration = new SharedKeyConfiguration();
 		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
@@ -82,10 +89,49 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	{
 		return this.publicKeyConfiguration;
 	}
+	
+	@Override
+	public ProtocolStackConfiguration getProtocolStack()
+	{
+		return this.protocolStack;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/// Configuration Loading   ////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void parseConfiguration( RID rid, Element element )
+	{
+		///////////////////////////////////
+		// Parent Element Properties //////
+		///////////////////////////////////
+		if( element.hasAttribute("enabled") )
+			super.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
+		
+		///////////////////////////////////
+		// Transport-Specific Properties //
+		///////////////////////////////////
+		// get the multicast configuration element
+		Element multicast = XmlUtils.getChild( element, "multicast", true );
+		
+		// get the standard properties
+		if( multicast.hasAttribute("address") )
+			this.setAddress( multicast.getAttribute("address") );
+		
+		if( multicast.hasAttribute("port") )
+			this.setPort( Integer.parseInt(multicast.getAttribute("port")) );
+
+		if( multicast.hasAttribute("nic") )
+			this.setNic( multicast.getAttribute("nic") );
+
+		///////////////////////////////////
+		// Protocol Stack Properties //////
+		///////////////////////////////////
+		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
+		if( protocolStackElement != null )
+			protocolStack.parseConfiguration( rid, protocolStackElement );
+	}
+	
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{
@@ -219,7 +265,8 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	@Override
 	public String toString()
 	{
-		return String.format( "[Multicast: address=%s, port=%d, nic=%s]", address, port, nic ); 
+		return String.format( "[Multicast: name=%s, enabled=%s, address=%s, port=%d, nic=%s]",
+		                      super.name, super.enabled, address, port, nic ); 
 	}
 
 	//----------------------------------------------------------

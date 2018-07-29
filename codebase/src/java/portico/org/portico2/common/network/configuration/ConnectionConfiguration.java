@@ -16,6 +16,10 @@ package org.portico2.common.network.configuration;
 
 import java.util.Properties;
 
+import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.w3c.dom.Element;
+
 /**
  * This class represents a generic structure for the configuration of a connection.
  * Each connection has a root transport type that it uses. This is expressed in the
@@ -35,7 +39,8 @@ public abstract class ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private String name;
+	protected String name;
+	protected boolean enabled;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -43,6 +48,7 @@ public abstract class ConnectionConfiguration
 	protected ConnectionConfiguration( String name )
 	{
 		this.name = name;
+		this.enabled = true;
 	}
 
 	//----------------------------------------------------------
@@ -61,14 +67,33 @@ public abstract class ConnectionConfiguration
 	 * @param prefix The prefix to look for properties under
 	 * @param properties The properties set to look in
 	 */
+	@Deprecated
 	public abstract void parseConfiguration( String prefix, Properties properties );
 
+	/**
+	 * Parse the configuration for the connection from the given set XML element. The concrete
+	 * connection type should pull its configuration from here
+	 * 
+	 * @param rid The RID we are configuring
+	 * @param element The XML element containing the configuration information
+	 */
+	public abstract void parseConfiguration( RID rid, Element element );
+
+	/**
+	 * Each connection will have a ProtocolStack. This returns the configuration that
+	 * should be used for that stack.
+	 * 
+	 * @return The configuration to use for the protocol stack
+	 */
+	public abstract ProtocolStackConfiguration getProtocolStack();
+	
 	/**
 	 * Each connection should support a default set of configuration properties.
 	 * This method will return the shared key protocol configuration settings.
 	 * 
 	 * @return The shared key configuration for the connection
 	 */
+	@Deprecated
 	public abstract SharedKeyConfiguration getSharedKeyConfiguration();
 
 	/**
@@ -77,6 +102,7 @@ public abstract class ConnectionConfiguration
 	 * 
 	 * @return The public key protocol configuration for the connection
 	 */
+	@Deprecated
 	public abstract PublicKeyConfiguration getPublicKeyConfiguration();
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -90,6 +116,16 @@ public abstract class ConnectionConfiguration
 	public void setName( String name )
 	{
 		this.name = name;
+	}
+	
+	public boolean isEnabled()
+	{
+		return this.enabled;
+	}
+	
+	public void setEnabled( boolean enabled )
+	{
+		this.enabled = enabled;
 	}
 
 	//----------------------------------------------------------

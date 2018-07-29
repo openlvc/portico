@@ -18,7 +18,11 @@ import java.net.InetAddress;
 import java.util.Properties;
 
 import org.portico.lrc.compat.JConfigurationException;
+import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
 import org.portico2.common.utils.NetworkUtils;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Element;
 
 public class TcpConfiguration extends ConnectionConfiguration
 {
@@ -50,6 +54,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 	private int bundlingMaxSize;
 	private int bundlingMaxTime;
 	
+	private ProtocolStackConfiguration protocolStack;
+	
 	private SharedKeyConfiguration sharedKeyConfiguration;
 	private PublicKeyConfiguration publicKeyConfiguration;
 	
@@ -70,6 +76,7 @@ public class TcpConfiguration extends ConnectionConfiguration
 		this.bundlingMaxSize = 64000; // 64k
 		this.bundlingMaxTime = 20000; // 20ms
 		
+		this.protocolStack = new ProtocolStackConfiguration();
 		this.sharedKeyConfiguration = new SharedKeyConfiguration();
 		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
@@ -97,6 +104,12 @@ public class TcpConfiguration extends ConnectionConfiguration
 	}
 
 	@Override
+	public ProtocolStackConfiguration getProtocolStack()
+	{
+		return this.protocolStack;
+	}
+
+	@Override
 	public SharedKeyConfiguration getSharedKeyConfiguration()
 	{
 		return this.sharedKeyConfiguration;
@@ -108,9 +121,51 @@ public class TcpConfiguration extends ConnectionConfiguration
 		return this.publicKeyConfiguration;
 	}
 
+	@Override
+	public String toString()
+	{
+		return String.format( "[TCP: name=%s, enabled=%s, transport=%s, address=%s, port=%d]",
+		                      super.name, super.enabled, type, address, port );
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/// Configuration Loading   ////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void parseConfiguration( RID rid, Element element )
+	{
+		///////////////////////////////////
+		// Parent Element Properties //////
+		///////////////////////////////////
+		if( element.hasAttribute("enabled") )
+			super.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
+		
+		// get the transport type (could be tcp-client or tcp-server)
+		TransportType transport = TransportType.fromString( element.getAttribute("transport") );
+		setTransportType( transport );
+
+		///////////////////////////////////
+		// Transport-Specific Properties //
+		///////////////////////////////////
+		// get the tcp configuration element
+		String typeName = transport == TransportType.TcpClient ? "tcp-client" : "tcp-server";
+		Element tcpElement = XmlUtils.getChild( element, typeName, true );
+		
+		// get the standard properties
+		if( tcpElement.hasAttribute("address") )
+			this.setAddress( tcpElement.getAttribute("address") );
+		
+		if( tcpElement.hasAttribute("port") )
+			this.setPort( Integer.parseInt(tcpElement.getAttribute("port")) );
+		
+		///////////////////////////////////
+		// Protocol Stack Properties //////
+		///////////////////////////////////
+		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
+		if( protocolStackElement != null )
+			protocolStack.parseConfiguration( rid, protocolStackElement );
+	}
+
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{

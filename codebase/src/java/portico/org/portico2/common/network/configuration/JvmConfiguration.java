@@ -16,6 +16,11 @@ package org.portico2.common.network.configuration;
 
 import java.util.Properties;
 
+import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Element;
+
 public class JvmConfiguration extends ConnectionConfiguration
 {
 	//----------------------------------------------------------
@@ -25,6 +30,7 @@ public class JvmConfiguration extends ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private ProtocolStackConfiguration protocolStack;
 	private SharedKeyConfiguration sharedKeyConfiguration;
 	private PublicKeyConfiguration publicKeyConfiguration;
 
@@ -34,6 +40,7 @@ public class JvmConfiguration extends ConnectionConfiguration
 	public JvmConfiguration( String name )
 	{
 		super( name );
+		this.protocolStack = new ProtocolStackConfiguration();
 		this.sharedKeyConfiguration = new SharedKeyConfiguration();
 		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
@@ -51,6 +58,12 @@ public class JvmConfiguration extends ConnectionConfiguration
 	}
 	
 	@Override
+	public ProtocolStackConfiguration getProtocolStack()
+	{
+		return this.protocolStack;
+	}
+
+	@Override
 	public SharedKeyConfiguration getSharedKeyConfiguration()
 	{
 		return this.sharedKeyConfiguration;
@@ -61,10 +74,33 @@ public class JvmConfiguration extends ConnectionConfiguration
 	{
 		return this.publicKeyConfiguration;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return String.format( "[JVM: name=%s, enabled=%s]", super.name, super.enabled );
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/// Configuration Loading   ////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public void parseConfiguration( RID rid, Element element )
+	{
+		///////////////////////////////////
+		// Parent Element Properties //////
+		///////////////////////////////////
+		if( element.hasAttribute("enabled") )
+			super.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
+		
+		///////////////////////////////////
+		// Protocol Stack Properties //////
+		///////////////////////////////////
+		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
+		if( protocolStackElement != null )
+			protocolStack.parseConfiguration( rid, protocolStackElement );
+	}
+	
 	@Override
 	public void parseConfiguration( String prefix, Properties properties )
 	{

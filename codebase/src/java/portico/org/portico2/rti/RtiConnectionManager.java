@@ -22,7 +22,7 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.xml.RID;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
 
 /**
@@ -83,6 +83,9 @@ public class RtiConnectionManager
 		// 2. Instantiate each connection and call its configure() method
 		for( ConnectionConfiguration configuration : connections.values() )
 		{
+			if( configuration.isEnabled() == false )
+				continue;
+
 			String connectionName = configuration.getName();
 			RtiConnection connection = new RtiConnection( rti, configuration );
 			this.connections.put( connectionName, connection );

@@ -78,6 +78,16 @@ public class CommandLine
 		return properties;
 	}
 
+	public boolean hasArgument( String name )
+	{
+		return arguments.keySet().contains( Argument.getArgument(name) );
+	}
+	
+	public boolean hasArgument( Argument argument )
+	{
+		return arguments.keySet().contains( argument );
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

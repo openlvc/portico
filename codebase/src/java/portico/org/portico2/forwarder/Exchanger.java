@@ -15,8 +15,8 @@
 package org.portico2.forwarder;
 
 import org.apache.logging.log4j.Logger;
-import org.portico2.common.configuration.ForwarderConfiguration;
-import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.xml.ForwarderConfiguration;
+import org.portico2.common.configuration.xml.RID;
 import org.portico2.forwarder.firewall.Firewall;
 import org.portico2.forwarder.tracking.StateTracker;
 

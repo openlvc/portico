@@ -12,13 +12,16 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.forwarder;
+package org.portico2.common.network.configuration.protocol;
 
+import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.xml.RID;
-import org.portico2.common.configuration.commandline.Argument;
-import org.portico2.forwarder.cli.ForwarderCli;
+import org.w3c.dom.Element;
 
-public class Main
+/**
+ * This class is the parent of all protcol configuration objects.
+ */
+public abstract class ProtocolConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -27,45 +30,44 @@ public class Main
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	protected boolean enabled;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	protected ProtocolConfiguration()
+	{
+		this.enabled = true;
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
+	public abstract ProtocolType getProtocolType();
+
+	/**
+	 * Parse the XML element within the protocol stack as extracted from the RID file.
+	 * 
+	 * @param rid The RID object we are being inserted into
+	 * @param element The element from the RID file
+	 * @throws JConfigurationException If there is a problem with the incoming configuration
+	 *         information or some of it is missing.
+	 */
+	public abstract void parseConfiguration( RID rid, Element element ) throws JConfigurationException;
+	
+
+	public boolean isEnabled()
+	{
+		return this.enabled;
+	}
+	
+	public void setEnabled( boolean enabled )
+	{
+		this.enabled = enabled;
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static void main( String[] args )
-	{
-		// Initialize environment
-		// The container will parse config the set up logging
-		System.setProperty( "java.net.preferIPv4Stack", "true" );
-
-		// Check for the --help command line arg and bail out early if its there
-		for( String argument : args )
-		{
-			if( argument.contains("--help") )
-			{
-				System.out.println( Argument.getCommandLineHelp() );
-				return;
-			}
-		}
-
-		// Load up our configuration data
-		// RID file may be specified on command line, in env var or from default location
-		// See javadoc on RID.loadRid() for more details
-		RID rid = RID.loadRid( args );
-
-		// create and launch the RTI process
-		Forwarder forwarder = new Forwarder( rid );
-		forwarder.startup();
-
-		// keep the Forwarder active - in the future we will start a simple command prompt tool
-		ForwarderCli cli = new ForwarderCli( forwarder );
-		cli.startup();
-	}
 }

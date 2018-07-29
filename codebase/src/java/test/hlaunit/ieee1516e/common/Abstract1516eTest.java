@@ -20,7 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
-import org.portico2.common.configuration.RID;
+import org.portico2.common.configuration.xml.RID;
 import org.portico2.rti.RTI;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;

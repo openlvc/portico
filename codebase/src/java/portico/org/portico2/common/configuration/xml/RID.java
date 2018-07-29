@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.configuration;
+package org.portico2.common.configuration.xml;
 
 import java.io.File;
 import java.util.Properties;
@@ -23,7 +23,9 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.commandline.Argument;
 import org.portico2.common.configuration.commandline.CommandLine;
 import org.portico2.common.logging.Log4jConfiguration;
-import org.portico2.common.utils.FileUtils;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class RID
 {
@@ -31,35 +33,14 @@ public class RID
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 	public static final String DEFAULT_RID_FILE = "./RTI.rid";
-	
-	/** The system property we will look to use as our command line */
-	public static final String KEY_RTI_COMMAND_LINE = "rti.commandline";
-	
-	// General Settings
-	public static final String KEY_RID_FILE = "rid.file";
-	public static final String KEY_RTI_HOME = "rti.home";
-	public static final String KEY_RTI_DATA = "rti.data";
-	
-	// Logging Settings
-	public static final String KEY_LOG_LEVEL  = "portico.loglevel";
-	public static final String KEY_LOG_DIR    = "portico.logdir";
-	public static final String KEY_LOG_FORMAT = "portico.logformat";
-	
-	// Connection Settings
-	// FIXME ???
-	public static final String PFX_LRC_CONNECTION  = "portico.lrc.network";
-	public static final String PFX_FWD_UPSTREAM    = "portico.fwd.network.upstream";
-	public static final String PFX_FWD_DOWNSTREAM  = "portico.fwd.network.downstream";
 
-	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private Log4jConfiguration log4jConfiguration;
 	private Logger logger;
 	private CommandLine commandline;
-	private Properties unifiedProperties; // set after parsing, contains rid and cl properties
-	
+
 	// File path properties
 	private String ridpath;
 	private File   rtihome;
@@ -82,7 +63,6 @@ public class RID
 		this.logger = null; // lazy loaded
 
 		this.commandline = null;
-		this.unifiedProperties = new Properties(); // filled out at end of parsing process
 		
 		// File path properties
 		this.ridpath = DEFAULT_RID_FILE;
@@ -96,33 +76,36 @@ public class RID
 	}
 
 	/**
-	 * Create a new RID using all the defaults and overridingn it with the values from the given
-	 * command line. Note that this constructor will ignore any command line argument that points
-	 * to a specific RID file. 
-	 * @param commandline
-	 * @throws JConfigurationException
+	 * Create a new RID using all the defaults and overriding it with the values from the given
+	 * configuration file, overriding those values with the ones extracted from the command line.
+	 * 
+	 * @param ridfile The XML file containing the configuration data
+	 * @param commandline The command line to use as the final value for any specific properties
+	 * @throws JConfigurationException If there is a problem parsing any of the configuraion data
 	 */
-	private RID( CommandLine commandline ) throws JConfigurationException
-	{
-		// set-up the defaults
-		this();
-
-		// parse configuration (we have no RID file to parse)
-		parseConfiguration( new Properties(), commandline.asProperties() );
-		
-		// store the command line for later read-only reference
-		this.commandline = commandline;
-	}
-
 	private RID( File ridfile, CommandLine commandline )
 	{
 		this();
 		
-		// parse the configuration
-		parseConfiguration( FileUtils.loadPropertiesFile(ridfile), commandline.asProperties() );
+		// Step 1. Pre-load important command line arguments
+		//         Only load those that RID properties might depend on.
+		if( commandline != null )
+		{
+			if( commandline.hasArgument(Argument.RtiHome) )
+				this.setRtiHome( commandline.get(Argument.RtiHome) );
+		}
+		
+		// Step 2. Parse the RID file
+		if( ridfile != null )
+			parseRid( ridfile );
+
+		// Step 3. Override whatever we've loaded with any command line args
+		if( commandline != null )
+			override( commandline );
 		
 		// store the location of teh RID file for later read-only reference
 		this.ridpath = ridfile.getPath();
+		// FIXME what about rtihome and rtidata???
 		this.commandline = commandline;
 	}
 
@@ -130,16 +113,9 @@ public class RID
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	public CommandLine getCommandLine()
-	{
-		return this.commandline;
-	}
-	
-	public Properties getConfigurationProperties()
-	{
-		return this.unifiedProperties;
-	}
-	
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * @return The application logger. *WARNING* This object may not be valid until the full
 	 *         logging framework has been initialized.
@@ -172,9 +148,30 @@ public class RID
 		return this.fwdConfiguration;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Path-Based Configuration Options    ////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
+	public CommandLine getCommandLine()
+	{
+		return this.commandline;
+	}
+	
+	//// Internal Only ////
+	private void setRtiHome( String path ) throws JConfigurationException
+	{
+		File file = new File( path );
+		if( file.exists() == false )
+			throw new JConfigurationException( "RTI Home location does not exist: "+file.getAbsolutePath() );
+		else
+			this.rtihome = file;
+	}
+	
+	private void setRtiData( String path ) throws JConfigurationException
+	{
+		// FIXME
+		throw new JConfigurationException( "Not Yet Implemented" );
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	/// Path-Based Configuration Options    ////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	// Read-only
 	public File getRidFile()
 	{
@@ -207,165 +204,125 @@ public class RID
 		this.rtidata = path;
 	}
 
-
+	
 	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
+	/// Configuration Parsing Methods   ////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Parse the configuration for this RID from the given ridfile properties and command line
-	 * properties. Not that any pathing related to the location of the RID file should have
-	 * already been determined by this point.
-	 * 
-	 * @param ridproperties The properties contained in the RID file (or null if no RID file was
-	 *                      specified or found)
-	 * @param clproperties  The command line arguments as a property set
-	 */
-	private void parseConfiguration( Properties ridproperties, Properties clproperties )
-		throws JConfigurationException
+	private void parseRid( File file ) throws JConfigurationException
 	{
-		// 1. Extract any properties that can be used as symbols in other properties
-		this.rtihome = findRtiHome( ridproperties, clproperties );
-		this.rtidata = findRtiData( ridproperties, clproperties );
+		if( file.exists() == false )
+			throw new JConfigurationException( "RID file does not exist: "+file.getAbsolutePath() );
 
-		// 2. Replace any special symbols in the given property sets
-		substituteSymbols( clproperties );
-		substituteSymbols( ridproperties );
+		// Parse the XML file into something we can work with
+		Document xml = XmlUtils.parseXmlFile( file );
+
+		// Grab the RID pieces that we handle directly
+		Element portico = xml.getDocumentElement();
+		if( portico.getTagName().equals("portico") == false )
+			throw new JConfigurationException( "RID file must contain <portico> as document element" );
+
+		// Get the <common> section of the RID
+		Element common  = XmlUtils.getChild( portico, "common" );
+		this.parseCommon( common );
+
+		// Grab the RID pieces for major sub-components
+		Element rti = XmlUtils.getChild( portico, "rti" );
+		Element lrc = XmlUtils.getChild( portico, "lrc" );
+		Element fwd = XmlUtils.getChild( portico, "forwarder" );
 		
-		// 3. Unify all the properties so that we have one set
-		if( ridproperties != null )
-			this.unifiedProperties.putAll( ridproperties );
-		if( clproperties != null )
-			this.unifiedProperties.putAll( clproperties );
+		// Parse the major sub-components
+		this.rtiConfiguration.parseConfiguration( this, rti );
+		this.lrcConfiguration.parseConfiguration( this, lrc );
+		this.fwdConfiguration.parseConfiguration( this, fwd );
+	}
+
+	private void parseCommon( Element element ) throws JConfigurationException
+	{
+		Element rtihome = XmlUtils.getChild( element, "rtihome", false ); // optional
+		Element rtidata = XmlUtils.getChild( element, "rtidata", false ); // optional
+		Element logging = XmlUtils.getChild( element, "logging" );
+		Element special = XmlUtils.getChild( element, "special" );
 		
-		// 4. Process the unified set of properties
-		parseProperties( this.unifiedProperties );
+		if( this.rtihome == null && rtihome != null )
+			this.setRtiHome( substituteSymbols(rtihome.getTextContent()) );
+		
+		if( this.rtidata == null && rtidata != null )
+			this.setRtiData( substituteSymbols(rtidata.getTextContent()) );
+		
+		this.parseLogging( logging );
+		this.parseSpecial( special );
 	}
 	
-	/**
-	 * Parse and store any local configuration from the given property set
-	 * 
-	 * @param properties The properties to pull configuration information from
-	 * @throws JConfigurationException If any of the configuration data is invalid
-	 */
-	private void parseProperties( Properties properties ) throws JConfigurationException
+	private void parseLogging( Element element ) throws JConfigurationException
 	{
-		// Extract the properties we manage locally
-		if( properties.containsKey(KEY_LOG_DIR) )
-			this.log4jConfiguration.setFilePath( properties.getProperty(KEY_LOG_DIR), "portico.log" );
-
-		if( properties.containsKey(KEY_LOG_LEVEL) )
-			this.log4jConfiguration.setLevel( properties.getProperty(KEY_LOG_LEVEL) );
+		if( element.hasAttribute("logdir") )
+		{
+			String temp = element.getAttribute("logdir");
+			this.log4jConfiguration.setFilePath( substituteSymbols(temp), "portico.log" );
+		}
 		
-		if( properties.containsKey(KEY_LOG_FORMAT) )
-			this.log4jConfiguration.setPattern( properties.getProperty(KEY_LOG_FORMAT) );
-
-		// Pass to all the sub-components
-		this.rtiConfiguration.parseProperties( properties );
-		this.lrcConfiguration.parseProperties( properties );
-		this.fwdConfiguration.parseProperties( properties );
+		if( element.hasAttribute("loglevel") )
+			this.log4jConfiguration.setLevel( element.getAttribute("loglevel") );
+		
+		if( element.hasAttribute("logformat") )
+			this.log4jConfiguration.setPattern( element.getAttribute("logformat") );
 	}
 
-	private File findRtiHome( Properties ridproperties, Properties clproperties )
-		throws JConfigurationException
+	private void parseSpecial( Element element ) throws JConfigurationException
 	{
-		// Priority 1: Command Line Args
-		String rtihome = clproperties.getProperty( KEY_RTI_HOME );
-		if( rtihome != null )
-		{
-			File file = new File( rtihome );
-			if( file.exists() )
-				return file;
-			else
-				throw new JConfigurationException( "RTI HOME path specified on command line but does not exist: %s", rtihome );
-		}
-		
-		// Priority 2: Contained in RID File (if we have one)
-		if( ridproperties != null && ridproperties.containsKey(KEY_RTI_HOME) )
-		{
-			rtihome = ridproperties.getProperty( KEY_RTI_HOME );
-			File file = new File( rtihome );
-			if( file.exists() )
-				return file;
-			else
-				throw new JConfigurationException( "RTI HOME path specified in RID file but does not exist: %s", rtihome );
-		}
-
-		// Priority 3: Environment Variable
-		rtihome = System.getenv( "RTI_HOME" );
-		if( rtihome != null )
-		{
-			File file = new File( rtihome );
-			if( file.exists() )
-				return file;
-			else
-				throw new JConfigurationException( "RTI_HOME environment variable specified but path does not exist: %s", rtihome );
-		}
-
-		// Priority 4: ./		
-		return new File( "./" );
-	}
-
-	/*
-	 * Find the RTI data directory. If it is specified but does not exist, try and create it.
-	 */
-	private File findRtiData( Properties ridproperties, Properties clproperties )
-	{
-		// Priority 1: Command Line Args
-		String rtidata = clproperties.getProperty( KEY_RTI_DATA );
-		if( rtidata != null )
-		{
-			File file = new File( rtidata );
-			file.mkdirs();
-			return file;
-		}
-		
-		// Priority 2: Contained in RID File (if we have one)
-		if( ridproperties != null && ridproperties.containsKey(KEY_RTI_DATA) )
-		{
-			rtidata = ridproperties.getProperty( KEY_RTI_DATA );
-			File file = new File( rtidata );
-			file.mkdirs();
-			return file;
-		}
-		
-		// Priority 4: System default
-		boolean windows = System.getProperty("os.name").contains("indows");
-		if( windows )
-			rtidata = System.getProperty("user.home")+"\\My Documents\\Portico";
-		else
-			rtidata = System.getProperty("user.home")+"/.portico";
-
-		File file = new File( rtidata );
-		file.mkdirs();
-		return file;
+		// FIXME Add support for setting JGroups log level
 	}
 
 	/**
 	 * RID properties can use symbols for certain configuration settings such as common important
-	 * paths. This method loops through all properties and replaces any instances of the symbols
-	 * that it finds in their values with the actual values.
+	 * paths. This method looks at the given value and substitutes any strings it finds with the
+	 * approrpiate values. 
 	 * 
 	 * Supported symbols:
-	 *  - `${rti.home} `- Location of the root RTI installation directory
-	 *  - `${rti.data}` - Location where we can write data such as log and working files 
+	 *  - `${user.home} `- Location of the user's home directory
+	 *  - `${rti.home} ` - Location of the root RTI installation directory
+	 *  - `${rti.data}`  - Location where we can write data such as log and working files
+	 *  
+	 * @param value The value to check for the special <code>${}</code> values in
+	 * @return The string, with any symbol paths substituted
 	 */
-	private void substituteSymbols( Properties properties )
+	public String substituteSymbols( String value )
 	{
-		// pull out the tokens we need to replace and replace them anywhere they are inside
-		// the values of the properties set
-		String rtihome_string  = this.rtihome.getAbsolutePath().replace( "\\","\\\\" );
-		String rtidata_string  = this.rtidata.getAbsolutePath().replace( "\\","\\\\" );
-		String userhome_string = System.getProperty("user.home").replace( "\\","\\\\" );
-		for( String key : properties.stringPropertyNames() )
+		if( value.contains("${user.home}") )
 		{
-			String value = properties.getProperty( key );
-			value = value.replace( "${user.home}", userhome_string );
-			value = value.replace( "${rti.home}",  rtihome_string );
-			value = value.replace( "${rti.data}",  rtidata_string );
-			properties.setProperty( key, value );
+			String path = System.getProperty("user.home").replace( "\\","\\\\" );
+			value.replace( "${user.home}", path ); 
 		}
+		
+		if( value.contains("${rti.home}") )
+		{
+			String path = this.rtihome.getAbsolutePath().replace( "\\","\\\\" );
+			value.replace( "${rti.home}", path ); 
+		}
+		
+		if( value.contains("${rti.data}") )
+		{
+			String path = this.rtidata.getAbsolutePath().replace( "\\","\\\\" );
+			value.replace( "${rti.data}", path ); 
+		}
+		
+		return value;
 	}
-
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/// Command Line Override Methods   ////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	private void override( CommandLine commandline ) throws JConfigurationException
+	{
+		// 
+		System.out.println( "FIX ME. RID.override(CommandLine) is not yet implemented" );
+	}
+	
+	private void override( Properties properties ) throws JConfigurationException
+	{
+		System.out.println( "FIX ME. RID.override(Properties) is not yet implemented" );
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
@@ -376,7 +333,7 @@ public class RID
 	 * @throws JConfigurationException If there is a problem with any defualt configurations
 	 * @see {@link #loadRid(String...)}
 	 */
-	private static RID loadDefaultRid() throws JConfigurationException
+	public static RID loadDefaultRid() throws JConfigurationException
 	{
 		return RID.loadRid();
 	}
@@ -398,7 +355,7 @@ public class RID
 	 * @return A populated RID file, with the given command line args applied to it
 	 * @throws JConfigurationException If there is a problem locating or parsing the RID file
 	 */
-	private static RID loadRid( String... commandline ) throws JConfigurationException
+	public static RID loadRid( String... commandline ) throws JConfigurationException
 	{
 		return loadRid( new CommandLine(commandline) );
 	}
@@ -422,14 +379,14 @@ public class RID
 	 * @return A populated RID file, with the given command line args applied to it
 	 * @throws JConfigurationException If there is a problem locating or parsing the RID file
 	 */
-	private static RID loadRid( CommandLine commandline ) throws JConfigurationException
+	public static RID loadRid( CommandLine commandline ) throws JConfigurationException
 	{
 		//
 		// Priority 1: Explicit command line arg
 		//
 		String ridpath = commandline.get( Argument.RidFile );
 		if( ridpath != null )
-		{	
+		{
 			File ridfile = new File( ridpath );
 			if( ridfile.exists() == false )
 				throw new JConfigurationException( "RID file does not exist: command line specified=%s", ridpath );
@@ -483,9 +440,9 @@ public class RID
 		//
 		// All done - no RID file to be found
 		//
-		return new RID( commandline );
+		return new RID( null, commandline );
 	}
-
+	
 	/**
 	 * Create a new RID with its default values, but override those with the values given as
 	 * an argument. This is useful for bulk overriding of settings.
@@ -494,11 +451,11 @@ public class RID
 	 * @return A RID with default values, except those overridden
 	 * @throws JConfigurationException There was a problem parsing or loading the properties
 	 */
-	private static RID loadRid( Properties overrides ) throws JConfigurationException
+	public static RID loadRid( Properties overrides ) throws JConfigurationException
 	{
 		RID rid = loadRid();
 		if( overrides != null )
-			rid.parseProperties( overrides );
+			rid.override( overrides );
 		return rid;
 	}
 }
