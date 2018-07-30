@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.model.ObjectModel;
-import org.portico2.common.configuration.xml.ForwarderConfiguration;
+import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.Message;
 import org.portico2.common.services.federation.msg.CreateFederation;

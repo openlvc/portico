@@ -18,8 +18,9 @@ import java.net.InetAddress;
 import java.util.Properties;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
 import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.utils.NetworkUtils;
 import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
@@ -107,18 +108,6 @@ public class TcpConfiguration extends ConnectionConfiguration
 	public ProtocolStackConfiguration getProtocolStack()
 	{
 		return this.protocolStack;
-	}
-
-	@Override
-	public SharedKeyConfiguration getSharedKeyConfiguration()
-	{
-		return this.sharedKeyConfiguration;
-	}
-
-	@Override
-	public PublicKeyConfiguration getPublicKeyConfiguration()
-	{
-		return this.publicKeyConfiguration;
 	}
 
 	@Override

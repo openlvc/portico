@@ -16,6 +16,8 @@ package org.portico2.common.network;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico2.common.network.protocol.Protocol;
+import org.portico2.common.network.transport.Transport;
 
 /**
  * The {@link ProtocolStack} manages the set of {@link Protocol} implementations that

@@ -16,7 +16,7 @@ package org.portico2.aaa;
 
 import java.util.Properties;
 
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
 import org.portico2.rti.RTI;
 
 import hla.rti1516e.ObjectInstanceHandle;

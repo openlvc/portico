@@ -16,8 +16,9 @@ package org.portico2.common.network.configuration;
 
 import java.util.Properties;
 
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
 import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
@@ -63,18 +64,6 @@ public class JvmConfiguration extends ConnectionConfiguration
 		return this.protocolStack;
 	}
 
-	@Override
-	public SharedKeyConfiguration getSharedKeyConfiguration()
-	{
-		return this.sharedKeyConfiguration;
-	}
-	
-	@Override
-	public PublicKeyConfiguration getPublicKeyConfiguration()
-	{
-		return this.publicKeyConfiguration;
-	}
-	
 	@Override
 	public String toString()
 	{

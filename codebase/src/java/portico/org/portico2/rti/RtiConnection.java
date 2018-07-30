@@ -26,7 +26,7 @@ import org.portico2.common.network.Connection.Status;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.configuration.TransportType;
+import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 public class RtiConnection implements IApplicationReceiver

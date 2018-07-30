@@ -14,28 +14,20 @@
  */
 package org.portico2.common.configuration;
 
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.PorticoConstants;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.configuration.MulticastConfiguration;
-import org.portico2.common.network.configuration.TransportType;
+import org.portico2.common.network.transport.TransportType;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Element;
 
 public class LrcConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final String KEY_LRC_CONNECTION       = "lrc.network.connection";
-	
-	/** Timeout to wait when calling tick() methods if there are no callbacks to process (ms) */
-	public static final String KEY_LRC_TT               = "lrc.callback.tickTimeout"; // in milliseconds
-	
-	/** Number of messages the queue can hold before the LRC starts issuing warnings about
-    not ticking enough, default: 500 */
-	public static final String KEY_LRC_QUEUE_WARN_COUNT = "lrc.callback.warningCount"; // FIXME Review name
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -43,13 +35,16 @@ public class LrcConfiguration
 	private ConnectionConfiguration connectionConfiguration;
 	
 	// Tick Processing
-	private long tickTimeout; // stored in nanos
+	// Timeout to wait when calling tick() is no callbacks to process. Stores in ns.
+	private long tickTimeout;
+	
+	// Number of messages in queue before the LRC starts issuing warnings about not ticking enough.
 	private int queueWarningCountSize;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public LrcConfiguration()
+	protected LrcConfiguration()
 	{
 		this.connectionConfiguration = null; // set in parseProperties()
 		this.tickTimeout = TimeUnit.MILLISECONDS.toNanos( 5 );
@@ -66,45 +61,9 @@ public class LrcConfiguration
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * Pull the configuration information we need from the given property set.
-	 */
-	protected void parseProperties( Properties properties ) throws JConfigurationException
-	{
-		//
-		// Connection Configuration
-		//
-		if( PorticoConstants.OVERRIDE_CONNECTION != null )
-		{
-			String override = PorticoConstants.OVERRIDE_CONNECTION;
-			this.connectionConfiguration = TransportType.fromString(override).newConfiguration( "hlaunit" );
-		}
-		else if( properties.containsKey(KEY_LRC_CONNECTION) )
-		{
-			String connectionName = properties.getProperty( KEY_LRC_CONNECTION );
-			String tranportName = properties.getProperty( "lrc.network."+connectionName+".transport" );
-			TransportType transport = TransportType.fromString( tranportName );
-			this.connectionConfiguration = transport.newConfiguration( "lrc",
-			                                                           "lrc.network."+connectionName,
-			                                                           properties );
-		}
-
-		//
-		// Misc Settings
-		//
-		String property = properties.getProperty( KEY_LRC_TT, "5" );
-		this.setTickTimeoutMs( Long.parseLong(property) );
-		
-		property = properties.getProperty( KEY_LRC_QUEUE_WARN_COUNT, "500" );
-		this.setQueueSizeWarningLimit( Integer.parseInt(property) );
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Accessors and Mutators   ///////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	public ConnectionConfiguration getConnectionConfiguration()
 	{
 		return this.connectionConfiguration;
@@ -114,30 +73,83 @@ public class LrcConfiguration
 	{
 		this.connectionConfiguration = connectionConfiguration;
 	}
-	
+
+	/**
+	 * @return Nanos the LRC should wait for messages if there are none ready when the
+	 *         tick() methods are called. 
+	 */
 	public long getTickTimeoutNanos()
 	{
 		return this.tickTimeout;
 	}
-	
+
+	/**
+	 * Set the number of millis that the LRC should wait for messages if there are none
+	 * to process when federate code calls the tick() method.
+	 * 
+	 * @param tickTimeout Timeout period in millis
+	 */
 	public void setTickTimeoutMs( long tickTimeout )
 	{
 		this.tickTimeout = TimeUnit.MILLISECONDS.toNanos( tickTimeout );
 	}
-	
+
+	/**
+	 * Set the number of nanos that the LRC should wait for messages if there are none
+	 * to process when federate code calls the tick() method.
+	 * 
+	 * @param tickTimeout Timeout period in nanos
+	 */
 	public void setTickTimeoutNanos( long tickTimeout )
 	{
 		this.tickTimeout = tickTimeout;
 	}
-	
+
+	/**
+	 * @return The maximum size the queue can get to before we start emitting warnings about
+	 *         starvation and not ticking too much. Default: 500.
+	 */
 	public int getQueueSizeWarningLimit()
 	{
 		return this.queueWarningCountSize;
 	}
-	
+
+	/**
+	 * Set the max number of messages allowed in the queue before we start issuing starvation
+	 * log message and asking someone to just call tick() dammit!
+	 * 
+	 * @param queueSize Max queue size before warnings are issues
+	 */
 	public void setQueueSizeWarningLimit( int queueSize )
 	{
 		this.queueWarningCountSize = queueSize;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	/// Configuration Parsing Methods   ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	protected void parseConfiguration( RID rid, Element lrcElement ) throws JConfigurationException
+	{
+		// Fetch the Network Properties
+		Element networkElement = XmlUtils.getChild( lrcElement, "network", true );
+		Element connectionElement = XmlUtils.getChild( networkElement, "connection", true );
+		
+		// get the name of the connection
+		String name = connectionElement.getAttribute( "name" );
+		if( name == null || name.trim().equals("") )
+			throw new JConfigurationException( "LRC <connection> missing attribute \"name\"" );
+		
+		// extract the transport type so we know what to create
+		String transportString = connectionElement.getAttribute( "transport" );
+		if( transportString == null || transportString.trim().equals("") )
+			throw new JConfigurationException( "LRC <connection name="+name+"> missing attribute \"transport\"" );
+		
+		// find the transport type of the connection and create an empty config of that type
+		TransportType transport = TransportType.fromString( transportString );
+		
+		// create an empty configuration of transport type and populate it 
+		this.connectionConfiguration = transport.newConfiguration( name );
+		this.connectionConfiguration.parseConfiguration( rid, connectionElement );
 	}
 
 	//----------------------------------------------------------

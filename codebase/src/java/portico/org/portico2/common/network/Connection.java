@@ -23,7 +23,11 @@ import org.portico.utils.messaging.PorticoMessage;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.messaging.ResponseMessage;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.protocols.encryption.EncryptionProtocol;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
+import org.portico2.common.network.protocol.Protocol;
+import org.portico2.common.network.protocol.ProtocolFactory;
+import org.portico2.common.network.protocol.ProtocolType;
+import org.portico2.common.network.transport.Transport;
 import org.portico2.common.services.federation.msg.RtiProbe;
 
 /**
@@ -141,13 +145,12 @@ public class Connection
 		// populate the protocol stack //
 		/////////////////////////////////
 		this.protocolStack = new ProtocolStack( this );
-		if( configuration.getPublicKeyConfiguration().isEnabled() )
-			protocolStack.addProtocol( ProtocolFactory.instance().createProtocol("publickey",host) );
-
-		// Insert the encryption settings
-		if( configuration.getSharedKeyConfiguration().isEnabled() )
-			protocolStack.addProtocol( new EncryptionProtocol() );
-		
+		for( ProtocolConfiguration config : configuration.getProtocolStack().getProtocolList() )
+		{
+			ProtocolType type = config.getProtocolType();
+			Protocol protocol = ProtocolFactory.instance().createProtocol( type, host );
+			protocolStack.addProtocol( protocol );
+		}
 	}
 
 	/**

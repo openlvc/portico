@@ -16,7 +16,7 @@ package org.portico2.common.network.configuration;
 
 import java.util.Properties;
 
-import org.portico2.common.network.protocols.encryption.CipherMode;
+import org.portico2.common.network.protocol.encryption.CipherMode;
 
 /**
  * This class extract encryption configuration information properties from the RID file

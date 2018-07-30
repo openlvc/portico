@@ -17,7 +17,8 @@ package org.portico2.common.network.configuration.protocol;
 import java.io.File;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
+import org.portico2.common.network.protocol.ProtocolType;
 import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 

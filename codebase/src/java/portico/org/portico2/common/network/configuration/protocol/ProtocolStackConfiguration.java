@@ -19,7 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
+import org.portico2.common.network.protocol.ProtocolType;
 import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 

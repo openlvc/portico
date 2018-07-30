@@ -15,8 +15,9 @@
 package org.portico2.common.network.configuration.protocol;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.xml.RID;
-import org.portico2.common.network.protocols.encryption.CipherMode;
+import org.portico2.common.configuration.RID;
+import org.portico2.common.network.protocol.ProtocolType;
+import org.portico2.common.network.protocol.encryption.CipherMode;
 import org.w3c.dom.Element;
 
 /**

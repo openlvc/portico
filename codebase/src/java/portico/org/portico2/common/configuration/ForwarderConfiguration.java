@@ -14,69 +14,62 @@
  */
 package org.portico2.common.configuration;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Properties;
+import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.configuration.TransportType;
+import org.portico2.common.network.transport.TransportType;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Element;
 
 public class ForwarderConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final String PFX_DOWNSTREAM = "fwd.network.downstream";
-	private static final String PFX_UPSTREAM   = "fwd.network.upstream";
-
-	// Firewall properties
-	public static final String KEY_FIREWALL_ENABLED = "fwd.firewall.enabled";
-	public static final String KEY_FIREWALL_IMPORT_OBJ = "fwd.firewall.import.object";
-	public static final String KEY_FIREWALL_IMPORT_INT = "fwd.firewall.import.interaction";
-	public static final String KEY_FIREWALL_EXPORT_OBJ = "fwd.firewall.export.object";
-	public static final String KEY_FIREWALL_EXPORT_INT = "fwd.firewall.export.interaction";
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Properties properties;
 	private ConnectionConfiguration downstreamConfiguration;
 	private ConnectionConfiguration upstreamConfiguration;
+	
+	// Firewall Configuration
+	private boolean isFirewallEnabled;
+	private Set<String> importObjectClasses;
+	private Set<String> importInteractionClasses;
+	private Set<String> exportObjectClasses;
+	private Set<String> exportInteractionClasses;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	protected ForwarderConfiguration()
+	{
+		this.downstreamConfiguration = null;
+		this.upstreamConfiguration = null;
+		
+		// Firewall Configuration
+		// Sets of object and interaction class name/fragements that we use to
+		// feed the firewall so it knows what is can flow between the two sides
+		// of our connection. Populated in #parse(Element)
+		this.isFirewallEnabled = false;
+		this.importObjectClasses = new HashSet<String>();
+		this.importInteractionClasses = new HashSet<String>();
+		this.exportObjectClasses = new HashSet<String>();
+		this.exportInteractionClasses = new HashSet<String>();
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	protected void parseProperties( Properties properties ) throws JConfigurationException
-	{
-		this.properties = properties;
-
-		//
-		// Network Configuration
-		//
-		// Local-side connection configuration
-		String transportString = properties.getProperty( PFX_DOWNSTREAM+".transport", "multicast" );
-		TransportType transportType = TransportType.fromString( transportString );
-		this.downstreamConfiguration = transportType.newConfiguration( "downstream", PFX_DOWNSTREAM, properties );
-		
-		// Upstream-side connection configuration
-		transportString = properties.getProperty( PFX_UPSTREAM+".transport", "tcp-client" );
-		transportType = TransportType.fromString( transportString );
-		this.upstreamConfiguration = transportType.newConfiguration( "upstream", PFX_UPSTREAM, properties );
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Accessors and Mutators   ///////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	///  Accessors and Mutators   //////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	public ConnectionConfiguration getDownstreamConfiguration()
 	{
 		return this.downstreamConfiguration;
@@ -89,37 +82,129 @@ public class ForwarderConfiguration
 
 	public boolean isFirewallEnabled()
 	{
-		return Boolean.valueOf(properties.getProperty(KEY_FIREWALL_ENABLED,"false"));
+		return this.isFirewallEnabled;
 	}
 	
 	public Set<String> getAllowedImportObjects()
 	{
-		return stringToSet( properties.getProperty(KEY_FIREWALL_IMPORT_OBJ,"") );
+		return Collections.unmodifiableSet( this.importObjectClasses );
 	}
 	
 	public Set<String> getAllowedImportInteractions()
 	{
-		return stringToSet( properties.getProperty(KEY_FIREWALL_IMPORT_INT,"") );
+		return Collections.unmodifiableSet( this.importInteractionClasses );
 	}
 	
 	public Set<String> getAllowedExportObjects()
 	{
-		return stringToSet( properties.getProperty(KEY_FIREWALL_EXPORT_OBJ,"") );
+		return Collections.unmodifiableSet( this.exportObjectClasses );
 	}
 	
 	public Set<String> getAllowedExportInteractions()
 	{
-		return stringToSet( properties.getProperty(KEY_FIREWALL_EXPORT_INT,"") );
+		return Collections.unmodifiableSet( this.exportInteractionClasses );
 	}
 
-	private Set<String> stringToSet( String string )
+//	private Set<String> stringToSet( String string )
+//	{
+//		HashSet<String> set = new HashSet<String>();
+//		StringTokenizer tokenizer = new StringTokenizer( string, "," );
+//		while( tokenizer.hasMoreTokens() )
+//			set.add( tokenizer.nextToken().trim() );
+//		
+//		return set;
+//	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	/// Configuration Parsing Methods   ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	protected void parseConfiguration( RID rid, Element element ) throws JConfigurationException
 	{
-		HashSet<String> set = new HashSet<String>();
-		StringTokenizer tokenizer = new StringTokenizer( string, "," );
-		while( tokenizer.hasMoreTokens() )
-			set.add( tokenizer.nextToken().trim() );
+		//////////////////////////////////
+		// Network Configuration  ////////
+		//////////////////////////////////
+		Element networkElement = XmlUtils.getChild( element, "network", true );
 		
-		return set;
+		// Find the upstream and downstream elements
+		List<Element> connections = XmlUtils.getChildren( networkElement, "connection" );
+		Element upstream = null;
+		Element downstream = null;
+		for( Element temp : connections )
+		{
+			if( temp.getAttribute("name").equalsIgnoreCase("upstream") )
+				upstream = temp;
+			else if( temp.getAttribute("name").equalsIgnoreCase("downstream") )
+				downstream = temp;
+		}
+		
+		if( upstream == null )
+			throw new JConfigurationException( "Forwarder is missing <connection name=\"upstream\">" );
+		
+		if( downstream == null )
+			throw new JConfigurationException( "Forwarder is missing <connection name=\"downstream\">" );
+
+		// Parse the connection configurations
+		this.upstreamConfiguration = getConnection( rid, upstream );
+		this.downstreamConfiguration = getConnection( rid, downstream );
+		
+		//////////////////////////////////
+		// Firewall Configuration  ///////
+		//////////////////////////////////
+		Element firewallElement = XmlUtils.getChild( element, "firewall", true );
+		this.isFirewallEnabled = firewallElement.getAttribute("enabled").equalsIgnoreCase( "true" );
+		
+		// Import Configuration
+		Element importElement = XmlUtils.getChild( firewallElement, "import", true );
+		populateFirewallRules( importElement, importObjectClasses, importInteractionClasses );
+
+		// Export Configuration
+		Element exportElement = XmlUtils.getChild( firewallElement, "export", true );
+		populateFirewallRules( exportElement, exportObjectClasses, exportInteractionClasses );
+	}
+
+	private ConnectionConfiguration getConnection( RID rid, Element connectionElement )
+	{
+		// get the name of the connection
+		String name = connectionElement.getAttribute( "name" );
+		if( name == null || name.trim().equals("") )
+			throw new JConfigurationException( "Forwarder <connection> missing attribute \"name\"" );
+		
+		// extract the transport type so we know what to create
+		String transportString = connectionElement.getAttribute( "transport" );
+		if( transportString == null || transportString.trim().equals("") )
+			throw new JConfigurationException( "Forwarder <connection name="+name+"> missing attribute \"transport\"" );
+		
+		// find the transport type of the connection and create an empty config of that type
+		TransportType transport = TransportType.fromString( transportString );
+		
+		// create an empty configuration of transport type and populate it 
+		ConnectionConfiguration configuration = transport.newConfiguration( name );
+		configuration.parseConfiguration( rid, connectionElement );
+		return configuration;
+	}
+
+	private void populateFirewallRules( Element element,
+	                                    Set<String> objectRules,
+	                                    Set<String> interactionRules )
+	{
+		String direction = element.getTagName().toUpperCase();
+		List<Element> objects = XmlUtils.getChildren( element, "object" );
+		for( Element object : objects )
+		{
+			if( object.hasAttribute("class") == false )
+				throw new JConfigurationException( "Forwarder "+direction+" Rules: <object> missing \"class\" attribute" );
+			else
+				objectRules.add( object.getAttribute("class") );
+		}
+
+		List<Element> interactions = XmlUtils.getChildren( element, "interaction" );
+		for( Element interaction : interactions )
+		{
+			if( interaction.hasAttribute("class") == false )
+				throw new JConfigurationException( "Forwarder "+direction+" Rules: <interaction> missing \"class\" attribute" );
+			else
+				interactionRules.add( interaction.getAttribute("class") );
+		}
 	}
 	
 	//----------------------------------------------------------

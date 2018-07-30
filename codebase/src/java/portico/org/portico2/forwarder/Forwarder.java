@@ -17,7 +17,7 @@ package org.portico2.forwarder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
 import org.portico2.common.configuration.StartupLogger;
 import org.portico2.common.logging.Log4jConfigurator;
 

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.portico2.common.configuration.xml.ForwarderConfiguration;
+import org.portico2.common.configuration.ForwarderConfiguration;
 import org.portico2.forwarder.Direction;
 import org.portico2.forwarder.tracking.StateTracker;
 

@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Level;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.utils.logging.Log4jConfigurator;
 import org.portico2.common.PorticoConstants;
-import org.portico2.common.configuration.RID;
 
 /**
  * Defines a logging configuration that can be applied by the {@link Log4jConfigurator}.
@@ -116,29 +115,6 @@ public class Log4jConfiguration
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	/**
-	 * The root Portico configuration has been overridden and it may have included
-	 * logging configuration information. Update outselves if that is the case.
-	 * @param properties
-	 */
-	protected void updateFrom( String properties )
-	{
-		
-	}
-
-	/**
-	 * The root Portico configuration has been overridden and it may have included
-	 * logging configuration information. Update ourselves if that is the case.
-	 */
-	protected void updateWith( String property, String value )
-	{
-		value = value.toLowerCase();
-		if( property.equalsIgnoreCase(RID.KEY_LOG_LEVEL) )
-			;
-		else if( property.equalsIgnoreCase(RID.KEY_LOG_DIR) )
-			;
-	}
-	
 	//////////////////////////////////////////////////////////////////////////////////
 	///  General Configuration   /////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
@@ -344,6 +320,13 @@ public class Log4jConfiguration
 	{
 		setFileDir( directory );
 		setFileName( filename );
+	}
+	
+	public void setFilePath( String fullpath )
+	{
+		File file = new File( fullpath );
+		setFileDir( file.getParentFile().getAbsolutePath() );
+		setFileName( file.getName() );
 	}
 
 	/**

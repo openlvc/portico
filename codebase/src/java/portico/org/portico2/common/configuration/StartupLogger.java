@@ -49,7 +49,7 @@ public class StartupLogger
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static void logGenericStartupHeader( Logger logger, org.portico2.common.configuration.xml.RID rid )
+	public static void logGenericStartupHeader( Logger logger, org.portico2.common.configuration.RID rid )
 	{
 		// get the system information
 		SystemInformation info = SystemInformation.LOCAL;
@@ -101,7 +101,7 @@ public class StartupLogger
 		return buf.toString();
 	}
 	
-	private static void logConfigurationInformation( Logger logger, org.portico2.common.configuration.xml.RID rid )
+	private static void logConfigurationInformation( Logger logger, org.portico2.common.configuration.RID rid )
 	{
 		// log the command line arguments
 		CommandLine commandline = rid.getCommandLine();

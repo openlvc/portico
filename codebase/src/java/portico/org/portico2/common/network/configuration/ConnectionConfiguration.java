@@ -16,8 +16,9 @@ package org.portico2.common.network.configuration;
 
 import java.util.Properties;
 
-import org.portico2.common.configuration.xml.RID;
+import org.portico2.common.configuration.RID;
 import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.transport.TransportType;
 import org.w3c.dom.Element;
 
 /**
@@ -87,24 +88,6 @@ public abstract class ConnectionConfiguration
 	 */
 	public abstract ProtocolStackConfiguration getProtocolStack();
 	
-	/**
-	 * Each connection should support a default set of configuration properties.
-	 * This method will return the shared key protocol configuration settings.
-	 * 
-	 * @return The shared key configuration for the connection
-	 */
-	@Deprecated
-	public abstract SharedKeyConfiguration getSharedKeyConfiguration();
-
-	/**
-	 * Each connection should support a default set of configuration properties.
-	 * This method will return the public key protocol configuration settings.
-	 * 
-	 * @return The public key protocol configuration for the connection
-	 */
-	@Deprecated
-	public abstract PublicKeyConfiguration getPublicKeyConfiguration();
-
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////

@@ -81,10 +81,13 @@ public class MessageHelpersTest
 	@Test
 	public void testDeflateInflateWithEncryption()
 	{
+		if( System.currentTimeMillis() > 1 )
+			throw new RuntimeException( "Under Refactor" );
+
 		// Create and set up the configurations
 		ConnectionConfiguration configuration = new JvmConfiguration( "jvm" );
-		configuration.getSharedKeyConfiguration().setEnabled( true );
-		configuration.getSharedKeyConfiguration().setSharedKey( "evelyn" );
+//		configuration.getSharedKeyConfiguration().setEnabled( true );
+//		configuration.getSharedKeyConfiguration().setSharedKey( "evelyn" );
 		
 		// Create and set up the connections
 		AppReceiver outgoingReceiver = new AppReceiver();

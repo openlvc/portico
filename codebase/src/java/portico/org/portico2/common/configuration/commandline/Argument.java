@@ -14,8 +14,6 @@
  */
 package org.portico2.common.configuration.commandline;
 
-import static org.portico2.common.configuration.RID.*;
-
 import org.portico.lrc.compat.JConfigurationException;
 
 public enum Argument
@@ -24,21 +22,20 @@ public enum Argument
 	//                        VALUES
 	//----------------------------------------------------------
 	// General Configuration
-	Help       ( "help",         null,             true, "",         "Show this help" ),
-	GUI        ( "gui",          null,             true, "",         "Show the Server Control GUI (off by default)" ),
-	RidFile    ( "rid",          KEY_RID_FILE,     true, "[file]",   "Path to RTI Initialization File (default: ./RTI.rid)"),
-	RtiHome    ( "rtihome",      KEY_RTI_HOME,     true, "[file]",   "Path to RTI_HOME diretory (default: ./" ),
+	Help       ( "help",        "",          "",         "Show this help" ),
+	GUI        ( "gui",         "",          "",         "Show the Server Control GUI (off by default)" ),
+	RidFile    ( "rid",         "rid.file",  "[file]",   "Path to RTI Initialization File (default: ./RTI.rid)"),
+	RtiHome    ( "rtihome",     "rit.home",  "[file]",   "Path to RTI_HOME diretory (default: ./" ),
 	
 	// Logging Configuration
-	LogLevel   ( "log-level",    KEY_LOG_LEVEL,    true, "[string]", "Threshold for logging. OFF for none. (default: INFO)" ),
-	LogFile    ( "log-dir",      KEY_LOG_DIR,      true, "[dir]",    "The directory to put log files in" );
+	LogLevel   ( "log-level",   "log.level", "[string]", "Threshold for logging. OFF for none. (default: INFO)" ),
+	LogFile    ( "log-dir",     "log.dir",   "[dir]",    "The directory to put log files in" );
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String name;             // token to look for
-	private String property;         // configuration property
-	private boolean isDocumented;    // true if we should print documentation with --help
+	private String propertyName;     // name of the equivalent property when loading from properties
 	private String typeDescription;  // description of expected arguments
 	private String textDescription;  // documentation on purpose of the setting
 
@@ -47,13 +44,10 @@ public enum Argument
 	//----------------------------------------------------------
 	private Argument( String name,
 	                  String property,
-	                  boolean isDocumented,
 	                  String typeDesc,
 	                  String textDesc )
 	{
 		this.name = name;
-		this.property = property;
-		this.isDocumented = isDocumented;
 		this.typeDescription = typeDesc;
 		this.textDescription = textDesc;
 	}
@@ -67,22 +61,6 @@ public enum Argument
 	public String getName()
 	{
 		return this.name;
-	}
-
-	/**
-	 * @return The property key for this command line argument.
-	 */
-	public String getProperty()
-	{
-		return this.property;
-	}
-
-	/**
-	 * @return true if this argument has a description to be printed when --help is invoked.
-	 */
-	public boolean isDocumented()
-	{
-		return this.isDocumented;
 	}
 
 	/**
@@ -133,6 +111,28 @@ public enum Argument
 	}
 
 	/**
+	 * Get the argument that is represented by the specified property. Each argument may
+	 * have an associated property name, and that is what we look up against.
+	 * 
+	 * @param propertyName The property to get the related argument for
+	 * @return The argument related to property
+	 */
+	public static Argument getArgumentForProperty( String propertyName )
+		throws JConfigurationException
+	{
+		if( propertyName == null || propertyName.trim().equals("") )
+			return null;
+		
+		for( Argument potential : Argument.values() )
+		{
+			if( propertyName.equalsIgnoreCase(potential.propertyName) )
+				return potential;
+		}
+		
+		throw new JConfigurationException( "Unknown argument (property): "+propertyName );
+	}
+	
+	/**
 	 * Returns a formatted string that can be printed to the command line outlining the various
 	 * arguments available and their use.
 	 */
@@ -141,7 +141,7 @@ public enum Argument
 		int longestName = 0;
 		for( Argument argument : Argument.values() )
 		{
-			if( argument.isDocumented() && (argument.name.length() > longestName) )
+			if( (argument.textDescription != null) && (argument.name.length() > longestName) )
 				longestName = argument.name.length();
 		}
 
@@ -154,7 +154,7 @@ public enum Argument
 		String formatString = "    %-"+(longestName+2)+"s  %10s   %s\n";
 		for( Argument argument : Argument.values() )
 		{
-			if( argument.isDocumented == false )
+			if( argument.textDescription == null )
 				continue;
 
 			String string = String.format( formatString,

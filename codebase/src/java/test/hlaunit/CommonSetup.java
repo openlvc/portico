@@ -16,7 +16,7 @@ package hlaunit;
 
 import org.portico2.common.PorticoConstants;
 import org.portico2.common.logging.Log4jConfigurator;
-import org.portico2.common.network.multicast.JGroupsConfiguration;
+import org.portico2.common.network.transport.multicast.JGroupsConfiguration;
 import org.testng.Assert;
 
 public class CommonSetup

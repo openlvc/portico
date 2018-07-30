@@ -69,11 +69,16 @@ public class CommandLine
 		return arguments.get( key );
 	}
 	
+	public Map<Argument,String> getArguments()
+	{
+		return arguments;
+	}
+	
 	public Properties asProperties()
 	{
 		Properties properties = new Properties();
 		for( Argument argument : arguments.keySet() )
-			properties.put( argument.getProperty(), arguments.get(argument) );
+			properties.put( argument, arguments.get(argument) );
 		
 		return properties;
 	}

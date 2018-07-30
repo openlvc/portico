@@ -20,23 +20,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico.utils.StringUtils;
-import org.portico2.common.PorticoConstants;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.configuration.JvmConfiguration;
-import org.portico2.common.network.configuration.MulticastConfiguration;
-import org.portico2.common.network.configuration.TransportType;
+import org.portico2.common.network.transport.TransportType;
+import org.portico2.common.utils.XmlUtils;
+import org.w3c.dom.Element;
 
 public class RtiConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final String KEY_RTI_CONNECTIONS = "rti.network.connections";
-	public static final String PFX_RTI_CONNECTION  = "rti.network"; // rti.network.$name
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -55,9 +50,9 @@ public class RtiConfiguration
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Network Configuration Options    ///////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	/// Network Configuration Options    ///////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
 	public ConnectionConfiguration getConnection( String name )
 	{
 		return rtiConnections.get( name );
@@ -104,53 +99,34 @@ public class RtiConfiguration
 		for( String name : toRemove )
 			rtiConnections.remove( name );
 	}
-	
-	////////////////////////////////////////////////////////////////////////////////////////////
-	/// Configuration Loading   ////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////
-	protected void parseProperties( Properties properties ) throws JConfigurationException
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	/// Configuration Parsing Methods   ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	protected void parseConfiguration( RID rid, Element rtiElement ) throws JConfigurationException
 	{
-		String property = properties.getProperty( KEY_RTI_CONNECTIONS, "" ).trim();
-		if( property.equals("") )
+		// Fetch the Network Properties
+		Element network = XmlUtils.getChild( rtiElement, "network", true );
+		List<Element> connections = XmlUtils.getChildren( network, "connection" );
+		for( Element connectionElement : connections )
 		{
-			if( PorticoConstants.OVERRIDE_CONNECTION == null )
-			{
-				// no configurations have been specified - fall back on just having a JVM connection
-				this.rtiConnections.put( "jvm", new JvmConfiguration("jvm") );
-				this.rtiConnections.put( "multicast", new MulticastConfiguration("multicast") );
-			}
-			else
-			{
-				// an override is in place, use it
-				String override = PorticoConstants.OVERRIDE_CONNECTION;
-				ConnectionConfiguration config = TransportType.fromString(override).newConfiguration("hlaunit");
-				this.rtiConnections.put( "hlaunit", config );
-			}
-		}
-		else
-		{
-    		String[] names = StringUtils.splitAndTrim( property, "," );
-    		
-			// empty out any existing connection information
-			rtiConnections.clear();
+			// get the name of the connection
+			String name = connectionElement.getAttribute( "name" );
+			if( name == null || name.trim().equals("") )
+				throw new JConfigurationException( "RTI <connection> missing attribute \"name\"" );
 			
-    		// build a configuration object for each type
-    		for( String name : names )
-    		{
-    			String prefix = PFX_RTI_CONNECTION+"."+name;
-    			
-    			// get the connection type
-    			String typeString = properties.getProperty( prefix+".transport" );
-    			if( typeString == null )
-    				throw new JConfigurationException( "RTI Connection [%s] does not specify a type", name );
-    			
-    			TransportType type = TransportType.fromString( typeString );
-    
-    			// create the configuration and store it
-    			ConnectionConfiguration configuration = type.newConfiguration( name );
-    			configuration.parseConfiguration( prefix, properties );
-    			this.rtiConnections.put( name, configuration );
-    		}
+			// extract the transport type so we know what to create
+			String transportString = connectionElement.getAttribute( "transport" );
+			if( transportString == null || transportString.trim().equals("") )
+				throw new JConfigurationException( "RTI <connection name="+name+"> missing attribute \"transport\"" );
+			
+			// find the transport type of the connection and create an empty config of that type
+			TransportType transport = TransportType.fromString( transportString );
+			
+			// create an empty configuration of transport type and populate it 
+			ConnectionConfiguration configuration = transport.newConfiguration( name );
+			configuration.parseConfiguration( rid, connectionElement );
+			this.rtiConnections.put( name, configuration );
 		}
 	}
 	

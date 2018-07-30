@@ -20,8 +20,8 @@ import org.portico2.common.messaging.MessageType;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.Protocol;
 import org.portico2.common.network.ProtocolStack;
+import org.portico2.common.network.protocol.Protocol;
 import org.portico2.forwarder.firewall.Firewall;
 import org.portico2.forwarder.tracking.StateTracker;
 
