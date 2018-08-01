@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
@@ -144,8 +143,10 @@ public class ForwarderConfiguration
 			throw new JConfigurationException( "Forwarder is missing <connection name=\"downstream\">" );
 
 		// Parse the connection configurations
-		this.upstreamConfiguration = getConnection( rid, upstream );
-		this.downstreamConfiguration = getConnection( rid, downstream );
+		this.upstreamConfiguration = new ConnectionConfiguration( "upstream" );
+		this.upstreamConfiguration.parseConfiguration( rid, upstream );
+		this.downstreamConfiguration = new ConnectionConfiguration( "downstream" );
+		this.downstreamConfiguration.parseConfiguration( rid, downstream );
 		
 		//////////////////////////////////
 		// Firewall Configuration  ///////
@@ -160,27 +161,6 @@ public class ForwarderConfiguration
 		// Export Configuration
 		Element exportElement = XmlUtils.getChild( firewallElement, "export", true );
 		populateFirewallRules( exportElement, exportObjectClasses, exportInteractionClasses );
-	}
-
-	private ConnectionConfiguration getConnection( RID rid, Element connectionElement )
-	{
-		// get the name of the connection
-		String name = connectionElement.getAttribute( "name" );
-		if( name == null || name.trim().equals("") )
-			throw new JConfigurationException( "Forwarder <connection> missing attribute \"name\"" );
-		
-		// extract the transport type so we know what to create
-		String transportString = connectionElement.getAttribute( "transport" );
-		if( transportString == null || transportString.trim().equals("") )
-			throw new JConfigurationException( "Forwarder <connection name="+name+"> missing attribute \"transport\"" );
-		
-		// find the transport type of the connection and create an empty config of that type
-		TransportType transport = TransportType.fromString( transportString );
-		
-		// create an empty configuration of transport type and populate it 
-		ConnectionConfiguration configuration = transport.newConfiguration( name );
-		configuration.parseConfiguration( rid, connectionElement );
-		return configuration;
 	}
 
 	private void populateFirewallRules( Element element,

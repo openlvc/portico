@@ -17,8 +17,8 @@ package org.portico2.common.network.protocol;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.network.ProtocolStack;
-import org.portico2.common.network.configuration.protocol.AuthenticationProtocolConfiguration;
-import org.portico2.common.network.configuration.protocol.EncryptionProtocolConfiguration;
+import org.portico2.common.network.configuration.protocol.AuthenticationConfiguration;
+import org.portico2.common.network.configuration.protocol.EncryptionConfiguration;
 import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.w3c.dom.Element;
 
@@ -58,8 +58,8 @@ public enum ProtocolType
 	{
 		switch( this )
 		{
-			case Authentication: return new AuthenticationProtocolConfiguration();
-			case Encryption: return new EncryptionProtocolConfiguration();
+			case Authentication: return new AuthenticationConfiguration();
+			case Encryption: return new EncryptionConfiguration();
 			default: throw new JConfigurationException( "Unknown Protocol type: "+this );
 		}
 	}

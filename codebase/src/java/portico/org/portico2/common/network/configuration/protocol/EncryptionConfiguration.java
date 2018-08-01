@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 /**
  * Class representing the configuration of the encryption protocol inside a ProtocolStack.
  */
-public class EncryptionProtocolConfiguration extends ProtocolConfiguration
+public class EncryptionConfiguration extends ProtocolConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -39,7 +39,7 @@ public class EncryptionProtocolConfiguration extends ProtocolConfiguration
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public EncryptionProtocolConfiguration()
+	public EncryptionConfiguration()
 	{
 		super();
 		this.enabled    = false;

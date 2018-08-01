@@ -14,14 +14,13 @@
  */
 package org.portico2.common.network.transport;
 
-import java.util.Properties;
-
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.configuration.JvmConfiguration;
-import org.portico2.common.network.configuration.MulticastConfiguration;
-import org.portico2.common.network.configuration.TcpConfiguration;
+import org.portico2.common.network.configuration.transport.JvmConfiguration;
+import org.portico2.common.network.configuration.transport.MulticastConfiguration;
+import org.portico2.common.network.configuration.transport.TcpConfiguration;
+import org.portico2.common.network.configuration.transport.TransportConfiguration;
 import org.portico2.common.network.transport.jvm.JvmTransport;
 import org.portico2.common.network.transport.multicast.MulticastTransport;
 import org.portico2.common.network.transport.tcp.TcpClientTransport;
@@ -57,43 +56,23 @@ public enum TransportType
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	/**
-	 * Create a new connection configuration with the given name and return it.
+	 * Create a transport configuration within the given {@link ConnectionConfiguration}.
 	 * 
-	 * @param name The name to pass to the connection configuration.
+	 * @param connection The connection we are part of
 	 * @return A new, empty/default configuration for a connection with the given transport.
 	 */
-	public ConnectionConfiguration newConfiguration( String name )
+	public TransportConfiguration newConfiguration( ConnectionConfiguration connection )
 	{
 		switch( this )
 		{
-			case JVM:       return new JvmConfiguration( name );
-			case Multicast: return new MulticastConfiguration( name );
-			case TcpClient: return new TcpConfiguration( name, TcpClient );
-			case TcpServer: return new TcpConfiguration( name, TcpServer );
+			case JVM:       return new JvmConfiguration( connection );
+			case Multicast: return new MulticastConfiguration( connection );
+			case TcpClient: return new TcpConfiguration( connection, TcpClient );
+			case TcpServer: return new TcpConfiguration( connection, TcpServer );
 			case UdpClient: throw new JRTIinternalError( "UDP Connection Not Yet Supported" );
 			case UdpServer: throw new JRTIinternalError( "UDP Connection Not Yet Supported" );
 			default:        throw new JRTIinternalError( "Unknown Transport: "+this );
 		}
-	}
-
-	/**
-	 * Create a new connection configuration with the given name and initialize it from the
-	 * provided properties. The configuration should look up all its relevant values using
-	 * the provided prefix.
-	 * 
-	 * @param name        The name of the connection
-	 * @param prefix      The prefix that the connections config properties are stored under
-	 * @param properties  The properties object containing the connection configuration
-	 * @return            A new {@link ConnectionConfiguration} that has been initialized with
-	 *                    the given configuration properties.
-	 * @throws JConfigurationException If there is a problem with any of the provided config data
-	 */
-	public ConnectionConfiguration newConfiguration( String name, String prefix, Properties properties )
-		throws JConfigurationException
-	{
-		ConnectionConfiguration configuration = newConfiguration( name );
-		configuration.parseConfiguration( prefix, properties );
-		return configuration;
 	}
 
 	/**

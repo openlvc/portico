@@ -21,6 +21,7 @@ import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ProtocolStack;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 import org.portico2.forwarder.firewall.Firewall;
 import org.portico2.forwarder.tracking.StateTracker;
@@ -97,7 +98,7 @@ public class ForwardingProtocol extends Protocol
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection hostConnection )
+	protected void doConfigure( ProtocolConfiguration configuration, Connection hostConnection )
 	{
 	}
 

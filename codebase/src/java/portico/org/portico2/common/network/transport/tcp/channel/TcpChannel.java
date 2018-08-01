@@ -23,7 +23,7 @@ import java.net.Socket;
 import org.apache.logging.log4j.Logger;
 import org.portico.utils.StringUtils;
 import org.portico2.common.network.Header;
-import org.portico2.common.network.configuration.TcpConfiguration;
+import org.portico2.common.network.configuration.transport.TcpConfiguration;
 
 /**
  * This class represents a bi-directional channel over which messages can be passed and received.

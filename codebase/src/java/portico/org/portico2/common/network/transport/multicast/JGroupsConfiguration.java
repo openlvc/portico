@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.portico2.common.network.configuration.MulticastConfiguration;
+import org.portico2.common.network.configuration.transport.MulticastConfiguration;
 
 /**
  * This class contains properties that are used to set JGroups protocol stack settings.

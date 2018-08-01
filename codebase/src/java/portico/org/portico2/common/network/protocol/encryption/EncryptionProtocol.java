@@ -14,8 +14,16 @@
  */
 package org.portico2.common.network.protocol.encryption;
 
+import java.security.Security;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
+import org.portico2.common.network.configuration.protocol.EncryptionConfiguration;
 import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 
@@ -24,14 +32,34 @@ public class EncryptionProtocol extends Protocol
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	static{ Security.addProvider(new BouncyCastleFipsProvider()); }
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private EncryptionConfiguration configuration;
+
+	private boolean isEnabled;
+	private CipherMode cipherMode;
+	private SecretKey sessionKey;
+	private Cipher encryptCipher;
+	private Cipher decryptCipher;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
+	public EncryptionProtocol()
+	{
+		super();
+		this.configuration = null;   // set in configure()
+		
+		// Runtime Properties
+		this.isEnabled = false;      // set in configure()
+		this.cipherMode = CipherMode.defaultMode(); // set in configure()
+		this.sessionKey = null;      // set in open()
+		this.encryptCipher = null;   // set in configure()
+		this.decryptCipher = null;   // set in configure()		
+	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -40,9 +68,31 @@ public class EncryptionProtocol extends Protocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	protected void doConfigure( ProtocolConfiguration configuration, Connection hostConnection )
+	@Override
+	protected void doConfigure( ProtocolConfiguration providedConfig, Connection hostConnection )
+		throws JConfigurationException
 	{
+		this.configuration = (EncryptionConfiguration)providedConfig;
+		this.hostConnection = hostConnection;
+
+		// Runtime Settings
+		this.isEnabled = configuration.isEnabled();
+		this.cipherMode = configuration.getCipherConfig();
 		
+		// Create the Ciphers
+		try
+		{
+			String configString = configuration.getCipherConfig().getConfigString();
+			this.encryptCipher = Cipher.getInstance( configString, "BCFIPS" );
+			this.decryptCipher = Cipher.getInstance( configString, "BCFIPS" );
+		}
+		catch( Exception e )
+		{
+			throw new JConfigurationException( "Error while setting up ciphers: "+e.getMessage(), e );
+		}
+		
+		// Shared key is extracted in open() call
+
 	}
 
 	public void open()

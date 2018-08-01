@@ -30,7 +30,7 @@ import org.portico2.common.network.Connection;
 import org.portico2.common.network.Header;
 import org.portico2.common.network.IApplicationReceiver;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.configuration.JvmConfiguration;
+import org.portico2.common.network.configuration.transport.JvmConfiguration;
 import org.portico2.common.services.federation.msg.RtiProbe;
 import org.testng.annotations.Test;
 
@@ -85,7 +85,8 @@ public class MessageHelpersTest
 			throw new RuntimeException( "Under Refactor" );
 
 		// Create and set up the configurations
-		ConnectionConfiguration configuration = new JvmConfiguration( "jvm" );
+		ConnectionConfiguration configuration = new ConnectionConfiguration( "jvm" );
+		configuration.setTransportConfiguration( new JvmConfiguration(configuration) );
 //		configuration.getSharedKeyConfiguration().setEnabled( true );
 //		configuration.getSharedKeyConfiguration().setSharedKey( "evelyn" );
 		

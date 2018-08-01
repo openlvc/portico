@@ -138,17 +138,18 @@ public class Connection
 		this.logger = LogManager.getFormatterLogger( appReceiver.getLogger().getName()+"."+name );
 		
 		// create the transport
-		this.transport = configuration.getTransportType().newTransport();
-		this.transport.configure( this );
+		this.transport = configuration.getTransportConfiguration().getTransportType().newTransport();
+		this.transport.configure( configuration.getTransportConfiguration(), this );
 		
 		/////////////////////////////////
 		// populate the protocol stack //
 		/////////////////////////////////
 		this.protocolStack = new ProtocolStack( this );
-		for( ProtocolConfiguration config : configuration.getProtocolStack().getProtocolList() )
+		for( ProtocolConfiguration config : configuration.getProtocolStackConfiguration().getProtocolList() )
 		{
 			ProtocolType type = config.getProtocolType();
 			Protocol protocol = ProtocolFactory.instance().createProtocol( type, host );
+			protocol.configure( config, this );
 			protocolStack.addProtocol( protocol );
 		}
 	}

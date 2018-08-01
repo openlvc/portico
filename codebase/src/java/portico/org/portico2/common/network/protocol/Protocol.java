@@ -19,6 +19,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ProtocolStack;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.transport.Transport;
 
 /**
@@ -79,14 +80,16 @@ public abstract class Protocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	public final void configure( Connection hostConnection )
+	public final void configure( ProtocolConfiguration configuration, Connection hostConnection )
 	{
 		this.hostConnection = hostConnection;
 		this.logger = hostConnection.getLogger();
-		this.doConfigure( hostConnection );
+		this.doConfigure( configuration, hostConnection );
 	}
-	
-	protected abstract void doConfigure( Connection hostConnection ) throws JConfigurationException;
+
+	protected abstract void doConfigure( ProtocolConfiguration configuration, Connection hostConnection )
+	    throws JConfigurationException;
+
 	public abstract void open();
 	public abstract void close();
 

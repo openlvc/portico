@@ -18,6 +18,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.transport.Transport;
 import org.portico2.common.network.transport.TransportType;
 
@@ -39,6 +40,7 @@ public class JvmTransport extends Transport
 	{
 		super( TransportType.JVM );
 	}
+
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -47,7 +49,8 @@ public class JvmTransport extends Transport
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection connection ) throws JConfigurationException
+	protected void doConfigure( ProtocolConfiguration configuration, Connection connection )
+		throws JConfigurationException
 	{
 		// drop the response wait time
 		connection.getResponseCorrelator().setTimeout( 100 );

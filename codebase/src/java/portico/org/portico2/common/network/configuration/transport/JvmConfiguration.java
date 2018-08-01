@@ -12,17 +12,14 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.configuration;
-
-import java.util.Properties;
+package org.portico2.common.network.configuration.transport;
 
 import org.portico2.common.configuration.RID;
-import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.transport.TransportType;
-import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
-public class JvmConfiguration extends ConnectionConfiguration
+public class JvmConfiguration extends TransportConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -31,19 +28,13 @@ public class JvmConfiguration extends ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private ProtocolStackConfiguration protocolStack;
-	private SharedKeyConfiguration sharedKeyConfiguration;
-	private PublicKeyConfiguration publicKeyConfiguration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public JvmConfiguration( String name )
+	public JvmConfiguration( ConnectionConfiguration connectionConfiguration )
 	{
-		super( name );
-		this.protocolStack = new ProtocolStackConfiguration();
-		this.sharedKeyConfiguration = new SharedKeyConfiguration();
-		this.publicKeyConfiguration = new PublicKeyConfiguration();
+		super( connectionConfiguration );
 	}
 
 	//----------------------------------------------------------
@@ -59,12 +50,6 @@ public class JvmConfiguration extends ConnectionConfiguration
 	}
 	
 	@Override
-	public ProtocolStackConfiguration getProtocolStack()
-	{
-		return this.protocolStack;
-	}
-
-	@Override
 	public String toString()
 	{
 		return String.format( "[JVM: name=%s, enabled=%s]", super.name, super.enabled );
@@ -76,28 +61,8 @@ public class JvmConfiguration extends ConnectionConfiguration
 	@Override
 	public void parseConfiguration( RID rid, Element element )
 	{
-		///////////////////////////////////
-		// Parent Element Properties //////
-		///////////////////////////////////
-		if( element.hasAttribute("enabled") )
-			super.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
-		
-		///////////////////////////////////
-		// Protocol Stack Properties //////
-		///////////////////////////////////
-		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
-		if( protocolStackElement != null )
-			protocolStack.parseConfiguration( rid, protocolStackElement );
 	}
 	
-	@Override
-	public void parseConfiguration( String prefix, Properties properties )
-	{
-		this.publicKeyConfiguration.parseConfiguration( prefix, properties );
-		this.sharedKeyConfiguration.parseConfiguration( prefix, properties );
-		
-	}
-
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

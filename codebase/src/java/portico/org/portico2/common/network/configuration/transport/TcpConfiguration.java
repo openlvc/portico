@@ -12,20 +12,18 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.configuration;
+package org.portico2.common.network.configuration.transport;
 
 import java.net.InetAddress;
-import java.util.Properties;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.RID;
-import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.utils.NetworkUtils;
-import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
-public class TcpConfiguration extends ConnectionConfiguration
+public class TcpConfiguration extends TransportConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -55,18 +53,23 @@ public class TcpConfiguration extends ConnectionConfiguration
 	private int bundlingMaxSize;
 	private int bundlingMaxTime;
 	
-	private ProtocolStackConfiguration protocolStack;
-	
-	private SharedKeyConfiguration sharedKeyConfiguration;
-	private PublicKeyConfiguration publicKeyConfiguration;
-	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public TcpConfiguration( String name )
+	/**
+	 * Create a new TcpConfiguration, which can be of type either {@link TransportType#TcpClient}
+	 * or {@link TransportType#TcpServer}.
+	 * 
+	 * @param connectionConfiguration The configuration for the connection we are the transport for
+	 * @param transportType The specific transport type we're creating
+	 */
+	public TcpConfiguration( ConnectionConfiguration connectionConfiguration, TransportType transportType )
 	{
-		super( name );
-		this.type    = TransportType.TcpClient;
+		super( connectionConfiguration );
+		if( transportType != TransportType.TcpClient && transportType != TransportType.TcpServer )
+			throw new JConfigurationException( "TCP Configuration must have type of either tcp-client or tcp-server" );
+		
+		this.type    = transportType;
 		this.address = DEFAULT_ADDRESS;
 		this.port    = DEFAULT_PORT;
 		
@@ -77,20 +80,8 @@ public class TcpConfiguration extends ConnectionConfiguration
 		this.bundlingMaxSize = 64000; // 64k
 		this.bundlingMaxTime = 20000; // 20ms
 		
-		this.protocolStack = new ProtocolStackConfiguration();
-		this.sharedKeyConfiguration = new SharedKeyConfiguration();
-		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
 	
-	public TcpConfiguration( String name, TransportType type )
-	{
-		this( name );
-		if( type == TransportType.TcpClient || type == TransportType.TcpServer )
-			this.type = type;
-		else
-			throw new JConfigurationException( "Cannot assign a TCP transport the type: "+type );
-	}
-
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -102,12 +93,6 @@ public class TcpConfiguration extends ConnectionConfiguration
 	public TransportType getTransportType()
 	{
 		return this.type;
-	}
-
-	@Override
-	public ProtocolStackConfiguration getProtocolStack()
-	{
-		return this.protocolStack;
 	}
 
 	@Override
@@ -124,57 +109,16 @@ public class TcpConfiguration extends ConnectionConfiguration
 	public void parseConfiguration( RID rid, Element element )
 	{
 		///////////////////////////////////
-		// Parent Element Properties //////
-		///////////////////////////////////
-		if( element.hasAttribute("enabled") )
-			super.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
-		
-		// get the transport type (could be tcp-client or tcp-server)
-		TransportType transport = TransportType.fromString( element.getAttribute("transport") );
-		setTransportType( transport );
-
-		///////////////////////////////////
 		// Transport-Specific Properties //
 		///////////////////////////////////
-		// get the tcp configuration element
-		String typeName = transport == TransportType.TcpClient ? "tcp-client" : "tcp-server";
-		Element tcpElement = XmlUtils.getChild( element, typeName, true );
-		
 		// get the standard properties
-		if( tcpElement.hasAttribute("address") )
-			this.setAddress( tcpElement.getAttribute("address") );
+		if( element.hasAttribute("address") )
+			this.setAddress( element.getAttribute("address") );
 		
-		if( tcpElement.hasAttribute("port") )
-			this.setPort( Integer.parseInt(tcpElement.getAttribute("port")) );
-		
-		///////////////////////////////////
-		// Protocol Stack Properties //////
-		///////////////////////////////////
-		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
-		if( protocolStackElement != null )
-			protocolStack.parseConfiguration( rid, protocolStackElement );
+		if( element.hasAttribute("port") )
+			this.setPort( Integer.parseInt(element.getAttribute("port")) );
 	}
 
-	@Override
-	public void parseConfiguration( String prefix, Properties properties )
-	{
-		this.sharedKeyConfiguration.parseConfiguration( prefix, properties );
-		this.publicKeyConfiguration.parseConfiguration( prefix, properties );
-
-		prefix += ".";
-		String temp = properties.getProperty( prefix+"type" );
-		if( temp != null )
-			setTransportType( TransportType.fromString(temp) );
-		
-		temp = properties.getProperty( prefix+KEY_ADDRESS );
-		if( temp != null )
-			setAddress( temp );
-		
-		temp = properties.getProperty( prefix+KEY_PORT );
-		if( temp != null )
-			setPort( Integer.parseInt(temp) );
-	}
-	
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////

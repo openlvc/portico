@@ -182,7 +182,7 @@ public class RtiConnection implements IApplicationReceiver
 	
 	public TransportType getTransportType()
 	{
-		return configuration.getTransportType();
+		return configuration.getTransportConfiguration().getTransportType();
 	}
 
 	//----------------------------------------------------------

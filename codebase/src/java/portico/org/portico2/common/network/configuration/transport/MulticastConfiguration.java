@@ -12,20 +12,18 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico2.common.network.configuration;
+package org.portico2.common.network.configuration.transport;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Properties;
 
 import org.portico2.common.configuration.RID;
-import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.configuration.ConnectionConfiguration;
 import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.utils.NetworkUtils;
-import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
-public class MulticastConfiguration extends ConnectionConfiguration
+public class MulticastConfiguration extends TransportConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -46,24 +44,15 @@ public class MulticastConfiguration extends ConnectionConfiguration
 	private int port;
 	private String nic;
 
-	private ProtocolStackConfiguration protocolStack;
-	private SharedKeyConfiguration sharedKeyConfiguration;
-	private PublicKeyConfiguration publicKeyConfiguration;
-
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public MulticastConfiguration( String name )
+	public MulticastConfiguration( ConnectionConfiguration connectionConfiguration )
 	{
-		super( name );
+		super( connectionConfiguration );
 		this.address = DEFAULT_ADDRESS;
 		this.port    = DEFAULT_PORT;
 		this.nic     = DEFAULT_NIC;
-		
-		this.protocolStack = new ProtocolStackConfiguration();
-
-		this.sharedKeyConfiguration = new SharedKeyConfiguration();
-		this.publicKeyConfiguration = new PublicKeyConfiguration();
 	}
 
 	//----------------------------------------------------------
@@ -79,66 +68,21 @@ public class MulticastConfiguration extends ConnectionConfiguration
 		return TransportType.Multicast;
 	}
 
-	@Override
-	public ProtocolStackConfiguration getProtocolStack()
-	{
-		return this.protocolStack;
-	}
-
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/// Configuration Loading   ////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void parseConfiguration( RID rid, Element element )
 	{
-		///////////////////////////////////
-		// Parent Element Properties //////
-		///////////////////////////////////
-		if( element.hasAttribute("enabled") )
-			super.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
-		
-		///////////////////////////////////
-		// Transport-Specific Properties //
-		///////////////////////////////////
-		// get the multicast configuration element
-		Element multicast = XmlUtils.getChild( element, "multicast", true );
-		
 		// get the standard properties
-		if( multicast.hasAttribute("address") )
-			this.setAddress( multicast.getAttribute("address") );
+		if( element.hasAttribute("address") )
+			this.setAddress( element.getAttribute("address") );
 		
-		if( multicast.hasAttribute("port") )
-			this.setPort( Integer.parseInt(multicast.getAttribute("port")) );
+		if( element.hasAttribute("port") )
+			this.setPort( Integer.parseInt(element.getAttribute("port")) );
 
-		if( multicast.hasAttribute("nic") )
-			this.setNic( multicast.getAttribute("nic") );
-
-		///////////////////////////////////
-		// Protocol Stack Properties //////
-		///////////////////////////////////
-		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
-		if( protocolStackElement != null )
-			protocolStack.parseConfiguration( rid, protocolStackElement );
-	}
-	
-	@Override
-	public void parseConfiguration( String prefix, Properties properties )
-	{
-		this.sharedKeyConfiguration.parseConfiguration( prefix, properties );
-		this.publicKeyConfiguration.parseConfiguration( prefix, properties );
-		
-		prefix += ".";
-		String temp = properties.getProperty( prefix+KEY_ADDRESS );
-		if( temp != null )
-			setAddress( temp );
-		
-		temp = properties.getProperty( prefix+KEY_PORT );
-		if( temp != null )
-			setPort( Integer.parseInt(temp) );
-		
-		temp = properties.getProperty( prefix+KEY_NIC );
-		if( temp != null )
-			setNic( temp );
+		if( element.hasAttribute("nic") )
+			this.setNic( element.getAttribute("nic") );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////

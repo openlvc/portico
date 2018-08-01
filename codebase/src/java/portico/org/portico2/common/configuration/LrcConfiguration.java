@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.network.configuration.ConnectionConfiguration;
-import org.portico2.common.network.configuration.MulticastConfiguration;
-import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
@@ -51,10 +49,7 @@ public class LrcConfiguration
 		this.queueWarningCountSize = 500;
 		
 		// defaults
-		this.connectionConfiguration = new MulticastConfiguration( "multicast" );
-		//TcpConnectionConfiguration tcc = new TcpConnectionConfiguration( "tcp" );
-		//tcc.setAddress( "SITE_LOCAL" );
-		//this.lrcConnection = tcc;
+		this.connectionConfiguration = new ConnectionConfiguration( "lrc" );
 	}
 
 	//----------------------------------------------------------
@@ -134,21 +129,6 @@ public class LrcConfiguration
 		Element networkElement = XmlUtils.getChild( lrcElement, "network", true );
 		Element connectionElement = XmlUtils.getChild( networkElement, "connection", true );
 		
-		// get the name of the connection
-		String name = connectionElement.getAttribute( "name" );
-		if( name == null || name.trim().equals("") )
-			throw new JConfigurationException( "LRC <connection> missing attribute \"name\"" );
-		
-		// extract the transport type so we know what to create
-		String transportString = connectionElement.getAttribute( "transport" );
-		if( transportString == null || transportString.trim().equals("") )
-			throw new JConfigurationException( "LRC <connection name="+name+"> missing attribute \"transport\"" );
-		
-		// find the transport type of the connection and create an empty config of that type
-		TransportType transport = TransportType.fromString( transportString );
-		
-		// create an empty configuration of transport type and populate it 
-		this.connectionConfiguration = transport.newConfiguration( name );
 		this.connectionConfiguration.parseConfiguration( rid, connectionElement );
 	}
 

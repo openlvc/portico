@@ -26,7 +26,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.configuration.TcpConfiguration;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
+import org.portico2.common.network.configuration.transport.TcpConfiguration;
 import org.portico2.common.network.transport.Transport;
 import org.portico2.common.network.transport.TransportType;
 
@@ -83,10 +84,10 @@ public class TcpServerTransport extends Transport
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection connection )
+	protected void doConfigure( ProtocolConfiguration protocolConfiguration, Connection connection )
 		throws JConfigurationException
 	{
-		this.configuration = (TcpConfiguration)connection.getConfiguration();
+		this.configuration = (TcpConfiguration)protocolConfiguration;
 		
 		this.socketAddress = new InetSocketAddress( this.configuration.getAddress(),
 		                                            this.configuration.getPort() );

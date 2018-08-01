@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 /**
  * Configuration information for the Authentication protocol.
  */
-public class AuthenticationProtocolConfiguration extends ProtocolConfiguration
+public class AuthenticationConfiguration extends ProtocolConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES

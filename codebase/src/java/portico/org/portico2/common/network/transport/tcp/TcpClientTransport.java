@@ -27,7 +27,8 @@ import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.utils.StringUtils;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.configuration.TcpConfiguration;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
+import org.portico2.common.network.configuration.transport.TcpConfiguration;
 import org.portico2.common.network.transport.Transport;
 import org.portico2.common.network.transport.TransportType;
 import org.portico2.common.network.transport.tcp.channel.ITcpChannelListener;
@@ -81,9 +82,11 @@ public class TcpClientTransport extends Transport implements ITcpChannelListener
 	///  Transport Lifecycle Methods   ////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection connection ) throws JConfigurationException
+	protected void doConfigure( ProtocolConfiguration protocolConfiguration,
+	                            Connection connection )
+	    throws JConfigurationException
 	{
-		this.configuration = (TcpConfiguration)connection.getConfiguration();
+		this.configuration = (TcpConfiguration)protocolConfiguration;
 		this.serverAddress = new InetSocketAddress( this.configuration.getAddress(),
 		                                            this.configuration.getPort() );
 		

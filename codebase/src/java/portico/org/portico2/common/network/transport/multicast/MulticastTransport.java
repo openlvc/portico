@@ -19,7 +19,8 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
-import org.portico2.common.network.configuration.MulticastConfiguration;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
+import org.portico2.common.network.configuration.transport.MulticastConfiguration;
 import org.portico2.common.network.transport.Transport;
 import org.portico2.common.network.transport.TransportType;
 
@@ -60,13 +61,13 @@ public class MulticastTransport extends Transport implements IJGroupsListener
 	 * Extract the RID configuration and store locally. Generate the JGroups configuration.
 	 */
 	@Override
-	protected void doConfigure( Connection connection )
+	protected void doConfigure( ProtocolConfiguration protocolConfiguration, Connection connection )
 		throws JConfigurationException
 	{
-		this.configuration = (MulticastConfiguration)connection.getConfiguration();
+		this.configuration = (MulticastConfiguration)protocolConfiguration;
 		
 		// create a JGroups channel configuration from what was provided
-		this.jgroupsConfiguration = new JGroupsConfiguration( configuration.getName() );
+		this.jgroupsConfiguration = new JGroupsConfiguration( "portico" );
 		this.jgroupsConfiguration.fromRidConfiguration( this.configuration );
 	}
 	

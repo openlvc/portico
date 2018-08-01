@@ -92,7 +92,7 @@ public class RtiConfiguration
 		for( String name : rtiConnections.keySet() )
 		{
 			ConnectionConfiguration configuration = rtiConnections.get( name );
-			if( alltypes.contains(configuration.getTransportType()) )
+			if( alltypes.contains(configuration.getTransportConfiguration().getTransportType()) )
 				toRemove.add( name );
 		}
 		
@@ -115,16 +115,8 @@ public class RtiConfiguration
 			if( name == null || name.trim().equals("") )
 				throw new JConfigurationException( "RTI <connection> missing attribute \"name\"" );
 			
-			// extract the transport type so we know what to create
-			String transportString = connectionElement.getAttribute( "transport" );
-			if( transportString == null || transportString.trim().equals("") )
-				throw new JConfigurationException( "RTI <connection name="+name+"> missing attribute \"transport\"" );
-			
-			// find the transport type of the connection and create an empty config of that type
-			TransportType transport = TransportType.fromString( transportString );
-			
-			// create an empty configuration of transport type and populate it 
-			ConnectionConfiguration configuration = transport.newConfiguration( name );
+			// create the configuration
+			ConnectionConfiguration configuration = new ConnectionConfiguration( name );
 			configuration.parseConfiguration( rid, connectionElement );
 			this.rtiConnections.put( name, configuration );
 		}

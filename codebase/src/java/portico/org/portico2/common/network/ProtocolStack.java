@@ -16,6 +16,7 @@ package org.portico2.common.network;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 import org.portico2.common.network.transport.Transport;
 
@@ -169,8 +170,7 @@ public class ProtocolStack
 		}
 		while( current != null );
 		
-		// configure the protocol and insert it into the stack
-		protocol.configure( connection );
+		// poen the protocol if it isn't already
 		if( connection.transport.isOpen() )
 			protocol.open();
 
@@ -197,7 +197,7 @@ public class ProtocolStack
 		public void open()  {}
 		public void close() {}
 		public String getName() { return "ApplicationConnector"; }
-		protected void doConfigure( Connection hostConnection ) {}
+		protected void doConfigure( ProtocolConfiguration configuration, Connection hostConnection ) {}
 
 		public final void down( Message message )
 		{

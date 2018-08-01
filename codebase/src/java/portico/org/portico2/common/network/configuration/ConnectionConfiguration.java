@@ -14,24 +14,23 @@
  */
 package org.portico2.common.network.configuration;
 
-import java.util.Properties;
-
+import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.configuration.RID;
 import org.portico2.common.network.configuration.protocol.ProtocolStackConfiguration;
+import org.portico2.common.network.configuration.transport.TransportConfiguration;
+import org.portico2.common.network.protocol.Protocol;
+import org.portico2.common.network.transport.Transport;
 import org.portico2.common.network.transport.TransportType;
+import org.portico2.common.utils.XmlUtils;
 import org.w3c.dom.Element;
 
 /**
  * This class represents a generic structure for the configuration of a connection.
- * Each connection has a root transport type that it uses. This is expressed in the
- * {@link TransportType} enumeration.
- * <p/>
- * 
- * Each connection also has a set of common properties, such as a name, encryption
- * and filtering settings. The common properties are accessed through this parent
- * class, but the transport-specific properties are contained in subclasses. 
+ * Each connection consists of a root {@link Transport}, the configuration for which
+ * we contain. The connection also contains a {@link ProtocolStack}, which again we
+ * contain the configuration for.
  */
-public abstract class ConnectionConfiguration
+public class ConnectionConfiguration
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -40,13 +39,15 @@ public abstract class ConnectionConfiguration
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	protected String name;
-	protected boolean enabled;
+	private String name;
+	private boolean enabled;
+	private TransportConfiguration transportConfiguration;
+	private ProtocolStackConfiguration protocolStackConfiguration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	protected ConnectionConfiguration( String name )
+	public ConnectionConfiguration( String name )
 	{
 		this.name = name;
 		this.enabled = true;
@@ -57,36 +58,68 @@ public abstract class ConnectionConfiguration
 	//----------------------------------------------------------
 
 	/**
-	 * @return Get the underlying transport type that this connection will use.
-	 */
-	public abstract TransportType getTransportType();
-	
-	/**
-	 * Parse the configuration for the connection from the given set of properties. The concrete
-	 * connection type should look for properties with the given prefix.
-	 * 
-	 * @param prefix The prefix to look for properties under
-	 * @param properties The properties set to look in
-	 */
-	@Deprecated
-	public abstract void parseConfiguration( String prefix, Properties properties );
-
-	/**
 	 * Parse the configuration for the connection from the given set XML element. The concrete
 	 * connection type should pull its configuration from here
 	 * 
 	 * @param rid The RID we are configuring
 	 * @param element The XML element containing the configuration information
 	 */
-	public abstract void parseConfiguration( RID rid, Element element );
+	public void parseConfiguration( RID rid, Element element ) throws JConfigurationException
+	{
+		///////////////////////////////////
+		// Parse Base Properties  /////////
+		///////////////////////////////////
+		this.name = element.getAttribute( "name" );
+		if( this.name == null || this.name.equals("") )
+			throw new JConfigurationException( "The \"name\" attribute was not provided on <connection>" );
 
+		if( element.hasAttribute("enabled") )
+			this.enabled = Boolean.valueOf( element.getAttribute("enabled") ); 
+		
+		///////////////////////////////////
+		// Transport Configuration  ///////
+		///////////////////////////////////
+		TransportType transport = TransportType.fromString( element.getAttribute("transport") );
+		this.transportConfiguration = transport.newConfiguration( this );
+		Element transportElement = XmlUtils.getChild( element, name.toLowerCase(), true );
+		this.transportConfiguration.parseConfiguration( rid, transportElement );
+
+		///////////////////////////////////
+		// Protocol Stack Properties //////
+		///////////////////////////////////
+		Element protocolStackElement = XmlUtils.getChild( element, "protocols", false );
+		this.protocolStackConfiguration = new ProtocolStackConfiguration();
+		if( protocolStackElement != null )
+			protocolStackConfiguration.parseConfiguration( rid, protocolStackElement );
+	}
+
+	/**
+	 * Each connection has a single Transport. The {@link Transport} is a subclass
+	 * of {@link Protocol} so that it can sit as the last element in the {@link ProtocolStack},
+	 * but it is a special type. As such, it also has its own configuration object.
+	 * 
+	 * @return The configuration to use for the {@link Transport}.
+	 */
+	public TransportConfiguration getTransportConfiguration()
+	{
+		return this.transportConfiguration;
+	}
+	
+	public void setTransportConfiguration( TransportConfiguration configuration )
+	{
+		this.transportConfiguration = configuration;
+	}
+	
 	/**
 	 * Each connection will have a ProtocolStack. This returns the configuration that
 	 * should be used for that stack.
 	 * 
 	 * @return The configuration to use for the protocol stack
 	 */
-	public abstract ProtocolStackConfiguration getProtocolStack();
+	public ProtocolStackConfiguration getProtocolStackConfiguration()
+	{
+		return this.protocolStackConfiguration;
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Accessors and Mutators   //////////////////////////////////////////////////////////

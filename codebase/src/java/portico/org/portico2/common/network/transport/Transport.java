@@ -20,6 +20,7 @@ import org.portico2.common.network.CallType;
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ProtocolStack;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 
 /**
@@ -84,7 +85,8 @@ public abstract class Transport extends Protocol
 	 * @param connection The {@link Connection} that this transport is contained within
 	 * @throws JConfigurationException Thown if there is an error in the configuration data
 	 */
-	protected abstract void doConfigure( Connection connection );
+	@Override
+	protected abstract void doConfigure( ProtocolConfiguration configuration, Connection connection );
 
 	/**
 	 * Establish a link to the underlying transport and commence processing messages.
