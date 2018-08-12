@@ -62,6 +62,9 @@ public class EncryptionConfiguration extends ProtocolConfiguration
 
 	public int        getKeyLength() { return this.keyLength; }
 	public CipherMode getCipherConfig() { return this.cipherMode; }
+	/** Return the shared key from the configuration file; will return null if none is set,
+	    meaning we have to try and source it from the RTI (if we are the LRC), or generate
+	    it ourselves randomly if we are the RTI. */
 	public String     getSharedKey() { return this.sharedKey; }
 	public boolean    hasSharedKey() { return this.sharedKey != null; }
 	

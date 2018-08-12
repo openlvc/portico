@@ -94,6 +94,22 @@ public enum TransportType
 		}
 	}
 
+	/** Return the name of the sub-element under the <connection> that contains the transport
+	    specific configuration options */
+	public String getConfigurationName()
+	{
+		switch( this )
+		{
+			case JVM:       return "jvm";
+			case Multicast: return "multicast";
+			case TcpClient: return "tcp-client";
+			case TcpServer: return "tcp-server";
+			case UdpClient: throw new JRTIinternalError( "UDP Connection Not Yet Supported" );
+			case UdpServer: throw new JRTIinternalError( "UDP Connection Not Yet Supported" );
+			default:        throw new JRTIinternalError( "Unknown Transport: "+this );
+		}
+	}
+
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

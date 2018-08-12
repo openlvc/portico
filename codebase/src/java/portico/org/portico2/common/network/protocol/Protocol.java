@@ -56,6 +56,7 @@ public abstract class Protocol
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	protected Connection hostConnection;
+	protected Connection.Host hostType;
 	protected Logger logger;
 	
 	private Protocol previous;
@@ -67,6 +68,7 @@ public abstract class Protocol
 	protected Protocol()
 	{
 		this.hostConnection = null;   // set in configure()
+		this.hostType = null;         // set in configure()
 		this.logger = null;           // set in configure()
 
 		this.previous = null;         // set when added to ProtocolStack
@@ -84,21 +86,56 @@ public abstract class Protocol
 	{
 		this.hostConnection = hostConnection;
 		this.logger = hostConnection.getLogger();
+		this.hostType = hostConnection.getHost();
 		this.doConfigure( configuration, hostConnection );
 	}
 
+	/**
+	 * This method should be overridden in all child types, but it is never called directly
+	 * by external code. Rather, the {@link #configure(ProtocolConfiguration, Connection)}
+	 * is called, which in turn extracts the necessary configuration that is generic to all
+	 * types before passing execution to this method, giving each specific protocol a change
+	 * to configure itself.
+	 * 
+	 * @param configuration The configuration object for the protocol. Expected to be cast to a sub-type
+	 * @param hostConnection The connection the protocol is being deployed into. Can also find out whether
+	 *                       we are in the LRC, RTI or Forwarder from here.
+	 * @throws JConfigurationException If the is a problem with any of the given configuration data given
+	 */
 	protected abstract void doConfigure( ProtocolConfiguration configuration, Connection hostConnection )
 	    throws JConfigurationException;
 
+	/**
+	 * The connection is opening, so it is time for the protocol to ensure it is set up
+	 * according to its configuration. 
+	 */
 	public abstract void open();
+	
+	/**
+	 * The connection is closing, so it is time to close any additional connections we may
+	 * have opened, close threads or files and generally clean up.
+	 */
 	public abstract void close();
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Message Passing   /////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * A message has been received from the host component and is being passed down towards
+	 * the network.
+	 * 
+	 * @param message The message we received
+	 */
 	public abstract void down( Message message );
-	public abstract void up( Message message );
 	
+	/**
+	 * A message has been received from the network and is being passed up towards the host.
+	 * 
+	 * @param message The message that was recieved.
+	 */
+	public abstract void up( Message message );
+
+
 	protected final void passUp( Message message )
 	{
 		previous.up( message );

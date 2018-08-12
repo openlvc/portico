@@ -122,7 +122,7 @@ public class Header
     //  (00-00)   | 1-bit  | Bundle?
     //  (01-01)   | 1-bit  | Encrypted? If true, Nonce/IV must be present
     //  (02-02)   | 1-bit  | Filtering data present?
-    //  (03-03)   | 1-bit  | Filtering handle is object? // 0=Object, 1=Interaction
+    //  (03-03)   | 1-bit  | Object Handle (Filtering)? // 1=Object, 0=Interaction
     //  (04-04)   | 1-bit  | Authenticated? If sender is authenticated, a token is included in the body
     //  (05-05)   | 1-bit  | Manually Marshalled? If true, the message uses manual marshalling
     //  (06-06)   | 1-bit  | Spare

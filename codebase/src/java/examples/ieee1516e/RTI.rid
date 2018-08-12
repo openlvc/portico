@@ -1,39 +1,67 @@
-# ================================
-# Portico RTI Initialization Data
-# ================================
-# This file contains all available configuration options for Portico. 
-# Values are initially commented out and are provided shown with their default settings.
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+# ===================================================================================
+# ////////////////////////  Portico RTI Initialization Data  ////////////////////////
+# ===================================================================================
 #
-# All options are formatted as name=value pairs, the '#' and '!' characters mark comment lines
+# This file contains all available configuration options for Portico. 
+# Values provided are shown with defaults. Inline documentation is provided throughout.
 #
 # To make use of this file, put it in the directory that your federate is executed from, or set the
 # RTI_RID_FILE environment variable to point at wherever it is located.
 #
-# --------------------------------------
-# Network Connections
-# --------------------------------------
-# The configuration properties for all network connections are grouped under a common name.
-# Although this configuration often uses the name of the transport, that is not required,
-# nor is there any link between the name and the transport that it uses. For example:
+# //////////////////////////////////////
+# 1. Network Connection Configuration
+# //////////////////////////////////////
+# The structure of configuration for all connections is the same:
 #
-# rti.network.[$NAME].transport = multicast
-# rti.network.[$NAME].otherPropertyA = ...
-# rti.network.[$NAME].otherPropertyB = ...
+#     <connection name="some-name" transport="{{TRANSPORT}}" enabled="true|false">
+#         <%TRANSPORT%>  // can be multicast, tcp-server, tcp-client or jvm
+#         <protocols>
+#             ...
+#         </protocols>
+#     </connection>
 #
-# All the properties under the prefix 'rti.network.[$NAME]' are considered part of the same
-# configuration. In this file, you'll often see that name is the _same_ as the transport
-# (e.g. rti.network.multicast.transport = multicast). There is _NO RELATION_ between the
-# name and the transport. It is done in this file only to provide the most natural default
-# configuration.
+# In the main <connection> element has three attributes:
+#     - name: A unqiue name to identify the connection (used in logging)
+#     - transport: The transport implementation use by the connection
+#     - protocols: The protocol stack supporting the connection
 #
-# Where allowed (such as in the RTI), you can create multiple connections with the same
-# transport, but different configurations. For example, you could listen on two different
-# multicast networks, or for incoming TCP connections on two different NICs. To do this,
-# duplicate the configurations and just change the name.
 #
-# --------------------------------------
-# Network Interface Symbolic Names
-# --------------------------------------
+#    1.1 Transport Implementations
+#    `````````````````````````````
+#    For each connection there is a single transport type. The <connection> element must have
+#    a child element with the same name as appears in the transport attribute ({{TRANSPORT}} above).
+#    Below, we see transport="multicast" and a <multicast> sub-element:
+#
+#    <connection name="myconnection" transport="multicast" enabled="true">
+#        <multicast address="239.1.2.3" port="20913" nic="SITE_LOCAL"/>
+#    </connection>
+#
+#    The sub-element contains transport-specific configuration. Valid transport types are:
+#
+#      - multicast: Uses multicast or broadcast group for message exchange
+#      - tcp-server: TCP, point-to-point. Listens for connections from clients.
+#      - tcp-client: TCP, point-to-point. Client side of connection. Connects to tcp-server.
+#      - jvm: Shared-memory. Federates must run in same process. Usually in differnet threads.
+#
+#
+#    1.2 Protocol Stack
+#    ``````````````````````````
+#    Each connection has a protocol stack. Protocols are units of functionality that transform
+#    a message in some way. The current list of supported protocols are:
+#
+#      - authentication: Either PKI or password. Special authentication process undertaken
+#                        with the RTI when a federate joins a federation
+#      - encryption: Will encrypt messages using either explicitly defined key, or one given
+#                    to it as part of the authentication process.
+#
+#     Examples are provided in this RID file, but are typically commented out or DISABLED
+#     via the special "enabled" property on each protocol configuration.
+#
+# ======================================
+# 2. Network Interface Symbolic Names
+# ======================================
 # For any place where an IP address or name could validly be entered, you can instead use a more
 # generic, symbolic string. When a symbolic name is used, Portico will substitute it for the first
 # address or NIC it can find that matches. The following symbolic names are available:
@@ -43,466 +71,229 @@
 #  - SITE_LOCAL: 10.0.0.0/8 (255.0.0.0), 172.16.0.0/12 (255.240.0.0), 192.168.0.0/16 (255.255.0.0)
 #  - GLOBAL:     Any address not in the above
 #
+-->
+<portico>
+	<!--
+	# ==================================================================================
+	# ///  Common Configuration  ///////////////////////////////////////////////////////
+	# ==================================================================================
+	-->
+	<common>
+		<!--
+		# (C.1) RTI Home Location
+		#
+		#        The location of the RTI installation. Can be overridden by the env-var RTI_HOME.
+		#
+		-->
+		<rti-home> ./ </rti-home>
 
-# ==================================================================================
-# ///  Common Configuration  ///////////////////////////////////////////////////////
-# ==================================================================================
-
-# (C.1) Common Logging Properties
-#        Specify the log level and directory. Settings are common across RTI, LRC and Forwarder.
-#        You can also specify the log4j pattern that is used to format the log messages.
-#
-portico.logdir = logs
-portico.loglevel = INFO
-portico.logformat = %d{ABSOLUTE} %-5p %c: %m%n
-
-# Log-level for any JGroups connections
-portico.jgroups.loglevel = OFF
-
-
-# ==================================================================================
-# ///  RTI Configuration  //////////////////////////////////////////////////////////
-# ==================================================================================
-
-# (R.1) RTI Home Location
-#        The location of the RTI installation. Can be overridden by the env-var RTI_HOME.
-#
-rti.home = ./
-
-
-# (R.2) RTI Data Directory
-#        The location to write log files, federation save files and all other data to.
-#        While core RTI files are often installed into Program Files or other privileged
-#        areas on Linux, the data directory typically points to subfolder of a users home
-#        directory or some other place that is writable without administrative privileges.
-#
-# rti.data = ${user.home}/.portico     // Linux
-# rti.data = ${user.home}\Portico      // Windows
+		<!--
+		# (C.2) RTI Data Directory
+		#
+		#        The location to write log files, federation save files and all other data to.
+		#        While core RTI files are often installed into Program Files or other privileged
+		#        areas on Linux, the data directory typically points to subfolder of a users home
+		#        directory or some other place that is writable without administrative privileges.
+		#
+		-->
+		<!-- <rti-data> ${user.home}\Portico </rti-data>  --> <!-- // Windows -->
+		<!-- <rti-data> ${user.home}/.portico </rti-data> --> <!-- // Linux   -->
 
 
-# --------------------------------------
-#   Network Configuration
-# --------------------------------------
-# (R.3) RTI Network Connections
-#        Specify the NAMES of all the connections we are using. These names have no relation to
-#        the transport used by the connection, even if it appears otherwise. On start-up, the RTI
-#        will use a name to look up further properties that contain the actual transport data.
-#
-#        For each name in the list, the RTI will look for properties prefixed with the string
-#        "rti.network.<name>.{property}" (where name is substituted for a value from the list).
-#        For example, if the name is "tcp", the RTI will look for all properties starting with
-#        the string "rti.network.example".
-#
-#        The "transport" property defines the actual transport used by the connection. To use our
-#        example, "rti.network.example.transport" would be used to define the explicit transport.
-#        An example of each, with transport-specific configurations, is provided below. We have
-#        named the connections after their transport type, but this isn't required (and lets you
-#        have multiple connections with the same transport, but, say, different ports if you want).
-#
-#        Encryption: If you want to use encryption with any of the connections, there are a set
-#                    of default properties you can add to the config for any type. We have
-#                    included them as defaults under each connection example we have provided.
-#                    however the full documentation is only provided on the "multicsat" types.
-#
-rti.network.connections = multicast, tcp, jvm
+		<!--
+		# (C.3)  Logging Properties
+		#        Specify level and directory. Settings are common across RTI, LRC and Forwarder.
+		#        You can also specify the log4j pattern that is used to format the log messages.
+		-->
+		<logging logdir="logs"
+		         loglevel="INFO"
+		         logformat="%d{ABSOLUTE} %-5p %c: %m%n"/>
+
+		<!--
+		# (C.4) Special Configuration Options
+		#        This section has a set of misc configuration options.
+		-->
+		<special>
+			<jgroups loglevel="OFF"/>
+		</special>
+	</common>
+
+	<!--
+	# ==================================================================================
+	# ///  RTI Configuration  //////////////////////////////////////////////////////////
+	# ==================================================================================
+	-->
+	<rti>
+		<!--
+		# (R.1) RTI Network Connections
+		#
+		#        The RTI can maintain a arbitrary number of network connections, allowing it
+		#        to speak on many networks at once.
+		#
+		#        The <network> element may contain a number of <connection> definitions.
+		#        Each must have a unique name and must identify a transport. It can also
+		#        be enabled/disabled via the "enabled" property.
+		#
+		#        Sub-component configuration options for individual connection definitions
+		#        are common across RTI, LRC and Forwarder components. See the section called
+		#        "Network Connection Configuration" at the top of this file for a detailed
+		#        discussion of valid structure.
+		#
+		-->
+		<network>
+			<!--
+			# (R.2) Multicast Connection
+			#
+			#        A connection that communicates via local multicast groups. Uses the
+			#        JGroups reliable multicast library to support its message exchange.
+			-->
+			<connection name="multicast" transport="multicast" enabled="true">
+				<multicast address="239.1.2.3" port="20913" nic="SITE_LOCAL"/>
+				<protocols/>
+			</connection>
 
 
-# (R.4) JVM Network Connection Configuration
-#        Use an internal, local-process only shared memory exchange.
-#        You can only define a type and log level.
-#
-rti.network.jvm.transport = jvm
+			<!--
+			# (R.3) Unicast TCP Network Connection
+			#
+			#        This connection opens a socket and listens for incoming connection
+			#        requests from "tcp-client" connections. It established a reliable,
+			#        point-to-point TCP connection between the server and any number of
+			#        clients that connect.
+			#
+			-->
+			<connection name="tcp" transport="tcp-server" enabled="true">
+				<tcp-server address="SITE_LOCAL" port="52295"/>
+
+				<protocols/>
+			</connection>
 
 
-# (R.5) Multicast Connection Configuration
-#
-#  Transport: Signals that this is a multicast connection
-#    Address: A valid multicast or broadcast group, or the symbolic name BROADCAST
-#       Port: Any valid port number
-#        NIC: The address or host name of the NIC we should use to send/receive traffic, or
-#             one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
-#
-rti.network.multicast.transport = multicast
-rti.network.multicast.address   = 239.1.2.3
-rti.network.multicast.port      = 20913
-rti.network.multicast.nic       = SITE_LOCAL
+			<!--
+			# (R.4) JVM Network Connection Configuration
+			#
+			#        Use an internal, local-process only shared memory exchange.
+			#        Federates must be running in the same process, typically as
+			#        separate threads.
+			#
+			-->
+			<connection name="jvm" transport="jvm" enabled="true">
+				<jvm/> <!-- no properties by default -->
+				<protocols/>
+			</connection>
 
-#rti.network.multicast.bundling = false
-#rti.network.multicast.bundling.maxSize = 64K
-#rti.network.multicast.bundling.maxTime = 30
-#rti.network.multicast.flow.credits = 2M
-#rti.network.multicast.flow.threshold = 0.4
-#rti.network.multicast.frag.size = 60K
+		</network>
+	</rti>
 
-	# (R.5a) Public Key Authentication and Encryption
+
+	<!--
+	# ==================================================================================
+	# ///  LRC Configuration  //////////////////////////////////////////////////////////
+	# ==================================================================================
+	-->
+	<lrc>
+
+		<!--
+		# (L.1) LRC Network Connection
+		#        The LRC can only have an SINGLE CONNECTION at once. It uses this to
+		#        communicate with the RTI (directly or through a Forwarder).
+		#
+		#        The <network> element main only contain a SINGLE <connection> definition.
+		#        We have provided placeholders for other types with default configuration
+		#        information, but have commented them out.
+		#
+		#        Sub-component configuration options for individual connection definitions
+		#        are common across RTI, LRC and Forwarder components. See the section called
+		#        "Network Connection Configuration" at the top of this file for a detailed
+		#        discussion of valid structure.
+		#
+		-->
+		<network>
+			<connection name="lrc" transport="multicast" enabled="true">
+				<multicast address="239.1.2.3" port="20913" nic="SITE_LOCAL"/>
+				<!-- <tcp-client address="SITE_LOCAL" port="52295"/> -->
+
+				<protocols>
+					<authentication enabled="false" type="pki">
+						<pki rtipublic="" privatekey="" privatepass="{none}" enforced=""/>
+						<password id="" password=""/> <!-- Not yet supported -->
+					</authentication>
+					<encryption enabled="false" kenlength="128" cipher="AES/CFB/NoPadding"/>
+				</protocols>
+
+			</connection>
+		</network>
+
+	</lrc>
+
+
+	<!--
+	# ==================================================================================
+	# ///  Forwarder Configuration  ////////////////////////////////////////////////////
+	# ==================================================================================
 	#
-	#        Federates connect to the RTI using PKI. The federate must have the
-	#        RTI's public key on file locally. When connecting to the RTI and
-	#        performing non-federation calls (Create, Destroy, Join, Resign, ...),
-	#        the messages are encrypted with the RTIs public key. On connect, they
-	#        also exchange keys, with return messages from the RTI encrypted using
-	#        the federates public key. Once a federation is joined, the federate
-	#        is given access to a federation-wide shared key and that is used instead.
-	#        (Less CPU load and needed so federates can read each other's broadcasts).
+	# The Forwarder is designed to bridge networks, whether that be because they
+	# are not local, or because there is some need for an administrative boundary
+	# between them. The forwarder will pass messages in two directions:
 	#
-	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
+	#       Upstream: Connection between Forwarder and RTI network
+	#     Downstream: Connection between Forwarder and local cluster of federates
 	#
-	#          Enabled: Is encryption on or off?
-	#         Enforced: Enforce that all connections use a public key. When set to false,
-	#                   federates can connect even if they do not provide creds. Only used by RTI.
-	#       PrivateKey: Points to the file containing the federate's private key (PEM format)
-	#        RtiPublic: Points to the file containing the RTI public key (PEM format) Only used by LRC.
-	#    SessionCipher: Cipher configuration for federation messages
-	#    SessionKeylen: Bit-length of shared key for federation messages
-	#      
-	rti.network.multicast.publickey.enabled       = false
-	rti.network.multicast.publickey.enforced      = false
-	rti.network.multicast.publickey.privatekey    = ./id_rsa
-	rti.network.multicast.publickey.rtipublic     = ./rti_public.pem
-	rti.network.multicast.publickey.sessionCipher = AES/CFB/NoPadding
-	rti.network.multicast.publickey.sessionKeylen = 128
-
-
-	# (R.5b) Symmetric Encryption Settings
+	#          (RTI) <<<<< Forwarder >>>>> (Local Federates)
+	#             {upstream}      {downstream}
 	#
-	#        Let the connection make use of a shared-key for encryption
+	# There is a separate network connection for each direction that reflects how the
+	# forwarder will talk to the RTI/Upstream (F.1) and Local Federates/Downstream (F.2).
 	#
-	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
-	#
-	#     Enabled: Is encryption on or off?
-	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
-	#              require the use of the Java unlimited strength policies (google it)
-	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
-	#         Key: The pre-shared key. Must be the same on all ends
-	#      
-	rti.network.multicast.sharedkey.enabled  = false
-	rti.network.multicast.sharedkey.keylen   = 128
-	rti.network.multicast.sharedkey.cipher   = AES/CFB/NoPadding
-	rti.network.multicast.sharedkey.key      = password
+	# To restrict traffic flow, a firewall can be configured (F.3).
+	-->
+	<forwarder>
+
+		<!--
+			NOTE: A Forwarder can only have TWO connections. One called "upstream" and
+			      one called "downstream". Other names, or configs that are missing both
+			      connections will cause a startup failure.
+		-->
+		<network>
+			<connection name="upstream" transport="tcp-client">
+				<tcp-client address="SITE_LOCAL" port="52295"/>
+				<protocols/>
+			</connection>
+
+			<connection name="downstream" transport="multicast">
+				<multicast address="239.1.2.3" port="20913" nic="SITE_LOCAL"/>
+				<protocols/>
+			</connection>
+		</network>
 
 
-# (R.6) Unicast Network Connection
-#
-#  Transport: Signals that this is a TCP Server connection that will listen for clients
-#       Port: The port number to listen on.
-#        NIC: A valid host name or IP address used by the NIC we should use to receive connections,
-#             or one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
-#
-rti.network.tcp.transport = tcp-server
-rti.network.tcp.port      = 52295
-rti.network.tcp.nic       = SITE_LOCAL
+		<!--
+		# (F.3) Forwarder Firewall
+		#
+		#       Define the object and interaction class types for messages that are to be
+		#       IMPORTED from upstream>>>downstream , or EXPORTED from downstream>>>upstream.
+		#
+		#       The firewall is DISABLED by default for efficiency reasons. If you need this
+		#       functionality, you can specify "enabled=true".
+		-->
+		<firewall enabled="false">
+			<!--
+			# (F.3a) Firewall Import Rules
+			-->
+			<import>
+				<object class="HLAobjectRoot.*"/>
+				<interaction class="HLAinteractionRoot.*"/>
+			</import>
 
-	# (R.6a) Public Key Authentication and Encryption
-	#
-	#        Federates connect to the RTI using PKI. The federate must have the
-	#        RTI's public key on file locally. When connecting to the RTI and
-	#        performing non-federation calls (Create, Destroy, Join, Resign, ...),
-	#        the messages are encrypted with the RTIs public key. On connect, they
-	#        also exchange keys, with return messages from the RTI encrypted using
-	#        the federates public key. Once a federation is joined, the federate
-	#        is given access to a federation-wide shared key and that is used instead.
-	#        (Less CPU load and needed so federates can read each other's broadcasts).
-	#
-	#        NOTE: Only one of Public Key or Symmetric options can be enabled at once.
-	#
-	#          Enabled: Is encryption on or off?
-	#         Enforced: Enforce that all connections use a public key. When set to false,
-	#                   federates can connect even if they do not provide creds. Only used by RTI.
-	#       PrivateKey: Points to the file containing the federate's private key (PEM format)
-	#        RtiPublic: Points to the file containing the RTI public key (PEM format) Only used by LRC.
-	#    SessionCipher: Cipher configuration for federation messages
-	#    SessionKeylen: Bit-length of shared key for federation messages
-	#      
-	rti.network.tcp.publickey.enabled       = false
-	rti.network.tcp.publickey.enforced      = false
-	rti.network.tcp.publickey.privatekey    = ./id_rsa
-	rti.network.tcp.publickey.rtipublic     = ./rti_public.pem
-	rti.network.tcp.publickey.sessionCipher = AES/CFB/NoPadding
-	rti.network.tcp.publickey.sessionKeylen = 128
+			<!--
+			# (F.3a) Firewall Export Rules
+			-->
+			<export>
+				<object class="HLAobjectRoot.*"/>
+				<interaction class="HLAinteractionRoot.*"/>
+			</export>
+		</firewall>
 
+	</forwarder>
 
-	# (R.6b) Symmetric Encryption Settings
-	#
-	#        Let the connection make use of a shared-key for encryption
-	#
-	#        NOTE: Only one of Public Key or Symmetric options can be enabled at once.
-	#
-	#     Enabled: Is encryption on or off?
-	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
-	#              require the use of the Java unlimited strength policies (google it)
-	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
-	#         Key: The pre-shared key. Must be the same on all ends
-	#      
-	rti.network.tcp.sharedkey.enabled  = false
-	rti.network.tcp.sharedkey.keylen   = 128
-	rti.network.tcp.sharedkey.cipher   = AES/CFB/NoPadding
-	rti.network.tcp.sharedkey.key      = password
-
-
-# ==================================================================================
-# ///  LRC Configuration  //////////////////////////////////////////////////////////
-# ==================================================================================
-
-# --------------------------------------
-#   Network Configuration
-# --------------------------------------
-# (L.1) LRC Network Connections
-#        The same structure as for the RTI (see R.3), except that only one name can be specified
-#        because each LRC only has one connection to the RTI/Federation.
-#
-#        Enter any name. The lrc.network.<name>.transport property determines the type.
-#
-lrc.network.connection = multicast
-
-
-# (L.2) JVM Connection Properties
-#        Only used if the JVM connection is specified.
-#        No configuration for the JVM connection beyond saying it is of type JVM
-#
-lrc.network.jvm.transport = jvm
-
-
-# (L.3) Multicast Connection Properties
-#
-#        Only used if multicast is specified as the connection.
-#        Be sure to check the *NIC* you are binding with. You can use some of the
-#        symbolic short-cuts highlighted at the top of this config file.
-#
-#    Address: A valid multicast or broadcast group, or the symbolic name BROADCAST
-#       Port: Any valid port number
-#        NIC: The address or host name of the NIC we should use to send/receive traffic, or
-#             one of the symbolic names from above (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
-#
-lrc.network.multicast.transport = multicast
-lrc.network.multicast.address   = 239.1.2.3
-lrc.network.multicast.port      = 20913
-lrc.network.multicast.nic       = SITE_LOCAL
-
-	# (L.3a) Public Key Authentication and Encryption
-	#
-	#        Federates connect to the RTI using PKI. The federate must have the
-	#        RTI's public key on file locally. When connecting to the RTI and
-	#        performing non-federation calls (Create, Destroy, Join, Resign, ...),
-	#        the messages are encrypted with the RTIs public key. On connect, they
-	#        also exchange keys, with return messages from the RTI encrypted using
-	#        the federates public key. Once a federation is joined, the federate
-	#        is given access to a federation-wide shared key and that is used instead.
-	#        (Less CPU load and needed so federates can read each other's broadcasts).
-	#
-	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
-	#
-	#          Enabled: Is encryption on or off?
-	#         Enforced: Enforce that all connections use a public key. When set to false,
-	#                   federates can connect even if they do not provide creds. Only used by RTI.
-	#       PrivateKey: Points to the file containing the federate's private key (PEM format)
-	#        RtiPublic: Points to the file containing the RTI public key (PEM format) Only used by LRC.
-	#    SessionCipher: Cipher configuration for federation messages
-	#    SessionKeylen: Bit-length of shared key for federation messages
-	#      
-	lrc.network.multicast.publickey.enabled       = false
-	lrc.network.multicast.publickey.privatekey    = ./id_rsa
-	lrc.network.multicast.publickey.rtipublic     = ./rti_public.pem
-	lrc.network.multicast.publickey.sessionCipher = AES/CFB/NoPadding
-	lrc.network.multicast.publickey.sessionKeylen = 128
-
-
-	# (L.3b) Shared Key Encryption Settings
-	#
-	#        Let the connection make use of a shared-key for encryption
-	#
-	#        NOTE: Only one of Public Key or Shared Key options can be enabled at once.
-	#
-	#     Enabled: Is encryption on or off?
-	#      Keylen: Bit-length of federation shared key. 128-bit is the default, higher values
-	#              require the use of the Java unlimited strength policies (google it)
-	#      Cipher: Cipher configuration string used in create Cipher. Only supports AES currently.
-	#         Key: The pre-shared key. Must be the same on all ends
-	#      
-	lrc.network.multicast.sharedkey.enabled  = false
-	lrc.network.multicast.sharedkey.keylen   = 128
-	lrc.network.multicast.sharedkey.cipher   = AES/CFB/NoPadding
-	lrc.network.multicast.sharedkey.key      = password
-
-
-# (L.4) TCP Connection Properties
-#
-#        Only used if tcp is specified as the LRC connection.
-#        Be sure to fill out the address of the server and check your firewall for
-#        any connection blocking.
-#
-#     Server: The IP address or host name of the server
-#       Port: The port that the server is listening on
-#        NIC: The local NIC to use. Address or host name of the local NIC, or can use
-#             one of the symbolic names (LOOPBACK, LINK_LOCAL, SITE_LOCAL, GLOBAL).
-#
-lrc.network.tcp.transport = tcp-client
-lrc.network.tcp.server    = 192.168.0.10
-lrc.network.tcp.port      = 52295
-lrc.network.tcp.nic       = SITE_LOCAL
-
-# (L.5) TCP Connection Bundling Support
-#         If you are sending lots of smaller messages, higher overall throughput can be obtained by
-#         bundling them together into a fewer number of larger messages. However, doing so comes at
-#         the cost of latency. Messages are buffered until either the timeout period (milliseconds)
-#         is reached, or the total size of the messages exceeds the specified threshold. Bundling
-#         is DISABLED by default. For latency-critical tasks, disable it or reduce the max-timeout.
-#
-lrc.network.tcp.bundling = false
-lrc.network.tcp.bundling.maxSize = 64K
-lrc.network.tcp.bundling.maxTime = 20
-
-
-# ==================================================================================
-# ///  Forwarder Configuration  ////////////////////////////////////////////////////
-# ==================================================================================
-#
-# The Forwarder is designed to bridge networks, whether that be because they
-# are not local, or because there is some need for an administrative boundary
-# between them. The forwarder will pass messages in two directions:
-#
-#       Upstream: Connection between Forwarder and RTI network
-#     Downstream: Connection between Forwarder and local cluster of federates
-#
-#          (RTI) <<<<< Forwarder >>>>> (Local Federates)
-#             {upstream}      {downstream}
-#
-# There is a separate network connection for each direction that reflects how the
-# forwarder will talk to the RTI/Upstream (F.1) and Local Federates/Downstream (F.2).
-#
-# To restrict traffic flow, a firewall can be configured (F.3, F.4 and F.5).
-
-# --------------------------------------
-#   Network Configuration
-# --------------------------------------
-
-# (F.1) Forwarder Upstream Connection
-#
-#       The forwarder upstream connection is our link back to the RTI. The config
-#       information should point to somewhere that an RTI is currently running.
-#
-#       Valid types are: multicast and tcp-client (connect to rti)
-#       Valid settings for each type are the same as in RTI and LRC.
-#
-fwd.network.upstream.transport = tcp-client
-fwd.network.upstream.address   = 192.168.0.10
-fwd.network.upstream.port      = 52295
-fwd.network.upstream.nic       = SITE_LOCAL
-
-
-# (F.2) Forwarder Downstream/Local Connection
-#
-#       The forwarder downstream connection is our link to a local fedeate (or cluster
-#       of federates). This connection should reflect how all the local federates will
-#       connect to the forwarder (shared multicast gorup? unicast?).
-#
-#       Valid types are: multicast and tcp-server (so clients can connect to us)
-#       Valid settings for each type are the same as in RTI and LRC.
-#
-fwd.network.downstream.transport = multicast
-fwd.network.downstream.address   = 239.1.2.3
-fwd.network.downstream.port      = 22222
-fwd.network.downstream.nic       = SITE_LOCAL
-
-
-# (F.3) Forwarder Firewall
-#
-#       To support increased scalability, the forwarder can act as a firewall.
-#       When enabled, it will prevent all data messages (attributes updates and interactions)
-#       from passing in either direction through the forwarder.
-#
-#       Users then configure which interaction and update types are allowed to pass from
-#       upstream>>downstream (F.4) and from downstream>>upstream (F.5).
-#
-#       This allows the forwarder to prevent overly chatty local clusters from overwhelming
-#       a federation or a long-haul link with unnecessary traffic.
-# 
-#       == Note==
-#       The firewall only affects _DATA_ messages (attribute updates and interactions).
-#       These messages are the vast majority of federation traffic by both volume and bandwidth.
-#       All control-type messages (everything else) will still pass through in both directions.
-#
-fwd.firewall.enabled = false
-
-
-# (F.4) Firewall Import Rules
-#
-#       Comma-separated list of all classes for which attribute updates and interactions
-#       are ALLOWED to pass through the firewall in the upstream>>>downstream direction.
-#
-#       If a data message is received from the RTI and it does NOT match one of the listed
-#       types, it will be dropped, and won't pass to the local cluster.
-#
-#       Class names MUST be fully qualified to match, but are case-insensitive.
-#       The wildcard '*' character matches any relevant character sequence in a name.
-#       Use '\' as the last character of a line to spread your config out over many.
-#
-fwd.firewall.import.object = HLAobjectRoot.*
-fwd.firewall.import.interaction = HLAinteractionRoot.*
-
-
-# (F.5) Firewall Export Rules
-#
-#       Comma-separated list of all classes for which attribute updates and interactions
-#       are ALLOWED to pass through the firewall in the upstream<<<downstream direction.
-#
-#       If a data message is received from the local cluster and it does NOT match one of
-#       the listed types, it will be dropped, and won't pass to the RTI.
-#
-#       Class names MUST be fully qualified to match, but are case-insensitive.
-#       The wildcard '*' character matches any relevant character sequence in a name.
-#       Use '\' as the last character of a line to spread your config out over many.
-#
-fwd.firewall.export.object = HLAobjectRoot.*
-fwd.firewall.export.interaction = HLAinteractionRoot.*
-
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-#                       Legacy Configuration Options                           #
-# //////////////////////////////////////////////////////////////////////////// #
-
-# (4.7) JGroups Traffic Auditing
-#         If this option is enabled a special log file will be produced for each federate listing
-#         the messages it has sent and received, along with their size and other useful details.
-#         This information can be used to make judgements about network config (such as bundling
-#         limits) or to just see what is happening in the federation at a network level.
-#
-#         The audit files are placed in the logs directory (see sec 1.1) with the name:
-#         "audit-FEDERATENAME.log"
-#
-#         If the auditor is enabled you can specify a detail level to control what is logged.
-#         When set to "full", each message will be logged with its specific details. (default)
-#         When set to "summary", only the summary tables will be printed
-#
-# portico.jgroups.auditor.enabled = false
-# portico.jgroups.auditor.details = full
-
-# (4.8) JGroups Traffic Audit Filtering
-#         Federates can generate a lot of messages. Sometimes you really just want to zero in
-#         on a particular type of message, or messages for a particular FOM type. These filters
-#         let you do that. These filters work in combination. For example, consider the following:
-#             - action  = sent
-#             - type    = UpdateAttributes
-#             - fomtype = Lifeform, GroundVehicle
-#
-#         Given this, only attribute updates for the FOM classes "Lifeform" and "GroundVehicle"
-#         that the local federate sends will be logged. Leaving a value empty, or using the
-#         keyword "all" will cause no filtering for that type to be applied.
-#
-#         NOTE: If the detail level is set to "summary", -no- individual messages will be logged,
-#               regardless of the filter settings.
-#         
-# portico.jgroups.auditor.filter.direction = 
-# portico.jgroups.auditor.filter.message   = 
-# portico.jgroups.auditor.filter.fomtype   = 
-
-
-# =========================================
-# A51. Undocumented Settings
-# =========================================
-# This section is a catch-all of settings we use for internal work, and infrequently.
-# Their specific usecase and function is undocumented as they are not intended for general use.
-# portico.container.loglevel = OFF
-# portico.jgroups.loglevel = OFF
-# portico.jgroups.timeout = 1000
-
+</portico>

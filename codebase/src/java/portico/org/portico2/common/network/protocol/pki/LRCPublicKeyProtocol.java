@@ -25,14 +25,12 @@ import javax.crypto.SecretKey;
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
-import org.portico2.common.network.CallType;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.Connection.Status;
 import org.portico2.common.network.Message;
 import org.portico2.common.network.ResponseCorrelator;
 import org.portico2.common.network.configuration.PublicKeyConfiguration;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 import org.portico2.common.services.federation.msg.Authenticate;
 import org.portico2.common.services.federation.msg.WelcomePack;
@@ -102,7 +100,8 @@ public class LRCPublicKeyProtocol extends Protocol
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection hostConnection ) throws JConfigurationException
+	protected void doConfigure( ProtocolConfiguration givenConfiguration, Connection hostConnection )
+		throws JConfigurationException
 	{
 		//this.configuration = hostConnection.getConfiguration().getPublicKeyConfiguration();
 		//this.isEnabled = configuration.isEnabled(); // FIXME TEMP ON
@@ -110,7 +109,7 @@ public class LRCPublicKeyProtocol extends Protocol
 		
 		// load the private key file
 		KeyPair pair = AuthUtils.readPrivateKeyPemFile( configuration.getPrivateKey(),
-		                                               configuration.getPrivateKeyPassword() );
+		                                                configuration.getPrivateKeyPassword() );
 		this.fedPrivate = pair.getPrivate();
 		this.fedPublic = pair.getPublic();
 		

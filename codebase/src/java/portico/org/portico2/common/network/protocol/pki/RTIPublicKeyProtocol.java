@@ -24,12 +24,10 @@ import javax.crypto.SecretKey;
 
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.portico.lrc.compat.JConfigurationException;
-import org.portico2.common.PorticoConstants;
-import org.portico2.common.messaging.MessageType;
 import org.portico2.common.messaging.ResponseMessage;
-import org.portico2.common.network.CallType;
 import org.portico2.common.network.Connection;import org.portico2.common.network.Message;
 import org.portico2.common.network.configuration.PublicKeyConfiguration;
+import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 import org.portico2.common.services.federation.msg.Authenticate;
 import org.portico2.common.services.federation.msg.CreateFederation;
@@ -95,7 +93,7 @@ public class RTIPublicKeyProtocol extends Protocol
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	protected void doConfigure( Connection hostConnection )
+	protected void doConfigure( ProtocolConfiguration givenConfiguration, Connection hostConnection )
 	{
 		//this.configuration = hostConnection.getConfiguration().getPublicKeyConfiguration();
 		//this.isEnabled = configuration.isEnabled(); // FIXME TEMP ON

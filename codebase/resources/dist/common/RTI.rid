@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 # ===================================================================================
 # ////////////////////////  Portico RTI Initialization Data  ////////////////////////
@@ -14,13 +13,9 @@
 # //////////////////////////////////////
 # 1. Network Connection Configuration
 # //////////////////////////////////////
-# The configuration structure for network connections across the RTI, LRC and Forwarder has
-# a large amount of overlap. While the number of connections you have specify for each of
-# the applications differs, the configuration properties you can specify a largely the same.
+# The structure of configuration for all connections is the same:
 #
-# A connection definition has a common structure:
-#
-#     <connection name="your-name" transport="%TRANSPORT%" enabled="true">
+#     <connection name="some-name" transport="{{TRANSPORT}}" enabled="true|false">
 #         <%TRANSPORT%>  // can be multicast, tcp-server, tcp-client or jvm
 #         <protocols>
 #             ...
@@ -35,17 +30,15 @@
 #
 #    1.1 Transport Implementations
 #    `````````````````````````````
-#    The transport implementation defines the network communication model used for the connection.
-#    There must be a sub-element of <connection> that has the same value. This is where transport
-#    specific configuration information is kept. For example:
+#    For each connection there is a single transport type. The <connection> element must have
+#    a child element with the same name as appears in the transport attribute ({{TRANSPORT}} above).
+#    Below, we see transport="multicast" and a <multicast> sub-element:
 #
 #    <connection name="myconnection" transport="multicast" enabled="true">
 #        <multicast address="239.1.2.3" port="20913" nic="SITE_LOCAL"/>
 #    </connection>
 #
-#    In the above, the connection is declared to have a "multicast" transport. The <multicast>
-#    sub-element provides transport-specific configuration information. Note the value of the
-#    "nic" attribute (see Network Interface Symbolic Names). Valid transports are:
+#    The sub-element contains transport-specific configuration. Valid transport types are:
 #
 #      - multicast: Uses multicast or broadcast group for message exchange
 #      - tcp-server: TCP, point-to-point. Listens for connections from clients.
@@ -55,26 +48,16 @@
 #
 #    1.2 Protocol Stack
 #    ``````````````````````````
-#    Each connection can have a protocols stack. Protocols are units of functionality that
-#    process and augment messages in some way. Some protocols are only available in some
-#    components. For example, the <encryption> protocol can be used anywhere, but the
-#    <forwarding> protocol can only be used in the Forwarder (manually injected in code).
+#    Each connection has a protocol stack. Protocols are units of functionality that transform
+#    a message in some way. The current list of supported protocols are:
 #
-#    The stack has two directions: 
-#        - down() From Application >>> Transport
-#        -   up() From Transport >>> Application
+#      - authentication: Either PKI or password. Special authentication process undertaken
+#                        with the RTI when a federate joins a federation
+#      - encryption: Will encrypt messages using either explicitly defined key, or one given
+#                    to it as part of the authentication process.
 #
-#      Application      | Messages sent to the network are
-#         Protocol #1   | passed "down" the stack, to each
-#         Protocol #2   | protocol in the order declared here.
-#         Transport     V
-#
-#    When a message is received from the transport, it is passed "up" the stack.
-#    The message is passed to each protocol in **REVERSE** order (from bottom to top).
-#
-#    Currently, the only protocol available for configuration via the RID is the <encryption>
-#    protocol.
-#
+#     Examples are provided in this RID file, but are typically commented out or DISABLED
+#     via the special "enabled" property on each protocol configuration.
 #
 # ======================================
 # 2. Network Interface Symbolic Names
@@ -167,7 +150,7 @@
 			<connection name="multicast" transport="multicast" enabled="true">
 
 				<!--
-				# (R.2a) Multicast Transport Configuration
+				#    Multicast Transport Configuration
 				#
 				#    Address: A valid multicast or broadcast ip, or the symbolic name BROADCAST.
 				#       Port: Any valid port number. Default: 20913.
@@ -177,26 +160,9 @@
 				-->
 				<multicast address="239.1.2.3" port="20913" nic="SITE_LOCAL"/>
 
-				<!--
-				# (R.2b) Protocol Stack
-				#
-				#         A stack of message reading and modifying protocol implementations.
-				#         The stack has two directions: 
-				#             - down() From Application >>> Transport
-				#             -   up() From Transport >>> Application
-				#
-				#         Application      | Messages sent to the network are
-				#            Protocol #1   | passed "down" the stack, to each
-				#            Protocol #2   | protocol in the order declared here.
-				#            Transport     V
-				#
-				#         When a message is received from the transport, it is passed
-				#         "up" the stack in the REVERSE order as configured here.
-				#
-				-->
 				<protocols>
 					<!--
-					# (R.2c) Authorization Settings
+					#   Authentication Settings
 					#
 					#        Description: TBA
 					#
@@ -213,7 +179,7 @@
 					</authentication>
 
 					<!--
-					# (R.2d) Encryption Settings
+					#   Encryption Settings
 					#
 					#        Description: TBA
 					#
@@ -249,7 +215,7 @@
 			-->
 			<connection name="tcp" transport="tcp-server" enabled="true">
 				<!--
-				# (R.3a) Unicast Server Transport Configuration
+				#   Unicast Server Transport Configuration
 				#
 				#     Address: IP or hostname of address to listen on. Can substitute for one of
 				#              the symbolic names and the first address found on the associated
@@ -260,7 +226,14 @@
 				<tcp-server address="SITE_LOCAL" port="52295"/>
 
 				<protocols>
+					<!-- Authentication
+					<authentication enabled="false" type="pki">
+						<pki rtipublic="" privatekey="" privatepass="{none}" enforced=""/>
+					</authentication> -->
+
+					<!-- Encryption
 					<encryption enabled="false" kenlength="128" cipher="AES/CFB/NoPadding"/>
+					-->
 				</protocols>
 			</connection>
 
@@ -339,30 +312,36 @@
 				-->
 				<!-- <jvm/> -->
 
-				<!--
-				# (L.5) Protocol Stack
-				#
-				#         A stack of message reading and modifying protocol implementations.
-				#         The stack has two directions: 
-				#             - down() From Application >>> Transport
-				#             -   up() From Transport >>> Application
-				#
-				#         Application      | Messages sent to the network are
-				#            Protocol #1   | passed "down" the stack, to each
-				#            Protocol #2   | protocol in the order declared here.
-				#            Transport     V
-				#
-				#         When a message is received from the transport, it is passed
-				#         "up" the stack in the REVERSE order as configured here.
-				-->
 				<protocols>
 					<!--
-					# (L.5a) Encryption Settings
+					#   Authentication Settings
 					#
-					#     Enabled: Is the protocol on/off? If disabled, wont be added
-					#   Keylength: Bit-length of federation shared key. 128-bit (DEFAULT)
+					#        Description: TBA
+					#
+					#      enabled: Is the protocol on/off? If disabled, wont be added
+					#    rtipublic: Reference to the RTI's public key to use for encryption
+					#   privatekey: Reference to our private key
+					#  privatepass: Password for the private key
+					#     enforced: Enforce that all connections use a public key. When set to false,
+					#               federates can connect even if they do not provide creds. Only used by RTI.
+					-->
+					<authentication enabled="false" type="pki">
+						<pki rtipublic="" privatekey="" privatepass="{none}" enforced=""/>
+						<password id="" password=""/> <!-- Not yet supported -->
+					</authentication>
+
+					<!--
+					#   Encryption Settings
+					#
+					#        Description: TBA
+					#
+					#     enabled: Is the protocol on/off? If disabled, wont be added
+					#   keylength: Bit-length of federation shared key. 128-bit (DEFAULT)
 					#              Stronger levels required Java unlimited strength policies (google it)
-					#      Cipher: Cipher configuration string.
+					#      cipher: Cipher configuration string.
+					#         key: The shared key that should be used. If specified, all connections
+					#              must specify the same value. RTI will auto-gen if not specified.
+					#              (Optional)
 					#
 					#   Supported Ciphers
 					#     AES Only. Further, only those modes that yield a cipher text that is

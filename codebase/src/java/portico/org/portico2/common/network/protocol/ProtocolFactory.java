@@ -19,10 +19,9 @@ import java.util.Map;
 
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico2.common.network.Connection;
-import org.portico2.common.network.Connection.Host;
-import org.portico2.common.network.protocol.encryption.EncryptionProtocol2;
-import org.portico2.common.network.protocol.pki.LRCPublicKeyProtocol;
-import org.portico2.common.network.protocol.pki.RTIPublicKeyProtocol;
+import org.portico2.common.network.protocol.authentication.LrcAuthProtocol;
+import org.portico2.common.network.protocol.authentication.RtiAuthProtocol;
+import org.portico2.common.network.protocol.encryption.EncryptionProtocol;
 
 /**
  * The {@link ProtocolFactory} stores references to all the various protocols that
@@ -54,14 +53,15 @@ public class ProtocolFactory
 		
 		// Register all the supported protocols
 		// RTI
-		rti.put( ProtocolType.Authentication, RTIPublicKeyProtocol.class );
-		rti.put( ProtocolType.Encryption, EncryptionProtocol2.class );
+		rti.put( ProtocolType.Authentication, RtiAuthProtocol.class );
+		rti.put( ProtocolType.Encryption, EncryptionProtocol.class );
 		
 		// LRC
-		lrc.put( ProtocolType.Authentication, LRCPublicKeyProtocol.class );
-		lrc.put( ProtocolType.Encryption, EncryptionProtocol2.class );
+		lrc.put( ProtocolType.Authentication, LrcAuthProtocol.class );
+		lrc.put( ProtocolType.Encryption, EncryptionProtocol.class );
 		
 		// Forwarder
+		//  --None
 	}
 
 	//----------------------------------------------------------

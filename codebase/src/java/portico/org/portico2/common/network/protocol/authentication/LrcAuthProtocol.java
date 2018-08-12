@@ -16,10 +16,11 @@ package org.portico2.common.network.protocol.authentication;
 
 import org.portico2.common.network.Connection;
 import org.portico2.common.network.Message;
+import org.portico2.common.network.configuration.protocol.AuthenticationConfiguration;
 import org.portico2.common.network.configuration.protocol.ProtocolConfiguration;
 import org.portico2.common.network.protocol.Protocol;
 
-public class RTIAuthProtocol extends Protocol
+public class LrcAuthProtocol extends Protocol
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -28,6 +29,7 @@ public class RTIAuthProtocol extends Protocol
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private AuthenticationConfiguration configuration;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -40,9 +42,9 @@ public class RTIAuthProtocol extends Protocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	///  Lifecycle Management   ////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
-	protected void doConfigure( Connection hostConnection )
+	protected void doConfigure( ProtocolConfiguration givenConfiguration, Connection hostConnection )
 	{
-		
+		this.configuration = (AuthenticationConfiguration)givenConfiguration;
 	}
 
 	public void open()
@@ -60,12 +62,12 @@ public class RTIAuthProtocol extends Protocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	public void down( Message message )
 	{
-		
+		passDown( message );
 	}
 
 	public void up( Message message )
 	{
-		
+		passUp( message );
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +75,7 @@ public class RTIAuthProtocol extends Protocol
 	////////////////////////////////////////////////////////////////////////////////////////
 	public String getName()
 	{
-		return "Authentication";
+		return "Authentication (LRC)";
 	}
 
 	//----------------------------------------------------------

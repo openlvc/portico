@@ -58,7 +58,7 @@ public class AuthenticationConfiguration extends ProtocolConfiguration
 	////////////////////////////////////////////////////////////////////////////////////////
 	public ProtocolType getProtocolType()
 	{
-		return ProtocolType.Encryption;
+		return ProtocolType.Authentication;
 	}
 
 	public void setType( String type )

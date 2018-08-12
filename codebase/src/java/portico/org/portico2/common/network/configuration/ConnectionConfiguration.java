@@ -81,7 +81,7 @@ public class ConnectionConfiguration
 		///////////////////////////////////
 		TransportType transport = TransportType.fromString( element.getAttribute("transport") );
 		this.transportConfiguration = transport.newConfiguration( this );
-		Element transportElement = XmlUtils.getChild( element, name.toLowerCase(), true );
+		Element transportElement = XmlUtils.getChild( element, transport.getConfigurationName().toLowerCase(), true );
 		this.transportConfiguration.parseConfiguration( rid, transportElement );
 
 		///////////////////////////////////

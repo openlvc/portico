@@ -20,7 +20,7 @@ public enum MessageType
 	//                        VALUES
 	//----------------------------------------------------------
 	
-	// Federation Messages (000-009)
+	// Non-Federation Messages (000-009)
 	Connect                 ( (short)0 ),
 	Disconnect              ( (short)1 ),
 	RtiProbe                ( (short)2 ),

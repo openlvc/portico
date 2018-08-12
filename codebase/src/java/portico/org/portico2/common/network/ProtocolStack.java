@@ -28,6 +28,18 @@ import org.portico2.common.network.transport.Transport;
  * The {@link ProtocolStack} will ensure that the final component in the stack is <i>always</i>
  * the {@link Transport} that has been loaded for the connection.  </p>
  * 
+ * The stack has two directions: 
+ *     - down() From Application >>> Transport
+ *     -   up() From Transport >>> Application
+ *
+ *   Application      | Messages sent to the network are
+ *      Protocol #1   | passed "down" the stack, to each
+ *      Protocol #2   | protocol in the order declared here.
+ *      Transport     V
+ *
+ * When a message is received from the transport, it is passed "up" the stack.
+ * The message is passed to each protocol in **REVERSE** order (from bottom to top).
+ * 
  * To pass a message to the network, hand it off to {@link #down(Message)}. To pass a message
  * up the stack, hand it {@link #up(Message)}. 
  */
