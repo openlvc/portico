@@ -39,6 +39,7 @@ public class ICMetadata implements Serializable
 	private int                     handle;
 	private Order                   order;
 	private Transport               transport;
+	private Sharing 			    sharing;
 	private Space                   space;
 	private ICMetadata              parent;
 	private Set<ICMetadata>         children;
@@ -46,6 +47,7 @@ public class ICMetadata implements Serializable
 	private ObjectModel             model;
 	private String                  qualifiedName; // set on first access
 	private String                  vsafeQualifiedName; // version-safe name, set on first access
+
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -60,6 +62,7 @@ public class ICMetadata implements Serializable
 		this.handle      = handle;
 		this.order       = Order.TIMESTAMP;
 		this.transport   = Transport.RELIABLE;
+		this.sharing	 = Sharing.NEITHER;
 		this.space       = null;
 		this.parent      = null;
 		this.model       = null;
@@ -90,7 +93,7 @@ public class ICMetadata implements Serializable
 		
 		return null;
 	}
-
+	
 	////////////////////////////////////////////////////////////
 	///////////////////// Parameter Methods ////////////////////
 	////////////////////////////////////////////////////////////
@@ -419,6 +422,16 @@ public class ICMetadata implements Serializable
 		this.transport = transport;
 	}
 
+	public Sharing getSharing()
+	{
+		return sharing;
+	}
+	
+	public void setSharing( Sharing sharing )
+	{
+		this.sharing = sharing;
+	}
+	
 	public Space getSpace()
 	{
 		return this.space;
