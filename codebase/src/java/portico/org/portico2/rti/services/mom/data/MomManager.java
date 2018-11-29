@@ -358,6 +358,7 @@ public class MomManager implements SaveRestoreTarget
 		Map<String,Object> params = new HashMap<>();
 		params.put( "HLAfederate", federate );
 		params.put( "HLAfederateName", lostFederate.getFederateName() );
+		params.put( "HLAfederateType", lostFederate.getFederateType() );
 		params.put( "HLAtimeStamp", timeManager.getCurrentTime(federate) );
 		params.put( "HLAfaultDescription", faultDescription );
 		int federateLostHandle = Mom.getMomInteractionHandle( CANONICAL_VERSION,

@@ -35,6 +35,7 @@ public class JoinFederation extends PorticoMessage
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String federateName;
+	private String federateType;
 	private String federationName;
 	private List<ObjectModel> parsedJoinObjectModels; // parsed version of object FOM modules below
 	private List<FomModule> rawJoinObjectModels;      // raw version of FOM modules below
@@ -59,21 +60,29 @@ public class JoinFederation extends PorticoMessage
 
 	public JoinFederation( String federationName, String federateName )
 	{
-		this();
-		this.federateName = federateName;
-		this.federationName = federationName;
-	}
-	
-	public JoinFederation( String federationName, String federateName, URL[] fomModules )
-	{
-		this( federationName, federateName );
-		if( fomModules != null )
-		{
-    		for( URL module : fomModules )
-    			this.fomModuleLocations.add( module );
-		}
+		// use federateName for federateType
+		this( federationName, federateName, federateName, null );
 	}
 
+	public JoinFederation( String federationName, String federateName, URL[] fomModules )
+	{
+		// use federateName for federateType
+		this( federationName, federateName, federateName, fomModules );
+	}
+
+	public JoinFederation( String federationName, String federateName, String federateType, URL[] fomModules )
+	{
+		this();
+		this.federateName = federateName;
+		this.federateType = federateType;
+		this.federationName = federationName;
+		if( fomModules != null )
+		{
+			for( URL module : fomModules )
+				this.fomModuleLocations.add( module );
+		}
+	}
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -93,6 +102,16 @@ public class JoinFederation extends PorticoMessage
 		this.federateName = federateName;
 	}
 
+	public String getFederateType()
+	{
+		return federateType;
+	}
+	
+	public void setFederateType( String federateType )
+	{
+		this.federateType = federateType;
+	}
+	
 	public String getFederationName()
 	{
 		return federationName;

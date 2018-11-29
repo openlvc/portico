@@ -30,6 +30,7 @@ public class ResignFederation extends PorticoMessage
 	//----------------------------------------------------------
 	private JResignAction resignAction;
 	private String federateName;
+	private String federateType;
 	private String federationName;
 
 	//----------------------------------------------------------
@@ -50,13 +51,14 @@ public class ResignFederation extends PorticoMessage
 		this.resignAction = resignAction;
 	}
 
-	public ResignFederation( JResignAction resignAction, String federate, String federation )
+	public ResignFederation( JResignAction resignAction, String federateName, String federateType, String federationName )
 	{
 		this.resignAction = resignAction;
-		this.federateName = federate;
-		this.federationName = federation;
+		this.federateName = federateName;
+		this.federateType = federateType;
+		this.federationName = federationName;
 	}
-
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -91,11 +93,21 @@ public class ResignFederation extends PorticoMessage
 		return this.federateName;
 	}
 	
-	public void setFederateName( String federate )
+	public void setFederateName( String federateName )
 	{
-		this.federateName = federate;
+		this.federateName = federateName;
 	}
 
+	public String getFederateType()
+	{
+		return this.federateType;
+	}
+	
+	public void setFederateType( String federateType )
+	{
+		this.federateType = federateType;
+	}
+	
 	@Override
 	public boolean isImmediateProcessingRequired()
 	{

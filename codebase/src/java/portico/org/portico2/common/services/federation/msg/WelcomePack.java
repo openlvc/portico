@@ -48,6 +48,7 @@ public class WelcomePack implements Externalizable
 	private int federateHandle;
 	private String federationName;
 	private String federateName;
+	private String federateType;
 	private ObjectModel fom;
 
 	// Federation State
@@ -63,6 +64,7 @@ public class WelcomePack implements Externalizable
 		this.federateHandle   = PorticoConstants.NULL_HANDLE;
 		this.federationName   = "unknown";
 		this.federateName     = "unknown";
+		this.federateType     = "unknown";
 		this.fom = null;
 		
 		// Federation State
@@ -79,6 +81,7 @@ public class WelcomePack implements Externalizable
 	public int         getFederateHandle()   { return this.federateHandle; }
 	public String      getFederationName()   { return this.federationName; }
 	public String      getFederateName()     { return this.federateName; }
+	public String      getFederateType()     { return this.federateType; }
 	public byte[]      getFederationKey()    { return this.federationKey; }
 	public Set<String> getSyncPoints( )      { return this.syncpoints; }
 
@@ -86,6 +89,7 @@ public class WelcomePack implements Externalizable
 	public void setFederateHandle  ( int handle ) { this.federateHandle = handle; }
 	public void setFederationName  ( String name ){ this.federationName = name; }
 	public void setFederateName    ( String name ){ this.federateName = name; }
+	public void setFederateType    ( String type ){ this.federateType = type; }
 	public void setFOM             ( ObjectModel fom ) { this.fom = fom; }
 	public void setFederationKey   ( byte[] federationKey ) { this.federationKey = federationKey; }
 	public void setSyncPoints      ( Set<String> points ) { this.syncpoints = points; }
@@ -99,6 +103,7 @@ public class WelcomePack implements Externalizable
 		this.federateHandle = input.readInt();
 		this.federationName = input.readUTF();
 		this.federateName = input.readUTF();
+		this.federateType = input.readUTF();
 		this.fom = (ObjectModel)input.readObject();
 		
 		// session key
@@ -119,6 +124,7 @@ public class WelcomePack implements Externalizable
 		output.writeInt( federateHandle );
 		output.writeUTF( federationName );
 		output.writeUTF( federateName );
+		output.writeUTF( federateType );
 		output.writeObject( fom );
 		
 		// session key

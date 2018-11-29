@@ -40,6 +40,7 @@ public class NullNotificationListener implements INotificationListener
 	//----------------------------------------------------------
 	public void localFederateJoinedFederation( int federateHandle,
 	                                           String federateName,
+	                                           String federateType,
 	                                           String federationName,
 	                                           ObjectModel fom )
 	{

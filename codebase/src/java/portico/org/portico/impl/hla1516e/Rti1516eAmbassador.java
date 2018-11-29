@@ -624,7 +624,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		JoinFederation request = new JoinFederation( federationName, federateName, fomModules );
+		JoinFederation request = new JoinFederation( federationName, federateName, federateType, fomModules );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////

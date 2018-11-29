@@ -88,6 +88,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	
 	// Basic settings //
 	private String  federateName;
+	private String  federateType;
 	private int     federateHandle;
 	private String  federationName;
 	private boolean joined;
@@ -161,6 +162,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 
 		// set all the default values //
 		this.federateName = "not-joined";
+		this.federateType = "not-joined";
 		setFederateHandle( PorticoConstants.NULL_HANDLE );
 		this.federationName = null;
 		this.joined = false;
@@ -237,11 +239,13 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	@Override
 	public void localFederateJoinedFederation( int federateHandle,
 	                                           String federateName,
+	                                           String federateType,
 	                                           String federationName,
 	                                           ObjectModel fom )
 	{
 		setFederateHandle( federateHandle );
 		this.federateName = federateName;
+		this.federateType = federateType;
 		this.federationName = federationName;
 		this.fom = fom;
 		this.joined = true;
@@ -258,7 +262,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		momManager.connectedToFederation();
 		
 		// add us to our "known federate" map (as we know about ourselves :P)
-		Federate federate = new Federate( this, federateHandle, federateName );
+		Federate federate = new Federate( this, federateHandle, federateName, federateType );
 		federation.addFederate( federate );
 		momManager.federateJoinedFederation( federate );
 	}
@@ -272,9 +276,10 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	{
 		int remoteHandle = federateStatus.getSourceFederate();
 		String remoteName = federateStatus.getFederateName();
+		String remoteType = federateStatus.getFederateType();
 		
 		// store the management and MOM information
-		Federate federate = new Federate( this, remoteHandle, remoteName );
+		Federate federate = new Federate( this, remoteHandle, remoteName, remoteType );
 		federation.addFederate( federate );
 		momManager.federateJoinedFederation( federate );
 		
@@ -462,6 +467,11 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		return federateName;
 	}
 
+	public String getFederateType()
+	{
+		return federateType;
+	}
+	
 	public int getFederateHandle()
 	{
 		return this.federateHandle;

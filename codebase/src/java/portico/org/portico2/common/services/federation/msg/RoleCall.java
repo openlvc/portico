@@ -51,6 +51,7 @@ public class RoleCall extends PorticoMessage implements Externalizable
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String federateName;
+	private String federateType;
 	private TimeStatus timeStatus;
 	private OCInstance[] controlledObjects;
 	private HashMap<String,byte[]> syncPointTags;
@@ -70,11 +71,13 @@ public class RoleCall extends PorticoMessage implements Externalizable
 
 	public RoleCall( int federateHandle,
 	                 String federateName, 
+	                 String federateType, 
 	                 TimeStatus status,
 	                 OCInstance[] controlledObjects )
 	{
 		this();
 		this.federateName = federateName;
+		this.federateType = federateType;
 		this.sourceFederate = federateHandle;
 		this.timeStatus = status;
 		this.controlledObjects = controlledObjects;
@@ -103,6 +106,16 @@ public class RoleCall extends PorticoMessage implements Externalizable
 	public void setFederateName( String federateName )
 	{
 		this.federateName = federateName;
+	}
+	
+	public String getFederateType()
+	{
+		return this.federateType;
+	}
+	
+	public void setFederateType( String federateType )
+	{
+		this.federateType = federateType;
 	}
 	
 	public TimeStatus getTimeStatus()

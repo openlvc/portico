@@ -263,7 +263,7 @@ public abstract class RTIMessageHandler implements IMessageHandler
 	///  Handle and Name Methods  ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Convenience method that returns the name of the federate that hsa teh given handle.
+	 * Convenience method that returns the name of the federate that has the given handle.
 	 * If there is no known federate with the given handle, null is returned.
 	 * 
 	 * @param federateHandle The federate handle to fetch the name for.
@@ -282,6 +282,29 @@ public abstract class RTIMessageHandler implements IMessageHandler
 		else
 		{
 			return federate.getFederateName();
+		}
+	}
+	
+	/**
+	 * Convenience method that returns the type of the federate that has the given handle.
+	 * If there is no known federate with the given handle, null is returned.
+	 * 
+	 * @param federateHandle The federate handle to fetch the name for.
+	 * @return The type of the federate with the given handle if it is known, or null if it isn't
+	 */
+	protected String federateType( int federateHandle )
+	{
+		Federate federate = federation.getFederate( federateHandle );
+		if( federate == null )
+		{
+			if( federateHandle == PorticoConstants.RTI_HANDLE )
+				return "RTI";
+			else
+				return null;
+		}
+		else
+		{
+			return federate.getFederateType();
 		}
 	}
 	

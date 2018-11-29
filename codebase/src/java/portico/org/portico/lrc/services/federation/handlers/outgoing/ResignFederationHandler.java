@@ -63,8 +63,10 @@ public class ResignFederationHandler extends LRCMessageHandler
 		
 		// set the federate and federation name
 		String federateName = lrcState.getFederateName();
+		String federateType = lrcState.getFederateType();
 		String federationName = lrcState.getFederationName();
 		request.setFederateName( federateName );
+		request.setFederateType( federateType );
 		request.setFederationName( federationName );
 		
 		// log the request and pass it on to the connection

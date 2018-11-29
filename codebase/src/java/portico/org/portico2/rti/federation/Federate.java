@@ -33,6 +33,7 @@ public class Federate
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private String name;
+	private String type;
 	private int federateHandle;
 	private RtiConnection federateConnection;
 	private FederateMetrics metrics;
@@ -43,19 +44,31 @@ public class Federate
 	//----------------------------------------------------------
 	public Federate( String name, RtiConnection federateConnection )
 	{
+		// use federate name for federate type
+		this( name, name, federateConnection );
+	}
+
+	public Federate( String name, String type, RtiConnection federateConnection )
+	{
 		this.name = name;
+		this.type = type;
 		this.federateConnection = federateConnection;
 		this.metrics = new FederateMetrics();
 		this.federateHandle = PorticoConstants.NULL_HANDLE;
 		this.fomModules = new ArrayList<FomModule>();
 	}
-
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	public String getFederateName()
 	{
 		return this.name;
+	}
+	
+	public String getFederateType()
+	{
+		return this.type;
 	}
 	
 	public int getFederateHandle()

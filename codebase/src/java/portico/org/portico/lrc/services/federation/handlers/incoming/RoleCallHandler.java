@@ -152,6 +152,7 @@ public class RoleCallHandler extends LRCMessageHandler
 		///////////////////////////////////////////
 		RoleCall role = new RoleCall( lrcState.getFederateHandle(),
 		                              lrcState.getFederateName(),
+		                              lrcState.getFederateType(),
 		                              timeStatus().copy(),
 		                              repository.getControlledData(lrcState.getFederateHandle()) );
 		syncManager.fillRolecall( role );
