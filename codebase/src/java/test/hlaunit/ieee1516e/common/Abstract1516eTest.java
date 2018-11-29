@@ -93,7 +93,7 @@ public abstract class Abstract1516eTest
 		this.rti = new RTI( RID.loadRid(overrides) );
 		
 		// Create the default federate
-		this.defaultFederate = new TestFederate( "defaultFederate", this );
+		this.defaultFederate = new TestFederate( "defaultFederate", "defaultFederateType", this );
 	}
 
 	@BeforeMethod(alwaysRun=true)

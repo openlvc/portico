@@ -104,6 +104,7 @@ public class RemoveContext implements ICommand
 		
 		ResignFederation resign = new ResignFederation( JResignAction.DELETE_OBJECTS_AND_RELEASE_ATTRIBUTES );
 		resign.setFederateName( federate.getFederateName() );
+		resign.setFederateType( federate.getFederateType() );
 		resign.setSourceFederate( federation.getFederationHandle() );
 		resign.setFederationName( federation.getFederationName() );
 		resign.setTargetFederation( federation.getFederationHandle() );

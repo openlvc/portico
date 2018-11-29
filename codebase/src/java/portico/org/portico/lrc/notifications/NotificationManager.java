@@ -163,6 +163,7 @@ public class NotificationManager
 	//////////////////////////////////////////////////////////////////////////////////////
 	public void localFederateJoinedFederation( int federateHandle,
 	                                           String federateName,
+	                                           String federateType,
 	                                           String federationName,
 	                                           ObjectModel fom )
 	{
@@ -172,6 +173,7 @@ public class NotificationManager
 			{
 				listener.localFederateJoinedFederation( federateHandle,
 				                                        federateName,
+				                                        federateType,
 				                                        federationName,
 				                                        fom );
 			}

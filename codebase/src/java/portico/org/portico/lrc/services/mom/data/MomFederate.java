@@ -108,7 +108,7 @@ public class MomFederate
 
 	private byte[] getFederateType( HLAVersion version )
 	{
-		return encodeString( version, federate.getFederateName() ); // wrong in 1516e
+		return encodeString( version, federate.getFederateType() );
 	}
 	
 	private byte[] getFederateName( HLAVersion version )

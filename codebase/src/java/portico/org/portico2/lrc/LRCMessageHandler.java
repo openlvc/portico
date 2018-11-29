@@ -259,6 +259,14 @@ public abstract class LRCMessageHandler implements IMessageHandler
 	}
 	
 	/**
+	 * Shortcut to get the type of the local federate.
+	 */
+	protected String federateType()
+	{
+		return lrcState.getFederateType();
+	}
+	
+	/**
 	 * Returns either the local federate name or the local federate handle depending on whether
 	 * our configuration is set to print handles or names.
 	 * <p/>

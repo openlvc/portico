@@ -127,6 +127,11 @@ public class MomFederate
 		return this.federate.getFederateName();
 	}
 	
+	public String getFederateType()
+	{
+		return this.federate.getFederateType();
+	}
+	
 	public int getFederateObjectInstanceHandle()
 	{
 		return this.federateObject.getHandle();
@@ -185,7 +190,7 @@ public class MomFederate
 	private byte[] getFederateType( ACMetadata metadata )
 	{
 		IDatatype type = metadata.getDatatype();
-		return MomEncodingHelpers.encode( type, federate.getFederateName() );
+		return MomEncodingHelpers.encode( type, federate.getFederateType() );
 	}
 	
 	private byte[] getFederateName( ACMetadata metadata )

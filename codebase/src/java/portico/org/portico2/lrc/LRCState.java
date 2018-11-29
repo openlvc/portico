@@ -45,6 +45,7 @@ public class LRCState
 	
 	// Basic settings //
 	private String  federateName;
+	private String  federateType;
 	private int     federateHandle;
 	private int     federationHandle;
 	private String  federationName;
@@ -172,12 +173,14 @@ public class LRCState
 	public void localFederateJoinedFederation( int federateHandle,
 	                                           int federationHandle,
 	                                           String federateName,
+	                                           String federateType,
 	                                           String federationName,
 	                                           ObjectModel fom )
 	{
 		setFederateHandle( federateHandle );
 		setFederationHandle( federationHandle );
 		this.federateName = federateName;
+		this.federateType = federateType;
 		this.federationName = federationName;
 		this.fom = fom;
 		this.interestManager.setFOM( fom );
@@ -323,6 +326,11 @@ public class LRCState
 		return federateName;
 	}
 
+	public String getFederateType()
+	{
+		return federateType;
+	}
+	
 	public int getFederateHandle()
 	{
 		return this.federateHandle;

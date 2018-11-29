@@ -45,11 +45,13 @@ public interface INotificationListener
 	 * 
 	 * @param federateHandle The handle of the local federate
 	 * @param federateName The name of the local federate
+	 * @param federateType The type of the local federate
 	 * @param federationName The name of the federation being joined to
 	 * @param fom The federation object model of the federation.
 	 */
 	public void localFederateJoinedFederation( int federateHandle,
 	                                           String federateName,
+	                                           String federateType,
 	                                           String federationName,
 	                                           ObjectModel fom );
 

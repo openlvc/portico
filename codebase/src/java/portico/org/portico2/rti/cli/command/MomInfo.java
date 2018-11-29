@@ -130,6 +130,7 @@ public class MomInfo implements ICommand
 		
 		paddedPrintln( console, "HLAfederateHandle:", federate.getFederateHandle() );
 		paddedPrintln( console, "HLAfederateName:", federate.getFederateName() );
+		paddedPrintln( console, "HLAfederateType:", federate.getFederateType() );
 		paddedPrintln( console, "HLARTIversion:", container.getEnvironmentVariables().get("RTI_VERSION") );
 		paddedPrintln( console, "HLAFOMmoduleDesignatorList:", designatorList );
 		paddedPrintln( console, "HLAtimeConstrained:", time.isConstrained() );

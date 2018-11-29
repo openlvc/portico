@@ -290,6 +290,37 @@ public abstract class LRCMessageHandler extends AbstractMessageHandler
 	}
 	
 	/**
+	 * Convenience method that calls {@link LRCState#getKnownFederate(int)} passing the given
+	 * federate handle. If there is no known federate with the given handle, null is returned.
+	 * 
+	 * @param federateHandle The federate handle to fetch the name for.
+	 * @return The type of the federate with the given handle if it is known, or null if it isn't
+	 */
+	protected String federateType( int federateHandle )
+	{
+		Federate federate = lrcState.getKnownFederate( federateHandle );
+		if( federate == null )
+		{
+			if( federateHandle == PorticoConstants.RTI_HANDLE )
+				return "RTI";
+			else
+				return null;
+		}
+		else
+		{
+			return federate.getFederateType();
+		}
+	}
+	
+	/**
+	 * Shortcut to get the type of the local federate.
+	 */
+	protected String federateType()
+	{
+		return lrcState.getFederateType();
+	}
+	
+	/**
 	 * THis method returns a string that contains either the name or the handle of the identified
 	 * federate. If logging with names is enabled for federates (see the documentation for
 	 * {@link PorticoConstants#isPrintHandlesForFederates()}), the string will contain the federate

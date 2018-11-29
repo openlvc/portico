@@ -58,17 +58,18 @@ public class JoinFederationHandler extends LRCMessageHandler
 	{
 		JoinFederation request = context.getRequest( JoinFederation.class, this );
 		
-		String federate = request.getFederateName();
-		String federation = request.getFederationName();
+		String federateName = request.getFederateName();
+		String federateType = request.getFederateType();
+		String federationName = request.getFederationName();
 		
 		/////////////////////////////
 		// perform validity checks //
 		/////////////////////////////
 		// check for null properties
-		if( federate == null || federate.trim().equals("") )
+		if( federateName == null || federateName.trim().equals("") )
 			throw new JRTIinternalError( "Can't join a federation using a null or empty federate name" );
 		
-		if( federation == null || federation.trim().equals("") )
+		if( federationName == null || federationName.trim().equals("") )
 		{
 			throw new JFederationExecutionDoesNotExist(
 			    "Can't join a federation using a null or empty federation name" );
@@ -83,7 +84,7 @@ public class JoinFederationHandler extends LRCMessageHandler
 		}
 
 		// log the request and pass it on to the connection
-		logger.debug( "ATTEMPT Join federate ["+federate+"] to federation ["+federation+"]" );
+		logger.debug( "ATTEMPT Join federate ["+federateName+"] to federation ["+federationName+"]" );
 		
 		// parse any additional FOM modules and store back in the request for processing
 		if( request.getFomModuleLocations().size() > 0 )
@@ -105,8 +106,9 @@ public class JoinFederationHandler extends LRCMessageHandler
 		WelcomePack welcome = (WelcomePack)context.getSuccessResult();
 		this.lrcState.localFederateJoinedFederation( welcome.getFederateHandle(),
 		                                             welcome.getFederationHandle(),
-		                                             federate,
-		                                             federation,
+		                                             federateName,
+		                                             federateType,
+		                                             federationName,
 		                                             welcome.getFOM() );
 		
 		// populate other state from the welcome pack
@@ -116,11 +118,11 @@ public class JoinFederationHandler extends LRCMessageHandler
 		context.success( welcome.getFederateHandle() );
 		
 		logger.info( "SUCCESS Federate [%s] joined to federation [%s] with handle [%s]",
-		             federate, federation, welcome.getFederateHandle() );
+		             federateName, federationName, welcome.getFederateHandle() );
 
 		// if FOM printing is enabled, do so
 		if( PorticoConstants.isPrintFom() )
-			logger.info( "FOM in use for federation ["+federation+"]:\n"+fom() );
+			logger.info( "FOM in use for federation ["+federationName+"]:\n"+fom() );
 	}
 
 	/**

@@ -57,7 +57,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	@BeforeMethod(alwaysRun=true)
 	public void beforeMethod()
 	{
-		this.secondFederate = new TestFederate( "secondFederate", this );
+		this.secondFederate = new TestFederate( "secondFederate", "secondFederateType", this );
 		this.secondFederate.quickConnect();
 		
 		defaultFederate.quickCreate();
@@ -115,13 +115,20 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		// give the other federate a chance to process the provide-request
 		secondFederate.quickTick( 0.1, 1.0 );
 		
-		// check the names //
 		defaultFederate.fedamb.waitForUpdate( one.getHandle() );
 		defaultFederate.fedamb.waitForUpdate( two.getHandle() );
+		
+		// check the names //
 		String oneName = decodeString( one.getAttributes().get(nameHandle) );
 		String twoName = decodeString( two.getAttributes().get(nameHandle) );
 		Assert.assertEquals( oneName, "defaultFederate" );
 		Assert.assertEquals( twoName, "secondFederate" );
+		
+		// check the types //
+		String oneType = decodeString( one.getAttributes().get(typeHandle) );
+		String twoType = decodeString( two.getAttributes().get(typeHandle) );
+		Assert.assertEquals( oneType, "defaultFederateType" );
+		Assert.assertEquals( twoType, "secondFederateType" );
 		
 		//////////////////////////
 		// MOM instance removal //
@@ -146,9 +153,11 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		// subscribe to the MOM information //
 		int momHandle = defaultFederate.quickOCHandle( "HLAobjectRoot.HLAmanager.HLAfederate" );
 		int nameHandle = defaultFederate.quickACHandle( "HLAobjectRoot.HLAmanager.HLAfederate",
-		                                                "HLAfederateType" );
+														"HLAfederateName" );
+		int typeHandle = defaultFederate.quickACHandle( "HLAobjectRoot.HLAmanager.HLAfederate",
+														"HLAfederateType" );
 		
-		federate.quickSubscribe( momHandle, nameHandle );
+		federate.quickSubscribe( momHandle, nameHandle, typeHandle );
 		
 		////////////////////////////
 		// MOM instances creation //

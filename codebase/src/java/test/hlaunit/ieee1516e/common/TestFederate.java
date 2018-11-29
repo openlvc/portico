@@ -72,13 +72,18 @@ public class TestFederate
 	//----------------------------------------------------------
 	public TestFederate( String name, Abstract1516eTest test )
 	{
-		if( name == null || test == null )
+		this( name, name, test );
+	}
+
+	public TestFederate( String name, String type, Abstract1516eTest test )
+	{
+		if( name == null || type == null || test == null )
 		{
 			Assert.fail( "Null value given when creating TestFederate, can't continue" );
 		}
 		
 		this.federateName = name;
-		this.federateType = "TestFederate";
+		this.federateType = type;
 		this.federateHandle = -1;
 		this.test = test;
 		this.simpleName = this.test.getClass().getSimpleName();
@@ -87,7 +92,7 @@ public class TestFederate
 		
 		ACTIVE_FEDERATES.add( this );
 	}
-
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -369,7 +374,7 @@ public class TestFederate
 		{
 			// now join
 			FederateHandle handle = this.rtiamb.joinFederationExecution( federateName,
-			                                                             "Test Federate", // type
+			                                                             federateType,
 			                                                             theFederation );
 			this.federateHandle = TypeFactory.getFederateHandle( handle );
 			return this.federateHandle;

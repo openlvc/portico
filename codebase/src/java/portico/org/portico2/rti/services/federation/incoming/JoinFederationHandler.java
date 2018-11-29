@@ -55,6 +55,7 @@ public class JoinFederationHandler extends RTIMessageHandler
 		// Get the bits we need and log what is happening
 		JoinFederation request = context.getRequest( JoinFederation.class );
 		String federateName = request.getFederateName();
+		String federateType = request.getFederateType();
 		String federationName = request.getFederationName();
 
 		logger.debug( "ATTEMPT Federate [%s] join federation [%s]", federateName, federationName );
@@ -65,7 +66,7 @@ public class JoinFederationHandler extends RTIMessageHandler
 			throw new JRTIinternalError( "Could not find the connection for the federate %s", federateName );
 
 		// Create the federate and attach it to the federation
-		Federate federate = new Federate( federateName, request.getConnection() );
+		Federate federate = new Federate( federateName, federateType, request.getConnection() );
 		federate.addRawFomModules( request.getRawFomModules() );
 		
 		int federateHandle = federation.joinFederate( federate );
@@ -80,6 +81,7 @@ public class JoinFederationHandler extends RTIMessageHandler
 		welcome.setFederationHandle( federation.getFederationHandle() );
 		welcome.setFederationName( federationName );
 		welcome.setFederateName( federateName );
+		welcome.setFederateType( federateType );
 		welcome.setFOM( federation.getFOM() );
 		if( federation.getFederationKey() != null )
 			welcome.setFederationKey( federation.getFederationKey().getEncoded() );
