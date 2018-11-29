@@ -92,7 +92,7 @@ public class Broadcaster
 	 * Joins a {@link JVMConnection} to the federation represented by this broadcaster. The return
 	 * value is a unique handle that can be used to identify the connection within the federation.
 	 */
-	public synchronized int joinLrc( String name, LRC lrc )
+	public synchronized int joinLrc( String name, String type, LRC lrc )
 		throws JFederateAlreadyExecutionMember, JRTIinternalError
 	{
 		if( PorticoConstants.isUniqueFederateNamesRequired() && getConnection(name) != null )
@@ -107,7 +107,7 @@ public class Broadcaster
 		}
 		
 		int federateHandle = ++FEDERATE_HANDLES;
-		FederateInfo federateInfo = new FederateInfo( federateHandle, name );
+		FederateInfo federateInfo = new FederateInfo( federateHandle, name, type );
 		this.joinedConnections.put( federateInfo, (JVMConnection)lrc.getConnection() );
 		return federateHandle;
 	}
@@ -184,13 +184,21 @@ public class Broadcaster
 	{
 		public int federateHandle;
 		public String federateName;
+		public String federateType;
 
 		public FederateInfo( int federateHandle, String federateName )
 		{
-			this.federateHandle = federateHandle;
-			this.federateName = federateName;
+			// use federate name as federate type
+			this( federateHandle, federateName, federateName );
 		}
 
+		public FederateInfo( int federateHandle, String federateName, String federateType )
+		{
+			this.federateHandle = federateHandle;
+			this.federateName = federateName;
+			this.federateType = federateType;
+		}
+		
         public int hashcode()
 		{
 			return federateName.hashCode();

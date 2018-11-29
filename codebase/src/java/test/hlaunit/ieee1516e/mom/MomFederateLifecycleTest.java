@@ -52,7 +52,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	public void beforeClass()
 	{
 		super.beforeClass();
-		this.secondFederate = new TestFederate( "secondFederate", this );
+		this.secondFederate = new TestFederate( "secondFederate", "secondFederateType", this );
 		this.secondFederate.quickConnect();
 	}
 	
@@ -114,13 +114,19 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		// give the other federate a chance to process the provide-request
 		secondFederate.quickTick( 0.1, 1.0 );
 		
-		// check the names //
 		defaultFederate.fedamb.waitForUpdate( one.getHandle() );
 		defaultFederate.fedamb.waitForUpdate( two.getHandle() );
+		
+		// check the names //
 		String oneName = decodeString( one.getAttributes().get(nameHandle) );
 		String twoName = decodeString( two.getAttributes().get(nameHandle) );
 		Assert.assertEquals( oneName, "defaultFederate" );
 		Assert.assertEquals( twoName, "secondFederate" );
+		// check the types //
+		String oneType = decodeString( one.getAttributes().get(typeHandle) );
+		String twoType = decodeString( two.getAttributes().get(typeHandle) );
+		Assert.assertEquals( oneType, "defaultFederateType" );
+		Assert.assertEquals( twoType, "secondFederateType" );
 		
 		//////////////////////////
 		// MOM instance removal //

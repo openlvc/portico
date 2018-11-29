@@ -38,16 +38,18 @@ public class Federate implements Serializable
 	protected transient LRCState lrcState;
 	private int federateHandle;
 	private String federateName;
+	private String federateType;
 	private String federateHost;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public Federate( LRCState lrcState, int federateHandle, String federateName )
+	public Federate( LRCState lrcState, int federateHandle, String federateName, String federateType )
 	{
 		this.lrcState = lrcState;
 		this.federateHandle = federateHandle;
 		this.federateName = federateName;
+		this.federateType = federateType;
 		this.federateHost = "<not-implemented>";
 	}
 
@@ -75,6 +77,16 @@ public class Federate implements Serializable
     	this.federateName = federateName;
     }
 
+	public String getFederateType()
+	{
+		return federateType;
+	}
+	
+	public void setFederateType( String federateType )
+	{
+		this.federateType = federateType;
+	}
+	
 	public String getFederateHost()
     {
     	return federateHost;

@@ -327,7 +327,10 @@ public class MomFederationTest extends Abstract1516eTest
 		HashMap<Integer,byte[]> values = fedInstance.getAttributes();
 		Assert.assertEquals( decodeString(values.get(ahHLAfederateName)),
 		                     defaultFederate.federateName,
-		                     "Value returned by MOM did not match federate name" );
+							"Value returned by MOM did not match federate name" );
+		Assert.assertEquals( decodeString(values.get(ahHLAfederateType)),
+		                     defaultFederate.federateType,
+		                     "Value returned by MOM did not match federate type" );
 		Assert.assertEquals( decodeHandle(values.get(ahHLAfederateHandle)),
 		                     defaultFederate.federateHandle,
 		                     "Value returned by MOM did not match federate handle" );

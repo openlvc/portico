@@ -532,7 +532,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	}
 
 	// 4.9
-	public FederateHandle joinFederationExecution( String federateType, String federationName )
+	public FederateHandle joinFederationExecution( String federateName, String federationName )
 	    throws CouldNotCreateLogicalTimeFactory,
 	           FederationExecutionDoesNotExist,
 	           SaveInProgress,
@@ -546,7 +546,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		// using the federate name as the federate type
 		try
 		{
-			return joinFederationExecution( federateType, federateType, federationName );
+			return joinFederationExecution( federateName, federateName, federationName );
 		}
 		catch( FederateNameAlreadyInUse niu )
 		{
@@ -648,7 +648,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		JoinFederation request = new JoinFederation( federationName, federateName, fomModules );
+		JoinFederation request = new JoinFederation( federationName, federateName, federateType, fomModules );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////

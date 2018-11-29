@@ -70,15 +70,20 @@ public class TestFederate
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public TestFederate( String name, Abstract1516eTest test )
+	public TestFederate( String federateName, Abstract1516eTest test )
 	{
-		if( name == null || test == null )
+		this( federateName, federateName, test );
+	}
+
+	public TestFederate( String federateName, String federateType, Abstract1516eTest test )
+	{
+		if( federateName == null || federateType == null || test == null )
 		{
 			Assert.fail( "Null value given when creating TestFederate, can't continue" );
 		}
 		
-		this.federateName = name;
-		this.federateType = "TestFederate";
+		this.federateName = federateName;
+		this.federateType = federateType;
 		this.federateHandle = -1;
 		this.test = test;
 		this.simpleName = this.test.getClass().getSimpleName();
@@ -87,7 +92,7 @@ public class TestFederate
 		
 		ACTIVE_FEDERATES.add( this );
 	}
-
+	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
@@ -326,7 +331,7 @@ public class TestFederate
 	}
 	
 	/**
-	 * This method will attemp to destroy the federation of the given name. However, if there is an
+	 * This method will attempt to destroy the federation of the given name. However, if there is an
 	 * error during this process (the federation now existing for example), it is ignored and
 	 * processing is allowed to continue.
 	 */
@@ -369,7 +374,7 @@ public class TestFederate
 		{
 			// now join
 			FederateHandle handle = this.rtiamb.joinFederationExecution( federateName,
-			                                                             "Test Federate", // type
+			                                                             federateType,
 			                                                             theFederation );
 			this.federateHandle = TypeFactory.getFederateHandle( handle );
 			return this.federateHandle;
@@ -393,7 +398,7 @@ public class TestFederate
 		{
 			// now join
 			FederateHandle handle = this.rtiamb.joinFederationExecution( federateName,
-			                                                             "Test Federate", // type
+			                                                             federateType,
 			                                                             simpleName,
 			                                                             modules );
 			this.federateHandle = TypeFactory.getFederateHandle( handle );

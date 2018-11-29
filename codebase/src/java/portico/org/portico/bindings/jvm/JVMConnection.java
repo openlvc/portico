@@ -172,7 +172,9 @@ public class JVMConnection implements IConnection
 	{
 		// find the federation
 		String federation = joinMessage.getFederationName();
-		String federate = joinMessage.getFederateName();
+		String federateName = joinMessage.getFederateName();
+		String federateType = joinMessage.getFederateType();
+		
 		Broadcaster broadcaster = FEDERATIONS.get( federation );
 		if( broadcaster == null )
 		{
@@ -186,14 +188,15 @@ public class JVMConnection implements IConnection
 
 		// join the federation
 		// this will check to see if there is already a federate with the same name
-		this.localHandle = broadcaster.joinLrc( federate, this.lrc );
+		this.localHandle = broadcaster.joinLrc( federateName, federateType, this.lrc );
 
 		// store the federation broadcaster locally
 		this.federation = broadcaster;
 		
 		// pack the FOM into the request object for use by the framework
 		//  -yes, you are seeing right, that says "JGroups" roster. We're "borrowing" their impl
-		logger.debug( "Joined federate [" + federate + "] to federation [" + federation + "]" );
+		logger.debug( String.format("Joined federate [%s] to federation [%s]", 
+		                            federateName, federation ) );
 		ConnectedRoster roster = new Roster( localHandle,
 		                                     broadcaster.getFederateHandles(),
 		                                     broadcaster.getFOM() );

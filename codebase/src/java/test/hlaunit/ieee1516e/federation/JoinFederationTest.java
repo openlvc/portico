@@ -106,7 +106,8 @@ public class JoinFederationTest extends Abstract1516eTest
 		try
 		{
 			// try and join a federation //
-			defaultFederate.rtiamb.joinFederationExecution( defaultFederate.federateType,
+			defaultFederate.rtiamb.joinFederationExecution( defaultFederate.federateName,
+			                                                defaultFederate.federateType,
 			                                                defaultFederate.simpleName );
 		}
 		catch( Exception e )
