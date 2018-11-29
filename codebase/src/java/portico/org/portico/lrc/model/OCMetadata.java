@@ -39,6 +39,7 @@ public class OCMetadata implements Serializable
 	private String                  name;
 	private int                     handle;
 	private OCMetadata              parent;
+	private Sharing                 sharing;
 	private Map<Integer,ACMetadata> attributes;
 	private Set<OCMetadata>         children;
 	private ObjectModel             model;
@@ -57,6 +58,7 @@ public class OCMetadata implements Serializable
 		this.name        = name;
 		this.handle      = handle;
 		this.parent      = null;
+		this.sharing	 = Sharing.NEITHER;
 		this.attributes  = new HashMap<Integer,ACMetadata>();
 		this.children    = new HashSet<OCMetadata>();
 	}
@@ -542,6 +544,16 @@ public class OCMetadata implements Serializable
 		{
 			oc.children.add( this );
 		}
+	}
+	
+	public Sharing getSharing()
+	{
+		return sharing;
+	}
+	
+	public void setSharing( Sharing sharing )
+	{
+		this.sharing = sharing;
 	}
 	
 	public ObjectModel getModel()
