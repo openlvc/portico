@@ -36,8 +36,10 @@ public class ACMetadata implements Serializable
 	private int           handle;
 	private Order         order;
 	private Transport     transport;
+	private Sharing sharing;
 	private OCMetadata    container;
 	private Space space;
+
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -53,6 +55,7 @@ public class ACMetadata implements Serializable
 		this.handle    = handle;
 		this.order     = Order.TIMESTAMP;
 		this.transport = Transport.RELIABLE;
+		this.sharing   = Sharing.NEITHER;
 		this.container = null;
 		this.space     = null;
 	}
@@ -129,6 +132,16 @@ public class ACMetadata implements Serializable
 	public void setTransport( Transport transport )
 	{
 		this.transport = transport;
+	}
+	
+	public Sharing getSharing()
+	{
+		return sharing;
+	}
+	
+	public void setSharing( Sharing sharing )
+	{
+		this.sharing = sharing;
 	}
 	
 	public Space getSpace()
