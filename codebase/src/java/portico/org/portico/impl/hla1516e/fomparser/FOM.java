@@ -30,6 +30,7 @@ import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.model.Order;
 import org.portico.lrc.model.PCMetadata;
+import org.portico.lrc.model.Sharing;
 import org.portico.lrc.model.Transport;
 import org.portico.lrc.model.datatype.IDatatype;
 import org.portico.lrc.model.datatype.linker.DatatypePlaceholder;
@@ -223,7 +224,15 @@ public class FOM
 		for( Element current : children )
 		{
 			String objectClassName = FedHelpers.getChildValue( current, "name" );
+			
 			OCMetadata objectClass = fom.newObject( objectClassName );
+
+			// get the sharing policy
+			String objectClassSharing = FedHelpers.getChildValueForgiving( current, 
+			                                                               "sharing", objectClassName );
+			if( objectClassSharing != null )
+				objectClass.setSharing( Sharing.fromFomString(objectClassSharing) );
+			
 			// link us to our parent
 			objectClass.setParent( parent );
 			extractAttributes( objectClass, current );
@@ -267,6 +276,13 @@ public class FOM
 			if( attributeTransport != null )
 				attribute.setTransport( Transport.fromFomString(attributeTransport) );
 
+			// get the sharing policy
+			String attributeSharing = FedHelpers.getChildValueForgiving( attributeElement, 
+			                                                               "sharing",
+			                                                               attributeName );
+			if( attributeSharing != null )
+				attribute.setSharing( Sharing.fromFomString(attributeSharing) );
+			
 			// add the attribute to the containing class
 			clazz.addAttribute( attribute );
 		}
@@ -325,6 +341,11 @@ public class FOM
 		                                                                 name );
 		if( interactionTransport != null )
 			interactionRoot.setTransport( Transport.fromFomString(interactionTransport) );
+
+		// get the sharing policy
+		String interactionSharing = FedHelpers.getChildValueForgiving( interactionRootElement, "sharing", name );
+		if( interactionSharing != null )
+			interactionRoot.setSharing( Sharing.fromFomString(interactionSharing) );
 
 		// get the parameters
 		extractParameters( interactionRoot, interactionRootElement );
