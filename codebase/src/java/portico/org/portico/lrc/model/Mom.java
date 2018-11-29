@@ -460,6 +460,11 @@ public class Mom
 		                                          Federate.FederateHandle.handle );
 		federate.addAttribute( federateHandle );
 		
+		ACMetadata federateName = newAttribute( "HLAfederateName",
+		                                        hlaUnicodeString,
+		                                        Federate.FederateName.handle );
+		federate.addAttribute( federateName );
+		
 		ACMetadata federateType = newAttribute( "HLAfederateType",
 		                                        hlaUnicodeString,
 		                                        Federate.FederateType.handle );

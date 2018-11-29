@@ -58,7 +58,8 @@ public class RoleCallHandler extends LRCMessageHandler
 
 		RoleCall notice = context.getRequest( RoleCall.class, this );
 		int handle = notice.getSourceFederate();
-		String name = notice.getFederateName();
+		String federateName = notice.getFederateName();
+		String federateType = notice.getFederateType();
 
 		// if we already know about this federate, skip this whole process
 		if( lrcState.getKnownFederate(handle) != null )
@@ -68,7 +69,7 @@ public class RoleCallHandler extends LRCMessageHandler
 		// send it back information about us
 		if( logger.isDebugEnabled() )
 		{
-			logger.debug( "@REMOTE RoleCall received [handle:"+handle+",name:"+name+
+			logger.debug( "@REMOTE RoleCall received [handle:"+handle+",name:"+federateName+
 			              "] by local federate ["+lrcState.getFederateName()+"]" );
 		}
 
@@ -148,10 +149,11 @@ public class RoleCallHandler extends LRCMessageHandler
 		}
 		
 		///////////////////////////////////////////
-		// send back information about outselves //
+		// send back information about ourselves //
 		///////////////////////////////////////////
 		RoleCall role = new RoleCall( lrcState.getFederateHandle(),
 		                              lrcState.getFederateName(),
+		                              lrcState.getFederateType(),
 		                              timeStatus().copy(),
 		                              repository.getControlledData(lrcState.getFederateHandle()) );
 		syncManager.fillRolecall( role );
