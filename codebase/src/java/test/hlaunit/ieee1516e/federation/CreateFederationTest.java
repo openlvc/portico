@@ -199,6 +199,36 @@ public class CreateFederationTest extends Abstract1516eTest
 		}
 	}
 	
+	@Test
+	public void testCreateFederationWithNullFomArray()
+	{
+		// attempt to create with null fom array //
+		try
+		{
+			URL[] foms = null;
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, foms );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Unexpected exception while testing create with null FOM array", e );
+		}
+	}
+	
+	@Test
+	public void testCreateFederationWithZeroLengthFomArray()
+	{
+		// attempt to create with empty fom array //
+		try
+		{
+			URL[] foms = new URL[0];
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, foms );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Unexpected exception while testing create with zero length FOM array", e );
+		}
+	}
+	
 	//////////////////////////////////////////////
 	// TEST: testCreateFederationWithNullName() //
 	//////////////////////////////////////////////

@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
+import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
@@ -64,6 +66,13 @@ public class CreateFederationHandler extends LRCMessageHandler
 		for( URL module : request.getFomModules() )
 			foms.add( FomParser.parse(module) );
 		
+		if( foms.isEmpty() )
+		{
+			HLAVersion version = this.lrc.getSpecHelper().getHlaVersion();
+			if( !version.equals( HLAVersion.IEEE1516e ) )
+				throw new JCouldNotOpenFED( "FED location provided was null or empty" );
+		}
+
 		// -- NOT DONE ANY MORE --
 		// Used to be important, but we will manually insert the MOM with handles we can control
 		// check to make sure we have the standard MIM as well - if not, load it

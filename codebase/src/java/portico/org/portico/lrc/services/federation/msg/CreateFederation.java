@@ -60,22 +60,25 @@ public class CreateFederation extends PorticoMessage
 	{
 		this();
 		this.federationName = federationName;
-		this.fomModules.add( fedfileLocation );
+		if( fedfileLocation != null )
+			this.fomModules.add( fedfileLocation );
 	}
 	
 	public CreateFederation( String federationName, URL[] fomModules )
 	{
 		this();
 		this.federationName = federationName;
-		for( URL module : fomModules )
-			this.fomModules.add( module );
+		if( fomModules != null )
+			for( URL module : fomModules )
+				this.fomModules.add( module );
 	}
 	
 	public CreateFederation( String federationName, List<URL> fomModules )
 	{
 		this();
 		this.federationName = federationName;
-		this.fomModules.addAll( fomModules );
+		if( fomModules != null )
+			this.fomModules.addAll( fomModules );
 	}
 
 	//----------------------------------------------------------

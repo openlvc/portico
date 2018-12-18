@@ -374,8 +374,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		// jam the MIM in at the front of the list of modules
 		ArrayList<URL> moduleList = new ArrayList<URL>();
 		moduleList.add( mimModule );
-		for( URL module : fomModules )
-			moduleList.add( module );
+		if( fomModules != null )
+			for( URL module : fomModules )
+				moduleList.add( module );
 
 		CreateFederation request = new CreateFederation( federationName, moduleList );
 		ResponseMessage response = processMessage( request );
