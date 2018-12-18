@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.datatype.DatatypeHelpers;
@@ -72,13 +73,25 @@ public class ModelMerger
 	private ObjectModel mergeModels( List<ObjectModel> models ) throws JInconsistentFDD,
 	                                                                   JRTIinternalError
 	{
-		// if we only got one model, there's nothing to merge!
+		if( models.size() == 0 )
+		{
+			// we have no models, we need a 'root' level model
+			ObjectModel model = new ObjectModel();
+			boolean isHLA13 = model.getHlaVersion().equals( HLAVersion.HLA13 );
+			OCMetadata objectRoot = new OCMetadata( isHLA13 ? "ObjectRoot" : "HLAobjectRoot",
+			                                        model.generateHandle() );
+			objectRoot.setModel( model );
+			model.setObjectRoot( objectRoot );
+			return validate( model );
+		}
+		
 		if( models.size() == 1 )
 		{
+			// we have one or no models, there's nothing to merge!
 			ObjectModel model = models.get( 0 );
 			return validate( model );
 		}
-
+			
 		logger.trace( "Beginning merge of "+models.size()+" FOM models" );
 
 		// We have multiple models to merge
