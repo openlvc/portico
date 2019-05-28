@@ -2,7 +2,7 @@ sudo: false
 dist: xenial
 language: java
 jdk:
-- openjdk9
+- openjdk10
 install:
 - cd codebase
 script:
