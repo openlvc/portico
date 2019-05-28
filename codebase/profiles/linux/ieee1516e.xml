@@ -63,6 +63,29 @@
 	</target>
 
 	<!-- ==================================== -->
+	<!--          1516e Test Suite          -->
+	<!-- ==================================== -->
+	<target name="test.compile" depends="compile">
+		<cpptask compiler="g++"
+		         outfile="testieee1516e"
+		         workdir="${testieee1516e.build.dir}"
+		         outdir="${testieee1516e.complete.dir}"
+		         type="executable"
+		         arch="amd64"
+		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
+			<fileset dir="${ieee1516e.test.src.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<includepath path="${ieee1516e.src.dir}/hla/time"/>
+			<includepath path="${cppunit.include}"/>
+			<define name="RTI_USES_STD_FSTREAM"/>
+			<define name="DEBUG"/>
+			<library path="${ieee1516e.complete.dir}/gcc4" libs="rti1516e64d,fedtime1516e64d"/>
+			<library path="${cppunit.lib}" libs="cppunit"/>
+		</cpptask>
+	</target>
+
+	<!-- ==================================== -->
 	<!--        1516e Example Federate        -->
 	<!-- ==================================== -->
 	<!-- Compiles the 1516e example federate. Doesn't do much except
