@@ -85,7 +85,6 @@
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<define name="_GLIBCXX_USE_CXX11_ABI=0"/> <!-- Required for compatibility with cppunit -->
 			<library path="${ieee1516e.complete.dir}/gcc4" libs="rti1516e64d,fedtime1516e64d"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpptask>
@@ -108,7 +107,6 @@
 			<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
-			<define name="_GLIBCXX_USE_CXX11_ABI=0"/>
 			<define name="DEBUG"/>
 			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
 			<library path="${jdk.home.linux64}/jre/lib/amd64/server" libs="jvm,jsig"/>
@@ -328,7 +326,6 @@
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
 				<define name="PORTICO_VERSION=${build.version}"/>
 				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
-				<define name="_GLIBCXX_USE_CXX11_ABI=0"/> <!-- Required for compatibility with older style ABI strings -->
 				<library path="${_jdklib}" libs="jvm,jsig"/>
 				<library path="${pugixml.dir}/linux64" libs="pugixml${_bitness}${_d}"/>
 			</cpptask>			
