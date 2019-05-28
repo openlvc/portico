@@ -6,6 +6,7 @@ jdk:
 install:
 - cd codebase
 script:
+- echo JAVA_HOME is $JAVA_HOME
 - ./ant release
 notifications:
   email: false
