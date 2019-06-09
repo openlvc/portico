@@ -14,10 +14,7 @@
  */
 package org.portico.impl.hla1516.types;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import org.portico.utils.bithelpers.BitHelpers;
 
 import hla.rti1516.IllegalTimeArithmetic;
 import hla.rti1516.InvalidLogicalTime;
@@ -181,61 +178,18 @@ public class DoubleTime implements LogicalTime
 
 	public int encodedLength()
 	{
-		try
-		{
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeDouble( this.time );
-			stream.close();
-			return byteStream.toByteArray().length;
-		}
-		catch( Exception e )
-		{
-			// shouldn't happen
-			return -1;
-		}
+		return 12;	// 4 (size) + 8 (value)
 	}
 
 	public void encode( byte[] buffer, int offset )
 	{
-		try
-		{
-			// convert the into an array
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			DataOutputStream stream = new DataOutputStream( byteStream );
-			stream.writeDouble( this.time );
-			stream.close();
-			byte[] bytes = byteStream.toByteArray();
-			
-			// copy it into the given array
-			System.arraycopy( bytes, 0, buffer, offset, bytes.length );
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}
-	}
-
-	public double decode( byte[] buffer, int offset )
-	{
-		try
-		{
-			// convert the into an array
-			ByteArrayInputStream byteStream = new ByteArrayInputStream( buffer );
-			DataInputStream stream = new DataInputStream( byteStream );
-			double temp = stream.readDouble();
-			stream.close();
-			return temp;
-		}
-		catch( Exception e )
-		{
-			throw new RuntimeException( e );
-		}		
+		BitHelpers.putIntBE( 8, buffer, offset );                 // size
+		BitHelpers.putDoubleBE( this.time, buffer, offset + 4 );  // value
 	}
 
 	public byte[] toByteArray()
 	{
-		byte[] buffer = new byte[8];
+		byte[] buffer = new byte[encodedLength()];
 		encode( buffer, 0 );
 		return buffer;
 	}
@@ -259,9 +213,11 @@ public class DoubleTime implements LogicalTime
 		}
 	}
 
-	public static double fromBuffer( byte[] buffer )
+	public static DoubleTime decode( byte[] buffer, int offset )
 	{
-		return new DoubleTime().decode( buffer, 0 );
+		// int length = BitHelpers.readIntBE( buffer, offset );        // size
+		double value = BitHelpers.readDoubleBE( buffer, offset + 4 );  // value
+		
+		return new DoubleTime( value );
 	}
-
 }

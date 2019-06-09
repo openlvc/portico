@@ -75,15 +75,15 @@ public class TestFederate
 		this( federateName, federateName, test );
 	}
 
-	public TestFederate( String federateName, String federateType, Abstract1516eTest test )
+	public TestFederate( String name, String type, Abstract1516eTest test )
 	{
-		if( federateName == null || federateType == null || test == null )
+		if( name == null || type == null || test == null )
 		{
 			Assert.fail( "Null value given when creating TestFederate, can't continue" );
 		}
 		
-		this.federateName = federateName;
-		this.federateType = federateType;
+		this.federateName = name;
+		this.federateType = type;
 		this.federateHandle = -1;
 		this.test = test;
 		this.simpleName = this.test.getClass().getSimpleName();
@@ -1772,7 +1772,7 @@ public class TestFederate
 	{
 		for( TestFederate federate : ACTIVE_FEDERATES )
 		{
-			((Rti1516eAmbassador)federate.rtiamb).getHelper().getLrc().stopLrc();
+			((Rti1516eAmbassador)federate.rtiamb).getHelper().getLrc().disconnect();
 		}
 		
 		ACTIVE_FEDERATES.clear();

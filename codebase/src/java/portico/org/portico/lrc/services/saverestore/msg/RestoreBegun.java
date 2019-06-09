@@ -15,6 +15,7 @@
 package org.portico.lrc.services.saverestore.msg;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * This method is what is delivered to the callback message handlers. When the incoming handler
@@ -43,6 +44,11 @@ public class RestoreBegun extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.RestoreBegun;
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

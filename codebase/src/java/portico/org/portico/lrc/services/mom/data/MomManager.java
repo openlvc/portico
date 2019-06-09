@@ -27,10 +27,10 @@ import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.management.Federate;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
-import org.portico.lrc.services.object.msg.DeleteObject;
-import org.portico.lrc.services.object.msg.DiscoverObject;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * The MOM manager takes care of all the MOM related tasks for the local federate. When the federate
@@ -96,7 +96,7 @@ public class MomManager implements SaveRestoreTarget
 			return;
 		
 		// create the object for the federation and store it away as an undiscovered object
-		OCInstance momFederation = getFederationClass().newInstance( PorticoConstants.RTI_HANDLE );
+		OCInstance momFederation = getFederationClass().REMOVE_newInstance( PorticoConstants.RTI_HANDLE );
 		this.momFederation = new MomFederation( lrcState.getFederation(), momFederation, logger );
 		momFederation.setHandle( 0 ); // handle for MOM federation object, same as RTI fed handle
 		momFederation.setName( "MOM.Federation("+lrcState.getFederationName()+")" );
@@ -130,7 +130,7 @@ public class MomManager implements SaveRestoreTarget
 			return;
 		
 		// create the object for the Federate and queeu up a discovery
-		OCInstance ocInstance = getFederateClass().newInstance( PorticoConstants.RTI_HANDLE );
+		OCInstance ocInstance = getFederateClass().REMOVE_newInstance( PorticoConstants.RTI_HANDLE );
 		ocInstance.setHandle( lrcState.getMomFederateObjectHandle(federate.getFederateHandle()) );
 		ocInstance.setName( "MOM.Federate("+federate.getFederateName()+")" );
 
@@ -251,9 +251,9 @@ public class MomManager implements SaveRestoreTarget
 		try
 		{
 			this.isRestore = true;
-    		momFederation.clear();
-    		for( Federate federate : lrcState.getFederation() )
-    			federateJoinedFederation( federate );
+			momFederation.clear();
+			for( Federate federate : lrcState.getFederation() )
+				federateJoinedFederation( federate );
 		}
 		finally
 		{

@@ -19,9 +19,9 @@ import hla.rti13.java1.EncodingHelpers;
 import java.util.Map;
 
 import org.portico.impl.hla13.types.DoubleTime;
-import org.portico.lrc.services.time.msg.EnableTimeRegulation;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.time.msg.EnableTimeRegulation;
 
 @MessageHandler(modules="lrc13-callback",
                 keywords= {"lrc13","lrcjava1"},

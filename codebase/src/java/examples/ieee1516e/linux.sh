@@ -31,7 +31,7 @@ then
 	cd ../../../
 	RTI_HOME=$PWD
 	export RTI_HOME
-	cd examples/java/ieee1516e
+	cd -
 	echo WARNING Your RTI_HOME environment variable is not set, assuming $RTI_HOME
 fi
 

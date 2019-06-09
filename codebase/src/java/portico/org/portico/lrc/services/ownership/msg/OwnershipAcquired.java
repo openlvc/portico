@@ -17,6 +17,7 @@ package org.portico.lrc.services.ownership.msg;
 import java.util.Set;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * This message signals that the specified attributes of the specified object have been aquired.
@@ -50,6 +51,12 @@ public class OwnershipAcquired extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.OwnershipAcquired;
+	}
+
 	public int getObjectHandle()
 	{
 		return objectHandle;

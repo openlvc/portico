@@ -15,7 +15,9 @@
 package org.portico.lrc.services.mom.data;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
@@ -26,9 +28,10 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JEncodingHelpers;
 import org.portico.lrc.management.Federate;
+import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * Contains links between the {@link OCInstance} used to represent the federate in the federation
@@ -47,6 +50,7 @@ public class MomFederate
 	protected OCInstance federateObject;
 	protected Federate federate;
 	protected Logger momLogger;
+	private Map<String,Function<HLAVersion,byte[]>> attributeEncoders;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -56,6 +60,42 @@ public class MomFederate
 		this.federate = federate;
 		this.federateObject = federateObject;
 		this.momLogger = momLogger;
+		
+		this.attributeEncoders = new HashMap<>();
+		this.attributeEncoders.put( "FederateHandle", this::getFederateHandle );
+		this.attributeEncoders.put( "FederateName", this::getFederateName );
+		this.attributeEncoders.put( "FederateType", this::getFederateType );
+		this.attributeEncoders.put( "FederateHost", this::getFederateHost );
+		this.attributeEncoders.put( "RTIVersion", this::getRTIversion );
+		this.attributeEncoders.put( "FEDid", this::getFEDid );
+		this.attributeEncoders.put( "FOMmoduleDesignatorList", this::getFomModuleDesignatorList );
+		this.attributeEncoders.put( "TimeConstrained", this::getTimeConstrained );
+		this.attributeEncoders.put( "TimeRegulating", this::getTimeRegulating );
+		this.attributeEncoders.put( "AsynchronousDelivery", this::getAsynchronousDelivery );
+		this.attributeEncoders.put( "FederateState", this::getFederateState );
+		this.attributeEncoders.put( "TimeManagerState", this::getTimeManagerState );
+		this.attributeEncoders.put( "FederateTime", this::getFederateTime );
+		this.attributeEncoders.put( "Lookahead", this::getLookahead );
+		this.attributeEncoders.put( "LBTS", this::getLBTS );
+		this.attributeEncoders.put( "GALT", this::getGALT );
+		this.attributeEncoders.put( "MinNextEventTime", this::getMinNextEventTime );
+		this.attributeEncoders.put( "ROlength", this::getROlength );
+		this.attributeEncoders.put( "TSOlength", this::getTSOlength );
+		this.attributeEncoders.put( "ReflectionsReceived", this::getReflectionsReceived );
+		this.attributeEncoders.put( "UpdatesSent", this::getUpdatesSent );
+		this.attributeEncoders.put( "InteractionsReceived", this::getInteractionsReceived );
+		this.attributeEncoders.put( "InteractionsSent", this::getInteractionsSent );
+		this.attributeEncoders.put( "ObjectsOwned", this::getObjectsOwned );
+		this.attributeEncoders.put( "ObjectsUpdated", this::getObjectsUpdated );
+		this.attributeEncoders.put( "ObjectsReflected", this::getObjectsReflected );
+		this.attributeEncoders.put( "ObjectInstancesDeleted", this::getObjectInstancesDeleted );
+		this.attributeEncoders.put( "ObjectInstancesRemoved", this::getObjectInstancesRemoved );
+		this.attributeEncoders.put( "ObjectInstancesRegistered", this::getObjectInstancesRegistered );
+		this.attributeEncoders.put( "ObjectInstancesDiscovered", this::getObjectInstancesDiscovered );
+		this.attributeEncoders.put( "TimeGrantedTime", this::getTimeGrantedTime );
+		this.attributeEncoders.put( "TimeAdvancingTime", this::getTimeAdvancingTime );
+		//this.attributeEncoders.put( "ConveyRegionDesignatorSets", this::get );
+		//this.attributeEncoders.put( "ConveyProducingFederate", this:: );
 	}
 
 	//----------------------------------------------------------
@@ -138,7 +178,7 @@ public class MomFederate
 
 	private byte[] getMinNextEventTime( HLAVersion version )
 	{
-		return getLBTS( version );
+		return getLITS( version );
 	}
 	
 	private byte[] getGALT( HLAVersion version )
@@ -233,119 +273,27 @@ public class MomFederate
 		throws JAttributeNotDefined
 	{
 		HashMap<Integer,byte[]> attributes = new HashMap<Integer,byte[]>();
-
-		// loop through the attributes and get the appropriate values
-		for( Integer attributeHandle : handles )
+		Set<ACInstance> attributeInstances = this.federateObject.getAllAttributes();
+		for( ACInstance instance : attributeInstances )
 		{
-			Mom.Federate enumValue = Mom.Federate.forHandle( attributeHandle );
-			switch( enumValue )
+			int attributeHandle = instance.getType().getHandle();
+			if( attributes.containsKey(attributeHandle) )
 			{
-				case FederateName:
-					attributes.put( attributeHandle, getFederateName(version) );
-					break;
-				case FederateHandle:
-					attributes.put( attributeHandle, getFederateHandle(version) );
-					break;
-				case FederateType:
-					attributes.put( attributeHandle, getFederateType(version) );
-					break;
-				case FederateHost:
-					attributes.put( attributeHandle, getFederateHost(version) );
-					break;
-				case FomModuleDesignatorList:
-					attributes.put( attributeHandle, getFomModuleDesignatorList(version) );
-					break;
-				case RtiVersion:
-					attributes.put( attributeHandle, getRTIversion(version) );
-					break;
-				case FedID:
-					attributes.put( attributeHandle, getFEDid(version) );
-					break;
-				case TimeConstrained:
-					attributes.put( attributeHandle, getTimeConstrained(version) );
-					break;
-				case TimeRegulating:
-					attributes.put( attributeHandle, getTimeRegulating(version) );
-					break;
-				case AsynchronousDelivery:
-					attributes.put( attributeHandle, getAsynchronousDelivery(version) );
-					break;
-				case FederateState:
-					attributes.put( attributeHandle, getFederateState(version) );
-					break;
-				case TimeManagerState:
-					attributes.put( attributeHandle, getTimeManagerState(version) );
-					break;
-				case LogicalTime:
-					attributes.put( attributeHandle, getFederateTime(version) );
-					break;
-				case Lookahead:
-					attributes.put( attributeHandle, getLookahead(version) );
-					break;
-				case LBTS:
-					attributes.put( attributeHandle, getLBTS(version) );
-					break;
-				case GALT:
-					attributes.put( attributeHandle, getGALT(version) );
-					break;
-				case LITS:
-					attributes.put( attributeHandle, getLITS(version) );
-					break;
-				case ROlength:
-					attributes.put( attributeHandle, getROlength(version) );
-					break;
-				case TSOlength:
-					attributes.put( attributeHandle, getTSOlength(version) );
-					break;
-				case ReflectionsReceived:
-					attributes.put( attributeHandle, getReflectionsReceived(version) );
-					break;
-				case UpdatesSent:
-					attributes.put( attributeHandle, getUpdatesSent(version) );
-					break;
-				case InteractionsReceived:
-					attributes.put( attributeHandle, getInteractionsReceived(version) );
-					break;
-				case InteractionsSent:
-					attributes.put( attributeHandle, getInteractionsSent(version) );
-					break;
-				case ObjectInstancesThatCanBeDeleted:
-					attributes.put( attributeHandle, getObjectsOwned(version) );
-					break;
-				case ObjectInstancesUpdated:
-					attributes.put( attributeHandle, getObjectsUpdated(version) );
-					break;
-				case ObjectInstancesReflected:
-					attributes.put( attributeHandle, getObjectsReflected(version) );
-					break;
-				case ObjectInstancesDeleted:
-					attributes.put( attributeHandle, getObjectInstancesDeleted(version) );
-					break;
-				case ObjectInstancesRemoved:
-					attributes.put( attributeHandle, getObjectInstancesRemoved(version) );
-					break;
-				case ObjectInstancesRegistered:
-					attributes.put( attributeHandle, getObjectInstancesRegistered(version) );
-					break;
-				case ObjectInstancesDiscovered:
-					attributes.put( attributeHandle, getObjectInstancesDiscovered(version) );
-					break;
-				case TimeGrantedTime:
-					attributes.put( attributeHandle, getTimeGrantedTime(version) );
-					break;
-				case TimeAdvancingTime:
-					attributes.put( attributeHandle, getTimeAdvancingTime(version) );
-					break;
-				case ConveyRegionDesignatorSets:
-					attributes.put( attributeHandle, notYetSupported(version,"ConveyRegionDesignatorSets") );
-					break;
-				case ConveyProducingFederate:
-					attributes.put( attributeHandle,  notYetSupported(version,"ConveyProducingFederate") );
-					break;
-				default:
-					break; // ignore
+				String canonicalName = Mom.getMomAttributeName( HLAVersion.HLA13, 
+				                                                attributeHandle );
+				Function<HLAVersion,byte[]> encoder = this.attributeEncoders.get( canonicalName );
+				if( encoder != null )
+				{
+					byte[] value = encoder.apply( version );
+					attributes.put( attributeHandle, value );
+				}
+				else
+				{
+					momLogger.warn( "No encoder for attribute " + 
+					                attributeHandle + 
+					                " [" + canonicalName + "]" );
+				}
 			}
-			
 		}
 		
 		UpdateAttributes update = new UpdateAttributes( federateObject.getHandle(),
@@ -357,7 +305,7 @@ public class MomFederate
 	
 	private byte[] notYetSupported( HLAVersion version, String property )
 	{
-		momLogger.trace( "Requeted MOM property that isn't supported yet: Federate." + property );
+		momLogger.trace( "Requested MOM property that isn't supported yet: Federate." + property );
 		return encodeString( version, "property ["+property+"] not yet supported" );
 	}
 

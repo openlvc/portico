@@ -61,6 +61,25 @@ public class JConfigurationException extends RuntimeException
 		super( message, cause );
 	}
 
+	/**
+	 * @param formatString A format string to use for the message via String.format()
+	 * @param objects Arguments to apply to the format string
+	 */
+	public JConfigurationException( String formatString, Object... objects )
+	{
+		super( String.format(formatString,objects) );
+	}
+
+	/**
+	 * @param cause The cause of the exception
+	 * @param formatString A format string to use for the message via String.format()
+	 * @param objects Arguments to apply to the format string
+	 */
+	public JConfigurationException( Throwable cause, String formatString, Object...objects )
+	{
+		super( String.format(formatString,objects), cause );
+	}
+
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------

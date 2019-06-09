@@ -15,6 +15,7 @@
 package org.portico.lrc.services.ownership.msg;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class QueryOwnershipResponse extends PorticoMessage
 {
@@ -46,6 +47,11 @@ public class QueryOwnershipResponse extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.QueryOwnershipResponse;
+	}
 
 	public int getObjectHandle()
 	{

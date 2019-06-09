@@ -18,16 +18,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JObjectNotKnown;
 import org.portico.lrc.model.ACInstance;
+import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.object.msg.RequestObjectUpdate;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.RequestObjectUpdate;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -42,6 +43,7 @@ public class RequestObjectUpdateHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
+	private int momFederationHandle;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -53,6 +55,7 @@ public class RequestObjectUpdateHandler extends LRCMessageHandler
 	public void initialize( Map<String,Object> properties )
 	{
 		super.initialize( properties );
+		this.momFederationHandle = Mom.getMomObjectClassHandle( HLAVersion.HLA13, "Manager.Federation" );
 	}
 	
 	public void process( MessageContext context ) throws Exception
@@ -99,7 +102,7 @@ public class RequestObjectUpdateHandler extends LRCMessageHandler
 		request.setAttributes( nonOwnedAttributes );
 		
 		// if this is for the MOM federation object, just handle it locally
-		if( objectHandle == PorticoConstants.MOM_FEDERATION_OBJECT_HANDLE )
+		if( objectHandle == this.momFederationHandle )
 		{
 			respondToMomFederationUpdateRequest( request.getAttributes() );
 		}

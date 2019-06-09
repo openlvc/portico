@@ -16,9 +16,9 @@ package org.portico.impl.hla13.handlers;
 
 import java.util.Map;
 
-import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.RegisterSyncPoint;
 
 /**
  * This handler generates HLA 1.3 callbacks for synchronization point announcements.
@@ -27,7 +27,7 @@ import org.portico.utils.messaging.MessageHandler;
                 keywords= {"lrc13","lrcjava1"},
                 sinks="incoming",
                 priority=3,
-                messages=SyncPointAnnouncement.class)
+                messages=RegisterSyncPoint.class)
 public class SyncAnnounceCallbackHandler extends HLA13CallbackHandler
 {
 	//----------------------------------------------------------
@@ -53,7 +53,7 @@ public class SyncAnnounceCallbackHandler extends HLA13CallbackHandler
 	
 	public void process( MessageContext context ) throws Exception
 	{
-		SyncPointAnnouncement request = context.getRequest( SyncPointAnnouncement.class, this );
+		RegisterSyncPoint request = context.getRequest( RegisterSyncPoint.class, this );
 		
 		// make sure we are in the announcement group
 		if( request.getFederateSet() != null &&

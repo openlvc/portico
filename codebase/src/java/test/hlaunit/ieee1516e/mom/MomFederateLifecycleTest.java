@@ -52,13 +52,14 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	public void beforeClass()
 	{
 		super.beforeClass();
-		this.secondFederate = new TestFederate( "secondFederate", "secondFederateType", this );
-		this.secondFederate.quickConnect();
 	}
 	
 	@BeforeMethod(alwaysRun=true)
 	public void beforeMethod()
 	{
+		this.secondFederate = new TestFederate( "secondFederate", "secondFederateType", this );
+		this.secondFederate.quickConnect();
+		
 		defaultFederate.quickCreate();
 		defaultFederate.quickJoin();
 		//secondFederate.quickJoin();
@@ -86,7 +87,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testMomFederateInstanceLifecycle() //
 	//////////////////////////////////////////////
-	@Test
+	@Test(enabled=true)
 	public void testMomFederateInstanceLifecycle() throws Exception
 	{
 		// subscribe to the MOM information //
@@ -122,6 +123,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		String twoName = decodeString( two.getAttributes().get(nameHandle) );
 		Assert.assertEquals( oneName, "defaultFederate" );
 		Assert.assertEquals( twoName, "secondFederate" );
+		
 		// check the types //
 		String oneType = decodeString( one.getAttributes().get(typeHandle) );
 		String twoType = decodeString( two.getAttributes().get(typeHandle) );
@@ -136,7 +138,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		defaultFederate.fedamb.waitForRORemoval( two.getHandle() );
 	}
 	
-	@Test
+	@Test(enabled=true)
 	public void testDisabledMom() throws Exception
 	{
 		// turn the mom off for new federations //
@@ -151,9 +153,11 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 		// subscribe to the MOM information //
 		int momHandle = defaultFederate.quickOCHandle( "HLAobjectRoot.HLAmanager.HLAfederate" );
 		int nameHandle = defaultFederate.quickACHandle( "HLAobjectRoot.HLAmanager.HLAfederate",
-		                                                "HLAfederateType" );
+														"HLAfederateName" );
+		int typeHandle = defaultFederate.quickACHandle( "HLAobjectRoot.HLAmanager.HLAfederate",
+														"HLAfederateType" );
 		
-		federate.quickSubscribe( momHandle, nameHandle );
+		federate.quickSubscribe( momHandle, nameHandle, typeHandle );
 		
 		////////////////////////////
 		// MOM instances creation //

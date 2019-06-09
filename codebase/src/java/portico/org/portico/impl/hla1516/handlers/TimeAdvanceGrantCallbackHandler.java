@@ -19,9 +19,9 @@ import java.util.Map;
 import org.portico.impl.hla1516.Impl1516Helper;
 import org.portico.impl.hla1516.types.DoubleTime;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.time.msg.TimeAdvanceGrant;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.time.msg.TimeAdvanceGrant;
 
 @MessageHandler(modules="lrc1516-callback",
                 keywords="lrc1516",

@@ -27,11 +27,11 @@ import org.portico.lrc.compat.JObjectClassNotPublished;
 import org.portico.lrc.compat.JObjectNotKnown;
 import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.ownership.msg.AttributeAcquire;
 import org.portico.lrc.services.ownership.msg.AttributesUnavailable;
 import org.portico.lrc.services.ownership.msg.OwnershipAcquired;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ownership.msg.AttributeAcquire;
 
 /**
  * This handler processes requests to acquire attributes, be it through direct solicitation (in

@@ -18,9 +18,9 @@ import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.services.sync.data.SyncPoint;
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

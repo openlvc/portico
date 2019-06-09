@@ -385,7 +385,7 @@ public class HandlerRegistry
 		register( org.portico.impl.hla1516e.handlers.SyncAnnounceCallbackHandler.class );
 		register( org.portico.impl.hla1516e.handlers.SyncRegResultCallbackHandler.class );
 		register( org.portico.impl.hla1516e.handlers.TimeAdvanceGrantCallbackHandler.class );
-		register( org.portico.impl.hla1516e.handlers.TimeConstrainedEnabledCallbackHandler.class );
+//		register( org.portico.impl.hla1516e.handlers2.TimeConstrainedEnabledCallbackHandler.class );
 		register( org.portico.impl.hla1516e.handlers.TimeRegulationEnabledCallbackHandler.class );
 	}
 	

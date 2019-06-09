@@ -40,36 +40,6 @@ public class BitHelpers
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static void main( String[] args ) throws Exception
-    {
-        int beforeInt = Integer.MAX_VALUE;
-        long beforeLong = Long.MAX_VALUE;
-        float beforeFloat = Float.MAX_VALUE;
-        double beforeDouble = Double.MAX_VALUE;
-
-        byte[] buffer = new byte[8];
-        BitHelpers.putIntBE( beforeInt, buffer, 0 );
-        int afterInt = BitHelpers.readIntBE( buffer, 0 );
-
-        BitHelpers.putLongBE( beforeLong, buffer, 0 );
-        long afterLong = BitHelpers.readLongBE( buffer, 0 );
-        
-        BitHelpers.putFloatBE( beforeFloat, buffer, 0 );
-        float afterFloat = BitHelpers.readFloatBE( buffer, 0 );
-        
-        BitHelpers.putDoubleBE( beforeDouble, buffer, 0 );
-        double afterDouble = BitHelpers.readDoubleBE( buffer, 0 );
-        
-        System.out.println( "   (int) before: "+beforeInt+", after: "+afterInt );
-        System.out.println( "  (long) before: "+beforeLong+", after: "+afterLong );
-        System.out.println( " (float) before: "+beforeFloat+", after: "+afterFloat );
-        System.out.println( "(double) before: "+beforeDouble+", after: "+afterDouble );
-        
-        assert beforeInt == afterInt;
-        assert beforeLong == afterLong;
-        assert beforeFloat == afterFloat;
-        assert beforeDouble == afterDouble;
-    }
 
 	////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////// Helper Methods //////////////////////////////////////
@@ -129,6 +99,24 @@ public class BitHelpers
 	{
 		checkOverflow( value.length, buffer, offset );
 		System.arraycopy( value, 0, buffer, offset, value.length );
+	}
+	
+	/**
+	 * Copies the provided byte[] value into the buffer starting from the specified offset.
+	 * Will copy the given number of bytes (in length) from the source array.
+	 * Checks to ensure there is enough room to write into first, throwing a
+	 * {@link BufferOverflowException} if there is not.
+	 * 
+	 * @param value The byte[] to write into the buffer
+	 * @param target The buffer to write into
+	 * @param offset The offset to commence at
+	 * @param length The number of bytes to write from the source array
+	 * @throws BufferOverflowException If there is not enough space to write the value into
+	 */
+	public static void putByteArray( byte[] value, byte[] target, int offset, int length )
+	{
+		checkOverflow( length, target, offset );
+		System.arraycopy( value, 0, target, offset, length );
 	}
 
 	/**
@@ -197,9 +185,9 @@ public class BitHelpers
 	{
 		checkUnderflow( 4, buffer, offset );
 
-		int temp = ((buffer[0] << 24) +
-		           ((buffer[1] & 255) << 16) +
-		           ((buffer[2] & 255) << 8) +
+		int temp = ((buffer[0] << 24) |
+		           ((buffer[1] & 255) << 16) |
+		           ((buffer[2] & 255) << 8) |
 		           ((buffer[3] & 255) << 0));
 
 		return Float.intBitsToFloat( temp );
@@ -215,9 +203,9 @@ public class BitHelpers
 	{
 		checkUnderflow( 4, buffer, offset );
 
-		int temp = ((buffer[3] << 24) +
-		           ((buffer[2] & 255) << 16) +
-		           ((buffer[1] & 255) << 8) +
+		int temp = ((buffer[3] << 24) |
+		           ((buffer[2] & 255) << 16) |
+		           ((buffer[1] & 255) << 8) |
 		           ((buffer[0] & 255) << 0));
 
 		return Float.intBitsToFloat( temp );
@@ -275,13 +263,13 @@ public class BitHelpers
 	{
 		checkUnderflow( 8, buffer, offset );
 
-		long temp = (((long)buffer[0] << 56) +
-		             ((long)(buffer[1] & 255) << 48) +
-		             ((long)(buffer[2] & 255) << 40) +
-		             ((long)(buffer[3] & 255) << 32) +
-		             ((long)(buffer[4] & 255) << 24) +
-		             ((buffer[5] & 255) << 16) +
-		             ((buffer[6] & 255) <<  8) +
+		long temp = (((long)buffer[0] << 56) |
+		             ((long)(buffer[1] & 255) << 48) |
+		             ((long)(buffer[2] & 255) << 40) |
+		             ((long)(buffer[3] & 255) << 32) |
+		             ((long)(buffer[4] & 255) << 24) |
+		             ((buffer[5] & 255) << 16) |
+		             ((buffer[6] & 255) <<  8) |
 		             ((buffer[7] & 255) <<  0));
 
 		return Double.longBitsToDouble( temp );
@@ -297,13 +285,13 @@ public class BitHelpers
 	{
 		checkUnderflow( 8, buffer, offset );
 
-		long temp = (((long)buffer[7] << 56) +
-		             ((long)(buffer[6] & 255) << 48) +
-		             ((long)(buffer[5] & 255) << 40) +
-		             ((long)(buffer[4] & 255) << 32) +
-		             ((long)(buffer[3] & 255) << 24) +
-		             ((buffer[2] & 255) << 16) +
-		             ((buffer[1] & 255) <<  8) +
+		long temp = (((long)buffer[7] << 56) |
+		             ((long)(buffer[6] & 255) << 48) |
+		             ((long)(buffer[5] & 255) << 40) |
+		             ((long)(buffer[4] & 255) << 32) |
+		             ((long)(buffer[3] & 255) << 24) |
+		             ((buffer[2] & 255) << 16) |
+		             ((buffer[1] & 255) <<  8) |
 		             ((buffer[0] & 255) <<  0));
 
 		return Double.longBitsToDouble( temp );
@@ -350,7 +338,7 @@ public class BitHelpers
 	{
 		checkUnderflow( 2, buffer, offset );
 		
-		return (short)(((buffer[offset]   & 255) << 8) +
+		return (short)(((buffer[offset]   & 255) << 8) |
 			           ((buffer[offset+1] & 255) /*<< 0*/));
 	}
 
@@ -364,7 +352,7 @@ public class BitHelpers
 	{
 		checkUnderflow( 2, buffer, offset );
 		
-		return (short)(((buffer[offset+1] & 255) << 8)  +
+		return (short)(((buffer[offset+1] & 255) << 8)  |
 		               ((buffer[offset]   & 255) /*<< 0*/));
 	}
 
@@ -413,9 +401,9 @@ public class BitHelpers
 	{
 		checkUnderflow( 4, buffer, offset );
 		
-		return ((buffer[offset]   & 255) << 24) +
-		       ((buffer[offset+1] & 255) << 16) +
-		       ((buffer[offset+2] & 255) << 8)  +
+		return ((buffer[offset]   & 255) << 24) |
+		       ((buffer[offset+1] & 255) << 16) |
+		       ((buffer[offset+2] & 255) << 8)  |
 		       ((buffer[offset+3] & 255) /*<< 0*/);
 	}
 
@@ -429,9 +417,9 @@ public class BitHelpers
 	{
 		checkUnderflow( 4, buffer, offset );
 		
-		return ((buffer[offset+3] & 255) << 24) +
-		       ((buffer[offset+2] & 255) << 16) +
-		       ((buffer[offset+1] & 255) << 8)  +
+		return ((buffer[offset+3] & 255) << 24) |
+		       ((buffer[offset+2] & 255) << 16) |
+		       ((buffer[offset+1] & 255) << 8)  |
 		       ((buffer[offset]   & 255) /*<< 0*/);
 	}
 
@@ -488,13 +476,13 @@ public class BitHelpers
 	{
 		checkUnderflow( 8, buffer, offset );
 
-		return (((long)buffer[0] << 56) +
-		        ((long)(buffer[1] & 255) << 48) +
-		        ((long)(buffer[2] & 255) << 40) +
-		        ((long)(buffer[3] & 255) << 32) +
-		        ((long)(buffer[4] & 255) << 24) +
-		        ((buffer[5] & 255) << 16) +
-		        ((buffer[6] & 255) <<  8) +
+		return (((long)buffer[0] << 56) |
+		        ((long)(buffer[1] & 255) << 48) |
+		        ((long)(buffer[2] & 255) << 40) |
+		        ((long)(buffer[3] & 255) << 32) |
+		        ((long)(buffer[4] & 255) << 24) |
+		        ((buffer[5] & 255) << 16) |
+		        ((buffer[6] & 255) <<  8) |
 		        ((buffer[7] & 255) <<  0));
 	}
 
@@ -508,16 +496,197 @@ public class BitHelpers
 	{
 		checkUnderflow( 8, buffer, offset );
 
-		return (((long)buffer[7] << 56) +
-		        ((long)(buffer[6] & 255) << 48) +
-		        ((long)(buffer[5] & 255) << 40) +
-		        ((long)(buffer[4] & 255) << 32) +
-		        ((long)(buffer[3] & 255) << 24) +
-		        ((buffer[2] & 255) << 16) +
-		        ((buffer[1] & 255) <<  8) +
+		return (((long)buffer[7] << 56) |
+		        ((long)(buffer[6] & 255) << 48) |
+		        ((long)(buffer[5] & 255) << 40) |
+		        ((long)(buffer[4] & 255) << 32) |
+		        ((long)(buffer[3] & 255) << 24) |
+		        ((buffer[2] & 255) << 16) |
+		        ((buffer[1] & 255) <<  8) |
 		        ((buffer[0] & 255) <<  0));
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////// Unsigned Integer Methods /////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Put the given boolean value into the bit at <code>bitPos</code> (0-7).
+	 * The value will be written into the byte in the buffer at the byte offset.
+	 * 
+	 * @param value      The value to write
+	 * @param buffer     The buffer to write into
+	 * @param byteOffset The offset within the buffer to find the byte we should write into
+	 * @param bitPos     The bit to set (0-7)
+	 */
+	public static void putBooleanBit( boolean value, byte[] buffer, int byteOffset, int bitPos )
+	{
+		checkOverflow( 1, buffer, byteOffset );
+		
+		byte mask = (byte)(1 << bitPos);
+		if( value )
+			buffer[byteOffset] = (byte)(buffer[byteOffset] | mask); // turn the bit on
+		else
+			buffer[byteOffset] = (byte)(buffer[byteOffset] & ~mask); // turn the bit off
+	}
+
+	/**
+	 * Return <code>true</code> if the value of the bit we're looking up is 1, <code>false</code>
+	 * if it is 0. We look up the byte within the buffer at the identified offset. We then look
+	 * up the bit at <code>bitPos</code> in that byte (0-7).
+	 * 
+	 * @param buffer     The buffer to find the byte in
+	 * @param byteOffset The offset within the buffer to find the specific byte
+	 * @param bitPos     The bit index within the byte (0-7)
+	 * @return True if the bit is 1, false if it is 0.
+	 */
+	public static boolean readBooleanBit( byte[] buffer, int byteOffset, int bitPos )
+	{
+		checkUnderflow( 1, buffer, byteOffset );
+		
+		if( bitPos < 0 || bitPos > 7 )
+			throw new IllegalArgumentException( "BitPos can only be between 0 and 7" );
+		
+		// 1. Generate a mask with only the bit we're measuring turned on
+		byte mask  = (byte)(1 << bitPos);
+		
+		// 2. And against the mask. All bits except bitPos turned off. bitPos will be off
+		//    if it was, and on if it was
+		byte value = (byte)((buffer[byteOffset] & mask));
+		if( bitPos == 7 )
+		{
+			// can't properly shift the 8th pos because java is using it
+			// as the - (negative) symbol. shifting brings in 1's rather than
+			// 0's. In this case, let's just check without trying to drain the bit
+			return value == -128;
+		}
+		else
+		{
+			// Bit at bitPos is now either on or off; need to drain it so we can
+			// compare it to a known value
+			value = (byte)(value >>> bitPos);
+			return value == 1;
+		}
+	}
+
+	public static void putPadding( int bytes, byte[] buffer, int offset )
+	{
+		switch( bytes )
+		{
+			case 0: return;
+			case 1: putUint8((short)0,buffer,offset); return;
+			case 2: putUint16(0,buffer,offset); return;
+			case 3: putUint24(0,buffer,offset); return;
+			case 4: putUint32(0,buffer,offset); return;
+			default: break;
+		}
+		
+		// it's more than 4... ok
+		for( int i = 0; i < bytes; i++ )
+			putUint8((short)0,buffer,offset);
+	}
+
+	public static void putUint4( byte value, byte[] buffer, int byteOffset, int bitOffset )
+	{
+		if( bitOffset > 4 )
+			throw new IllegalArgumentException( "Bit offset cannot be greater than 4" );
+		
+		// 1. Prep Incoming Value
+		//    The bits we want are sitting in the low-order 4. There _should_ be
+		//    nothing in the high-order 4, but let's zero them out just in case
+		int temp = (byte)(value & 0x0f);
+
+		// 2. Shift Incoming Into Place
+		//    We are writing 4 bytes starting from a particular offset. Shift
+		//    the bits into place. After this, the 4-bit value will be sandwiched
+		//    by 0's in the temp value.
+		temp = temp << bitOffset;
+		
+		// 3. Zero-Out Space in Existing Value
+		//    To effectively merge the prepared bits into the ones present in the
+		//    buffer currently, we need to zero-out the space they'll go into
+		int mask = ~(0x0f << bitOffset);
+		int orig = buffer[byteOffset] & mask;
+		
+		// 4. Merge New into Old
+		//    Or the modified original bits (step 3) with the shifted bits that
+		//    represent the value we want to inject (step 2). Save back to buffer;
+		buffer[byteOffset] = (byte)(orig | temp);
+	}
+
+	public static byte readUint4( byte[] buffer, int byteOffset, int bitOffset )
+	{
+		int temp = buffer[byteOffset] >> bitOffset;
+		return (byte)(0x0f & temp);
+	}
+
+	public static void putUint8( short value, byte[] buffer, int offset )
+	{
+		checkOverflow( 1, buffer, offset );
+		
+		buffer[offset] = (byte)value;
+	}
+	
+	public static short readUint8( byte[] buffer, int offset )
+	{
+		checkUnderflow( 1, buffer, offset );
+		return (short)(buffer[offset] & 0xff);
+	}
+
+	
+	public static void putUint16( int value, byte[] buffer, int offset )
+	{
+		checkOverflow( 2, buffer, offset );
+
+		buffer[offset]   = (byte)(value >>> 8);
+		buffer[offset+1] = (byte)(value /*>> 0*/);
+	}
+	
+	public static int readUint16( byte[] buffer, int offset )
+	{
+		checkUnderflow( 2, buffer, offset );
+		
+		return ((buffer[offset]   & 0xff) << 8) |
+		       ((buffer[offset+1] & 0xff));
+	}
+	
+	public static void putUint24( long value, byte[] buffer, int offset )
+	{
+		checkOverflow( 3, buffer, offset );
+
+		buffer[offset]   = (byte)(value >>> 16);
+		buffer[offset+1] = (byte)(value >>> 8);
+		buffer[offset+2] = (byte)(value /*>> 0*/);
+	}
+	
+	public static long readUint24( byte[] buffer, int offset )
+	{
+		checkUnderflow( 3, buffer, offset );
+		
+		return ((buffer[offset]   & 0xff) << 16) |
+		       ((buffer[offset+1] & 0xff) << 8)  |
+		       ((buffer[offset+2] & 0xff));
+	}
+	
+	public static void putUint32( long value, byte[] buffer, int offset )
+	{
+		checkOverflow( 4, buffer, offset );
+
+		buffer[offset]   = (byte)(value >> 24);
+		buffer[offset+1] = (byte)(value >> 16);
+		buffer[offset+2] = (byte)(value >> 8);
+		buffer[offset+3] = (byte)(value /*>> 0*/);
+	}
+	
+	public static long readUint32( byte[] buffer, int offset )
+	{
+		checkUnderflow( 4, buffer, offset );
+		
+		return ((long)(buffer[offset]   & 0xff) << 24) |
+		       ((long)(buffer[offset+1] & 0xff) << 16) |
+		       ((long)(buffer[offset+2] & 0xff) << 8)  |
+		       ((long)(buffer[offset+3] & 0xff));
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////// General Methods //////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////

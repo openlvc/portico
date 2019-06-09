@@ -19,10 +19,10 @@ import java.util.Map;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JIllegalName;
 import org.portico.lrc.compat.JObjectAlreadyRegistered;
-import org.portico.lrc.services.object.msg.ReserveObjectName;
-import org.portico.lrc.services.object.msg.ReserveObjectNameResult;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.ReserveObjectName;
+import org.portico2.common.services.object.msg.ReserveObjectNameResult;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc1516","lrc1516e"},

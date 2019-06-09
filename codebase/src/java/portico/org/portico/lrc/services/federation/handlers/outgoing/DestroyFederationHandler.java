@@ -18,9 +18,9 @@ import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.DestroyFederation;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

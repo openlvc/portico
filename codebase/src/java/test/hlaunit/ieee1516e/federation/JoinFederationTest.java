@@ -53,12 +53,13 @@ public class JoinFederationTest extends Abstract1516eTest
 	{
 		super.beforeClass();
 		this.secondFederate = new TestFederate( "secondFederate", this );
-		this.secondFederate.quickConnect();
 	}
 
 	@BeforeMethod(alwaysRun=true)
 	public void beforeMethod()
 	{
+		this.secondFederate.quickConnect();
+
 		// create a federation that we can test with //
 		defaultFederate.quickCreate();
 	}
@@ -69,12 +70,13 @@ public class JoinFederationTest extends Abstract1516eTest
 		defaultFederate.quickResignTolerant();
 		secondFederate.quickResignTolerant();
 		defaultFederate.quickDestroy();
+		
+		secondFederate.quickDisconnect();
 	}
 
 	@AfterClass(alwaysRun=true)
 	public void afterClass()
 	{
-		secondFederate.quickDisconnect();
 		super.afterClass();
 	}
 	

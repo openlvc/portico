@@ -17,6 +17,7 @@ package org.portico.lrc.services.mom.data;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
@@ -25,9 +26,10 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JEncodingHelpers;
 import org.portico.lrc.management.Federation;
+import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.object.msg.UpdateAttributes;
 
 /**
  * Contains links between the {@link OCInstance} used to represent the federation in the federation
@@ -47,6 +49,7 @@ public class MomFederation
 	protected Map<Integer,MomFederate> federates;
 	protected OCInstance federationObject;
 	protected Logger momLogger;
+	private Map<String,Function<HLAVersion,byte[]>> attributeEncoders;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -57,6 +60,22 @@ public class MomFederation
 		this.federates = new HashMap<Integer,MomFederate>();
 		this.federationObject = federationObject;
 		this.momLogger = lrcLogger;
+		
+		this.attributeEncoders = new HashMap<>();
+		this.attributeEncoders.put( "FederationName", this::getFederationName );
+		this.attributeEncoders.put( "FederatesInFederation", this::getFederatesInFederation );
+		this.attributeEncoders.put( "RTIversion", this::getRtiVersion );
+		this.attributeEncoders.put( "FEDid", this::getFedID );
+		this.attributeEncoders.put( "MIMdesignator", this::getMimDesignator );
+		this.attributeEncoders.put( "FOMmoduleDesignatorList", this::getFomModuleDesignatorList );
+		this.attributeEncoders.put( "CurrentFDD", this::getCurrentFdd );
+		this.attributeEncoders.put( "TimeImplementationName", this::getTimeImplementationName );
+		this.attributeEncoders.put( "LastSaveName", this::getLastSaveName );
+		this.attributeEncoders.put( "LastSaveTime", this::getLastSaveTime );
+		this.attributeEncoders.put( "NextSaveName", this::getNextSaveName );
+		this.attributeEncoders.put( "NextSaveTime", this::getNextSaveTime );
+		this.attributeEncoders.put( "ConveyRegionDesignatorSets", this::getConveyRegionDesignatorSets );
+		this.attributeEncoders.put( "AutoProvide", this::getAutoProvide );
 	}
 
 	//----------------------------------------------------------
@@ -149,6 +168,16 @@ public class MomFederation
 		//return JEncodingHelpers.encodeDouble( 0.0 );
 		return notYetSupported( version, "NextSaveTime" );
 	}
+	
+	private byte[] getConveyRegionDesignatorSets( HLAVersion version )
+	{
+		return notYetSupported( version, "ConveyRegionDesignatorSets" );
+	}
+	
+	private byte[] getAutoProvide( HLAVersion version )
+	{
+		return notYetSupported( version, "AutoProvide" );
+	}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Update Generating Methods ///////////////////////////
@@ -157,57 +186,26 @@ public class MomFederation
 		throws JAttributeNotDefined
 	{
 		HashMap<Integer,byte[]> attributes = new HashMap<Integer,byte[]>();
-
-		// loop through the attributes and get the appropriate values
-		for( Integer attributeHandle : handles )
+		Set<ACInstance> attributeInstances = this.federationObject.getAllAttributes();
+		for( ACInstance instance : attributeInstances )
 		{
-			Mom.Federation enumValue = Mom.Federation.forHandle( attributeHandle );
-			switch( enumValue )
+			int attributeHandle = instance.getType().getHandle();
+			if( handles.contains(attributeHandle) )
 			{
-				case FederationName:
-					attributes.put( attributeHandle, getFederationName(version) );
-					break;
-				case FederatesInFederation:
-					attributes.put( attributeHandle, getFederatesInFederation(version) );
-					break;
-				case RtiVersion:
-					attributes.put( attributeHandle, getRtiVersion(version) );
-					break;
-				case MimDesignator:
-					attributes.put( attributeHandle, getMimDesignator(version) );
-					break;
-				case FomModuleDesignatorList:
-					attributes.put( attributeHandle, getFomModuleDesignatorList(version) );
-					break;
-				case CurrentFdd:
-					attributes.put( attributeHandle, getCurrentFdd(version) );
-					break;
-				case FedID:
-					attributes.put( attributeHandle, getFedID(version) );
-					break;
-				case TimeImplementationName:
-					attributes.put( attributeHandle, getTimeImplementationName(version) );
-					break;
-				case LastSaveName:
-					attributes.put( attributeHandle, getLastSaveName(version) );
-					break;
-				case LastSaveTime:
-					attributes.put( attributeHandle, getLastSaveTime(version) );
-					break;
-				case NextSaveName:
-					attributes.put( attributeHandle, getNextSaveName(version) );
-					break;
-				case NextSaveTime:
-					attributes.put( attributeHandle, getNextSaveTime(version) );
-					break;
-				case AutoProvide:
-					attributes.put( attributeHandle, notYetSupported(version,"AutoProvide") );
-					break;
-				case ConveyRegionDesignatorSets:
-					attributes.put( attributeHandle, notYetSupported(version,"ConveyRegionDesignatorSets") );
-					break;
-				default:
-					break;
+				String canonicalName = Mom.getMomAttributeName( HLAVersion.HLA13,  
+				                                                attributeHandle );
+				Function<HLAVersion,byte[]> encoder = this.attributeEncoders.get( canonicalName );
+				if( encoder != null )
+				{
+					byte[] value = encoder.apply( version );
+					attributes.put( attributeHandle, value );
+				}
+				else
+				{
+					momLogger.warn( "No encoder for attribute " + 
+					                attributeHandle + 
+					                " [" + canonicalName + "]" );
+				}
 			}
 		}
 		

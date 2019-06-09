@@ -33,11 +33,11 @@ import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.msg.DiscoverObject;
-import org.portico.lrc.services.object.msg.RegisterObject;
-import org.portico.lrc.services.object.msg.ReserveObjectName;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.object.msg.RegisterObject;
+import org.portico2.common.services.object.msg.ReserveObjectName;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -96,7 +96,9 @@ public class RegisterObjectHandler extends LRCMessageHandler
 		// create a new OCInstance and store it locally
 		Set<Integer> published = interests.getPublishedAttributes( lrcState.getFederateHandle(),
 		                                                           classHandle );
-		OCInstance instance = repository.newInstance( objectClass, objectName, published );
+		
+		//FIXME Hangover from refactor
+		OCInstance instance = null; //repository.newInstance( 666, objectClass, objectName, published );
 		
 		///////////////////////////////////////////
 		// run the ddm checks and apply ddm data //

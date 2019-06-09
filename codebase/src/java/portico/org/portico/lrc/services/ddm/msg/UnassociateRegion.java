@@ -15,6 +15,7 @@
 package org.portico.lrc.services.ddm.msg;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class UnassociateRegion extends PorticoMessage
 {
@@ -48,6 +49,11 @@ public class UnassociateRegion extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.UnassociateRegion;
+	}
 
 	public int getRegionToken()
     {

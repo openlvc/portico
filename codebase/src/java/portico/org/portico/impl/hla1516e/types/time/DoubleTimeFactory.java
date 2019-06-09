@@ -14,8 +14,6 @@
  */
 package org.portico.impl.hla1516e.types.time;
 
-import org.portico.utils.bithelpers.BitHelpers;
-
 import hla.rti1516e.exceptions.CouldNotDecode;
 import hla.rti1516e.time.HLAfloat64Interval;
 import hla.rti1516e.time.HLAfloat64Time;
@@ -44,12 +42,12 @@ public class DoubleTimeFactory implements HLAfloat64TimeFactory
 	//----------------------------------------------------------
 	public HLAfloat64Time decodeTime( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new DoubleTime( BitHelpers.readDoubleBE(buffer,offset) );
+		return DoubleTime.decode( buffer, offset );
 	}
 
 	public HLAfloat64Interval decodeInterval( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new DoubleTimeInterval( BitHelpers.readDoubleBE(buffer,offset) );
+		return DoubleTimeInterval.decode( buffer, offset );
 	}
 
 	public HLAfloat64Time makeInitial()

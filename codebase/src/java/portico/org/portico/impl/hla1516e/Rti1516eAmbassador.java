@@ -24,6 +24,7 @@ import hla.rti1516e.*;
 import hla.rti1516e.exceptions.*;
 
 import org.apache.logging.log4j.Logger;
+import org.portico.impl.HLAVersion;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSetFactory;
@@ -96,57 +97,55 @@ import org.portico.lrc.compat.JTimeConstrainedAlreadyEnabled;
 import org.portico.lrc.compat.JTimeConstrainedWasNotEnabled;
 import org.portico.lrc.compat.JTimeRegulationAlreadyEnabled;
 import org.portico.lrc.compat.JTimeRegulationWasNotEnabled;
-import org.portico.lrc.management.Federate;
-import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.ICMetadata;
-import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.CreateFederation;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.ResignFederation;
-import org.portico.lrc.services.object.msg.DeleteObject;
-import org.portico.lrc.services.object.msg.LocalDelete;
-import org.portico.lrc.services.object.msg.RegisterObject;
-import org.portico.lrc.services.object.msg.RequestClassUpdate;
-import org.portico.lrc.services.object.msg.RequestObjectUpdate;
-import org.portico.lrc.services.object.msg.ReserveObjectName;
-import org.portico.lrc.services.object.msg.SendInteraction;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
-import org.portico.lrc.services.ownership.msg.AttributeAcquire;
 import org.portico.lrc.services.ownership.msg.AttributeDivest;
 import org.portico.lrc.services.ownership.msg.AttributeRelease;
 import org.portico.lrc.services.ownership.msg.CancelAcquire;
 import org.portico.lrc.services.ownership.msg.CancelDivest;
 import org.portico.lrc.services.ownership.msg.QueryOwnership;
-import org.portico.lrc.services.pubsub.msg.PublishInteractionClass;
-import org.portico.lrc.services.pubsub.msg.PublishObjectClass;
-import org.portico.lrc.services.pubsub.msg.SubscribeInteractionClass;
-import org.portico.lrc.services.pubsub.msg.SubscribeObjectClass;
-import org.portico.lrc.services.pubsub.msg.UnpublishInteractionClass;
-import org.portico.lrc.services.pubsub.msg.UnpublishObjectClass;
-import org.portico.lrc.services.pubsub.msg.UnsubscribeInteractionClass;
-import org.portico.lrc.services.pubsub.msg.UnsubscribeObjectClass;
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
-import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
-import org.portico.lrc.services.time.msg.DisableAsynchronousDelivery;
-import org.portico.lrc.services.time.msg.DisableTimeConstrained;
-import org.portico.lrc.services.time.msg.DisableTimeRegulation;
-import org.portico.lrc.services.time.msg.EnableAsynchronousDelivery;
-import org.portico.lrc.services.time.msg.EnableTimeConstrained;
-import org.portico.lrc.services.time.msg.EnableTimeRegulation;
-import org.portico.lrc.services.time.msg.FlushQueueRequest;
-import org.portico.lrc.services.time.msg.ModifyLookahead;
-import org.portico.lrc.services.time.msg.NextEventRequest;
-import org.portico.lrc.services.time.msg.QueryGalt;
-import org.portico.lrc.services.time.msg.TimeAdvanceRequest;
-import org.portico.utils.messaging.ErrorResponse;
-import org.portico.utils.messaging.ExtendedSuccessMessage;
-import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
-import org.portico.utils.messaging.ResponseMessage;
+import org.portico2.common.messaging.ErrorResponse;
+import org.portico2.common.messaging.ExtendedSuccessResponse;
+import org.portico2.common.messaging.MessageContext;
+import org.portico2.common.messaging.ResponseMessage;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.common.services.federation.msg.DestroyFederation;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.ResignFederation;
+import org.portico2.common.services.object.msg.DeleteObject;
+import org.portico2.common.services.object.msg.LocalDelete;
+import org.portico2.common.services.object.msg.RegisterObject;
+import org.portico2.common.services.object.msg.RequestClassUpdate;
+import org.portico2.common.services.object.msg.RequestObjectUpdate;
+import org.portico2.common.services.object.msg.ReserveObjectName;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.ownership.msg.AttributeAcquire;
+import org.portico2.common.services.pubsub.msg.PublishInteractionClass;
+import org.portico2.common.services.pubsub.msg.PublishObjectClass;
+import org.portico2.common.services.pubsub.msg.SubscribeInteractionClass;
+import org.portico2.common.services.pubsub.msg.SubscribeObjectClass;
+import org.portico2.common.services.pubsub.msg.UnpublishInteractionClass;
+import org.portico2.common.services.pubsub.msg.UnpublishObjectClass;
+import org.portico2.common.services.pubsub.msg.UnsubscribeInteractionClass;
+import org.portico2.common.services.pubsub.msg.UnsubscribeObjectClass;
+import org.portico2.common.services.sync.msg.RegisterSyncPoint;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
+import org.portico2.common.services.time.msg.DisableAsynchronousDelivery;
+import org.portico2.common.services.time.msg.DisableTimeConstrained;
+import org.portico2.common.services.time.msg.DisableTimeRegulation;
+import org.portico2.common.services.time.msg.EnableAsynchronousDelivery;
+import org.portico2.common.services.time.msg.EnableTimeConstrained;
+import org.portico2.common.services.time.msg.EnableTimeRegulation;
+import org.portico2.common.services.time.msg.FlushQueueRequest;
+import org.portico2.common.services.time.msg.ModifyLookahead;
+import org.portico2.common.services.time.msg.NextEventRequest;
+import org.portico2.common.services.time.msg.QueryGalt;
+import org.portico2.common.services.time.msg.TimeAdvanceRequest;
+import org.portico2.lrc.services.object.data.LOCInstance;
 
 /**
  * The Portico implementation of the IEEE 1516-2010 (HLA Evolved) RTIambassador class.
@@ -161,7 +160,6 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private Impl1516eHelper helper;
-	private Logger logger;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -169,7 +167,6 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	public Rti1516eAmbassador() throws RTIinternalError
 	{
 		this.helper = new Impl1516eHelper();
-		this.logger = this.helper.getLrcLogger();
 	}
 
 	//----------------------------------------------------------
@@ -195,7 +192,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		this.connect( federateReference, callbackModel );
+		this.helper.connect( federateReference, callbackModel, localSettingsDesignator );
 	}
 
 	// 4.2
@@ -207,19 +204,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	           CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		// check to make sure we're not already connected
-		if( helper.getFederateAmbassador() != null )
-			throw new AlreadyConnected("");
-
-		// set the callback model on the LRC approrpriately
-		this.helper.setCallbackModel( callbackModel );
-		if( callbackModel == CallbackModel.HLA_EVOKED )
-			helper.getLrc().disableImmediateCallbackProcessing();
-		else if( callbackModel == CallbackModel.HLA_IMMEDIATE )
-			helper.getLrc().enableImmediateCallbackProcessing();
-	
-		// store the FederateAmbassador for now, we'll stick it on the join call shortly
-		this.helper.connected( federateReference );
+		this.helper.connect( federateReference, callbackModel );
 	}
 
 	// 4.3
@@ -228,19 +213,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		       CallNotAllowedFromWithinCallback,
 		       RTIinternalError
 	{
-		// make sure we're not currently involved in a federation
-		if( helper.getState().isJoined() )
-		{
-			throw new FederateIsExecutionMember( "Can't disconnect. Joined to federation ["+
-			                                     helper.getState().getFederationName()+"]" );
-		}
-		
-		// remove our federate ambassador reference to signal we're "disconnected" :P
-		this.helper.disconnected();
-		
-		// turn off the immediate callback handler if we have to
-		if( helper.getCallbackModel() == CallbackModel.HLA_IMMEDIATE )
-			helper.getLrc().disableImmediateCallbackProcessing();
+		this.helper.disconnect();
 	}
 
 	// 4.5
@@ -256,6 +229,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
 		CreateFederation request = new CreateFederation( executionName, fomModule );
+		request.setHlaVersion( HLAVersion.IEEE1516e );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -312,6 +286,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
 		CreateFederation request = new CreateFederation( federationName, fomModules );
+		request.setHlaVersion( HLAVersion.IEEE1516e );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -379,6 +354,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 				moduleList.add( module );
 
 		CreateFederation request = new CreateFederation( federationName, moduleList );
+		request.setHlaVersion( HLAVersion.IEEE1516e );
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -659,7 +635,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		if( response.isError() == false )
 		{
 			// everything went fine!
-			ExtendedSuccessMessage success = (ExtendedSuccessMessage)response;
+			ExtendedSuccessResponse success = (ExtendedSuccessResponse)response;
 			
 			// return the "handle"
 			return new HLA1516eHandle( (Integer)success.getResult() );
@@ -769,12 +745,17 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
 		///////////////////////////////////////////////////////
-		SyncPointAnnouncement request = new SyncPointAnnouncement( label, userSuppliedTag );
+		RegisterSyncPoint request = new RegisterSyncPoint( label, userSuppliedTag );
 		ResponseMessage response = processMessage( request );
-
+		
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerFederationSynchronizationPoint", 
+		                                response, 
+		                                label,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -827,12 +808,18 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		HashSet<Integer> set = null;
 		if( synchronizationSet != null )
 			set = HLA1516eFederateHandleSet.toJavaSet( synchronizationSet );
-		SyncPointAnnouncement request = new SyncPointAnnouncement( label, tag, set );
+		RegisterSyncPoint request = new RegisterSyncPoint( label, tag, set );
 		ResponseMessage response = processMessage( request );
-
+		
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerFederationSynchronizationPoint", 
+		                                response, 
+		                                label,
+		                                tag,
+		                                synchronizationSet );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -881,10 +868,14 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		///////////////////////////////////////////////////////
 		SyncPointAchieved request = new SyncPointAchieved( synchronizationPointLabel );
 		ResponseMessage response = processMessage( request );
-
+		
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "synchronizationPointAchieved", 
+		                                response, 
+		                                synchronizationPointLabel );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -942,6 +933,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "synchronizationPointAchieved", 
+		                                response, 
+		                                synchronizationPointLabel,
+		                                successIndicator );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1138,6 +1134,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "publishObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1199,6 +1200,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unpublishObjectClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1268,6 +1273,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unpublishObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1337,6 +1347,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "publishInteractionClass", 
+		                                response, 
+		                                theInteraction );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1394,6 +1408,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unpublishInteractionClass", 
+		                                response, 
+		                                theInteraction );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1458,6 +1476,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "subscribeObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1569,6 +1592,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unsubscribeObjectClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1633,6 +1660,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unsubscribeObjectClassAttributes", 
+		                                response, 
+		                                theClass,
+		                                attributeList );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1699,6 +1731,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "subscribeInteractionClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1773,6 +1809,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unsubscribeInteractionClass", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1836,6 +1876,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "reserveObjectInstanceName", 
+		                                response, 
+		                                theObjectName );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -1930,12 +1974,16 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerObjectInstance", 
+		                                response, 
+		                                theClass );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
 			// everything went fine!
-			ExtendedSuccessMessage success = (ExtendedSuccessMessage)response;
-			OCInstance instance = (OCInstance)success.getResult();
+			ExtendedSuccessResponse success = (ExtendedSuccessResponse)response;
+			LOCInstance instance = (LOCInstance)success.getResult();
 			return new HLA1516eHandle( instance.getHandle() );
 		}
 		else
@@ -1998,12 +2046,17 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "registerObjectInstance", 
+		                                response, 
+		                                theClass,
+		                                theObjectName );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
 			// everything went fine!
-			ExtendedSuccessMessage success = (ExtendedSuccessMessage)response;
-			OCInstance instance = (OCInstance)success.getResult();
+			ExtendedSuccessResponse success = (ExtendedSuccessResponse)response;
+			LOCInstance instance = (LOCInstance)success.getResult();
 			return new HLA1516eHandle( instance.getHandle() );
 		}
 		else
@@ -2071,6 +2124,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "updateAttributeValues", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2151,6 +2210,13 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "updateAttributeValues", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                tag,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2226,6 +2292,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "sendInteraction", 
+		                                response, 
+		                                theInteraction,
+		                                theParameters,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2305,6 +2377,13 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "sendInteraction", 
+		                                response, 
+		                                theInteraction,
+		                                theParameters,
+		                                tag,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2376,6 +2455,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "deleteObjectInstance", 
+		                                response, 
+		                                objectHandle,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2448,6 +2532,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "deleteObjectInstance", 
+		                                response, 
+		                                objectHandle,
+		                                userSuppliedTag,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2515,6 +2605,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "localDeleteObjectInstance", 
+		                                response, 
+		                                objectHandle );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2583,6 +2677,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "requestAttributeValueUpdate", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2652,6 +2752,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "requestAttributeValueUpdate", 
+		                                response, 
+		                                theClass,
+		                                theAttributes,
+		                                tag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2786,6 +2892,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "unconditionalAttributeOwnershipDivestiture", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2862,6 +2973,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "negotiatedAttributeOwnershipDivestiture", 
+		                                response, 
+		                                theObject,
+		                                theAttributes,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -2961,6 +3078,12 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "attributeOwnershipAcquisition", 
+		                                response, 
+		                                theObject,
+		                                desiredAttributes,
+		                                userSuppliedTag );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3046,6 +3169,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "attributeOwnershipAcquisitionIfAvailable", 
+		                                response, 
+		                                theObject,
+		                                desiredAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3151,6 +3279,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "attributeOwnershipDivestitureIfWanted", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3229,6 +3362,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "cancelNegotiatedAttributeOwnershipDivestiture", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3308,6 +3446,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "cancelAttributeOwnershipAcquisition", 
+		                                response, 
+		                                theObject,
+		                                theAttributes );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3385,6 +3528,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "queryAttributeOwnership", 
+		                                response, 
+		                                theObject,
+		                                theAttribute );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3443,24 +3591,25 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	           RTIinternalError
 	{
 		helper.checkJoined();
+		return true;
 		
-		int oHandle = HLA1516eHandle.fromHandle( theObject );		
-		OCInstance instance = helper.getState().getRepository().getInstance( oHandle );
-		if( instance == null )
-		{
-			throw new ObjectInstanceNotKnown( "handle: " + oHandle );
-		}
-		else
-		{
-			// convert the handle into an ACInstance
-			int aHandle = HLA1516eHandle.fromHandle( theAttribute );
-			ACInstance attribute = instance.getAttribute( aHandle );
-			if( attribute == null )
-				throw new AttributeNotDefined( "handle: " + aHandle );
-
-			// check to see if we are the owner
-			return attribute.getOwner() == helper.getState().getFederateHandle();
-		}
+//		int oHandle = HLA1516eHandle.fromHandle( theObject );		
+//		OCInstance instance = helper.getState().getRepository().getInstance( oHandle );
+//		if( instance == null )
+//		{
+//			throw new ObjectInstanceNotKnown( "handle: " + oHandle );
+//		}
+//		else
+//		{
+//			// convert the handle into an ACInstance
+//			int aHandle = HLA1516eHandle.fromHandle( theAttribute );
+//			ACInstance attribute = instance.getAttribute( aHandle );
+//			if( attribute == null )
+//				throw new AttributeNotDefined( "handle: " + aHandle );
+//
+//			// check to see if we are the owner
+//			return attribute.getOwner() == helper.getState().getFederateHandle();
+//		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -3492,6 +3641,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "enableTimeRegulation", 
+		                                response, 
+		                                theLookahead );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3564,6 +3717,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "disableTimeRegulation", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3622,6 +3778,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "enableTimeConstrained", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3686,6 +3845,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "disableTimeConstrained", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3752,6 +3914,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "timeAdvanceRequest", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3835,6 +4001,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "timeAdvanceRequestAvailable", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3917,6 +4087,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "nextMessageRequest", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -3999,6 +4173,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "nextMessageRequestAvailable", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4081,6 +4259,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "flushQueueRequest", 
+		                                response,
+		                                theTime );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4152,6 +4334,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "enableAsynchronousDelivery", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4207,6 +4392,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "disableAsynchronousDelivery", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4262,6 +4450,9 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "queryGALT", 
+		                                response );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4310,7 +4501,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		return new DoubleTime( helper.getState().getCurrentTime() );
+		DoubleTime result = new DoubleTime( helper.getState().getCurrentTime() );
+		
+		helper.reportServiceInvocation( "queryLogicalTime", true, result );
+		
+		return result;
 	}
 
 	// 8.18
@@ -4326,7 +4521,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkRestore();
 		
 		DoubleTime time = new DoubleTime( helper.getState().getCurrentTime() );
-		return new TimeQueryReturn( true, time );
+		TimeQueryReturn result = new TimeQueryReturn( true, time );
+		
+		helper.reportServiceInvocation( "queryLITS", true, result );
+		
+		return result;
 	}
 
 	// 8.19
@@ -4362,6 +4561,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////
 		// 2. process the results //
 		////////////////////////////
+		helper.reportServiceInvocation( "modifyLookahead", 
+		                                response,
+		                                theLookahead );
+		
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
@@ -4421,7 +4624,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		return new DoubleTimeInterval( helper.getState().getLookahead() );
+		DoubleTimeInterval result = new DoubleTimeInterval( helper.getState().getLookahead() );
+		
+		helper.reportServiceInvocation( "queryLookahead", true, result );
+		
+		return result;
 	}
 
 	// 8.21
@@ -4830,14 +5037,16 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	           RTIinternalError
 	{
 		helper.checkJoined();
-		
-		// get a reference to all the known federates
-		int handle = HLA1516eHandle.validatedHandle( theHandle );
-		Federate federate = helper.getLrc().getState().getKnownFederate( handle );
-		if( federate == null )
-			throw new InvalidFederateHandle( "No known federate for handle ["+handle+"]" );
-		else
-			return federate.getFederateName();
+
+return "";
+// TODO FIXME
+//		// get a reference to all the known federates
+//		int handle = HLA1516eHandle.validatedHandle( theHandle );
+//		Federate federate = helper.getLrc().getState().getKnownFederate( handle );
+//		if( federate == null )
+//			throw new InvalidFederateHandle( "No known federate for handle ["+handle+"]" );
+//		else
+//			return federate.getFederateName();
 	}
 
 	// 10.6
@@ -4853,11 +5062,14 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		OCMetadata cls = helper.getFOM().getObjectClass( theName );
 		if( cls == null )
 		{
+			helper.reportServiceInvocation( "getObjectClassHandle", false, "name not found", theName );
 			throw new NameNotFound( theName );
 		}
 		else
 		{
-			return new HLA1516eHandle( cls.getHandle() );
+			ObjectClassHandle result = new HLA1516eHandle( cls.getHandle() );
+			helper.reportServiceInvocation( "getObjectClassHandle", true, result, theName );
+			return result;
 		}
 	}
 
@@ -4875,11 +5087,14 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		OCMetadata cls = helper.getFOM().getObjectClass( handle );
 		if( cls == null )
 		{
+			helper.reportServiceInvocation( "getObjectClassName", false, "unknown handle", theHandle );
 			throw new RTIinternalError( "unknown handle: " + theHandle );
 		}
 		else
 		{
-			return cls.getQualifiedName();
+			String result = cls.getQualifiedName();
+			helper.reportServiceInvocation( "getObjectClassName", true, result, theHandle );
+			return result;
 		}
 	}
 
@@ -4891,12 +5106,24 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	           RTIinternalError
 	{
 		helper.checkJoined();
-		
-		OCInstance instance = helper.getState().getRepository().getInstance( theObject.hashCode() );
+		LOCInstance instance = helper.getState().getRepository().getObject( theObject.hashCode() );
 		if( instance == null )
+		{
+			helper.reportServiceInvocation( "getKnownObjectClassHandle", 
+			                                false, 
+			                                "object instance not known", 
+			                                theObject );
 			throw new ObjectInstanceNotKnown( "handle: " + theObject );
+		}
 		else
-			return new HLA1516eHandle( instance.getDiscoveredClassHandle() );
+		{
+			ObjectClassHandle result = new HLA1516eHandle( instance.getDiscoveredClassHandle() );
+			helper.reportServiceInvocation( "getKnownObjectClassHandle", 
+			                                true, 
+			                                result, 
+			                                theObject );
+			return result;
+		}
 	}
 
 	// 10.9
@@ -4907,16 +5134,17 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		       RTIinternalError
 	{
 		helper.checkJoined();
+		return null;
 		
-		OCInstance instance = helper.getState().getRepository().getInstance( theName );
-		if( instance == null )
-		{
-			throw new ObjectInstanceNotKnown( "name: " + theName );
-		}
-		else
-		{
-			return new HLA1516eHandle( instance.getHandle() );
-		}
+//		OCInstance instance = helper.getState().getRepository().getInstance( theName );
+//		if( instance == null )
+//		{
+//			throw new ObjectInstanceNotKnown( "name: " + theName );
+//		}
+//		else
+//		{
+//			return new HLA1516eHandle( instance.getHandle() );
+//		}
 	}
 
 	// 10.10
@@ -4927,17 +5155,18 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	           RTIinternalError
 	{
 		helper.checkJoined();
+		return null;
 		
-		int handle = HLA1516eHandle.validatedHandle( theHandle );
-		OCInstance instance = helper.getState().getRepository().getInstance( handle );
-		if( instance == null )
-		{
-			throw new RTIinternalError( "handle: " + handle );
-		}
-		else
-		{
-			return instance.getName();
-		}
+//		int handle = HLA1516eHandle.validatedHandle( theHandle );
+//		OCInstance instance = helper.getState().getRepository().getInstance( handle );
+//		if( instance == null )
+//		{
+//			throw new RTIinternalError( "handle: " + handle );
+//		}
+//		else
+//		{
+//			return instance.getName();
+//		}
 	}
 
 	// 10.11
@@ -4954,17 +5183,33 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		OCMetadata cls = helper.getFOM().getObjectClass( cHandle );
 		if( cls == null )
 		{
+			helper.reportServiceInvocation( "getAttributeHandle", 
+			                                false, 
+			                                "invalid object class handle", 
+			                                whichClass,
+			                                theName );
 			throw new InvalidObjectClassHandle( "handle: " + whichClass );
 		}
 		
 		ACMetadata aClass = helper.getFOM().getAttributeClass( cHandle, theName );
 		if( aClass == null )
 		{
+			helper.reportServiceInvocation( "getAttributeHandle", 
+			                                false, 
+			                                "name not found", 
+			                                whichClass,
+			                                theName );
 			throw new NameNotFound( "name: " + theName );
 		}
 		else
 		{
-			return new HLA1516eHandle( aClass.getHandle() );
+			AttributeHandle result = new HLA1516eHandle( aClass.getHandle() );
+			helper.reportServiceInvocation( "getAttributeHandle", 
+			                                true, 
+			                                result, 
+			                                whichClass,
+			                                theName );
+			return result;
 		}
 	}
 
@@ -4989,14 +5234,16 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		else
 		{
 			String name = cls.getAttributeName( acHandle );
+			helper.reportServiceInvocation( "getAttributeName", 
+			                                name != null, 
+			                                name != null ? name : "attribute not defined", 
+			                                whichClass,
+			                                theHandle );
+			
 			if( name == null )
-			{
 				throw new AttributeNotDefined( "handle: " + theHandle );
-			}
 			else
-			{
 				return name;
-			}
 		}
 	}
 
@@ -5035,6 +5282,11 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		
 		// get the class
 		ICMetadata cls = helper.getFOM().getInteractionClass( theName );
+		helper.reportServiceInvocation( "getInteractionClassHandle", 
+		                                cls != null, 
+		                                cls != null ? cls.getHandle() : "name not found", 
+		                                theName );
+		
 		if( cls == null )
 		{
 			throw new NameNotFound( theName );
@@ -5057,9 +5309,14 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		// get the class
 		int handle = HLA1516eHandle.validatedHandle( theHandle );
 		ICMetadata cls = helper.getFOM().getInteractionClass( handle );
+		helper.reportServiceInvocation( "getInteractionClassName", 
+		                                cls != null, 
+		                                cls != null ? cls.getQualifiedName() : "invalid interaction class handle", 
+		                                theHandle );
+		
 		if( cls == null )
 		{
-			throw new RTIinternalError( "handle: " + theHandle );
+			throw new InvalidInteractionClassHandle( "handle: " + theHandle );
 		}
 		else
 		{
@@ -5081,18 +5338,34 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		ICMetadata cls = helper.getFOM().getInteractionClass( cHandle );
 		if( cls == null )
 		{
-			throw new RTIinternalError( "handle: " + cHandle );
+			helper.reportServiceInvocation( "getParameterHandle", 
+			                                false, 
+			                                "invalid interaction class handle", 
+			                                whichClass,
+			                                theName );
+			throw new InvalidInteractionClassHandle( "handle: " + cHandle );
 		}
 		else
 		{
 			int handle = cls.getParameterHandle( theName );
 			if( handle == ObjectModel.INVALID_HANDLE )
 			{
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                false, 
+				                                "parameter name not found", 
+				                                whichClass,
+				                                theName );
 				throw new NameNotFound( "name: " + theName );
 			}
 			else
 			{
-				return new HLA1516eHandle( handle );
+				ParameterHandle result = new HLA1516eHandle( handle );
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                true, 
+				                                result, 
+				                                whichClass,
+				                                theName );
+				return result;
 			}
 		}
 	}
@@ -5113,17 +5386,32 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		ICMetadata cls = helper.getFOM().getInteractionClass( icHandle );
 		if( cls == null )
 		{
-			throw new RTIinternalError( "handle: " + icHandle );
+			helper.reportServiceInvocation( "getParameterHandle", 
+			                                false, 
+			                                "invalid interaction class handle", 
+			                                whichClass,
+			                                theHandle );
+			throw new InvalidInteractionClassHandle( "handle: " + icHandle );
 		}
 		else
 		{
 			String name = cls.getParameterName( pcHandle );
 			if( name == null )
 			{
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                false, 
+				                                "parameter not defined", 
+				                                whichClass,
+				                                theHandle );
 				throw new InteractionParameterNotDefined( "handle: " + pcHandle );
 			}
 			else
 			{
+				helper.reportServiceInvocation( "getParameterHandle", 
+				                                true, 
+				                                name, 
+				                                whichClass,
+				                                theHandle );
 				return name;
 			}
 		}
@@ -5396,7 +5684,23 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	    throws CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		return helper.evokeSingle( approximateMinimumTimeInSeconds );
+		try
+		{
+			boolean result = helper.evokeSingle( approximateMinimumTimeInSeconds );
+			this.helper.reportServiceInvocation( "evokeCallback", 
+			                                     true, 
+			                                     result, 
+			                                     approximateMinimumTimeInSeconds );
+			return result;
+		}
+		catch ( CallNotAllowedFromWithinCallback cnafwc )
+		{
+			this.helper.reportServiceInvocation( "evokeCallback", 
+			                                     false, 
+			                                     "call not allowed from within callback", 
+			                                     approximateMinimumTimeInSeconds );
+			throw cnafwc;
+		}
 	}
 
 	// 10.42
@@ -5405,8 +5709,26 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	    throws CallNotAllowedFromWithinCallback,
 	           RTIinternalError
 	{
-		return helper.evokeMultiple( approximateMinimumTimeInSeconds,
-		                             approximateMaximumTimeInSeconds );
+		try
+		{
+			boolean result = helper.evokeMultiple( approximateMinimumTimeInSeconds,
+			                                       approximateMaximumTimeInSeconds );
+			this.helper.reportServiceInvocation( "evokeMultipleCallbacks", 
+			                                     true, 
+			                                     result, 
+			                                     approximateMinimumTimeInSeconds,
+			                                     approximateMaximumTimeInSeconds );
+			
+			return result;
+		}
+		catch( CallNotAllowedFromWithinCallback cnafwc )
+		{
+			this.helper.reportServiceInvocation( "evokeMultipleCallbacks", 
+			                                     false, 
+			                                     "call not allowed from within callback", 
+			                                     approximateMinimumTimeInSeconds );
+			throw cnafwc;
+		}
 	}
 
 	// 10.43
@@ -5415,7 +5737,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		helper.getState().setCallbacksEnabled( true );
-		logger.debug( "enableCallbacks invoked(): callbacks turned on" );
+		
+		this.helper.reportServiceInvocation( "enableCallbacks", true, null );
+		
+		logger().debug( "enableCallbacks invoked(): callbacks turned on" );
 	}
 
 	// 10.44
@@ -5424,7 +5749,10 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		helper.getState().setCallbacksEnabled( false );
-		logger.debug( "disableCallbacks invoked(): callbacks turned off" );
+		
+		this.helper.reportServiceInvocation( "disableCallbacks", true, null );
+		
+		logger().debug( "disableCallbacks invoked(): callbacks turned off" );
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -5552,6 +5880,7 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 			// set the source federate, if we have not joined yet (or have resigned)
 			// this will be null
 			request.setSourceFederate( this.helper.getState().getFederateHandle() );
+			request.setTargetFederation( this.helper.getState().getFederationHandle() );
 			
 			// create the context
 			MessageContext message = new MessageContext( request );
@@ -5603,9 +5932,14 @@ public abstract class Rti1516eAmbassador implements RTIambassador
 	 */
 	private void featureNotSupported( String methodName ) throws RTIinternalError
 	{
-		logger.warn( "The IEEE 1516e interface doesn't yet support " + methodName );
+		logger().warn( "The IEEE 1516e interface doesn't yet support " + methodName );
 		if( PorticoConstants.shouldThrowExceptionForUnsupportedCall() )
 			throw new RTIinternalError( "The IEEE 1516e interface doesn't yet support "+methodName );
+	}
+
+	private Logger logger()
+	{
+		return this.helper.getLrcLogger();
 	}
 
 	//----------------------------------------------------------

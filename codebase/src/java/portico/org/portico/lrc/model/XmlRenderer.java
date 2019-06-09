@@ -14,23 +14,32 @@
  */
 package org.portico.lrc.model; 
 
-
+import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List; 
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.portico.lrc.model.datatype.Alternative;
 import org.portico.lrc.model.datatype.ArrayType;
 import org.portico.lrc.model.datatype.BasicType;
-import org.portico.lrc.model.datatype.DatatypeClass;
 import org.portico.lrc.model.datatype.DatatypeHelpers;
-import org.portico.lrc.model.datatype.Dimension;
 import org.portico.lrc.model.datatype.EnumeratedType;
 import org.portico.lrc.model.datatype.Enumerator;
 import org.portico.lrc.model.datatype.Field;
@@ -41,11 +50,13 @@ import org.portico.lrc.model.datatype.SimpleType;
 import org.portico.lrc.model.datatype.VariantRecordType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
- 
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
- * This class will take an {@link ObjectModel} and render it as a String (complete with proper
- * indentation and the like)
+ * This class will take an {@link ObjectModel} and render it as an XML document.
+ * <p/>
+ * Kindly donated by EMostafaAli!
  */
 public class XmlRenderer
 {
@@ -65,239 +76,348 @@ public class XmlRenderer
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	/**
-	 * Takes the given {@link ObjectModel} and converts it into a String. The String it multi-lined
-	 * and displays all the information about the object/interaction/attribute/parameter classes
-	 * contained within the model. Inheritence is displayed using indenting.
-	 * @throws ParserConfigurationException 
+	 * Takes the given {@link ObjectModel} and converts it into an XML Document.
 	 */
 	public Document renderFOM( ObjectModel model )  
 	{		
-		Document fomxml = null;		
-		
 		try
 		{
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();  		
-			fomxml = db.newDocument();			
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dbBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dbBuilder.newDocument();
+			Element mainRootElement =
+			    doc.createElementNS( "http://standards.ieee.org/IEEE1516-2010", "objectModel" );
+			doc.appendChild( mainRootElement );
+			mainRootElement.appendChild( doc.createElement( "modelIdentification" ) );
+			Node objectsNode = mainRootElement.appendChild( doc.createElement("objects") );
+			renderObject( model.getObjectRoot(), doc, objectsNode );
+		
+			Node intNode = mainRootElement.appendChild( doc.createElement("interactions") );
+			renderInteraction( model.getInteractionRoot(), doc, intNode );
+
+			Node dataNode = mainRootElement.appendChild( doc.createElement("dataTypes") );
+			renderDataType( model.getDatatypes(), doc, dataNode );
+
+			Node switchesNode = mainRootElement.appendChild( doc.createElement("switches") );
+			renderSwitches( doc, switchesNode );
+		
+			mainRootElement.appendChild( doc.createElement("dimensions") );
+			mainRootElement.appendChild( doc.createElement("synchronizations") );
+			mainRootElement.appendChild( doc.createElement("transportations") );
+			mainRootElement.appendChild( doc.createElement("updateRates") );
+			mainRootElement.appendChild( doc.createElement("notes") );
+		
+			return doc;
+	}
+		catch( ParserConfigurationException pce )
+	{
+			throw new IllegalStateException( pce );
 		}
-		catch(Exception e)
+	}
+
+	private void renderObject( OCMetadata oclass, Document doc, Node parentNode )
+	{
+		Node node = parentNode.appendChild( doc.createElement( "objectClass" ) );
+		addXMLAttribute( "name", oclass.getLocalName(), doc, node );
+		addXMLAttribute( "sharing", "PublishSubscribe", doc, node ); // TODO: use value from ObjectModel when available
+		addXMLAttribute( "semantics", "NA", doc, node ); // TODO: use value from ObjectModel when available
+		for( ACMetadata attribute : oclass.getDeclaredAttributes() )
 		{
-			throw new IllegalStateException(e);
+			Node attNode = node.appendChild( doc.createElement( "attribute" ) );
+			addXMLAttribute( "name", attribute.getName(), doc, attNode );
+			Node dataTypeNode = attNode.appendChild( doc.createElement( "dataType" ) );
+			dataTypeNode.appendChild( doc.createTextNode( attribute.getDatatype().getName() ) );
+			String orderType = "TimeStamp";
+			if( attribute.isRO() )
+				orderType = "Receive";
+
+			addXMLAttribute( "order", orderType, doc, attNode );
+			String transportationType = "HLAreliable";
+			if( attribute.getTransport() == Transport.BEST_EFFORT )
+				transportationType = "HLAbestEffort";
+ 
+			addXMLAttribute( "transportation", transportationType, doc, attNode );
+			addXMLAttribute( "updateType", "Conditional", doc, attNode ); // TODO: use value from ObjectModel when available
+			addXMLAttribute( "ownership", "DivestAcquire", doc, attNode ); // TODO: use value from ObjectModel when available
+			addXMLAttribute( "sharing", "Neither", doc, attNode ); // TODO: use value from ObjectModel when available
+	}
+	
+		for( OCMetadata subclass : oclass.getChildTypes() )
+			renderObject( subclass, doc, node );
+	}
+	
+	private void renderInteraction( ICMetadata iclass, Document doc, Node parentNode )
+	{
+		Node node = parentNode.appendChild( doc.createElement( "interactionClass" ) );
+		addXMLAttribute( "name", iclass.getLocalName(), doc, node );
+		addXMLAttribute( "sharing", "PublishSubscribe", doc, node ); // TODO: use value from ObjectModel when available
+		String orderType = "TimeStamp";
+		if( iclass.isRO() )
+			orderType = "Receive";
+		
+		addXMLAttribute( "order", orderType, doc, node );
+		String transportationType = "HLAreliable";
+		if( iclass.getTransport() == Transport.BEST_EFFORT )
+			transportationType = "HLAbestEffort";
+		
+		addXMLAttribute( "transportation", transportationType, doc, node );
+
+		for( PCMetadata parameter : iclass.getDeclaredParameters() )
+		{
+			Node parNode = node.appendChild( doc.createElement( "Parameter" ) );
+			addXMLAttribute( "name", parameter.getName(), doc, parNode );
+			addXMLAttribute( "dataType", parameter.getDatatype().getName(), doc, parNode );
 		}
-
-		
-		Element objectModel = fomxml.createElement( "objectModel" );
-		fomxml.appendChild( objectModel );
-		
-		// Routing Spaces    
-//		renderSpaces( model.getAllSpaces(), builder, 0 );
-
- 		// Object Classes  
-//		renderObject( model.getObjectRoot(), builder, 0 );
-
-		// Interaction Classes
-//		renderInteraction( model.getInteractionRoot(), builder, 0 );
-		
-		
-		// Data types
-		renderDatatypes( model, fomxml, objectModel);
-					
-		return fomxml;	
-	}
-	
-	private void renderSpaces( Collection<Space> spaces, StringBuilder builder, int level )
-	{
- 
-	}
-
-	private void renderObject( OCMetadata clazz, StringBuilder builder, int level )
-	{
- 
-	}
-	
-	private void renderInteraction( ICMetadata clazz, StringBuilder builder, int level )
-	{
- 
-	}
-	
-	private void renderDatatypes( ObjectModel model, Document doc, Element objectModel)
-	{
-		// Create elements
-		Element datatype = doc.createElement( "dataTypes" );
-		Element basicDataRepresentations = doc.createElement( "basicDataRepresentations" );
-		Element simpleDataTypes = doc.createElement( "simpleDataTypes" );
-		Element enumeratedDataTypes = doc.createElement( "enumeratedDataTypes" );
-		Element arrayDataTypes = doc.createElement( "arrayDataTypes" );
-		Element fixedRecordDataTypes = doc.createElement( "fixedRecordDataTypes" );
-		Element variantRecordDataTypes = doc.createElement( "variantRecordDataTypes" );
-		
-		// add elements to xml docs
-		objectModel.appendChild( datatype );			
-		datatype.appendChild( basicDataRepresentations );
-		datatype.appendChild( simpleDataTypes );
-		datatype.appendChild( enumeratedDataTypes );
-		datatype.appendChild( arrayDataTypes );
-		datatype.appendChild( fixedRecordDataTypes );
-		datatype.appendChild( variantRecordDataTypes );
-				
-		
-		List<IDatatype> types = new ArrayList<IDatatype>( model.getDatatypes() );
-		Collections.sort( types, new DatatypeComparator() );
-		
-		for( IDatatype type : types )
-		{
-			DatatypeClass typeClass = type.getDatatypeClass();
 			
+		for( ICMetadata subinteraction : iclass.getChildTypes() )
+			renderInteraction( subinteraction, doc, node );
+	}
 			 
-			switch( type.getDatatypeClass() )
+	private void renderDataType( Set<IDatatype> dataTypes, Document doc, Node dataNode )
+	{
+		Node basicType = dataNode.appendChild( doc.createElement("basicDataRepresentations") );
+		Node simpleType = dataNode.appendChild( doc.createElement("simpleDataTypes") );
+		Node enumType = dataNode.appendChild( doc.createElement("enumeratedDataTypes") );
+		Node arrayType = dataNode.appendChild( doc.createElement("arrayDataTypes") );
+		Node fixedType = dataNode.appendChild( doc.createElement("fixedRecordDataTypes") );
+		Node variantType = dataNode.appendChild( doc.createElement("variantRecordDataTypes") );
+		for( IDatatype dataType : dataTypes )
+		{
+			switch( dataType.getDatatypeClass() )
 			{
 				case BASIC:
 				{
-					// Get the data type
-					BasicType asBasic = (BasicType)type;
-					
-					// Create the xml element and attributes
-					Element basicDatatype = doc.createElement( "basicData" );
-					basicDatatype.setAttribute( "name", asBasic.getName() );
-					basicDatatype.setAttribute( "size",  Integer.toString( asBasic.getSize() ));
-					basicDatatype.setAttribute( "endianness", asBasic.getEndianness().toString() );
-					
-					// Add it to the parent node
-					basicDataRepresentations.appendChild( basicDatatype );
+					BasicType bType = (BasicType)dataType;
+					Node bNode = basicType.appendChild( doc.createElement("basicData") );
+					Node dataName = bNode.appendChild( doc.createElement("name") );
+					dataName.appendChild( doc.createTextNode( bType.getName() ) );
+					Node dataSize = bNode.appendChild( doc.createElement("size") );
+					dataSize.appendChild( doc.createTextNode(String.valueOf(bType.getSize())) );
+					Node dataEndian = bNode.appendChild( doc.createElement("endian") );
+					dataEndian.appendChild( doc.createTextNode(bType.getEndianness().name()) );
 					break;
 				}
+
 				case SIMPLE:
 				{
-					// Get the data type
-					SimpleType asSimple = (SimpleType)type;
-					
-					// Create the xml element and attributes
-					Element simpleDatatype = doc.createElement( "simpleData" ); 
-					simpleDatatype.setAttribute( "name", asSimple.getName() );
-					simpleDatatype.setAttribute( "representation",  asSimple.getRepresentation().toString() );
-
-					// Add it to the parent node
-					simpleDataTypes.appendChild( simpleDatatype );
+					SimpleType sType = (SimpleType)dataType;
+					Node sNode = simpleType.appendChild( doc.createElement("simpleData") );
+					Node dataName = sNode.appendChild( doc.createElement("name") );
+					dataName.appendChild( doc.createTextNode(sType.getName()) );
+					Node dataSize = sNode.appendChild( doc.createElement("representation") );
+					dataSize.appendChild( doc.createTextNode(sType.getRepresentation().getName()) );
 					break;
 				}
+
 				case ENUMERATED:
 				{
-					EnumeratedType asEnumerated = (EnumeratedType)type;
-					
-					// Create the xml element and attributes
-					Element enumeratedData = doc.createElement( "enumeratedData" );  
-					enumeratedData.setAttribute( "name",  asEnumerated.getName() );
-					enumeratedData.setAttribute( "representation",  asEnumerated.getRepresentation().toString() );
-									 
-					// Get each enumerator associated with this enumerator type.
-					List<Enumerator> enumerators = asEnumerated.getEnumerators();
-					for( Enumerator enumerator : asEnumerated.getEnumerators() )
+					EnumeratedType eType = (EnumeratedType)dataType;
+					Node sNode = enumType.appendChild( doc.createElement("enumeratedData") );
+					Node dataName = sNode.appendChild( doc.createElement("name") );
+					dataName.appendChild( doc.createTextNode(eType.getName()) );
+					Node dataSize = sNode.appendChild( doc.createElement("representation") );
+					dataSize.appendChild( doc.createTextNode(eType.getRepresentation().getName()) );
+					for( Enumerator e : eType.getEnumerators() )
 					{
-						Element enumeratorElement  = doc.createElement( "enumerator" ); 
-						enumeratorElement.setAttribute( "name", enumerator.getName());
-						enumeratorElement.setAttribute( "values",  enumerator.getValue().toString() );
-						enumeratedData.appendChild( enumeratorElement );
+						Node enumNode = sNode.appendChild( doc.createElement("enumerator") );
+						Node enumName = enumNode.appendChild( doc.createElement("name") );
+						enumName.appendChild( doc.createTextNode(e.getName()) );
+						Node enumValue = enumNode.appendChild( doc.createElement("value") );
+						enumValue.appendChild( doc.createTextNode( e.getValue().toString() ) );
 					}
-					
-					// Add it to the parent node
-					enumeratedDataTypes.appendChild( enumeratedData  );
 					break;
 				}
+
 				case ARRAY:
 				{
-					ArrayType asArray = (ArrayType)type;
-					
-					// Create the xml element and attributes
-					Element arrayData = doc.createElement( "arrayData" ); 
-					arrayData.setAttribute( "name", asArray.getName());
-					arrayData.setAttribute( "dataType",  asArray.getDatatype().toString() );
-				 						
-					String dimensionString = "";
-					
-					for( org.portico.lrc.model.datatype.Dimension dimension : asArray.getDimensions() )
-					{					
-						// Create the enumerator element
-						Element dimensionElement = doc.createElement( "cardinality" ); 
-						dimensionElement.setTextContent( Dimension.toFomString( dimension ) ); 
-						arrayData.appendChild( dimensionElement );
-						
+					ArrayType aType = (ArrayType)dataType;
+					Node sNode = arrayType.appendChild( doc.createElement("arrayData") );
+					Node dataName = sNode.appendChild( doc.createElement("name") );
+					dataName.appendChild( doc.createTextNode(aType.getName()) );
+					Node dataTypeNode = sNode.appendChild( doc.createElement( "dataType" ) );
+					dataTypeNode.appendChild( doc.createTextNode(aType.getDatatype().getName()) );
+					Node cardinality = sNode.appendChild( doc.createElement("cardinality") );
+					Node encoding = sNode.appendChild( doc.createElement("encoding") );
+					if( aType.isCardinalityDynamic() )
+					{
+						cardinality.appendChild( doc.createTextNode("Dynamic") );
+						encoding.appendChild( doc.createTextNode("HLAvariableArray") );
 					}
-									 
-					// Add it to the parent node
-					arrayDataTypes.appendChild( arrayData  );
+					else
+					{					
+						encoding.appendChild( doc.createTextNode("HLAfixedArray") );
+						List<String> upperBounds = new ArrayList<String>();
+						for( org.portico.lrc.model.datatype.Dimension d : aType.getDimensions() )
+							upperBounds.add( String.valueOf( d.getCardinalityUpperBound() ) );
+						
+						String boundsString = String.join( ",", upperBounds );
+						cardinality.appendChild( doc.createTextNode(boundsString) );
+					}
 					break;
 				}
+
 				case FIXEDRECORD:
 				{
-					FixedRecordType asFixed = (FixedRecordType)type;
-					
-					// Create the xml element and attributes
-					Element fixedRecordData = doc.createElement( "fixedRecordData" ); 
-					fixedRecordData.setAttribute( "name", asFixed.getName());
-					
-					// Get each enumerator associated with this enumerator type.
-					List<Field> fields = asFixed.getFields(); 
-					for( Field field : fields )
+					FixedRecordType fType = (FixedRecordType)dataType;
+					Node sNode = fixedType.appendChild( doc.createElement("fixedRecordData") );
+					Node dataName = sNode.appendChild( doc.createElement("name") );
+					dataName.appendChild( doc.createTextNode( fType.getName() ) );
+					Node encoding = sNode.appendChild( doc.createElement("encoding") );
+					encoding.appendChild( doc.createTextNode("HLAfixedRecord") );
+					for( Field e : fType.getFields() )
 					{
-						Element fieldElement  = doc.createElement( "field" ); 
-						fieldElement.setAttribute( "name", field.getName());
-						fieldElement.setAttribute( "dataType", field.getDatatype().toString());								 
-						fixedRecordData.appendChild( fieldElement );
+						Node fieldNode = sNode.appendChild( doc.createElement("field") );
+						Node fieldName = fieldNode.appendChild( doc.createElement("name") );
+						fieldName.appendChild( doc.createTextNode(e.getName()) );
+						Node enumValue = fieldNode.appendChild( doc.createElement("dataType") );
+						enumValue.appendChild( doc.createTextNode(e.getDatatype().getName()) );
 					}
 					
-					// Add it to the parent node
-					fixedRecordDataTypes.appendChild( fixedRecordData  );
 					break;
 				}
+
 				case VARIANTRECORD:
 				{
-					VariantRecordType asVariant = (VariantRecordType)type;
-			 
-					// Create the xml element and attributes
-					Element variantRecordType = doc.createElement( "variantRecordData" ); 
-					variantRecordType.setAttribute( "name", asVariant.getName());
-					variantRecordType.setAttribute( "discriminant", asVariant.getDiscriminantName());
-					variantRecordType.setAttribute( "dataType", asVariant.getDiscriminantDatatype().toString());
-					
-					
-					List<Alternative> alternatives = new ArrayList<Alternative>( asVariant.getAlternatives() );
-					alternatives.sort( new AlternativeComparator() );
-					for( Alternative alternative : alternatives )
+					VariantRecordType vType = (VariantRecordType)dataType;
+					Node sNode =
+					    variantType.appendChild( doc.createElement("variantRecordData") );
+					Node dataName = sNode.appendChild( doc.createElement("name") );
+					dataName.appendChild( doc.createTextNode(vType.getName()) );
+					Node encoding = sNode.appendChild( doc.createElement("encoding") );
+					encoding.appendChild( doc.createTextNode("HLAvariantRecord") );
+					Node discNode = sNode.appendChild( doc.createElement("discriminant") );
+					discNode.appendChild( doc.createTextNode(vType.getDiscriminantName()) );
+					Node discTypeNode = sNode.appendChild( doc.createElement("dataType") );
+					String discName = vType.getDiscriminantDatatype().getName();
+					discTypeNode.appendChild( doc.createTextNode(discName) );
+					for( Alternative e : vType.getAlternatives() )
 					{
-						
-						// Create the xml element and attributes for alternative
-						Element alternateElement = doc.createElement( "alternative" ); 
-						alternateElement.setAttribute( "name", alternative.getName());
-						alternateElement.setAttribute( "dataType", alternative.getDatatype().toString());						
-						
-						// Create each enumerator value entry
-						List<IEnumerator> enumerators = new ArrayList<IEnumerator>( alternative.getEnumerators() );
-						enumerators.sort( new EnumeratorComparator() );	
-						
-						for(IEnumerator enumeratorEntry: enumerators)
-						{
-							// Create the enumerator element
-							Element enumeratorElement = doc.createElement( "enumerator" ); 
-							enumeratorElement.setTextContent( enumeratorEntry.toString() ); 
-							alternateElement.appendChild( enumeratorElement );
-						}									
-						
-						//Add the alternative entry to the element						
-						variantRecordType.appendChild( alternateElement );
-					}					
+						Node fieldNode = sNode.appendChild( doc.createElement("alternative") );
+						Node fieldName = fieldNode.appendChild( doc.createElement("name") );
+						fieldName.appendChild( doc.createTextNode(e.getName()) );
+						Node dataValue = fieldNode.appendChild( doc.createElement("dataType") );
+						dataValue.appendChild( doc.createTextNode(e.getDatatype().getName()) );
+						Node enumValue = fieldNode.appendChild( doc.createElement("enumerator") );
+						List<String> values = new ArrayList<String>();
+						for( IEnumerator v : e.getEnumerators() )
+							values.add( v.getName() );
+
+						String valueString = String.join( ",", values );
+						enumValue.appendChild( doc.createTextNode(valueString) );
+					}
 					
-					// Add it to the parent node
-					variantRecordDataTypes.appendChild( variantRecordType  );
 					break;
 				}
+				default:
+					break;
 			}
-		} 
+		}
 	}
 
+	private void renderSwitches( Document doc, Node switches )
+				{
+			 
+		Element autoProvide = doc.createElement( "autoProvide" );
+		autoProvide.setAttribute( "isEnabled", "true" );
+		switches.appendChild( autoProvide );
+		
+		Element conveyRegionDesignatorSets = doc.createElement( "conveyRegionDesignatorSets" );
+		conveyRegionDesignatorSets.setAttribute( "isEnabled", "false" );
+		switches.appendChild( conveyRegionDesignatorSets );
+		
+		Element conveyProducingFederate = doc.createElement( "conveyProducingFederate" );
+		conveyProducingFederate.setAttribute( "isEnabled", "false" );
+		switches.appendChild( conveyProducingFederate );
+		
+		Element attributeScopeAdvisory = doc.createElement( "attributeScopeAdvisory" );
+		attributeScopeAdvisory.setAttribute( "isEnabled", "false" );
+		switches.appendChild( attributeScopeAdvisory );
+		
+		Element attributeRelevanceAdvisory = doc.createElement( "attributeRelevanceAdvisory" );
+		attributeRelevanceAdvisory.setAttribute( "isEnabled", "false" );
+		switches.appendChild( attributeRelevanceAdvisory );
+		
+		Element objectClassRelevanceAdvisory = doc.createElement( "objectClassRelevanceAdvisory" );
+		objectClassRelevanceAdvisory.setAttribute( "isEnabled", "true" );
+		switches.appendChild( objectClassRelevanceAdvisory );
+		
+		Element interactionRelevanceAdvisory = doc.createElement( "interactionRelevanceAdvisory" );
+		interactionRelevanceAdvisory.setAttribute( "isEnabled", "true" );
+		switches.appendChild( interactionRelevanceAdvisory );
+		
+		Element serviceReporting = doc.createElement( "serviceReporting" );
+		serviceReporting.setAttribute( "isEnabled", "false" );
+		switches.appendChild( serviceReporting );
+					
+		Element exceptionReporting = doc.createElement( "exceptionReporting" );
+		exceptionReporting.setAttribute( "isEnabled", "false" );
+		switches.appendChild( exceptionReporting );
+					
+		Element delaySubscriptionEvaluation = doc.createElement( "delaySubscriptionEvaluation" );
+		delaySubscriptionEvaluation.setAttribute( "isEnabled", "false" );
+		switches.appendChild( delaySubscriptionEvaluation );
+		
+		Element automaticResignAction = doc.createElement( "automaticResignAction" );
+		automaticResignAction.setAttribute( "resignAction", "CancelThenDeleteThenDivest" );
+		switches.appendChild( automaticResignAction );
+	}
 	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	private static void addXMLAttribute( String attName,
+	                                     String value,
+	                                     Document doc,
+	                                     Node parentNode )
+					{
+		Node attNode = parentNode.appendChild( doc.createElement( attName ) );
+		attNode.appendChild( doc.createTextNode( value ) );
+	}
+						
+	public static String xmlToString( Document document )
+	{
+		try
+		{
+			// Remove white space
+			document.normalize();
+			XPathFactory xpathFactory = XPathFactory.newInstance();
+						
+			// XPath to find empty text nodes.
+			XPathExpression xpathExp = xpathFactory.newXPath().compile("//text()[normalize-space(.) = '']");  
+			NodeList emptyTextNodes = (NodeList) 
+			xpathExp.evaluate(document, XPathConstants.NODESET);
+						
+			// Remove each empty text node from document.
+			for ( int i = 0; i < emptyTextNodes.getLength(); ++i ) 
+						{
+				Node emptyTextNode = emptyTextNodes.item(i);
+				emptyTextNode.getParentNode().removeChild(emptyTextNode);
+						}									
+						
+			Source source = new DOMSource( document );
+			StringWriter writer = new StringWriter();
+			Result result = new StreamResult( writer );
+
+			Transformer xformer = TransformerFactory.newInstance().newTransformer();
+			xformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+			xformer.setOutputProperty( OutputKeys.METHOD, "xml" );
+			xformer.setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", "4" );
+					
+			xformer.transform( source, result );
+			return writer.toString();
+				}
+		catch( TransformerException te )
+		{
+			// Programmer error, should not be thrown
+			throw new IllegalStateException( te );
+			}
+		catch( XPathExpressionException e ) 
+		{
+			// Programmer error, should not be thrown
+			throw new IllegalArgumentException( e );
+		} 
+	}
+
 	private static class DatatypeComparator implements Comparator<IDatatype>
 	{
 		@Override
@@ -346,7 +466,6 @@ public class XmlRenderer
 			
 			return enumCompare.compare( o1Lowest, o2Lowest );
 		}
-		
 	}
 }
 

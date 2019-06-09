@@ -25,9 +25,9 @@ import org.portico.impl.hla1516.types.HLA1516InteractionClassHandle;
 import org.portico.impl.hla1516.types.HLA1516ParameterHandleValueMap;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
-import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.SendInteraction;
 
 /**
  * Generate receiveInteraction() callbacks to a IEEE1516 compliant federate ambassador

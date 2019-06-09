@@ -25,10 +25,11 @@ import org.portico.lrc.compat.JCouldNotOpenFED;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.rti.services.mom.data.FomModule;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -63,8 +64,12 @@ public class CreateFederationHandler extends LRCMessageHandler
 		
 		// try and parse each of the fed files that we have
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
-		for( URL module : request.getFomModules() )
+		List<FomModule> modules = new ArrayList<FomModule>();
+		for( URL module : request.getFomModuleLocations() )
+		{
 			foms.add( FomParser.parse(module) );
+			modules.add( new FomModule(module) );
+		}
 		
 		if( foms.isEmpty() )
 		{
@@ -90,7 +95,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		ObjectModel.resolveSymbols( combinedFOM );
 		
 		// we have our grand unified FOM!
-		request.setModel( combinedFOM );
+		request.setModel( combinedFOM, modules );
 		
 		// check that we don't have a null name
 		if( request.getFederationName() == null )

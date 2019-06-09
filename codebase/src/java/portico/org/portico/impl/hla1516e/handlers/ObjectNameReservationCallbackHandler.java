@@ -16,9 +16,9 @@ package org.portico.impl.hla1516e.handlers;
 
 import java.util.Map;
 
-import org.portico.lrc.services.object.msg.ReserveObjectNameResult;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.ReserveObjectNameResult;
 
 @MessageHandler(modules="lrc1516e-callback",
                 keywords= {"lrc1516e"},

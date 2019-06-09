@@ -19,12 +19,12 @@ import java.util.Map;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
-import org.portico.lrc.services.federation.msg.RoleCall;
-import org.portico.lrc.services.object.msg.DiscoverObject;
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
-import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.RoleCall;
+import org.portico2.common.services.object.msg.DiscoverObject;
+import org.portico2.common.services.sync.msg.RegisterSyncPoint;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -134,8 +134,8 @@ public class RoleCallHandler extends LRCMessageHandler
 			// if we don't know about the point, queue an announcement
 			if( syncManager.containsPoint(label) == false )
 			{
-				SyncPointAnnouncement announce =
-					new SyncPointAnnouncement( label, notice.getSyncPointTags().get(label) );
+				RegisterSyncPoint announce =
+					new RegisterSyncPoint( label, notice.getSyncPointTags().get(label) );
 				lrcState.getQueue().offer( announce );
 			}
 			

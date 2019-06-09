@@ -23,7 +23,7 @@ import java.util.Set;
 import org.portico.container.Container;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.RoleCall;
+import org.portico2.common.services.federation.msg.RoleCall;
 
 /**
  * The {@link NotificationManager} is responsible for aggregating {@link INotificationListener}s

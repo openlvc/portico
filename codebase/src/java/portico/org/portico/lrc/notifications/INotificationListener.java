@@ -15,7 +15,7 @@
 package org.portico.lrc.notifications;
 
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.RoleCall;
+import org.portico2.common.services.federation.msg.RoleCall;
 
 /**
  * Throughout a federation, a number of interesting events can occur. This interface describes
@@ -45,6 +45,7 @@ public interface INotificationListener
 	 * 
 	 * @param federateHandle The handle of the local federate
 	 * @param federateName The name of the local federate
+	 * @param federateType The type of the local federate
 	 * @param federationName The name of the federation being joined to
 	 * @param fom The federation object model of the federation.
 	 */

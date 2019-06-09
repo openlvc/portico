@@ -22,10 +22,10 @@ import java.util.Map;
 
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.HLA13ReflectedAttributes;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
-import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.object.msg.UpdateAttributes.FilteredAttribute;
 
 /**
  * Generate reflectAttributeValues() callbacks to a HLA 1.3 compliant federate ambassador

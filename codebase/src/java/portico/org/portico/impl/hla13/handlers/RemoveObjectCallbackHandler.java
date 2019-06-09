@@ -19,9 +19,9 @@ import hla.rti13.java1.EncodingHelpers;
 import java.util.Map;
 
 import org.portico.impl.hla13.types.DoubleTime;
-import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DeleteObject;
 
 /**
  * Generate removeObjectInstance() callbacks to a HLA 1.3 compliant federate ambassador

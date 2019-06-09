@@ -20,6 +20,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 public class DeleteRegion extends PorticoMessage implements Externalizable
 {
@@ -51,6 +52,11 @@ public class DeleteRegion extends PorticoMessage implements Externalizable
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.DeleteRegion;
+	}
 
 	public int getRegionToken()
     {

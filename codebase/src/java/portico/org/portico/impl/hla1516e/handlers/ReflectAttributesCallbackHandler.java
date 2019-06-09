@@ -22,12 +22,13 @@ import java.util.Map;
 import static org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory.*;
 
 import org.portico.impl.hla1516e.types.time.DoubleTime;
+import org.portico.impl.hla1516e.handlers2.SupplementalInfo;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
-import org.portico.lrc.services.object.msg.UpdateAttributes;
-import org.portico.lrc.services.object.msg.UpdateAttributes.FilteredAttribute;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.UpdateAttributes;
+import org.portico2.common.services.object.msg.UpdateAttributes.FilteredAttribute;
 
 /**
  * Generate reflectAttributeValues() callbacks to a IEEE1516e compliant federate ambassador
@@ -68,7 +69,7 @@ public class ReflectAttributesCallbackHandler extends HLA1516eCallbackHandler
 
 		// convert the attributes into an appropriate form
 		HLA1516eAttributeHandleValueMap reflected = new HLA1516eAttributeHandleValueMap(attributes);
-		SupplementalInfo supplement = new SupplementalInfo( request.getSourceFederate() );
+		SupplementalInfo supplement = null;//new SupplementalInfo( request.getSourceFederate() );
 		
 		
 		// do the callback

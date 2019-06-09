@@ -20,9 +20,9 @@ import hla.rti1516e.ObjectInstanceHandle;
 import java.util.Map;
 
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
-import org.portico.lrc.services.object.msg.DiscoverObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DiscoverObject;
 
 /**
  * Generate discoverObjectInstance() callbacks to a IEEE1516e compliant federate ambassador

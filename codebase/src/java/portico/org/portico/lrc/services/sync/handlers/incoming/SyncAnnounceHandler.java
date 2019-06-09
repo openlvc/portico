@@ -18,15 +18,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.sync.msg.SyncPointAnnouncement;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.RegisterSyncPoint;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
                 sinks="incoming",
                 priority=7, // we want to handle it before the callback handler
-                messages=SyncPointAnnouncement.class)
+                messages=RegisterSyncPoint.class)
 public class SyncAnnounceHandler extends LRCMessageHandler
 {
 	//----------------------------------------------------------
@@ -51,7 +51,7 @@ public class SyncAnnounceHandler extends LRCMessageHandler
 	
 	public void process( MessageContext context ) throws Exception
 	{
-		SyncPointAnnouncement announcement = context.getRequest( SyncPointAnnouncement.class, this );
+		RegisterSyncPoint announcement = context.getRequest( RegisterSyncPoint.class, this );
 		vetoIfMessageFromUs( announcement ); // announcement handled in reg.result handler if local federate
 		String label = announcement.getLabel();
 		Set<Integer> federates = announcement.getFederateSet();

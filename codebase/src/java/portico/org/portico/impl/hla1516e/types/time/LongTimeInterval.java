@@ -106,12 +106,13 @@ public class LongTimeInterval implements HLAinteger64Interval
 
 	public int encodedLength()
 	{
-		return 8;
+		return 12;  // 4 (size) + 8 (length)
 	}
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		BitHelpers.putLongBE( this.time, buffer, offset );
+		BitHelpers.putIntBE( 8, buffer, offset );           // size
+		BitHelpers.putLongBE( this.time, buffer, offset );  // value
 	}
 
 	public long getValue()
@@ -122,5 +123,10 @@ public class LongTimeInterval implements HLAinteger64Interval
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-
+	public static LongTimeInterval decode( byte[] buffer, int offset )
+	{
+		// int length = BitHelpers.readIntBE( buffer, offset );    // size
+		long value = BitHelpers.readLongBE( buffer, offset + 4 );  // value
+		return new LongTimeInterval( value );
+	}
 }

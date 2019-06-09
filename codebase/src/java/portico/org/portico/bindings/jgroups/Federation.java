@@ -31,11 +31,11 @@ import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.model.ObjectModel;
-import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.lrc.utils.MessageHelpers;
 import org.portico.utils.messaging.ErrorResponse;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.federation.msg.ResignFederation;
 
 /**
  * Class represents a link to a particular federation. This contains the actual

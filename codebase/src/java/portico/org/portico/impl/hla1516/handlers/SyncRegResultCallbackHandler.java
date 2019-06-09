@@ -18,9 +18,9 @@ import java.util.Map;
 
 import org.portico.impl.hla1516.Impl1516Helper;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.sync.msg.RegisterSyncPointResult;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.RegisterSyncPointResult;
 
 /**
  * This handler generates HLA 1.3 callbacks for synchronization registration results. If the point

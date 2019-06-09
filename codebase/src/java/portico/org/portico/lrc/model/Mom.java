@@ -14,10 +14,18 @@
  */
 package org.portico.lrc.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 import org.portico.impl.HLAVersion;
-import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.model.datatype.IDatatype;
 
 /**
@@ -31,127 +39,32 @@ public class Mom
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final int ManagerClass    = 1;
-	public static final int FederateClass   = 2;
-	public static final int FederationClass = 3;
-	
 	private static final Mom INSTANCE = new Mom();
+	
 	//----------------------------------------------------------
 	//                      ENUMERATIONS
 	//----------------------------------------------------------
-	/** Identifiers for the attributes of the Federate MOM class. This is to get around the
-	    STUPIDITY that was involved in prefixing all standardized types with "HLA" in 1516.
-	    Who ever came up with that bright idea, please be sure never to work with any heavy
-	    machinery.
-	*/
-	public enum Federate
+	/**
+	 * Types of things that can be stored in the {@link MomHandleTree}
+	 */
+	private enum MomType
 	{
-		FederateHandle(4),
-		FederateName(5),                     // 1516e
-		FederateType(6),
-		FederateHost(7),
-		FomModuleDesignatorList(8),          // 1516e
-		RtiVersion(9),
-		FedID(10),
-		TimeConstrained(11),
-		TimeRegulating(12),
-		AsynchronousDelivery(13),
-		FederateState(14),
-		TimeManagerState(15),
-		LogicalTime(16),
-		Lookahead(17),
-		LBTS(18), // synonym for LITS
-		GALT(19),
-		LITS(20), // NextMinEventTime in 1.3,
-		ROlength(21),
-		TSOlength(22),
-		ReflectionsReceived(23),
-		UpdatesSent(24),
-		InteractionsReceived(25),
-		InteractionsSent(26),
-		ObjectInstancesThatCanBeDeleted(27), // ObjectsOwned in 1.3
-		ObjectInstancesUpdated(28),          // ObjectsUpdated in 1.3
-		ObjectInstancesReflected(29),        // ObjectsReflected in 1.3
-		ObjectInstancesDeleted(30),
-		ObjectInstancesRemoved(31),
-		ObjectInstancesRegistered(32),
-		ObjectInstancesDiscovered(33),
-		TimeGrantedTime(34),
-		TimeAdvancingTime(35),
-		ConveyRegionDesignatorSets(36),     // Belongs to Federate in 1516e
-		ConveyProducingFederate(37); // not in 1.3
-		
-		public final int handle;
-		private Federate( int handle )
-		{
-			this.handle = handle;
-		}
-		
-		/**
-		 * Find the attribute for the given handle. If no value can be found for that handle,
-		 * an exception is thrown.
-		 */
-		public static Federate forHandle( int handle ) throws JAttributeNotDefined
-		{
-			for( Federate federate : Federate.values() )
-			{
-				if( federate.handle == handle )
-					return federate;
-			}
-			
-			throw new JAttributeNotDefined( "MOM Federate attribute handle not known: " + handle );
-		}
-	}
-	
-	/** Same solution as for Federate above, see that comment for my thoughts */
-	public enum Federation
-	{
-		FederationName(38),
-		FederatesInFederation(39),
-		RtiVersion(40),
-		MimDesignator(41),              // 1516e
-		FomModuleDesignatorList(42),    // 1516e
-		CurrentFdd(43),                 // 1516e
-		FedID(44),
-		TimeImplementationName(45),     // 1516e
-		LastSaveName(46),
-		LastSaveTime(47),
-		NextSaveName(48),
-		NextSaveTime(49),
-		AutoProvide(50),                // not in 1.3
-		ConveyRegionDesignatorSets(51); // Belongs to Federation in 1516
-		
-		public final int handle;
-		private Federation( int handle )
-		{
-			this.handle = handle;
-		}
-		
-		/**
-		 * Find the attribute for the given handle. If no value can be found for that handle,
-		 * an exception is thrown.
-		 */
-		public static Federation forHandle( int handle ) throws JAttributeNotDefined
-		{
-			for( Federation attribute : Federation.values() )
-			{
-				if( attribute.handle == handle )
-					return attribute;
-			}
-			
-			throw new JAttributeNotDefined( "MOM Federation attribute handle not known: "+handle );
-		}
+		Object,
+		Attribute,
+		Interaction,
+		Parameter
 	}
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private HashMap<String,Mom.Federate> federate13Attributes;
-	private HashMap<String,Mom.Federation> federation13Attributes;
-	private HashMap<String,Mom.Federate> federate1516Attributes;
-	private HashMap<String,Mom.Federation> federation1516Attributes;
-	private HashMap<String,Mom.Federate> federate1516eAttributes;
-	private HashMap<String,Mom.Federation> federation1516eAttributes;
+	private MomHandleTree momTree;
+	
+	// Lookup tables for mom types
+	private Map<Integer,MomTreeNode> objectLookup;
+	private Map<Integer,MomTreeNode> attributeLookup;
+	private Map<Integer,MomTreeNode> interactionLookup;
+	private Map<Integer,MomTreeNode> parameterLookup;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -159,233 +72,537 @@ public class Mom
 
 	private Mom()
 	{
-		this.federate13Attributes     = new HashMap<String,Mom.Federate>();
-		this.federation13Attributes   = new HashMap<String,Mom.Federation>();
-		this.federate1516Attributes   = new HashMap<String,Mom.Federate>();
-		this.federation1516Attributes = new HashMap<String,Mom.Federation>();
-		this.federate1516eAttributes  = new HashMap<String,Mom.Federate>();
-		this.federation1516eAttributes= new HashMap<String,Mom.Federation>();
-		
-		////////////////////////////////////////////////////////////////
-		////////////////////////// Initialize //////////////////////////
-		////////////////////////////////////////////////////////////////
-		federate13Attributes.put( "FederateHandle", Federate.FederateHandle );
-		federate13Attributes.put( "FederateType", Federate.FederateType );
-		federate13Attributes.put( "FederateHost", Federate.FederateHost );
-		federate13Attributes.put( "RTIversion", Federate.RtiVersion );
-		federate13Attributes.put( "FEDid", Federate.FedID );
-		federate13Attributes.put( "TimeConstrained", Federate.TimeConstrained );
-		federate13Attributes.put( "TimeRegulating", Federate.TimeRegulating );
-		federate13Attributes.put( "AsynchronousDelivery", Federate.AsynchronousDelivery );
-		federate13Attributes.put( "FederateState", Federate.FederateState );
-		federate13Attributes.put( "TimeManagerState", Federate.TimeManagerState );
-		federate13Attributes.put( "FederateTime", Federate.LogicalTime );
-		federate13Attributes.put( "Lookahead", Federate.Lookahead );
-		federate13Attributes.put( "LBTS", Federate.LBTS );
-		federate13Attributes.put( "MinNextEventTime", Federate.LITS );
-		federate13Attributes.put( "ROlength", Federate.ROlength );
-		federate13Attributes.put( "TSOlength", Federate.TSOlength );
-		federate13Attributes.put( "ReflectionsReceived", Federate.ReflectionsReceived );
-		federate13Attributes.put( "UpdatesSent", Federate.UpdatesSent );
-		federate13Attributes.put( "InteractionsReceived", Federate.InteractionsReceived );
-		federate13Attributes.put( "InteractionsSent", Federate.InteractionsSent );
-		federate13Attributes.put( "ObjectsOwned", Federate.ObjectInstancesThatCanBeDeleted );
-		federate13Attributes.put( "ObjectsUpdated", Federate.ObjectInstancesUpdated );
-		federate13Attributes.put( "ObjectsReflected", Federate.ObjectInstancesReflected );
-		
-		federation13Attributes.put( "FederationName", Federation.FederationName );
-		federation13Attributes.put( "FederatesInFederation", Federation.FederatesInFederation );
-		federation13Attributes.put( "RTIversion", Federation.RtiVersion );
-		federation13Attributes.put( "FEDid", Federation.FedID );
-		federation13Attributes.put( "LastSaveName", Federation.LastSaveName );
-		federation13Attributes.put( "LastSaveTime", Federation.LastSaveTime );
-		federation13Attributes.put( "NextSaveName", Federation.NextSaveName );
-		federation13Attributes.put( "NextSaveTime", Federation.NextSaveTime );
-		
-		// HLA 1516 //
-		federate1516Attributes.put( "HLAfederateHandle", Federate.FederateHandle );
-		federate1516Attributes.put( "HLAfederateType", Federate.FederateType );
-		federate1516Attributes.put( "HLARTIversion", Federate.RtiVersion );
-		federate1516Attributes.put( "HLAFDDID", Federate.FedID );
-		federate1516Attributes.put( "HLAtimeConstrained", Federate.TimeConstrained );
-		federate1516Attributes.put( "HLAtimeRegulating", Federate.TimeRegulating );
-		federate1516Attributes.put( "HLAasynchronousDelivery", Federate.AsynchronousDelivery );
-		federate1516Attributes.put( "HLAfederateState", Federate.FederateState );
-		federate1516Attributes.put( "HLAtimeManagerState", Federate.TimeManagerState );
-		federate1516Attributes.put( "HLAlogicalTime", Federate.LogicalTime );
-		federate1516Attributes.put( "HLAlookahead", Federate.Lookahead );
-		federate1516Attributes.put( "HLAGALT", Federate.GALT );
-		federate1516Attributes.put( "HLALITS", Federate.LITS );
-		federate1516Attributes.put( "HLAROlength", Federate.ROlength );
-		federate1516Attributes.put( "HLATSOlength", Federate.TSOlength );
-		federate1516Attributes.put( "HLAreflectionsReceived", Federate.ReflectionsReceived );
-		federate1516Attributes.put( "HLAupdatesSent", Federate.UpdatesSent );
-		federate1516Attributes.put( "HLAinteractionsReceived", Federate.InteractionsReceived );
-		federate1516Attributes.put( "HLAinteractionsSent", Federate.InteractionsSent );
-		federate1516Attributes.put( "HLAobjectInstancesThatCanBeDeleted", Federate.ObjectInstancesThatCanBeDeleted );
-		federate1516Attributes.put( "HLAobjectInstancesUpdated", Federate.ObjectInstancesUpdated );
-		federate1516Attributes.put( "HLAobjectInstancesReflected", Federate.ObjectInstancesReflected );
-		federate1516Attributes.put( "HLAobjectInstancesDeleted", Federate.ObjectInstancesDeleted );
-		federate1516Attributes.put( "HLAobjectInstancesRemoved", Federate.ObjectInstancesRemoved );
-		federate1516Attributes.put( "HLAobjectInstancesRegistered", Federate.ObjectInstancesRegistered );
-		federate1516Attributes.put( "HLAobjectInstancesDiscovered", Federate.ObjectInstancesDiscovered );
-		federate1516Attributes.put( "HLAtimeGrantedTime", Federate.TimeGrantedTime );
-		federate1516Attributes.put( "HLAtimeAdvancingTime", Federate.TimeAdvancingTime );
-
-		federation1516Attributes.put( "HLAfederationName", Federation.FederationName );
-		federation1516Attributes.put( "HLAfederatesInFederation", Federation.FederatesInFederation );
-		federation1516Attributes.put( "HLARTIversion", Federation.RtiVersion );
-		federation1516Attributes.put( "HLAFDDID", Federation.FedID );
-		federation1516Attributes.put( "HLAlastSaveName", Federation.LastSaveName );
-		federation1516Attributes.put( "HLAlastSaveTime", Federation.LastSaveTime );
-		federation1516Attributes.put( "HLAnextSaveName", Federation.NextSaveName );
-		federation1516Attributes.put( "HLAnextSaveTime", Federation.NextSaveTime );
-		federation1516Attributes.put( "HLAautoProvide", Federation.AutoProvide );
-		federation1516Attributes.put( "HLAconveyRegionDesignatorSets", Federation.ConveyRegionDesignatorSets );
-		
-		
-		// HLA 1516-Evolved //
-		federate1516eAttributes.put( "HLAfederateHandle", Federate.FederateHandle );
-		federate1516eAttributes.put( "HLAfederateName", Federate.FederateName );
-		federate1516eAttributes.put( "HLAfederateType", Federate.FederateType );
-		federate1516eAttributes.put( "HLAfederateHost", Federate.FederateHost );
-		federate1516eAttributes.put( "HLARTIversion", Federate.RtiVersion );
-		federate1516eAttributes.put( "HLAFOMmoduleDesignatorList", Federate.FomModuleDesignatorList );
-		federate1516eAttributes.put( "HLAtimeConstrained", Federate.TimeConstrained );
-		federate1516eAttributes.put( "HLAtimeRegulating", Federate.TimeRegulating );
-		federate1516eAttributes.put( "HLAasynchronousDelivery", Federate.AsynchronousDelivery );
-		federate1516eAttributes.put( "HLAfederateState", Federate.FederateState );
-		federate1516eAttributes.put( "HLAtimeManagerState", Federate.TimeManagerState );
-		federate1516eAttributes.put( "HLAlogicalTime", Federate.LogicalTime );
-		federate1516eAttributes.put( "HLAlookahead", Federate.Lookahead );
-		federate1516eAttributes.put( "HLAGALT", Federate.GALT );
-		federate1516eAttributes.put( "HLALITS", Federate.LITS );
-		federate1516eAttributes.put( "HLAROlength", Federate.ROlength );
-		federate1516eAttributes.put( "HLATSOlength", Federate.TSOlength );
-		federate1516eAttributes.put( "HLAreflectionsReceived", Federate.ReflectionsReceived );
-		federate1516eAttributes.put( "HLAupdatesSent", Federate.UpdatesSent );
-		federate1516eAttributes.put( "HLAinteractionsReceived", Federate.InteractionsReceived );
-		federate1516eAttributes.put( "HLAinteractionsSent", Federate.InteractionsSent );
-		federate1516eAttributes.put( "HLAobjectInstancesThatCanBeDeleted", Federate.ObjectInstancesThatCanBeDeleted );
-		federate1516eAttributes.put( "HLAobjectInstancesUpdated", Federate.ObjectInstancesUpdated );
-		federate1516eAttributes.put( "HLAobjectInstancesReflected", Federate.ObjectInstancesReflected );
-		federate1516eAttributes.put( "HLAobjectInstancesDeleted", Federate.ObjectInstancesDeleted );
-		federate1516eAttributes.put( "HLAobjectInstancesRemoved", Federate.ObjectInstancesRemoved );
-		federate1516eAttributes.put( "HLAobjectInstancesRegistered", Federate.ObjectInstancesRegistered );
-		federate1516eAttributes.put( "HLAobjectInstancesDiscovered", Federate.ObjectInstancesDiscovered );
-		federate1516eAttributes.put( "HLAtimeGrantedTime", Federate.TimeGrantedTime );
-		federate1516eAttributes.put( "HLAtimeAdvancingTime", Federate.TimeAdvancingTime );
-		federate1516eAttributes.put( "HLAconveyRegionDesignatorSets", Federate.ConveyRegionDesignatorSets );
-		federate1516eAttributes.put( "HLAconveyProducingFederate", Federate.ConveyProducingFederate );
-
-		federation1516eAttributes.put( "HLAfederationName", Federation.FederationName );
-		federation1516eAttributes.put( "HLAfederatesInFederation", Federation.FederatesInFederation );
-		federation1516eAttributes.put( "HLARTIversion", Federation.RtiVersion );
-		federation1516eAttributes.put( "HLAMIMdesignator", Federation.MimDesignator );
-		federation1516eAttributes.put( "HLAFOMmoduleDesignatorList", Federation.FomModuleDesignatorList );
-		federation1516eAttributes.put( "HLAcurrentFDD", Federation.CurrentFdd );
-		federation1516eAttributes.put( "HLAtimeImplementationName", Federation.TimeImplementationName );
-		federation1516eAttributes.put( "HLAlastSaveName", Federation.LastSaveName );
-		federation1516eAttributes.put( "HLAlastSaveTime", Federation.LastSaveTime );
-		federation1516eAttributes.put( "HLAnextSaveName", Federation.NextSaveName );
-		federation1516eAttributes.put( "HLAnextSaveTime", Federation.NextSaveTime );
-		federation1516eAttributes.put( "HLAautoProvide", Federation.AutoProvide );
+		// Build interaction hierarchy
+		initialize();
 	}
 
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
-
+	/**
+	 * Builds the internal representation of metadata for standard MOM types.
+	 * <p/>
+	 * The tree contains nodes representing the hierarchy of objects, attributes, interactions and 
+	 * parameters and can be used to populate an {@link ObjectModel} with {@link OCMetadata}
+	 * and {@link ICMetadata} for all MOM types.
+	 * <p/>
+	 * This method also generates the lookup tables that resolve {@link MomTreeNode} metadata by handle
+	 */
+	private void initialize()
+	{
+		HLAVersion[] v13 = { HLAVersion.JAVA1, HLAVersion.HLA13 };
+		HLAVersion[] v1516 = { HLAVersion.IEEE1516, HLAVersion.IEEE1516e };
+		
+		// Declaratively build the tree. The creator methods convert the provided names into a 
+		// {@link VersionedName} so that nodes can be resolved based on the naming conventions of all
+		// HLA specification versions
+		//
+		// NOTE: Handles generated here will be consistent across all federations running in the RTI
+		MomTreeNodeBuilder b = new MomTreeNodeBuilder();
+		
+		//
+		// Objects
+		//
+		b.object( "HLAobjectRoot" )
+			.object("HLAmanager")
+				.object("HLAfederate")
+					.attribute( "HLAfederateHandle", "HLAhandle" )
+					.attribute( "HLAfederateName", "HLAunicodeString", v1516 )
+					.attribute( "HLAfederateType", "HLAunicodeString" )
+					.attribute( "HLAfederateHost", "HLAunicodeString" )
+					.attribute( "HLARTIversion", "HLAunicodeString" )
+					.attribute( "FEDid", "HLAunicodeString", v13 )
+					.attribute( "HLAFOMmoduleDesignatorList", "HLAmoduleDesignatorList", HLAVersion.IEEE1516e )
+					.attribute( "HLAtimeConstrained", "HLAboolean" )
+					.attribute( "HLAtimeRegulating", "HLAboolean" )
+					.attribute( "HLAasynchronousDelivery", "HLAboolean" )
+					.attribute( "HLAfederateState", "HLAfederateState" )
+					.attribute( "HLAtimeManagerState", "HLAtimeState" )
+					.attribute( VersionedName.from( "FederateTime", "HLAlogicalTime" ), "HLAlogicalTime" )
+					.attribute( "HLAlookahead", "HLAtimeInterval" )
+					.attribute( "LBTS", "HLAlogicalTime", v13 )
+					.attribute( "HLAGALT", "HLAlogicalTime", v1516 )
+					.attribute( VersionedName.from( "MinNextEventTime", "HLALITS" ), "HLAlogicalTime" )
+					.attribute( "HLAROlength", "HLAcount" )
+					.attribute( "HLATSOlength", "HLAcount" )
+					.attribute( "HLAreflectionsReceived", "HLAcount" )
+					.attribute( "HLAupdatesSent", "HLAcount" )
+					.attribute( "HLAinteractionsReceived", "HLAcount" )
+					.attribute( "HLAinteractionsSent", "HLAcount" )
+					.attribute( VersionedName.from( "ObjectsOwned", "HLAobjectInstancesThatCanBeDeleted" ), "HLAcount" )
+					.attribute( VersionedName.from( "ObjectsUpdated", "HLAobjectInstancesUpdated" ), "HLAcount" )
+					.attribute( VersionedName.from( "ObjectsReflected", "HLAobjectInstancesReflected" ), "HLAcount" )
+					.attribute( "HLAobjectInstancesDeleted", "HLAcount", v1516 )
+					.attribute( "HLAobjectInstancesRemoved", "HLAcount", v1516 )
+					.attribute( "HLAobjectInstancesRegistered", "HLAcount", v1516 )
+					.attribute( "HLAobjectInstancesDiscovered", "HLAcount", v1516 )
+					.attribute( "HLAtimeGrantedTime", "HLAmsec", v1516 )
+					.attribute( "HLAtimeAdvancingTime", "HLAmsec", v1516 )
+					.attribute( "HLAconveyRegionDesignatorSets", "HLAswitch", HLAVersion.IEEE1516e )
+					.attribute( "HLAconveyProducingFederate", "HLAswitch", v1516 )
+				.end()
+				.object("HLAfederation")
+					.attribute( "HLAfederationName", "HLAunicodeString" )
+					.attribute( "HLAfederatesInFederation", "HLAhandleList" )
+					.attribute( "HLARTIversion", "HLAunicodeString" )
+					.attribute( "HLAFEDid", "HLAunicodeString", HLAVersion.JAVA1, HLAVersion.HLA13, HLAVersion.IEEE1516 )
+					.attribute( "HLAMIMdesignator", "HLAunicodeString", HLAVersion.IEEE1516e )
+					.attribute( "HLAFOMmoduleDesignatorList", "HLAmoduleDesignatorList", HLAVersion.IEEE1516e )
+					.attribute( "HLAcurrentFDD", "HLAunicodeString", HLAVersion.IEEE1516e )
+					.attribute( "HLAtimeImplementationName", "HLAunicodeString", HLAVersion.IEEE1516e )
+					.attribute( "HLAlastSaveName", "HLAunicodeString" )
+					.attribute( "HLAlastSaveTime", "HLAlogicalTime" )
+					.attribute( "HLAnextSaveName", "HLAunicodeString" )
+					.attribute( "HLAnextSaveTime", "HLAlogicalTime" )
+					.attribute( "HLAconveyRegionDesignatorSets", "HLAswitch", HLAVersion.IEEE1516 )
+					.attribute( "HLAautoProvide", "HLAswitch", v1516 )
+				.end()
+			.end();
+		MomTreeNode objectRoot = b.getContext();
+		b.end();
+		
+		//
+		// Interactions
+		//
+		b.interaction( "HLAinteractionRoot" )
+			.interaction( "HLAmanager" )
+				.interaction( "HLAfederate")
+					.parameter( "HLAfederate", "HLAhandle" )
+					.interaction( "HLAadjust" )
+						.interaction( "HLAsetTiming")
+							.parameter( "HLAreportPeriod", "HLAseconds" )
+						.end()
+						.interaction( "HLAmodifyAttributeState" )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+							.parameter( "HLAattribute", "HLAhandle" )
+							.parameter( "HLAattributeState", "HLAownership" )
+						.end()
+						.interaction( "HLAsetServiceReporting" )
+							.parameter( "HLAreportingState", "HLAboolean" )
+						.end()
+						.interaction( "HLAsetExceptionReporting" )
+							.parameter( VersionedName.from("LoggingState", "HLAreportingState"), "HLAboolean" )
+						.end()
+						.interaction( "HLAsetSwitches", v1516 )
+							.parameter( "HLAconveyRegionDesignatorSets", "HLAswitch", HLAVersion.IEEE1516e )
+							.parameter( "HLAconveyProducingFederate", "HLAswitch" )
+						.end()
+					.end()
+					.interaction( "HLArequest" )
+						.interaction( "HLArequestPublications" ).end()
+						.interaction( "HLArequestSubscriptions" ).end()
+						.interaction( VersionedName.from("RequestObjectInstancesOwned","HLArequestObjectInstancesThatCanBeDeleted") ).end()
+						.interaction( VersionedName.from("RequestObjectsUpdated","HLArequestObjectInstancesUpdated") ).end()
+						.interaction( VersionedName.from("RequestObjectsReflected","HLArequestObjectInstancesReflected") ).end()
+						.interaction( "HLArequestUpdatesSent" ).end()
+						.interaction( "HLArequestInteractionsSent" ).end()
+						.interaction( "HLArequestReflectionsReceived" ).end()
+						.interaction( "HLArequestInteractionsReceived" ).end()
+						.interaction( VersionedName.from("RequestObjectInformation", "HLArequestObjectInstanceInformation") )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+						.end()
+						.interaction( "HLArequestFOMmoduleData", HLAVersion.IEEE1516e )
+							.parameter( "HLAFOMmoduleIndicator", "HLAindex" )
+						.end()
+					.end()
+					.interaction( "HLAreport" )
+						.interaction( VersionedName.from("ReportObjectPublication","HLAreportObjectClassPublication") )
+							.parameter( "HLAnumberOfClasses", "HLAcount" )
+							.parameter( "HLAobjectClass", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+						.end()
+						.interaction( "HLAreportInteractionPublication" )
+							.parameter( "HLAinteractionClassList", "HLAhandleList" )
+						.end()
+						.interaction( VersionedName.from("ReportObjectSubscription","HLAreportObjectClassSubscription") )
+							.parameter( "HLAnumberOfClasses", "HLAcount" )
+							.parameter( "HLAobjectClass", "HLAhandle" )
+							.parameter( "HLAactive", "HLAboolean" )
+							.parameter( "HLAmaxUpdateRate", "HLAupdateRateName", v1516 )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+						.end()
+						.interaction( "HLAreportInteractionSubscription" )
+							.parameter( "HLAinteractionClassList", "HLAinteractionSubList" )
+						.end()
+						.interaction( VersionedName.from("ReportObjectsOwned","HLAreportObjectInstancesThatCanBeDeleted") )
+							.parameter( VersionedName.from("ObjectCounts","HLAobjectInstanceCounts"), "HLAobjectClassBasedCounts" )
+						.end()
+						.interaction( VersionedName.from("ReportObjectsUpdated","HLAreportObjectInstancesUpdated") )
+							.parameter( VersionedName.from("ObjectCounts","HLAobjectInstanceCounts"), "HLAobjectClassBasedCounts" )
+						.end()
+						.interaction( VersionedName.from("ReportObjectsReflected","HLAreportObjectInstancesReflected") )
+							.parameter( VersionedName.from("ObjectCounts","HLAobjectInstanceCounts"), "HLAobjectClassBasedCounts" )
+						.end()
+						.interaction( "HLAreportUpdatesSent" )
+							.parameter( VersionedName.from("TransportationType", "HLAtransportation"), "HLAtransportationName" )
+							.parameter( "HLAupdateCounts", "HLAobjectClassBasedCounts" )
+						.end()
+						.interaction( "HLAreportReflectionsReceived" )
+							.parameter( VersionedName.from("TransportationType", "HLAtransportation"), "HLAtransportationName" )
+							.parameter( "HLAreflectCounts", "HLAobjectClassBasedCounts" )
+						.end()
+						.interaction( "HLAreportInteractionsSent" )
+							.parameter( VersionedName.from("TransportationType", "HLAtransportation"), "HLAtransportationName" )
+							.parameter( "HLAinteractionCounts", "HLAinteractionCounts" )
+						.end()
+						.interaction( "HLAreportInteractionsReceived" )
+							.parameter( VersionedName.from("TransportationType", "HLAtransportation"), "HLAtransportationName" )
+							.parameter( "HLAinteractionCounts", "HLAinteractionCounts" )
+						.end()
+						.interaction( VersionedName.from("ReportObjectInformation","HLAreportObjectInstanceInformation") )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+							.parameter( VersionedName.from("OwnedAttributeList","HLAownedInstanceAttributeList"), "HLAhandleList" )
+							.parameter( "HLAregisteredClass", "HLAhandle" )
+							.parameter( "HLAknownClass", "HLAhandle" )
+						.end()
+						.interaction( "Alert", v13 )
+							.parameter( "AlertSeverity", "HLAunicodeString" )
+							.parameter( "AlertDescription", "HLAunicodeString" )
+							.parameter( "AlertID", "HLAunicodeString" )
+						.end()
+						.interaction( "HLAreportException", v1516 )
+							.parameter( "HLAservice", "HLAunicodeString" )
+							.parameter( "HLAexception", "HLAunicodeString" )
+						.end()
+						.interaction( "HLAreportServiceInvocation" )
+							.parameter( "HLAservice", "HLAunicodeString" )
+							.parameter( "Initiator", "HLAunicodeString", v13 )
+							.parameter( "HLAsuccessIndicator", "HLAboolean" )
+							.parameter( "HLAsuppliedArguments", "HLAargumentList", v1516 )
+							.parameter( "SuppliedArgument1", "HLAunicodeString", v13 )
+							.parameter( "SuppliedArgument2", "HLAunicodeString", v13 )
+							.parameter( "SuppliedArgument3", "HLAunicodeString", v13 )
+							.parameter( "SuppliedArgument4", "HLAunicodeString", v13 )
+							.parameter( "SuppliedArgument5", "HLAunicodeString", v13 )
+							.parameter( "HLAreturnedArguments", "HLAargumentList", v1516 )
+							.parameter( "ReturnedArgument", "HLAunicodeString", v13 )
+							.parameter( VersionedName.from("ExceptionDescription","HLAexception"), "HLAunicodeString" )
+							.parameter( "ExceptionID", "HLAunicodeString", v13 )
+							.parameter( "HLAserialNumber", "HLAcount", v1516 )
+						.end()
+						.interaction( "HLAreportMOMexception", v1516 )				// TODO 1516e only?
+							.parameter( "HLAservice", "HLAunicodeString" )
+							.parameter( "HLAexception", "HLAunicodeString" )
+							.parameter( "HLAparameterError", "HLAboolean" )
+						.end()
+						.interaction( "HLAreportFederateLost", HLAVersion.IEEE1516e )
+							.parameter( "HLAfederateName", "HLAunicodeString" )
+							.parameter( "HLAtimeStamp", "HLAlogicalTime" )
+							.parameter( "HLAfaultDescription", "HLAunicodeString" )
+						.end()
+						.interaction( "HLAreportFOMmoduleData", HLAVersion.IEEE1516e )
+							.parameter( "HLAFOMmoduleIndicator", "HLAindex" )
+							.parameter( "HLAFOMmoduleData", "HLAunicodeString" )
+						.end()
+					.end()
+					.interaction( "HLAservice" )
+						.interaction( "HLAresignFederationExecution" )
+							.parameter( "HLAresignAction", "HLAresignAction" )
+						.end()
+						.interaction( "HLAsynchronizationPointAchieved" )
+							.parameter( "HLAlabel", "HLAunicodeString" )
+						.end()
+						.interaction( "HLAfederateSaveBegun" ).end()
+						.interaction( "HLAfederateSaveComplete" )
+							.parameter( "HLAsuccessIndicator", "HLAboolean" )
+						.end()
+						.interaction( "HLAfederateRestoreComplete" )
+							.parameter( "HLAsuccessIndicator", "HLAboolean" )
+						.end()
+						.interaction( VersionedName.from("PublishObjectClass","HLApublishObjectClassAttributes") )
+							.parameter( "HLAobjectClass", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+						.end()
+						.interaction( VersionedName.from("UnpublishObjectClass","HLAunpublishObjectClassAttributes") )
+							.parameter( "HLAobjectClass", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList", v1516 )
+						.end()
+						.interaction( "HLApublishInteractionClass" )
+							.parameter( "HLAinteractionClass", "HLAhandle" )
+						.end()
+						.interaction( "HLAunpublishInteractionClass" )
+							.parameter( "HLAinteractionClass", "HLAhandle" )
+						.end()
+						.interaction( "HLAsubscribeObjectClassAttributes" )
+							.parameter( "HLAobjectClass", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+							.parameter( "HLAactive", "HLAboolean" )
+						.end()
+						.interaction( VersionedName.from("UnsubscribeObjectClass","HLAunsubscribeObjectClassAttributes") )
+							.parameter( "HLAobjectClass", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList", v1516 )
+						.end()
+						.interaction( "HLAsubscribeInteractionClass" )
+							.parameter( "HLAinteractionClass", "HLAhandle" )
+							.parameter( "HLAactive", "HLAboolean" )
+						.end()
+						.interaction( "HLAunsubscribeInteractionClass" )
+							.parameter( "HLAinteractionClass", "HLAhandle" )
+						.end()
+						.interaction( "HLAdeleteObjectInstance" )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+							.parameter( "HLAtag", "HLAopaqueData" )
+							.parameter( "HLAtimeStamp", "HLAlogicalTime" )
+						.end()
+						.interaction( "HLAlocalDeleteObjectInstance" )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+						.end()
+						.interaction( VersionedName.from("ChangeAttributeTransportationType","HLArequestAttributeTransportationTypeChange") )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+							.parameter( VersionedName.from("TransportationType", "HLAtransportation"), "HLAtransportationName" )
+						.end()
+						.interaction( VersionedName.from("ChangeInteractionTransportationType","HLArequestInteractionTransportationTypeChange") )
+							.parameter( "HLAinteractionClass", "HLAhandle" )
+							.parameter( VersionedName.from("TransportationType", "HLAtransportation"), "HLAtransportationName" )
+						.end()
+						.interaction( "HLAunconditionalAttributeOwnershipDivestiture" )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+						.end()
+						.interaction( "HLAenableTimeRegulation" )
+							.parameter( "FederationTime", "HLAlogicalTime", v13 )
+							.parameter( "HLAlookahead", "HLAtimeInterval" )
+						.end()
+						.interaction( "HLAdisableTimeRegulation" ).end()
+						.interaction( "HLAenableTimeConstrained" ).end()
+						.interaction( "HLAdisableTimeConstrained" ).end()
+						.interaction( "HLAtimeAdvanceRequest" )
+							.parameter( VersionedName.from("FederationTime","HLAtimeStamp"), "HLAlogicalTime" )
+						.end()
+						.interaction( "HLAtimeAdvanceRequestAvailable" )
+							.parameter( VersionedName.from("FederationTime","HLAtimeStamp"), "HLAlogicalTime" )
+						.end()
+						.interaction( VersionedName.from("NextEventRequest","HLAnextMessageRequest") )
+							.parameter( VersionedName.from("FederationTime","HLAtimeStamp"), "HLAlogicalTime" )
+						.end()
+						.interaction( VersionedName.from("NextEventRequestAvailable","HLAnextMessageRequestAvailable") )
+							.parameter( VersionedName.from("FederationTime","HLAtimeStamp"), "HLAlogicalTime" )
+						.end()
+						.interaction( "HLAflushQueueRequest" )
+							.parameter( VersionedName.from("FederationTime","HLAtimeStamp"), "HLAlogicalTime" )
+						.end()
+						.interaction( "HLAenableAsynchronousDelivery" ).end()
+						.interaction( "HLAdisableAsynchronousDelivery" ).end()
+						.interaction( "HLAmodifyLookahead" )
+							.parameter( "HLAlookahead", "HLAtimeInterval" )
+						.end()
+						.interaction( "HLAchangeAttributeOrderType" )
+							.parameter( "HLAobjectInstance", "HLAhandle" )
+							.parameter( "HLAattributeList", "HLAhandleList" )
+							.parameter( VersionedName.from("OrderingType","HLAsendOrder"), "HLAorderType" )
+						.end()
+						.interaction( "HLAchangeInteractionOrderType" )
+							.parameter( "HLAinteractionClass", "HLAhandle" )
+							.parameter( VersionedName.from("OrderingType","HLAsendOrder"), "HLAorderType" )
+						.end()
+					.end()
+				.end()
+				.interaction( "HLAfederation", v1516 )
+					.interaction( "HLAadjust" )
+						.interaction( "HLAsetSwitches" )
+							.parameter( "HLAautoProvide", "HLAswitch" )
+						.end()
+					.end()
+					.interaction( "HLArequest" )
+						.interaction( "HLArequestSynchronizationPoints" ).end()
+						.interaction( "HLArequestSynchronizationPointStatus" )
+							.parameter( "HLAsyncPointName", "HLAunicodeString" )	// This param is listed in the spec but not in the MIM xml :(
+						.end()
+						.interaction( "HLArequestFOMmoduleData" )
+							.parameter( "HLAFOMmoduleIndicator", "HLAindex" )
+						.end()
+						.interaction( "HLArequestMIMdata" ).end()
+					.end()
+					.interaction( "HLAreport" )
+						.interaction( "HLAreportSynchronizationPoints" )
+							.parameter( "HLAsyncPoints", "HLAsynchPointList" )
+						.end()
+						.interaction( "HLAreportSynchronizationPointStatus" )
+							.parameter( "HLAsyncPointName", "HLAunicodeString" )
+							.parameter( "HLAsyncPointFederates", "HLAsynchPointFederateList" )
+						.end()
+						.interaction( "HLAreportFOMmoduleData" )
+							.parameter( "HLAFOMmoduleIndicator", "HLAindex" )
+							.parameter( "HLAFOMmoduleData", "HLAunicodeString" )
+						.end()
+						.interaction( "HLAreportMIMdata" )
+							.parameter( "HLAMIMdata", "HLAunicodeString" )
+						.end()
+					.end()
+				.end()
+			.end();
+		
+		MomTreeNode interactionRoot = b.getContext();
+		b.end();
+		
+		this.momTree = new MomHandleTree( objectRoot, interactionRoot );
+		this.objectLookup = b.getObjectLookup();
+		this.attributeLookup = b.getAttributeLookup();
+		this.interactionLookup = b.getInteractionLookup();
+		this.parameterLookup = b.getParameterLookup();
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 	/**
-	 * Fetch the handle for the MOM class of the given name. This will work when given either
-	 * HLA 1.3 or HLA 1516 style MOM names. If the class name is unknown,
-	 * {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * Fetch the handle for the MOM class of the given name.
+	 * <p/>
+	 * This function expects a fully qualified name be provided in the <code>className</code> parameter,
+	 * relative to <code>ObjectRoot</code> (e.g. "Manager.Federate")
+	 * <p/>
+	 * If the class name is unknown, {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * 
+	 * @param version the HLA version of the MOM naming scheme that the <code>className</code> parameter 
+	 *                conforms to
+	 * @param className the qualified name of the class to resolve the handle for, relative to ObjectRoot
+	 * @return the handle of the desired object class, or {@link ObjectModel#INVALID_HANDLE} if no class
+	 *         exists with the specified name
 	 */
-	public static int getMomClassHandle( HLAVersion version, String className )
+	public static int getMomObjectClassHandle( HLAVersion version, String className )
 	{
-		////////////////////////////////
-		// strip out any HLA prefixes //
-		////////////////////////////////
-		className = className.toLowerCase();
-		if( className.startsWith("hla") )
+		MomTreeNode node = INSTANCE.momTree.find( className, 
+		                                          version,
+		                                          INSTANCE.momTree.objectRoot );
+		if( node != null )
 		{
-			className = className.replaceFirst( "hla", "" );
-		}
-		if( className.startsWith("objectroot.") )
-		{
-			className = className.replaceFirst( "objectroot.", "" );
-		}
-
-		/////////////////////////////////////
-		// try and find the relevant class //
-		/////////////////////////////////////
-		if( className.equals("manager") )
-		{
-			return ManagerClass;
-		}
-		else if( className.equals("manager.federate") || className.equals("federate") )
-		{
-			return FederateClass;
-		}
-		else if( className.equals("manager.federation") || className.equals("federation") )
-		{
-			return FederationClass;
+			return node.getHandle();
 		}
 		else
 		{
-			// if we get here, we haven't go any sort of valid name! :S
 			return ObjectModel.INVALID_HANDLE;
 		}
 	}
 
 	/**
-	 * Fetch the handle for the MOM attribute of the given name in the MOM class of the given
-	 * handle. If the handle is not recognized or the name isn't a valid attribute,
+	 * Fetch the handle for the MOM attribute of the given name that belongs to the MOM class of the given
+	 * handle. If the class handle is not recognized or the name isn't a valid attribute,
 	 * {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * 
+	 * @param version the HLA version of the MOM naming scheme that the <code>name</code> parameter 
+	 *                conforms to
+	 * @param classHandle the handle of the object class to search for the attribute in
+	 * @param the name of the attribute
+	 * @return the handle of the desired attribute, or {@link ObjectModel#INVALID_HANDLE} if the specified
+	 *         class does not exist or does not contain an attribute with the specified name
 	 */
 	public static int getMomAttributeHandle( HLAVersion version, int classHandle, String name )
 	{
-		try
+		int attributeHandle = ObjectModel.INVALID_HANDLE;
+		
+		MomTreeNode objectNode = INSTANCE.momTree.find( MomType.Object,
+		                                                classHandle, 
+		                                                INSTANCE.momTree.objectRoot );
+		
+		if( objectNode != null )
 		{
-    		if( classHandle == FederateClass )
-    		{
-    			switch( version )
-    			{
-    				case HLA13:
-    					return INSTANCE.federate13Attributes.get(name).handle;
-    				case IEEE1516e:
-    					return INSTANCE.federate1516eAttributes.get(name).handle;
-    				case IEEE1516:
-    					return INSTANCE.federate1516Attributes.get(name).handle;
-    				default:
-    					return ObjectModel.INVALID_HANDLE;
-    			}
-    		}
-    		else if( classHandle == FederationClass )
-    		{
-    			switch( version )
-    			{
-    				case HLA13:
-    					return INSTANCE.federation13Attributes.get(name).handle;
-    				case IEEE1516e:
-    					return INSTANCE.federation1516eAttributes.get(name).handle;
-    				case IEEE1516:
-    					return INSTANCE.federation1516Attributes.get(name).handle;
-    				default:
-    					return ObjectModel.INVALID_HANDLE;
-    			}
-    		}
-		}
-		catch( NullPointerException npe )
-		{
-			// can happen if the handle name isn't valid for the version type
-			// just drop through - this is the same as not having a valid handle at all
+			MomTreeNode attributeNode = INSTANCE.momTree.find( name, version, objectNode );
+			if( attributeNode != null )
+				attributeHandle = attributeNode.getHandle();
 		}
 
-		return ObjectModel.INVALID_HANDLE;
+		return attributeHandle;
+	}
+	
+	/**
+	 * Fetch the name for the MOM attribute that belongs to the MOM class of the given handle. If the 
+	 * class handle is not recognized or the attribute handle isn't a valid attribute,
+	 * {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * 
+	 * @param version the HLA version of the MOM naming scheme to use
+	 * @param attributeHandle the handle of the attribute
+	 * @return the name of the desired attribute, or <code>null</code> if the specified
+	 *         class does not exist or does not contain the specified attribute 
+	 */
+	public static String getMomAttributeName( HLAVersion version, int attributeHandle )
+	{
+		String name = null;
+		
+		MomTreeNode attributeNode = INSTANCE.attributeLookup.get( attributeHandle );
+		if( attributeNode != null )
+			name = attributeNode.getName( version );
+		
+		return name;
+	}
+	
+	/**
+	 * Fetch the handle for the MOM interaction class of the given name. If the class name is unknown,
+	 * {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * <p/>
+	 * This function expects a fully qualified name be provided in the <code>className</code> parameter,
+	 * relative to <code>InteractionRoot</code> (e.g. "Manager.Federate.Request.RequestSubscriptions")
+	 * <p/>
+	 * If the class name is unknown, {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * 
+	 * @param version the HLA version of the MOM naming scheme that the <code>className</code> parameter 
+	 *                conforms to
+	 * @param className the qualified name of the interaction class relative to InteractionRoot
+	 * @return the handle of the desired interaction class, or {@link ObjectModel#INVALID_HANDLE} if no
+	 *         such interaction class exists
+	 */
+	public static int getMomInteractionHandle( HLAVersion version, String className )
+	{
+		MomTreeNode node = INSTANCE.momTree.find( className, 
+		                                          version,
+		                                          INSTANCE.momTree.interactionRoot );
+		if( node != null )
+		{
+			return node.getHandle();
+		}
+		else
+		{
+			return ObjectModel.INVALID_HANDLE;
+		}
+	}
+	
+	/**
+	 * Fetch the name for the MOM interaction class of the given handle. 
+	 * <p/>
+	 * If the class handle is not recognized, {@link ObjectModel#INVALID_HANDLE} will be returned.
+	 * 
+	 * @param version the HLA version of the MOM naming scheme to use
+	 * @param classHandle the handle of the interaction class
+	 * @param qualified <code>true</code> to return the fully qualified name of the interaction class,
+	 *                  otherwise <code>false</code> to return the name of the specified interaction class 
+	 *                  only
+	 * @return the name of the desired interaction class, or <code>null</code> if the specified
+	 *         class does not exist 
+	 */
+	public static String getMomInteractionName( HLAVersion version, int handle, boolean qualified )
+	{
+		String name = null;
+		MomTreeNode interactionNode = INSTANCE.interactionLookup.get( handle );
+		
+		if( interactionNode != null )
+		{
+			if( qualified )
+				name = interactionNode.getQualifiedName( version );
+			else
+				name = interactionNode.getName( version );
+		}
+		
+		return name;
+	}
+	
+	/**
+	 * Fetch the name of the MOM Interaction Parameter of the specified handle. 
+	 * <p/>
+	 * If no parameter exists within the specified interaction with the given handle, then 
+	 * <code>null</code> is returned.
+	 * 
+	 * @param version the HLA version of the MOM naming scheme to format the name for
+	 * @param parameterHandle the handle of the parameter to fetch the name for
+	 */
+	public static String getMomParameterName( HLAVersion version, 
+	                                          int parameterHandle )
+	{
+		String name = null;
+		MomTreeNode paramNode = INSTANCE.parameterLookup.get( parameterHandle );
+		if( paramNode != null )
+			name = paramNode.getName( version );
+		
+		return name;
 	}
 
 	/**
@@ -427,363 +644,767 @@ public class Mom
 	 * method will also patch the MOM stuff into the model, adding all the classes and setting the
 	 * manager class (for example) as a child of the object root.
 	 */
-	public static void insertMomHierarchy( ObjectModel theModel )
+	public static void insertMomHierarchy( ObjectModel model )
 	{
-		// datatypes that will be used throughout
-		IDatatype hlaBoolean = theModel.getDatatype( "HLAboolean" );
-		IDatatype hlaCount = theModel.getDatatype( "HLAcount" );
-		IDatatype hlaFederateState = theModel.getDatatype( "HLAfederateState" );
-		IDatatype hlaHandle = theModel.getDatatype( "HLAhandle" );
-		IDatatype hlaHandleList = theModel.getDatatype( "HLAhandleList" );
-		IDatatype hlaLogicalTime = theModel.getDatatype( "HLAlogicalTime" );
-		IDatatype hlaMsec = theModel.getDatatype( "HLAmsec" );
-		IDatatype hlaSwitch = theModel.getDatatype( "HLAswitch" );
-		IDatatype hlaTimeInterval = theModel.getDatatype( "HLAtimeInterval" );
-		IDatatype hlaTimeState = theModel.getDatatype( "HLAtimeState" );
-		IDatatype hlaUnicodeString = theModel.getDatatype( "HLAunicodeString" );
+		HLAVersion version = model.getHlaVersion();
 		
-		// create the manager class //
-		OCMetadata manager = new OCMetadata( "HLAmanager", ManagerClass );
-		manager.setModel( theModel );
-		manager.setParent( theModel.getObjectRoot() );
-		
-		///////////////////////////////////////////////////////////////
-		////////////////// create the federate class //////////////////
-		///////////////////////////////////////////////////////////////
-		OCMetadata federate = new OCMetadata( "HLAfederate", FederateClass );
-		federate.setModel( theModel );
-		federate.setParent( manager );
-		
-		// populate it //
-		ACMetadata federateHandle = newAttribute( "HLAfederateHandle",
-		                                          hlaHandle,
-		                                          Federate.FederateHandle.handle );
-		federate.addAttribute( federateHandle );
-		
-		ACMetadata federateName = newAttribute( "HLAfederateName",
-		                                        hlaUnicodeString,
-		                                        Federate.FederateName.handle );
-		federate.addAttribute( federateName );
-		
-		ACMetadata federateType = newAttribute( "HLAfederateType",
-		                                        hlaUnicodeString,
-		                                        Federate.FederateType.handle );
-		federate.addAttribute( federateType );
-		
-		ACMetadata federateHost = newAttribute( "HLAfederateHost",
-		                                        hlaUnicodeString,
-		                                        Federate.FederateHost.handle );
-		federate.addAttribute( federateHost );
-		
-		ACMetadata rtiVersion = newAttribute( "HLARTIversion",
-		                                      hlaUnicodeString,
-		                                      Federate.RtiVersion.handle );
-		federate.addAttribute( rtiVersion );
-		
-		ACMetadata fddID = newAttribute( "HLAFDDID",
-		                                 hlaUnicodeString, 
-		                                 Federate.FedID.handle );
-		federate.addAttribute( fddID );
-		
-		ACMetadata timeConstrained = newAttribute( "HLAtimeConstrained",
-		                                           hlaBoolean,
-		                                           Federate.TimeConstrained.handle );
-		federate.addAttribute( timeConstrained );
-		
-		ACMetadata timeRegulating = newAttribute( "HLAtimeRegulating",
-		                                          hlaBoolean,
-		                                          Federate.TimeRegulating.handle );
-		federate.addAttribute( timeRegulating );
-		
-		ACMetadata async = newAttribute( "HLAasynchronousDelivery",
-		                                 hlaBoolean,
-		                                 Federate.AsynchronousDelivery.handle );
-		federate.addAttribute( async );
-		
-		ACMetadata state = newAttribute( "HLAfederateState",
-		                                 hlaFederateState,
-		                                 Federate.FederateState.handle );
-		federate.addAttribute( state );
-		
-		ACMetadata timeState = newAttribute( "HLAtimeManagerState",
-		                                     hlaTimeState,
-		                                     Federate.TimeManagerState.handle );
-		federate.addAttribute( timeState );
-		
-		ACMetadata logicalTime = newAttribute( "HLAlogicalTime",
-		                                       hlaLogicalTime,
-		                                       Federate.LogicalTime.handle );
-		federate.addAttribute( logicalTime );
-		
-		ACMetadata lookahead = newAttribute( "HLAlookahead",
-		                                     hlaTimeInterval,
-		                                     Federate.Lookahead.handle );
-		federate.addAttribute( lookahead );
-		
-		// TODO: Check the type of this - there is no reference of it in the standard MIM document
-		ACMetadata lbts = newAttribute( "HLALBTS",
-		                                hlaLogicalTime,
-		                                Federate.LBTS.handle );
-		federate.addAttribute( lbts );
+		// MOM Objects
+		OCMetadata objectRoot = model.getObjectRoot();
+		MomTreeNode objectRootNode = INSTANCE.momTree.objectRoot;
+		for( MomTreeNode objectNode : objectRootNode.getChildren() )
+			insertMomObject( objectRoot, objectNode, version );
 
-		ACMetadata galt = newAttribute( "HLAGALT",
-		                                hlaLogicalTime,
-		                                Federate.GALT.handle );
-		federate.addAttribute( galt );
-		
-		ACMetadata lits = newAttribute( "HLALITS",
-		                                hlaLogicalTime,
-		                                Federate.LITS.handle );
-		federate.addAttribute( lits );
-		
-		ACMetadata roLength = newAttribute( "HLAROlength",
-		                                    hlaCount,
-		                                    Federate.ROlength.handle );
-		federate.addAttribute( roLength );
-		
-		ACMetadata tsoLength = newAttribute( "HLATSOlength",
-		                                     hlaCount,
-		                                     Federate.TSOlength.handle );
-		federate.addAttribute( tsoLength );
-		
-		ACMetadata reflections = newAttribute( "HLAreflectionsReceived",
-		                                       hlaCount,
-		                                       Federate.ReflectionsReceived.handle );
-		federate.addAttribute( reflections );
-		
-		ACMetadata updates = newAttribute( "HLAupdatesSent",
-		                                   hlaCount,
-		                                   Federate.UpdatesSent.handle );
-		federate.addAttribute( updates );
-		
-		ACMetadata intReceived = newAttribute( "HLAinteractionsReceived",
-		                                       hlaCount,
-		                                       Federate.InteractionsReceived.handle );
-		federate.addAttribute( intReceived );
-		
-		ACMetadata intSent = newAttribute( "HLAinteractionsSent",
-		                                   hlaCount,
-		                                   Federate.InteractionsSent.handle );
-		federate.addAttribute( intSent );
-		
-		ACMetadata objDelete = newAttribute( "HLAobjectInstancesThatCanBeDeleted",
-		                                     hlaCount,
-		                                     Federate.ObjectInstancesThatCanBeDeleted.handle );
-		federate.addAttribute( objDelete );
-		
-		ACMetadata objUpdate = newAttribute( "HLAobjectInstancesUpdated",
-		                                     hlaCount,
-		                                     Federate.ObjectInstancesUpdated.handle );
-		federate.addAttribute( objUpdate );
-		
-		ACMetadata objReflect = newAttribute( "HLAobjectInstancesReflected",
-		                                      hlaCount,
-		                                      Federate.ObjectInstancesReflected.handle );
-		federate.addAttribute( objReflect );
-		
-		ACMetadata objDeleted = newAttribute( "HLAobjectInstancesDeleted",
-		                                      hlaCount,
-		                                      Federate.ObjectInstancesDeleted.handle );
-		federate.addAttribute( objDeleted );
-		
-		ACMetadata objRemoved = newAttribute( "HLAobjectInstancesRemoved",
-		                                      hlaCount,
-		                                      Federate.ObjectInstancesRemoved.handle );
-		federate.addAttribute( objRemoved );
-		
-		ACMetadata objRegistered = newAttribute( "HLAobjectInstancesRegistered",
-		                                         hlaCount,
-		                                         Federate.ObjectInstancesRegistered.handle );
-		federate.addAttribute( objRegistered );
-		
-		ACMetadata objDiscovered = newAttribute( "HLAobjectInstancesDiscovered",
-		                                         hlaCount,
-		                                         Federate.ObjectInstancesDiscovered.handle );
-		federate.addAttribute( objDiscovered );
-		
-		ACMetadata timeGrant = newAttribute( "HLAtimeGrantedTime",
-		                                     hlaMsec,
-		                                     Federate.TimeGrantedTime.handle );
-		federate.addAttribute( timeGrant );
-		
-		ACMetadata timeAdv = newAttribute( "HLAtimeAdvancingTime",
-		                                   hlaMsec,
-		                                   Federate.TimeAdvancingTime.handle );
-		federate.addAttribute( timeAdv );
-		
-		///////////////////////////////////////////////////////////////
-		///////////////// create the federation class /////////////////
-		///////////////////////////////////////////////////////////////
-		OCMetadata federation = new OCMetadata( "HLAfederation", FederationClass );
-		federation.setModel( theModel );
-		federation.setParent( manager );
-		
-		// populate it //
-		ACMetadata fedName = newAttribute( "HLAfederationName",
-		                                   hlaUnicodeString,
-		                                   Federation.FederationName.handle );
-		federation.addAttribute( fedName );
-		
-		ACMetadata fedList = newAttribute( "HLAfederatesInFederation",
-		                                   hlaHandleList,
-		                                   Federation.FederatesInFederation.handle );
-		federation.addAttribute( fedList );
-		
-		ACMetadata rtiVersion2 = newAttribute( "HLARTIversion",
-		                                       hlaUnicodeString,
-		                                       Federation.RtiVersion.handle );
-		federation.addAttribute( rtiVersion2 );
-		
-		ACMetadata fddID2 = newAttribute( "HLAFDDID",
-		                                  hlaUnicodeString,
-		                                  Federation.FedID.handle );
-		federation.addAttribute( fddID2 );
-		
-		ACMetadata lastSave = newAttribute( "HLAlastSaveName",
-		                                    hlaUnicodeString,
-		                                    Federation.LastSaveName.handle );
-		federation.addAttribute( lastSave );
-		
-		ACMetadata lastTime = newAttribute( "HLAlastSaveTime",
-		                                    hlaLogicalTime,
-		                                    Federation.LastSaveTime.handle );
-		federation.addAttribute( lastTime );
-		
-		ACMetadata nextSave = newAttribute( "HLAnextSaveName",
-		                                    hlaUnicodeString,
-		                                    Federation.NextSaveName.handle );
-		federation.addAttribute( nextSave );
-		
-		ACMetadata nextTime = newAttribute( "HLAnextSaveTime",
-		                                    hlaLogicalTime,
-		                                    Federation.NextSaveTime.handle );
-		federation.addAttribute( nextTime );
-		
-		ACMetadata autoProv = newAttribute( "HLAautoProvide",
-		                                    hlaSwitch,
-		                                    Federation.AutoProvide.handle );
-		federation.addAttribute( autoProv );
-		
-		// 1516 Federation level ConveyRegionDesignatorSets (Belongs to Federate in 1516e)
-		ACMetadata crds = newAttribute( "HLAconveyRegionDesignatorSets",
-		                                hlaSwitch,
-		                                Federation.ConveyRegionDesignatorSets.handle );
-		federation.addAttribute( crds );
-		
-		//////////////////////////////////////
-		// patch the manager into the model //
-		//////////////////////////////////////
-		theModel.addObjectClass( manager );
-		theModel.addObjectClass( federate );
-		theModel.addObjectClass( federation );
-	}
-
-	/**
-	 * Patch the supported MOM hierarchy into the given object model. Presumes that any
-	 * modification of it has already been stripped out elsewhere so that we can patch
-	 * it in clean.
-	 */
-	public static void insertMomHierarchy1516e( ObjectModel theModel )
-	{
-		// datatypes that will be used throughout
-		IDatatype hlaBoolean = theModel.getDatatype( "HLAboolean" );
-		IDatatype hlaCount = theModel.getDatatype( "HLAcount" );
-		IDatatype hlaFederateState = theModel.getDatatype( "HLAfederateState" );
-		IDatatype hlaHandle = theModel.getDatatype( "HLAhandle" );
-		IDatatype hlaHandleList = theModel.getDatatype( "HLAhandleList" );
-		IDatatype hlaLogicalTime = theModel.getDatatype( "HLAlogicalTime" );
-		IDatatype hlaModuleDesignatorList = theModel.getDatatype( "HLAmoduleDesignatorList" );
-		IDatatype hlaMsec = theModel.getDatatype( "HLAmsec" );
-		IDatatype hlaSwitch = theModel.getDatatype( "HLAswitch" );
-		IDatatype hlaTimeInterval = theModel.getDatatype( "HLAtimeInterval" );
-		IDatatype hlaTimeState = theModel.getDatatype( "HLAtimeState" );
-		IDatatype hlaUnicodeString = theModel.getDatatype( "HLAunicodeString" );
-		
-		// create the manager class //
-		OCMetadata manager = new OCMetadata( "HLAmanager", ManagerClass );
-		manager.setModel( theModel );
-		manager.setParent( theModel.getObjectRoot() );
-		
-		///////////////////////////////////////////////////////////////
-		////////////////// create the federate class //////////////////
-		///////////////////////////////////////////////////////////////
-		OCMetadata federate = new OCMetadata( "HLAfederate", FederateClass );
-		federate.setModel( theModel );
-		federate.setParent( manager );
-		
-		// populate it //
-		federate.addAttribute( newAttribute("HLAfederateHandle",hlaHandle,Federate.FederateHandle.handle) );
-		federate.addAttribute( newAttribute("HLAfederateName",hlaUnicodeString,Federate.FederateName.handle) );
-		federate.addAttribute( newAttribute("HLAfederateType",hlaUnicodeString,Federate.FederateType.handle) );
-		federate.addAttribute( newAttribute("HLAfederateHost",hlaUnicodeString,Federate.FederateHost.handle) );
-		federate.addAttribute( newAttribute("HLARTIversion",hlaUnicodeString,Federate.RtiVersion.handle) );
-		federate.addAttribute( newAttribute("HLAFOMmoduleDesignatorList",hlaModuleDesignatorList,Federate.FomModuleDesignatorList.handle) );
-		federate.addAttribute( newAttribute("HLAtimeConstrained",hlaBoolean,Federate.TimeConstrained.handle) );
-		federate.addAttribute( newAttribute("HLAtimeRegulating",hlaBoolean,Federate.TimeRegulating.handle) );
-		federate.addAttribute( newAttribute("HLAasynchronousDelivery",hlaBoolean,Federate.AsynchronousDelivery.handle) );
-		federate.addAttribute( newAttribute("HLAfederateState",hlaFederateState,Federate.FederateState.handle) );
-		federate.addAttribute( newAttribute("HLAtimeManagerState",hlaTimeState,Federate.TimeManagerState.handle) );
-		federate.addAttribute( newAttribute("HLAlogicalTime",hlaLogicalTime,Federate.LogicalTime.handle) );
-		federate.addAttribute( newAttribute("HLAlookahead",hlaTimeInterval,Federate.Lookahead.handle) );
-		federate.addAttribute( newAttribute("HLAGALT",hlaLogicalTime,Federate.GALT.handle) );
-		federate.addAttribute( newAttribute("HLALITS",hlaLogicalTime,Federate.LITS.handle) );
-		federate.addAttribute( newAttribute("HLAROlength",hlaCount,Federate.ROlength.handle) );
-		federate.addAttribute( newAttribute("HLATSOlength",hlaCount,Federate.TSOlength.handle) );
-		federate.addAttribute( newAttribute("HLAreflectionsReceived",hlaCount,Federate.ReflectionsReceived.handle) );
-		federate.addAttribute( newAttribute("HLAupdatesSent",hlaCount,Federate.UpdatesSent.handle) );
-		federate.addAttribute( newAttribute("HLAinteractionsReceived",hlaCount,Federate.InteractionsReceived.handle) );
-		federate.addAttribute( newAttribute("HLAinteractionsSent",hlaCount,Federate.InteractionsSent.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesThatCanBeDeleted",hlaCount,Federate.ObjectInstancesThatCanBeDeleted.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesUpdated",hlaCount,Federate.ObjectInstancesUpdated.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesReflected",hlaCount,Federate.ObjectInstancesReflected.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesDeleted",hlaCount,Federate.ObjectInstancesDeleted.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesRemoved",hlaCount,Federate.ObjectInstancesRemoved.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesRegistered",hlaCount,Federate.ObjectInstancesRegistered.handle) );
-		federate.addAttribute( newAttribute("HLAobjectInstancesDiscovered",hlaCount,Federate.ObjectInstancesDiscovered.handle) );
-		federate.addAttribute( newAttribute("HLAtimeGrantedTime",hlaMsec,Federate.TimeGrantedTime.handle) );
-		federate.addAttribute( newAttribute("HLAtimeAdvancingTime",hlaMsec,Federate.TimeAdvancingTime.handle) );
-		federate.addAttribute( newAttribute("HLAconveyRegionDesignatorSets",hlaSwitch,Federate.ConveyRegionDesignatorSets.handle) );
-		federate.addAttribute( newAttribute("HLAconveyProducingFederate",hlaSwitch,Federate.ConveyProducingFederate.handle) );
-
-		///////////////////////////////////////////////////////////////
-		///////////////// create the federation class /////////////////
-		///////////////////////////////////////////////////////////////
-		OCMetadata federation = new OCMetadata( "HLAfederation", FederationClass );
-		federation.setModel( theModel );
-		federation.setParent( manager );
-		
-		// populate it //
-		federation.addAttribute( newAttribute("HLAfederationName",hlaUnicodeString,Federation.FederationName.handle) );
-		federation.addAttribute( newAttribute("HLAfederatesInFederation",hlaHandleList,Federation.FederatesInFederation.handle) );
-		federation.addAttribute( newAttribute("HLARTIversion",hlaUnicodeString,Federation.RtiVersion.handle) );
-		federation.addAttribute( newAttribute("HLAMIMdesignator",hlaUnicodeString,Federation.MimDesignator.handle) );
-		federation.addAttribute( newAttribute("HLAFOMmoduleDesignatorList",hlaModuleDesignatorList,Federation.FomModuleDesignatorList.handle) );
-		federation.addAttribute( newAttribute("HLAcurrentFDD",hlaUnicodeString,Federation.CurrentFdd.handle) );
-		federation.addAttribute( newAttribute("HLAtimeImplementationName",hlaUnicodeString,Federation.TimeImplementationName.handle) );
-		federation.addAttribute( newAttribute("HLAlastSaveName",hlaUnicodeString,Federation.LastSaveName.handle) );
-		federation.addAttribute( newAttribute("HLAlastSaveTime",hlaUnicodeString,Federation.LastSaveTime.handle) );
-		federation.addAttribute( newAttribute("HLAnextSaveName",hlaUnicodeString,Federation.NextSaveName.handle) );
-		federation.addAttribute( newAttribute("HLAnextSaveTime",hlaUnicodeString,Federation.NextSaveTime.handle) );
-		federation.addAttribute( newAttribute("HLAautoProvide",hlaSwitch,Federation.AutoProvide.handle) );
-		
-		//////////////////////////////////////
-		// patch the manager into the model //
-		//////////////////////////////////////
-		theModel.addObjectClass( manager );
-		theModel.addObjectClass( federate );
-		theModel.addObjectClass( federation );
+		// MOM Interactions
+		ICMetadata interactionRoot = model.getInteractionRoot();
+		MomTreeNode interactionRootNode = INSTANCE.momTree.interactionRoot;
+		for( MomTreeNode interactionNode : interactionRootNode.getChildren() )
+			insertMomInteraction( interactionRoot, interactionNode, version );
 	}
 	
-	private static ACMetadata newAttribute( String name, IDatatype datatype, int handle )
+	private static void insertMomObject( OCMetadata modelParent,
+	                                     MomTreeNode objectNode,
+	                                     HLAVersion version )
 	{
-		// As method is called under controlled circumstances the datatype param should only
-		// ever refer to a standard datatype that should already exist in the model
-		if( datatype == null )
-			throw new IllegalArgumentException( "invalid datatype: " + datatype.getName() );
+		// Only insert nodes that are for the desired HLA Version
+		if( !objectNode.isSupportedVersion(version) )
+			return;
 		
-		ACMetadata attribute = new ACMetadata( name, datatype, handle );
-		attribute.setTransport( Transport.RELIABLE );
-		attribute.setOrder( Order.RECEIVE );
-		return attribute;
+		ObjectModel model = modelParent.getModel();
+		OCMetadata ocMetadata = new OCMetadata( objectNode.getName(version), 
+		                                        objectNode.getHandle() );
+		ocMetadata.setParent( modelParent );
+		model.addObjectClass( ocMetadata );
+		
+		// Process Children
+		for( MomTreeNode child : objectNode.getChildren() )
+		{
+			String versionName = child.getName( version );
+			int handle = child.getHandle();
+			
+			MomType type = child.getType();
+			if( type == MomType.Attribute && child.isSupportedVersion(version) )
+			{
+				// Child is an attribute
+				IDatatype datatype = model.getDatatype( child.getDatatype(version) );
+				ACMetadata attribute = new ACMetadata( versionName, datatype, handle );
+				attribute.setTransport( Transport.RELIABLE );
+				attribute.setOrder( Order.RECEIVE );
+				ocMetadata.addAttribute( attribute );
+			}
+			else if( type == MomType.Object )
+			{
+				// Child is nested object class
+				insertMomObject( ocMetadata, child, version );
+			}
+		}
+	}
+	
+	private static void insertMomInteraction( ICMetadata modelParent,
+	                                          MomTreeNode interactionNode,
+	                                          HLAVersion version )
+	{
+		// Only insert nodes that are for the desired HLA Version
+		if( !interactionNode.isSupportedVersion(version) )
+			return;
+		
+		ObjectModel model = modelParent.getModel();
+		ICMetadata icMetadata = new ICMetadata( interactionNode.getName(version), 
+		                                        interactionNode.getHandle() );
+		icMetadata.setParent( modelParent );
+		model.addInteractionClass( icMetadata );
+		
+		// Process Children
+		for( MomTreeNode child : interactionNode.getChildren() )
+		{
+			String versionName = child.getName( version );
+			int handle = child.getHandle();
+			
+			MomType type = child.getType();
+			if( type == MomType.Parameter && child.isSupportedVersion(version) )
+			{
+				// Child is a parameter
+				IDatatype datatype = model.getDatatype( child.getDatatype(version) );
+				PCMetadata param = new PCMetadata( versionName, datatype, handle );
+				icMetadata.addParameter( param );
+			}
+			else if( type == MomType.Interaction )
+			{
+				// Child is nested interaction
+				insertMomInteraction( icMetadata, child, version );
+			}
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////// MOM Hierarchy Generation Methods ////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	/**
+	 * A helper class that allows declarative construction of the MOM tree.
+	 * <p/>
+	 * The {@link MomTreeNodeBuilder} class supports chained declarative building by returning a reference
+	 * to itself from each of the builder methods (e.g. {@link #object(String)}, 
+	 * {@link #attribute(String, String)}) and maintaining an internal context stack. For example an 
+	 * object class with attributes and a sub-class could be declared as such:
+	 * 
+	 * <pre>
+	 *  MomTreeNodeBuilder b = new MomTreeNodeBuilder();
+	 *  b.object("BaseClass")           // push an object node onto the context stack
+	 *    .attribute("baseAttribute")   // add an attribute to the current context (BaseClass)
+	 *    .object("ChildClass")         // push another object node onto the context stack
+	 *     .attribute("childAttribute") // add an attribute to the current context (BaseClass.ChildClass)
+	 *    .end()                        // pop the current context from the stack
+	 *  MomTreeNode baseNode = b.get(); // get the current context from the stack (BaseClass)
+	 * </pre>
+	 */
+	private static class MomTreeNodeBuilder
+	{
+		private int objectCounter = 0;
+		private int attributeCounter = 0;
+		private int interactionCounter = 0;
+		private int parameterCounter = 0;
+		private Map<Integer,MomTreeNode> objectLookup;
+		private Map<Integer,MomTreeNode> attributeLookup;
+		private Map<Integer,MomTreeNode> interactionLookup;
+		private Map<Integer,MomTreeNode> parameterLookup;
+		
+		private Stack<MomTreeNode> context;
+		
+		public MomTreeNodeBuilder()
+		{
+			this.context = new Stack<>();
+			this.objectLookup = new HashMap<>();
+			this.attributeLookup = new HashMap<>();
+			this.interactionLookup = new HashMap<>();
+			this.parameterLookup = new HashMap<>();
+		}
+		
+		/**
+		 * Adds a node to the context current node. 
+		 * <p/>
+		 * <b>Note:</b> This method does not affect the context stack.
+		 *  
+		 * @param newNode the node to add to the current context node
+		 * @throws IllegalStateException if the context stack is currently empty
+		 */
+		private void add( MomTreeNode newNode )
+		{
+			if( !this.context.isEmpty() )
+			{
+				MomTreeNode currentContext = this.context.peek();
+				currentContext.addChild( newNode );
+			}
+			else
+			{
+				throw new IllegalStateException( "no context to add to" );
+			}
+		}
+		
+		/**
+		 * Adds the specified node to the context current node and pushes it onto the context stack. 
+		 *  
+		 * @param newNode the node to add to the current context node
+		 */
+		private void addAndPush( MomTreeNode newNode )
+		{
+			if( !this.context.isEmpty() )
+			{
+				MomTreeNode currentContext = this.context.peek();
+				currentContext.addChild( newNode );
+			}
+			
+			this.context.push( newNode );
+		}
+		
+		/**
+		 * Creates an object {@link MomTreeNode} for all HLA Versions and adds it to the current context 
+		 * node.
+		 * <p/>
+		 * <b>Note:</b> The object's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * <p/>
+		 * The created node is pushed onto the context stack to become the new context node.
+		 * 
+		 * @param name the name of the object
+		 * @return this
+		 */
+		public MomTreeNodeBuilder object( String name )
+		{
+			return object( name, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates an object {@link MomTreeNode} for the specified HLA Versions and adds it to the current 
+		 * context node.
+		 * <p/>
+		 * <b>Note:</b> The object's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * <p/>
+		 * The created node is pushed onto the context stack to become the new context node.
+		 * 
+		 * @param name the name of the object
+		 * @param supportedVersions the HLA Versions that the object is supported in
+		 * @return this
+		 */
+		public MomTreeNodeBuilder object( String name, HLAVersion... supportedVersions )
+		{
+			Set<HLAVersion> versions = new HashSet<>(); 
+			for( HLAVersion version : supportedVersions )
+				versions.add( version );
+			
+			int handle = objectCounter++;
+			MomTreeNode node = new MomTreeNode( VersionedName.from(name), 
+			                                    MomType.Object, 
+			                                    handle,
+			                                    versions );
+			
+			this.addAndPush( node );
+			objectLookup.put( handle, node );
+			return this;
+		}
+		
+		/**
+		 * Creates an attribute {@link MomTreeNode} for all HLA Versions and adds it to the current 
+		 * context node.
+		 * <p/>
+		 * <b>Note:</b> The attribute's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * 
+		 * @param name the name of the attribute
+		 * @param datatype the name of this attribute's datatype
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Object node
+		 */
+		public MomTreeNodeBuilder attribute( String name, String datatype )
+		{
+			return attribute( VersionedName.from(name), datatype, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates an attribute {@link MomTreeNode} for all HLA Versions and adds it to the current 
+		 * context node.
+		 * 
+		 * @param name the name of the attribute under each HLA version
+		 * @param datatype the name of this attribute's datatype
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Object node
+		 */
+		public MomTreeNodeBuilder attribute( VersionedName name, String datatype )
+		{
+			return attribute( name, datatype, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates an attribute {@link MomTreeNode} for the specified HLA Versions and adds it to the 
+		 * current context node.
+		 * <p/>
+		 * <b>Note:</b> The attribute's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * 
+		 * @param name the name of the attribute for each HLA version
+		 * @param datatype the name of this attribute's datatype
+		 * @param supportedVersions the HLA Versions that support this attribute
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Object node
+		 */
+		public MomTreeNodeBuilder attribute( String name, String datatype, HLAVersion... supportedVersions )
+		{
+			return attribute( VersionedName.from(name), datatype, supportedVersions );
+		}
+		
+		/**
+		 * Creates an attribute {@link MomTreeNode} for the specified HLA Versions and adds it to the 
+		 * current context node.
+		 * 
+		 * @param name the name of the attribute under each HLA version
+		 * @param datatype the name of this attribute's datatype
+		 * @param supportedVersions the HLA Versions that support this attribute
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Object node
+		 */
+		public MomTreeNodeBuilder attribute( VersionedName name, 
+		                                     String datatype, 
+		                                     HLAVersion... supportedVersions )
+		{
+			if( context.size() == 0 )
+				throw new IllegalStateException( "attribute cannot be root node" );
+			
+			if( context.peek().type != MomType.Object )
+				throw new IllegalStateException( "attribute can only be added to an object" );
+			
+			Set<HLAVersion> versions = new HashSet<>(); 
+			for( HLAVersion version : supportedVersions )
+				versions.add( version );
+			
+			int handle = attributeCounter++;
+			MomTreeNode node = new MomTreeNode( name, 
+			                                    MomType.Attribute,
+			                                    datatype,
+			                                    handle,
+			                                    versions );
+			this.add( node );
+			this.attributeLookup.put( handle, node );
+			return this;
+		}
+		
+		/**
+		 * Creates an interaction {@link MomTreeNode} for all HLA Versions and adds it to the current 
+		 * context node.
+		 * <p/>
+		 * <b>Note:</b> The interaction's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * <p/>
+		 * The created node is pushed onto the context stack to become the new context node.
+		 * 
+		 * @param name the name of the interaction
+		 * @return this
+		 */
+		public MomTreeNodeBuilder interaction( String name )
+		{
+			return interaction( name, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates an interaction {@link MomTreeNode} for all HLA Versions and adds it to the current 
+		 * context node.
+		 * <p/>
+		 * The created node is pushed onto the context stack to become the new context node.
+		 * 
+		 * @param name the name of the interaction under each HLA version
+		 * @return this
+		 */
+		public MomTreeNodeBuilder interaction( VersionedName name )
+		{
+			return interaction( name, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates an interaction {@link MomTreeNode} for the specified HLA Versions and adds it to the 
+		 * current context node.
+		 * <p/>
+		 * <b>Note:</b> The interaction's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * <p/>
+		 * The created node is pushed onto the context stack to become the new context node.
+		 * 
+		 * @param name the name of the interaction
+		 * @param supportedVersions the HLA Versions that support this attribute
+		 * @return this
+		 */
+		public MomTreeNodeBuilder interaction( String name, HLAVersion... supportedVersions )
+		{
+			return interaction( VersionedName.from(name), supportedVersions );
+		}
+		
+		/**
+		 * Creates an interaction {@link MomTreeNode} for the specified HLA Versions and adds it to the 
+		 * current context node.
+		 * <p/>
+		 * <b>Note:</b> The interaction's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * <p/>
+		 * The created node is pushed onto the context stack to become the new context node.
+		 * 
+		 * @param name the name of the interaction under each HLA version
+		 * @param supportedVersions the HLA Versions that support this attribute
+		 * @return this
+		 */
+		public MomTreeNodeBuilder interaction( VersionedName name, HLAVersion... supportedVersions )
+		{
+			Set<HLAVersion> versions = new HashSet<>(); 
+			for( HLAVersion version : supportedVersions )
+				versions.add( version );
+			
+			int handle = interactionCounter++;
+			MomTreeNode node = new MomTreeNode( name, 
+			                                    MomType.Interaction, 
+			                                    handle,
+			                                    versions );
+			
+			this.addAndPush( node );
+			this.interactionLookup.put( handle, node );
+			return this;
+		}
+		
+		/**
+		 * Creates a parameter {@link MomTreeNode} for all HLA Versions and adds it to the current 
+		 * context node.
+		 * <p/>
+		 * <b>Note:</b> The parameter's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * 
+		 * @param name the name of the parameter
+		 * @param datatype the name of this parameter's datatype
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Interaction node
+		 */
+		public MomTreeNodeBuilder parameter( String name, String datatype )
+		{
+			return parameter( name, datatype, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates a parameter {@link MomTreeNode} for all HLA Versions and adds it to the current 
+		 * context node.
+		 * <p/>
+		 * <b>Note:</b> The parameter's name for each HLA version naming scheme will be automatically 
+		 * generated from the <code>name</code> parameter via the simple pattern rule.
+		 * 
+		 * @param name the name of the parameter under each HLA version
+		 * @param datatype the name of this parameter's datatype
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Interaction node
+		 */
+		public MomTreeNodeBuilder parameter( VersionedName name, String datatype )
+		{
+			return parameter( name, datatype, HLAVersion.values() );
+		}
+		
+		/**
+		 * Creates a parameter {@link MomTreeNode} for the specified HLA Versions and adds it to the 
+		 * current context node.
+		 * 
+		 * @param name the name of the parameter
+		 * @param datatype the name of this parameter's datatype
+		 * @param supportedVersions the HLA Versions that support this parameter
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Parameter node
+		 */
+		public MomTreeNodeBuilder parameter( String name, String datatype, HLAVersion...supportedVersions )
+		{
+			return parameter( VersionedName.from(name), datatype, supportedVersions );
+		}
+		
+		/**
+		 * Creates a parameter {@link MomTreeNode} for the specified HLA Versions and adds it to the 
+		 * current context node.
+		 * 
+		 * @param name the name of the parameter under each HLA version
+		 * @param datatype the name of this parameter's datatype
+		 * @param supportedVersions the HLA Versions that support this parameter
+		 * @return this
+		 * @throws IllegalStateException if the current context is not an Parameter node
+		 */
+		public MomTreeNodeBuilder parameter( VersionedName name, 
+		                                     String datatype, 
+		                                     HLAVersion...supportedVersions )
+		{
+			if( context.size() == 0 )
+				throw new IllegalStateException( "parameter cannot be root node" );
+			
+			if( context.peek().type != MomType.Interaction )
+				throw new IllegalStateException( "parameter can only be added to an interaction" );
+			
+			Set<HLAVersion> versions = new HashSet<>(); 
+			for( HLAVersion version : supportedVersions )
+				versions.add( version );
+			
+			int handle = parameterCounter++;
+			MomTreeNode node = new MomTreeNode( name, 
+			                                    MomType.Parameter, 
+			                                    datatype, 
+			                                    handle,
+			                                    versions );
+			this.add( node );
+			this.parameterLookup.put( handle, node );
+			return this;
+		}
+		
+		/**
+		 * Marks the end of the current context node, popping it from the stack.
+		 * 
+		 * @return the previous node on the context stack
+		 */
+		public MomTreeNodeBuilder end()
+		{
+			this.context.pop();
+			return this;
+		}
+		
+		/**
+		 * @return the current context node
+		 */
+		public MomTreeNode getContext()
+		{
+			return this.context.peek();
+		}
+		
+		public Map<Integer,MomTreeNode> getObjectLookup()
+		{
+			return this.objectLookup;
+		}
+		
+		public Map<Integer,MomTreeNode> getAttributeLookup()
+		{
+			return this.attributeLookup;
+		}
+		
+		public Map<Integer,MomTreeNode> getInteractionLookup()
+		{
+			return this.interactionLookup;
+		}
+		
+		public Map<Integer,MomTreeNode> getParameterLookup()
+		{
+			return this.parameterLookup;
+		}
+	}
+	
+	/**
+	 * A tree to hold the internal representation of metadata for standard MOM types.
+	 * <p/>
+	 * The tree contains nodes representing the hierarchy of objects, attributes, interactions and 
+	 * parameters and can be used to populate an {@link ObjectModel} with {@link OCMetadata}
+	 * and {@link ICMetadata} for all MOM types.
+	 * <p/>
+	 * To allow a cross-version lookup, we store a {@link VersionedName} for each node, so that we can 
+	 * resolve MOM type handles regardless of which naming version is being used.
+	 * <p/>
+	 * Nodes can be fetched from the tree by qualified name using 
+	 * {@link #find(String, HLAVersion, MomTreeNode)}, or by handle by calling 
+	 * {@link #find(MomType, int, MomTreeNode)}.
+	 */
+	private static class MomHandleTree
+	{
+		private MomTreeNode objectRoot;
+		private MomTreeNode interactionRoot;
+		
+		/**
+		 * MomHandleTree constructor with specified interaction root
+		 * 
+		 * @param interactionRoot the tree node representing InteractionRoot
+		 */
+		private MomHandleTree( MomTreeNode objectRoot, MomTreeNode interactionRoot )
+		{
+			this.objectRoot = objectRoot;
+			this.interactionRoot = interactionRoot;
+		}
+		
+		/**
+		 * Finds the tree node that matches the specified qualified name.
+		 * 
+		 * @param name the qualified name of the node to find e.g. "Manager.Federation.Request"
+		 * @param version the HLA version that the <code>name</code> parameter conforms to
+		 * @param root the node to begin the search from
+		 * @return the node in the tree that matches the specified name, or <code>null</code> if no node
+		 *         exists in the tree with that name 
+		 */
+		public MomTreeNode find( String name, HLAVersion version, MomTreeNode root )
+		{
+			// Break the qualified name into tokens
+			String[] nameTokens = tokenizeName( name );
+			
+			MomTreeNode context = root;
+			for( int i = 0 ; i < nameTokens.length ; ++i )
+			{
+				// The current token we are searching for
+				String matchName = nameTokens[i].toLowerCase();
+				MomTreeNode nextContext = null;
+				
+				// Iterate over all child nodes in the current context, searching for the one that matches 
+				// the current token
+				List<MomTreeNode> children = context.getChildren();
+				for( MomTreeNode child : children )
+				{
+					String childName = child.getName(version).toLowerCase();
+					if( childName.equals(matchName) )
+					{
+						// This node matches the current token that we're looking for, so it becomes the
+						// context for the next token
+						nextContext = child;
+						break;
+					}
+				}
+				
+				if( nextContext == null )
+				{
+					// Next part in the chain wasn't found, so break from the loop, returning null
+					break;
+				}
+				else
+				{
+					context = nextContext;
+				}
+			}
+			
+			return context;
+		}
+		
+		/**
+		 * Finds the tree node with the specified handle
+		 * 
+		 * @param type the type of node to search for
+		 * @param handle the handle of the node to search for
+		 * @param version the HLA version that the <code>name</code> parameter conforms to
+		 * @param root the node to begin the search from
+		 * @return the node in the tree that matches the specified type/handle, or <code>null</code> if no 
+		 *         node exists in the tree that matches the specified type/handle 
+		 */
+		public MomTreeNode find( MomType type, int handle, MomTreeNode root )
+		{
+			// TODO This could be optimized by caching found results, or creating a lookup tree on
+			// startup
+			
+			MomTreeNode found = null;
+			if( root.type == type && root.handle == handle )
+			{
+				// This is the node!
+				found = root;
+			}
+			else
+			{
+				// Recurse find over all child nodes
+				for( MomTreeNode child : root.children )
+				{
+					found = find( type, handle, child );
+					if( found != null )
+						break;
+				}
+			}
+			
+			return found;
+		}
+		
+		/**
+		 * Splits a qualified name into individual tokens
+		 * 
+		 * @param name the qualified name to split
+		 * @return the name tokens ordered from root to tip
+		 */
+		private String[] tokenizeName( String name )
+		{
+			StringTokenizer tokenizer = new StringTokenizer( name, "." );
+			String[] tokenArray = new String[tokenizer.countTokens()];
+			for( int i = 0 ; i < tokenArray.length ; ++i )
+				tokenArray[i] = tokenizer.nextToken();
+			
+			return tokenArray;
+		}
+	}
+	
+	/**
+	 * A node in the MomHandleTree.
+	 * <p/>
+	 * Nodes in the tree may represent Mom Object Classes, Attributes, Interaction Classes or Parameters.
+	 * <p/>
+	 * To allow a cross-version lookup, we store a {@link VersionedName} for each node, so that we can 
+	 * resolve MOM type handles regardless of which naming version is being used.
+	 */
+	private static class MomTreeNode
+	{
+		private MomTreeNode parent;
+		private List<MomTreeNode> children;
+		private VersionedName name;
+		private int handle;
+		private MomType type;
+		private String datatype; // For attributes and parameters, only for 1516+ (all mom types are strings in 1.3)
+		private Set<HLAVersion> supportedVersions;
+		
+		public MomTreeNode( VersionedName name, 
+		                    MomType type, 
+		                    int handle, 
+		                    Collection<HLAVersion> supportedVersions )
+		{
+			this( name, type, null, handle, supportedVersions );
+		}
+		
+		public MomTreeNode( VersionedName name, 
+		                    MomType type, 
+		                    String datatype, 
+		                    int handle, 
+		                    Collection<HLAVersion> supportedVersions )
+		{
+			this.name = name;
+			this.parent = null;
+			this.handle = handle;
+			this.type = type;
+			this.children = new ArrayList<>();
+			this.datatype = datatype;
+			this.supportedVersions = EnumSet.copyOf( supportedVersions );
+		}
+		
+		public boolean isSupportedVersion( HLAVersion version )
+		{
+			return this.supportedVersions.contains( version );
+		}
+		
+		public MomTreeNode getParent()
+		{
+			return this.parent;
+		}
+		
+		public MomType getType()
+		{
+			return this.type;
+		}
+		
+		public int getHandle()
+		{
+			return this.handle;
+		}
+		
+		public List<MomTreeNode> getChildren()
+		{
+			return new ArrayList<>( this.children );
+		}
+		
+		/**
+		 * Returns the version-specific name of this node.
+		 *  
+		 * @param version a HLA specification version
+		 * @return the name of the node for the specified HLA version
+		 * 
+		 * @see #getQualifiedName(HLAVersion)
+		 */
+		public String getName( HLAVersion version )
+		{
+			return this.name.get( version );
+		}
+		
+		/**
+		 * Returns the fully qualified version-specific name of this node.
+		 *  
+		 * @param version a HLA specification version
+		 * @return the name of the node for the specified HLA version
+		 * 
+		 * @see #getName(HLAVersion)
+		 */
+		public String getQualifiedName( HLAVersion version )
+		{
+			String name = this.getName( version );
+			if( this.parent != null )
+				name = this.parent.getQualifiedName( version ) + "." + name;
+			
+			return name;
+		}
+		
+		public String getDatatype( HLAVersion version )
+		{
+			// The datatype for all MOM attributes/params in HLA13 are plain strings
+			if( version == HLAVersion.HLA13 || version == HLAVersion.JAVA1 )
+				return "HLAASCIIstring";
+			else
+				return this.datatype;
+		}
+		
+		public void addChild( MomTreeNode node )
+		{
+			if( node.parent == null )
+			{
+				node.parent = this;
+				this.children.add( node );
+			}
+			else
+			{
+				throw new IllegalArgumentException( node.getName(HLAVersion.IEEE1516e) + 
+				                                    " already has a parent" );
+			}
+		}
+		
+		public String toString()
+		{
+			return this.getName( HLAVersion.IEEE1516e );
+		}
 	}
 }

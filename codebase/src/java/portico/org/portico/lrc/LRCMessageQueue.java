@@ -29,9 +29,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.portico.lrc.services.saverestore.data.SaveRestoreTarget;
-import org.portico.lrc.services.time.data.TimeStatus;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.time.data.TimeStatus;
 
 /**
  * The MessageQueue class is designed to store incoming messages for later processing by a federate.

@@ -22,10 +22,10 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ICMetadata;
 import org.portico.lrc.model.RegionInstance;
-import org.portico.lrc.services.object.data.ICInterest;
-import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.SendInteraction;
+import org.portico2.common.services.pubsub.data.ICInterest;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},

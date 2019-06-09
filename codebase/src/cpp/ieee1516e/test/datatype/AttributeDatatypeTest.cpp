@@ -41,7 +41,6 @@ void AttributeDatatypeTest::setUp()
 		wcout << L"Didn't create federation, it already existed" << endl;
 	}
 
-	
 	this->defaultFederate->quickJoin(L"HLA_datatype_tests");
 }
 

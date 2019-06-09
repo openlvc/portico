@@ -40,6 +40,7 @@
 	<property name="test.reports.dir"         location="${test.build.dir}/reports"/>
 
 	<property name="test.binding"             value="jvm"/>
+	<property name="test.connection"          value="jvm"/>
 	<property name="test.loglevel"            value="OFF"/>
 	<property name="test.fileLogLevel"        value="OFF"/>
 
@@ -49,12 +50,8 @@
 	<property name="examples.ieee1516e.dir"         location="${java.src.dir}/examples/ieee1516e"/>
 	<property name="examples.ieee1516e.classes.dir" location="${java.build.dir}/examples/ieee1516e"/>
 
-	<!-- ==== Onejar Related Properties ==== -->
-	<!-- To provide a single jar, we extract all deps here and copy them into the portico jar -->
-	<property name="onejar.dir"               location="${build.dir}/onejar"/>
-
 	<!-- ==== Javadoc Related Properties ==== -->
-	<property name="javadoc.oracle"           value="http://docs.oracle.com/javase/7/docs/api/"/>
+	<property name="javadoc.oracle"           value="http://docs.oracle.com/javase/8/docs/api/"/>
 	<property name="javadoc.sisocopyright"    value="Copyright Simulation Interoperability Standard Organization"/>
 	<property name="javadoc.ppcopyright"      value="Copyright The Portico Project ${YEAR}."/>
 	<property name="javadoc.ppwindow"         value="${build.shortname} [${build.version} build] Javadoc"/>
@@ -70,10 +67,11 @@
 	<!-- These properties are set so that any information relating to a specific path
 	     for a library can be changed in a single spot. The properties should be used
 	     when defining paths and the like later in the build file -->
-	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
+	<property name="testng.dir"            location="${lib.dir}/testng/testng-7.0.0"/> <!-- update taskdef in macros -->
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-git"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-2.10.0"/>
 	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
+	<property name="bouncycastle.dir"      location="${lib.dir}/bouncycastle/fips/1.0.1"/>
 
 	<!-- Classpaths for individual libraries -->
 	<path id="lib.testng.classpath">
@@ -81,15 +79,19 @@
 	</path>
 	
 	<path id="lib.jgroups.classpath">
-		<fileset dir="${jgroups.dir}" includes="**/*"/>
+		<fileset dir="${jgroups.dir}" includes="**/*.jar"/>
 	</path>
 
 	<path id="lib.log4j.classpath">
-		<fileset dir="${log4j.dir}" includes="**/*"/>
+		<fileset dir="${log4j.dir}" includes="**/*.jar"/>
 	</path>
 
 	<path id="lib.asm.classpath">
-		<fileset dir="${asm.dir}" includes="**/*"/>
+		<fileset dir="${asm.dir}" includes="**/*.jar"/>
+	</path>
+
+	<path id="lib.bouncycastle.classpath">
+		<fileset dir="${bouncycastle.dir}" includes="**/*.jar"/>
 	</path>
 
 	<!-- ========================== -->
@@ -99,6 +101,7 @@
 		<path refid="lib.jgroups.classpath"/>
 		<path refid="lib.log4j.classpath"/>
 		<path refid="lib.asm.classpath"/>
+		<path refid="lib.bouncycastle.classpath"/>
 	</path>
 	
 	<path id="test.classpath">
@@ -109,7 +112,12 @@
 		<pathelement path="${resources.dir}/jars/portico.jar"/>
 		<pathelement path="${resources.dir}/test-data"/>
 	</path>
-	
+
+	<!-- generate the classpath for the manifest -->
+	<manifestclasspath property="portico.manifest.classpath" jarfile="${lib.dir}/portico.jar">
+		<classpath refid="compile.classpath"/>
+	</manifestclasspath>
+
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
 	<!-- ================================================================================= -->
@@ -220,7 +228,7 @@
 			<jvmarg value="-Dtest.loglevel=${test.loglevel}"/>
 			<jvmarg value="-Dtest.fileLogLevel=${test.fileLogLevel}"/>
 			<jvmarg value="-Dtest.root.dir=${test.root.dir}"/>
-			<jvmarg value="-Dtest.binding=${test.binding}"/>
+			<jvmarg value="-Dtest.connection=${test.connection}"/>
 	     </java-test>
 	</target>
 
@@ -239,7 +247,15 @@
 		<mkdir dir="${sandbox.dir}/plugins"/>
 
 		<!-- copy across the dependant libraries -->
-		<mkdir dir="${sandbox.lib.dir}"/>
+		<mkdir dir="${sandbox.dir}/lib"/>
+		<copy todir="${sandbox.dir}/lib">
+			<fileset dir="${lib.dir}">
+				<include name="jgroups/**/*"/>
+				<include name="log4j/**/*"/>
+				<include name="asm/**/*"/>
+				<include name="bouncycastle/**/*"/>
+			</fileset>
+		</copy>
 
 		<!-- copy across the resources -->
 		<copy todir="${sandbox.dir}">
@@ -279,15 +295,12 @@
 	<extension-point name="jars"/>
 
 	<!-- build the main portico jar file -->
-	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
+	<target name="jar.portico" extensionOf="jars" depends="compile">
 		<!-- construct the main portico jar file -->
 		<jar destfile="${sandbox.dir}/lib/portico.jar">
 			<!-- portico code -->
 			<fileset dir="${portico.classes.dir}" includes="**/*.class"/>
 			
-			<!-- dependency code (onejar stuff) -->
-			<fileset dir="${onejar.dir}" includes="**/*"/>
-
 			<!-- internal jar resources -->
 			<fileset dir="${resources.jars.dir}/portico.jar" includes="**/*"/>
 
@@ -299,39 +312,20 @@
 
 			<!-- MANIFEST -->
 			<manifest>
-				<attribute name="Main-Class" value="org.portico.Main"/>
-				<attribute name="Built-By" value="Calytrix Technologies"/>
+				<attribute name="Product"          value="Portico"/>
+				<attribute name="Product-Version"  value="${build.version}"/>
+				<attribute name="Built-By"         value="Open LVC Project"/>
+				<attribute name="Built-Date"       value="${TODAY}"/>
+				<attribute name="Main-Class"       value="org.portico.Main"/>
+				<attribute name="Class-Path"       value="../ ${portico.manifest.classpath}"/>
 				<section name="org/portico">
-					<attribute name="Implementation-Title" value="portico"/>
+					<attribute name="Implementation-Title"   value="org.portico"/>
 					<attribute name="Implementation-Version" value="${build.version} (build ${build.number}) ${TODAY}"/>
-					<attribute name="Implementation-Vendor" value="Calytrix Technologies"/>
+					<attribute name="Implementation-Vendor"  value="Open LVC Project"/>
 				</section>
 			</manifest>
+
 		</jar>
-	</target>
-
-	<!-- Extract all the releant dependencies into the onejar location -->	
-	<target name="onejar">
-		<mkdir dir="${onejar.dir}"/>
-
-		<!-- Check to see if we need to extract things again due to dependency changes
-		     or new dependencies being added. Otherwise we skip this step. -->
-		<uptodate property="deps.uptodate" targetfile="${onejar.dir}/.created">
-			<srcfiles dir="${lib.dir}" includes="**/*.jar"/>
-		</uptodate>
-		
-		<if><isset property="deps.uptodate"/>
-		<then>
-			<echo>No need to unjar deps again - they're up to date</echo>
-		</then>
-		<else>
-			<touch file="${onejar.dir}/.created"/>
-			<!-- extract the deps for the one-jar style distribution -->
-			<unjar dest="${onejar.dir}">
-				<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
-			</unjar>
-		</else>
-		</if>
 	</target>
 
 	<!-- ================================================================================= -->

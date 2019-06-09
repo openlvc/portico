@@ -23,9 +23,9 @@ import org.portico.impl.hla1516.Impl1516Helper;
 import org.portico.impl.hla1516.types.HLA1516ObjectClassHandle;
 import org.portico.impl.hla1516.types.HLA1516ObjectInstanceHandle;
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.services.object.msg.DiscoverObject;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.object.msg.DiscoverObject;
 
 /**
  * Generate discoverObjectInstance() callbacks to a IEEE1516 compliant federate ambassador

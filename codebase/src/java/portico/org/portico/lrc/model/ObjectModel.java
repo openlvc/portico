@@ -295,7 +295,7 @@ public class ObjectModel implements Serializable
 		
 		// the only other thing that could have gotten missed is a MOM class
 		// below will return null if it isn't a MOM class
-		return this.getObjectClass( Mom.getMomClassHandle(version,name) );
+		return this.getObjectClass( Mom.getMomObjectClassHandle(version,name) );
 	}
 	
 	/**
@@ -379,6 +379,9 @@ public class ObjectModel implements Serializable
 				this.privilegeToDelete = root.getAttributeHandle( "HLAprivilegeToDeleteObject" );
 			}
 		}
+		
+		// If the new ocroot has no privilegeToDelete, then make sure it is added
+		this.addPrivilegeToDeleteIfNotPresent();
 	}
 
 	/**
@@ -395,14 +398,14 @@ public class ObjectModel implements Serializable
 	 */
 	public void addPrivilegeToDeleteIfNotPresent()
 	{
-		// TODO: As this is for 1516e shouldn't this be HLAprivilegeToDelete? getDeclaredAttribute
-		// does no cross-version name resolution
-		ACMetadata temp = ocroot.getDeclaredAttribute( "privilegeToDelete" );
+		String name = this.version == HLAVersion.HLA13 ? "privilegeToDelete" : 
+		                                                 "HLAprivilegeToDeleteObject";
+		ACMetadata temp = ocroot.getDeclaredAttribute( name );
 		if( temp == null )
 		{
 			// TODO: This HLAprivilegeToDelete is NA in 1516 but HLAtoken in 1516e. This method
 			// looks to only ever called for 1516e foms, so I've hardcoded it for HLAtoken 
-			temp = this.newAttribute( "privilegeToDelete", getDatatype("HLAtoken") );
+			temp = this.newAttribute( name, getDatatype("HLAtoken") );
 			ocroot.addAttribute( temp );
 			this.privilegeToDelete = temp.getHandle();
 		}
@@ -516,6 +519,21 @@ public class ObjectModel implements Serializable
 	{
 		return this.privilegeToDelete;
 	}
+	
+	/**
+	 * This method will get the ACMetadata for the privilege to delete attribute. As the standards
+	 * board changed the name of the attribute from 1.3 to 1516 (for no other good reason than
+	 * to cause everyone pain), this method will take version into account. A user should
+	 * <b>NEVER</b> try and get privilegeToDelete or HLAprivilegeToDeleteObject by name from
+	 * wihin a handler (or any part of the RTI).
+	 *
+	 * @return The metadata type for the privilege to delete attribute or null if there is
+	 *         currently no object root set.
+	 */
+	public ACMetadata getPrivileteToDeleteMetaClass()
+	{
+		return ocroot.getDeclaredAttribute( this.privilegeToDelete );
+	}
 
 	/////////////////////////////////////////////////////////////
 	////////////////// InteractionClass Methods /////////////////
@@ -577,8 +595,9 @@ public class ObjectModel implements Serializable
 			name.equalsIgnoreCase("HLAinteractionRoot") )
 			return this.getInteractionRoot();
 
-		// we didn't find the name, return null
-		return null;
+		// the only other thing that could have gotten missed is a MOM class
+		// below will return null if it isn't a MOM class
+		return this.getInteractionClass( Mom.getMomInteractionHandle(version,name) );
 	}
 	
 	/**
@@ -856,13 +875,18 @@ public class ObjectModel implements Serializable
 		/////////////////////////////////////////////////////////////
 		// remove any MOM stuff that currently exists in the model //
 		/////////////////////////////////////////////////////////////
-		String managerName = "ObjectRoot.Manager";
+		String objectManagerName = "ObjectRoot.Manager";
+		String interactionManagerName = "InteractionRoot.Manager";
 		if( model.version == HLAVersion.IEEE1516 || model.version == HLAVersion.IEEE1516e )
 		{
-			managerName = "HLAobjectRoot.HLAmanager";
+			objectManagerName = "HLAobjectRoot.HLAmanager";
+			interactionManagerName = "HLAinteractionRoot.HLAmanager";
 		}
 		
-		OCMetadata ocManager = model.getObjectClass( managerName );
+		//
+		// Objects
+		//
+		OCMetadata ocManager = model.getObjectClass( objectManagerName );
 		if( ocManager != null )
 		{
 			// we have MOM stuff, nurse, pass my cleaver
@@ -879,24 +903,30 @@ public class ObjectModel implements Serializable
 			}
 		}
 		
-		// do the same for any MOM interactions //
-		// FIXME still need to add this //
+		//
+		// Interactions
+		//
+		ICMetadata icManager = model.getInteractionClass( interactionManagerName );
+		if( icManager != null )
+		{
+			// we have MOM stuff, nurse, pass my cleaver
+			icManager.cleave();
+			model.iclasses.remove( ocManager.getHandle() );
+			
+			// remove all its children from the model //
+			// have to create a separate set to avoid a ConcurrentModificationException
+			Set<ICMetadata> children = new HashSet<ICMetadata>( icManager.getChildTypes() );
+			for( ICMetadata clazz : children )
+			{
+				clazz.cleave();
+				model.iclasses.remove( clazz.getHandle() );
+			}
+		}
 
 		//////////////////////////////////
 		// add the predefined MOM stuff //
 		//////////////////////////////////
-		switch( model.version )
-		{
-			case HLA13:
-			case IEEE1516:
-				Mom.insertMomHierarchy( model );
-				break;
-			case IEEE1516e:
-				Mom.insertMomHierarchy1516e( model );
-				break;
-			default:
-				throw new RuntimeException( "Could't determine spec version when inserting MOM" );
-		}
+		Mom.insertMomHierarchy( model );
 		
 		// lock the model again //
 		if( wasLocked )

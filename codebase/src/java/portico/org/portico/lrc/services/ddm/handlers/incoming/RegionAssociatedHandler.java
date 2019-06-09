@@ -24,9 +24,9 @@ import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.RegionInstance;
 import org.portico.lrc.services.ddm.msg.AssociateRegion;
-import org.portico.lrc.services.object.data.RegionStore;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.ddm.data.RegionStore;
 
 /**
  * Handles incoming notifications about the removal of a region. Notify the {@link RegionStore} and

@@ -17,9 +17,9 @@ package org.portico.impl.hla1516e.handlers;
 import java.util.Map;
 
 import org.portico.impl.hla1516e.types.HLA1516eFederateHandleSet;
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
 
 /**
  * This handler generates IEDE1516e callbacks for synchronization point announcements.
@@ -55,7 +55,7 @@ public class SyncAchievedCallbackHandler extends HLA1516eCallbackHandler
 	{
 		SyncPointAchieved request = context.getRequest( SyncPointAchieved.class, this );
 		String label = request.getLabel();
-
+System.out.println( "////////////////////////////////////////"+label );
 		// remove the point from the state
 		syncManager.removePoint( label );
 		

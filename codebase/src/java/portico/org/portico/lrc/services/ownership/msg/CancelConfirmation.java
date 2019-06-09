@@ -17,6 +17,7 @@ package org.portico.lrc.services.ownership.msg;
 import java.util.Set;
 
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.messaging.MessageType;
 
 /**
  * This class represents an ownership acquisition or divestiture cancellation confirmation.
@@ -47,6 +48,12 @@ public class CancelConfirmation extends PorticoMessage
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
+	@Override
+	public MessageType getType()
+	{
+		return MessageType.CancelConfirmation;
+	}
+
 	public int getObjectHandle()
 	{
 		return objectHandle;

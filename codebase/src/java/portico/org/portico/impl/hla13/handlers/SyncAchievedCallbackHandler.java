@@ -16,9 +16,9 @@ package org.portico.impl.hla13.handlers;
 
 import java.util.Map;
 
-import org.portico.lrc.services.sync.msg.SyncPointAchieved;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.sync.msg.SyncPointAchieved;
 
 /**
  * This handler generates HLA 1.3 callbacks for synchronization point announcements.

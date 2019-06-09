@@ -15,8 +15,18 @@
 package hlaunit.ieee1516e.common;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import hla.rti1516e.ParameterHandleValueMap;
+import hla.rti1516e.RTIambassador;
+import hla.rti1516e.exceptions.FederateNotExecutionMember;
+import hla.rti1516e.exceptions.InteractionParameterNotDefined;
+import hla.rti1516e.exceptions.InvalidInteractionClassHandle;
+import hla.rti1516e.exceptions.InvalidParameterHandle;
+import hla.rti1516e.exceptions.NotConnected;
+import hla.rti1516e.exceptions.RTIinternalError;
+
+import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
 
 /**
@@ -81,6 +91,26 @@ public class TestInteraction
     {
     	return parameters;
     }
+	
+	public HashMap<String,byte[]> getParametersNamed( RTIambassador rtiamb )
+		throws RTIinternalError, 
+		       NotConnected, 
+		       FederateNotExecutionMember, 
+		       InvalidInteractionClassHandle,
+		       InvalidParameterHandle,
+		       InteractionParameterNotDefined
+	{
+		HashMap<String,byte[]> namedMap = new HashMap<>();
+		HLA1516eHandle icHandle = new HLA1516eHandle( classHandle );
+		for( Entry<Integer,byte[]> entry : this.parameters.entrySet() )
+		{
+			HLA1516eHandle pHandle = new HLA1516eHandle( entry.getKey() );
+			String pName = rtiamb.getParameterName( icHandle, pHandle );
+			namedMap.put( pName, entry.getValue() );
+		}
+		
+		return namedMap;
+	}
 	
 	public byte[] getParameterValue( int handle )
 	{

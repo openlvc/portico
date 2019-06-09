@@ -23,11 +23,11 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.RoleCall;
 import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.RoleCall;
 
 @MessageHandler(modules="lrc-base",
                 keywords={"lrc13","lrcjava1","lrc1516","lrc1516e"},
@@ -88,17 +88,16 @@ public class JoinFederationHandler extends LRCMessageHandler
 		}
 
 		// log the request and pass it on to the connection
-		logger.debug( String.format( "ATTEMPT Join federate [%s] to federation [%s]", 
-		                             federateName, federationName ) ); 
+		logger.debug( "ATTEMPT Join federate ["+federateName+"] to federation ["+federationName+"]" );
 		
 		// parse any additional FOM modules and store back in the request for processing
-		if( request.getFomModules().size() > 0 )
+		if( request.getFomModuleLocations().size() > 0 )
 		{
-			for( URL fedLocation : request.getFomModules() )
-				request.addJoinModule( FomParser.parse(fedLocation) );
+			for( URL fedLocation : request.getFomModuleLocations() )
+				request.addJoinModule( fedLocation, FomParser.parse(fedLocation) );
 			
 			// let people know what happened
-			logger.debug( "Parsed ["+request.getJoinModules().size()+"] additional FOM modules" );
+			logger.debug( "Parsed ["+request.getParsedJoinModules().size()+"] additional FOM modules" );
 		}
 		
 		///////////////////////////////
@@ -129,7 +128,7 @@ public class JoinFederationHandler extends LRCMessageHandler
 		// broadcast out the notification so that other federates know we're in the federation
 		rolecall.setSourceFederate( federateHandle );
 		rolecall.setImmediateProcessingFlag( true );
-		rolecall.addAdditionalFomModules( request.getJoinModules() );
+		rolecall.addAdditionalFomModules( request.getParsedJoinModules() );
 		connection.broadcast( rolecall );
 		
 		// wait until we have gotten a RoleCall from everyone, this ensures we don't end

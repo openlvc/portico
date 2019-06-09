@@ -32,11 +32,11 @@ import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JFederatesCurrentlyJoined;
 import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
-import org.portico.lrc.services.federation.msg.CreateFederation;
-import org.portico.lrc.services.federation.msg.DestroyFederation;
-import org.portico.lrc.services.federation.msg.JoinFederation;
-import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico2.common.services.federation.msg.CreateFederation;
+import org.portico2.common.services.federation.msg.DestroyFederation;
+import org.portico2.common.services.federation.msg.JoinFederation;
+import org.portico2.common.services.federation.msg.ResignFederation;
 
 /**
  * The {@link JVMConnection} allows federates to work in a "shared memory" like environment. Rather
@@ -183,8 +183,8 @@ public class JVMConnection implements IConnection
 		
 		// Merge the provided join modules with the existing FOM - this method will
 		// perform a dry-run first to ensure that things can be merged happily
-		logger.debug( "Merge ["+joinMessage.getJoinModules().size()+"] modules into existing FOM" );
-		broadcaster.extendFOM( joinMessage.getJoinModules() );
+		logger.debug( "Merge ["+joinMessage.getParsedJoinModules().size()+"] modules into existing FOM" );
+		broadcaster.extendFOM( joinMessage.getParsedJoinModules() );
 
 		// join the federation
 		// this will check to see if there is already a federate with the same name
