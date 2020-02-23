@@ -24,9 +24,4 @@ public final class SynchronizationPointLabelNotAnnounced extends RTIexception {
    {
       super(message, cause);
    }
-
-   public SynchronizationPointLabelNotAnnounced(Throwable cause)
-   {
-      super(cause);
-   }
 }

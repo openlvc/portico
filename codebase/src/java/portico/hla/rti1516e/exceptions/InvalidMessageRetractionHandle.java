@@ -24,9 +24,4 @@ public final class InvalidMessageRetractionHandle extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidMessageRetractionHandle(Throwable cause)
-   {
-      super(cause);
-   }
 }

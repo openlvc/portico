@@ -24,9 +24,4 @@ public class RTIexception extends Exception {
    {
       super(message, cause);
    }
-   
-   public RTIexception(Throwable cause)
-   {
-	   super(cause);
-   }
 }

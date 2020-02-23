@@ -23,9 +23,4 @@ public final class NameSetWasEmpty extends RTIexception {
    {
       super(message, cause);
    }
-
-   public NameSetWasEmpty(Throwable cause)
-   {
-      super(cause);
-   }
 }

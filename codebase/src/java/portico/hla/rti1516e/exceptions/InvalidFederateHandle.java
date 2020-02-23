@@ -24,9 +24,4 @@ public final class InvalidFederateHandle extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidFederateHandle(Throwable cause)
-   {
-      super(cause);
-   }
 }

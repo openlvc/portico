@@ -23,9 +23,4 @@ public final class FederateOwnsAttributes extends RTIexception {
    {
       super(message, cause);
    }
-
-   public FederateOwnsAttributes(Throwable cause)
-   {
-      super(cause);
-   }
 }

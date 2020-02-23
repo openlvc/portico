@@ -269,23 +269,23 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
-				throw new FederationExecutionAlreadyExists( theException );
+				throw new FederationExecutionAlreadyExists( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInconsistentFDD )
 			{
-				throw new InconsistentFDD( theException );
+				throw new InconsistentFDD( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{
-				throw new CouldNotOpenFDD( theException );
+				throw new CouldNotOpenFDD( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JErrorReadingFED )
 			{
-				throw new ErrorReadingFDD( theException );
+				throw new ErrorReadingFDD( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -325,24 +325,23 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
-				// FIXME - old type of exception initialization
-				throw new FederationExecutionAlreadyExists( theException.getMessage() );
+				throw new FederationExecutionAlreadyExists( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInconsistentFDD )
 			{
-				throw new InconsistentFDD( theException );
+				throw new InconsistentFDD( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{
-				throw new CouldNotOpenFDD( theException );
+				throw new CouldNotOpenFDD( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JErrorReadingFED )
 			{
-				throw new ErrorReadingFDD( theException );
+				throw new ErrorReadingFDD( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -391,23 +390,23 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationExecutionAlreadyExists )
 			{
-				throw new FederationExecutionAlreadyExists( theException );
+				throw new FederationExecutionAlreadyExists( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInconsistentFDD )
 			{
-				throw new InconsistentFDD( theException );
+				throw new InconsistentFDD( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JCouldNotOpenFED )
 			{
-				throw new CouldNotOpenFDD( theException );
+				throw new CouldNotOpenFDD( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JErrorReadingFED )
 			{
-				throw new ErrorReadingFDD( theException );
+				throw new ErrorReadingFDD( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -503,15 +502,15 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederatesCurrentlyJoined )
 			{
-				throw new FederatesCurrentlyJoined( theException );
+				throw new FederatesCurrentlyJoined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationExecutionDoesNotExist )
 			{
-				throw new FederationExecutionDoesNotExist( theException );
+				throw new FederationExecutionDoesNotExist( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -665,23 +664,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateAlreadyExecutionMember )
 			{
-				throw new FederateAlreadyExecutionMember( theException );
+				throw new FederateAlreadyExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationExecutionDoesNotExist )
 			{
-				throw new FederationExecutionDoesNotExist( theException );
+				throw new FederationExecutionDoesNotExist( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -731,19 +730,19 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateOwnsAttributes )
 			{
-				throw new FederateOwnsAttributes( theException );
+				throw new FederateOwnsAttributes( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidResignAction )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -782,19 +781,19 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -840,19 +839,19 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -892,23 +891,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSynchronizationLabelNotAnnounced )
 			{
-				throw new SynchronizationPointLabelNotAnnounced( theException );
+				throw new SynchronizationPointLabelNotAnnounced( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -949,23 +948,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSynchronizationLabelNotAnnounced )
 			{
-				throw new SynchronizationPointLabelNotAnnounced( theException );
+				throw new SynchronizationPointLabelNotAnnounced( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1145,27 +1144,27 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1206,27 +1205,27 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JOwnershipAcquisitionPending )
 			{
-				throw new OwnershipAcquisitionPending( theException );
+				throw new OwnershipAcquisitionPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotPublished )
 			{
@@ -1275,31 +1274,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JOwnershipAcquisitionPending )
 			{
-				throw new OwnershipAcquisitionPending( theException );
+				throw new OwnershipAcquisitionPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotPublished )
 			{
@@ -1344,23 +1343,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotDefined )
 			{
-				throw new InteractionClassNotDefined( theException );
+				throw new InteractionClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1401,23 +1400,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotDefined )
 			{
-				throw new InteractionClassNotDefined( theException );
+				throw new InteractionClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotPublished )
 			{
@@ -1465,19 +1464,19 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotSubscribed )
 			{
@@ -1485,11 +1484,11 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1576,15 +1575,15 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotSubscribed )
 			{
@@ -1592,11 +1591,11 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1640,15 +1639,15 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotSubscribed )
 			{
@@ -1656,15 +1655,15 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotSubscribed )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1706,15 +1705,15 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotDefined )
 			{
-				throw new InteractionClassNotDefined( theException );
+				throw new InteractionClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotSubscribed )
 			{
@@ -1722,11 +1721,11 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1780,15 +1779,15 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotDefined )
 			{
-				throw new InteractionClassNotDefined( theException );
+				throw new InteractionClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotSubscribed )
 			{
@@ -1796,11 +1795,11 @@ public class Rti1516eAmbassador implements RTIambassador
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1843,23 +1842,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JIllegalName )
 			{
-				throw new IllegalName( theException );
+				throw new IllegalName( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -1939,27 +1938,27 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotPublished )
 			{
-				throw new ObjectClassNotPublished( theException );
+				throw new ObjectClassNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2007,31 +2006,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotPublished )
 			{
-				throw new ObjectClassNotPublished( theException );
+				throw new ObjectClassNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectAlreadyRegistered )
 			{
-				throw new ObjectInstanceNameInUse( theException );
+				throw new ObjectInstanceNameInUse( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2078,31 +2077,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotOwned )
 			{
-				throw new AttributeNotOwned( theException );
+				throw new AttributeNotOwned( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2158,40 +2157,40 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotOwned )
 			{
-				throw new AttributeNotOwned( theException );
+				throw new AttributeNotOwned( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
 				logException( "updateAttributeValues(LogicalTime)", theException );
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 		}
 	}
@@ -2233,31 +2232,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotDefined )
 			{
-				throw new InteractionClassNotDefined( theException );
+				throw new InteractionClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotPublished )
 			{
-				throw new InteractionClassNotPublished( theException );
+				throw new InteractionClassNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionParameterNotDefined )
 			{
-				throw new InteractionParameterNotDefined( theException );
+				throw new InteractionParameterNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2312,40 +2311,40 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotDefined )
 			{
-				throw new InteractionClassNotDefined( theException );
+				throw new InteractionClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionClassNotPublished )
 			{
-				throw new InteractionClassNotPublished( theException );
+				throw new InteractionClassNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInteractionParameterNotDefined )
 			{
-				throw new InteractionParameterNotDefined( theException );
+				throw new InteractionParameterNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
 				logException( "sentInteraction(LogicalTime)", theException );
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 		}
 	}
@@ -2383,27 +2382,27 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JDeletePrivilegeNotHeld )
 			{
-				throw new DeletePrivilegeNotHeld( theException );
+				throw new DeletePrivilegeNotHeld( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2455,31 +2454,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JDeletePrivilegeNotHeld )
 			{
-				throw new DeletePrivilegeNotHeld( theException );
+				throw new DeletePrivilegeNotHeld( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2521,31 +2520,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateOwnsAttributes )
 			{
-				throw new FederateOwnsAttributes( theException );
+				throw new FederateOwnsAttributes( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JOwnershipAcquisitionPending )
 			{
-				throw new OwnershipAcquisitionPending( theException );
+				throw new OwnershipAcquisitionPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2590,31 +2589,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2659,31 +2658,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotDefined )
 			{
-				throw new ObjectClassNotDefined( theException );
+				throw new ObjectClassNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2793,35 +2792,35 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotOwned )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2869,39 +2868,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotOwned )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeAlreadyBeingDivested )
 			{
-				throw new AttributeAlreadyBeingDivested( theException );
+				throw new AttributeAlreadyBeingDivested( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -2968,43 +2967,43 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotPublished )
 			{
-				throw new ObjectClassNotPublished( theException );
+				throw new ObjectClassNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotPublished )
 			{
-				throw new AttributeNotPublished( theException );
+				throw new AttributeNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateOwnsAttributes )
 			{
-				throw new FederateOwnsAttributes( theException );
+				throw new FederateOwnsAttributes( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3053,47 +3052,47 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectClassNotPublished )
 			{
-				throw new ObjectClassNotPublished( theException );
+				throw new ObjectClassNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotPublished )
 			{
-				throw new AttributeNotPublished( theException );
+				throw new AttributeNotPublished( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateOwnsAttributes )
 			{
-				throw new FederateOwnsAttributes( theException );
+				throw new FederateOwnsAttributes( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeAlreadyBeingAcquired )
 			{
-				throw new AttributeAlreadyBeingAcquired( theException );
+				throw new AttributeAlreadyBeingAcquired( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3158,35 +3157,35 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotOwned )
 			{
-				throw new AttributeNotOwned( theException );
+				throw new AttributeNotOwned( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3236,39 +3235,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotOwned )
 			{
-				throw new AttributeNotOwned( theException );
+				throw new AttributeNotOwned( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeDivestitureWasNotRequested )
 			{
-				throw new AttributeDivestitureWasNotRequested( theException );
+				throw new AttributeDivestitureWasNotRequested( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3315,39 +3314,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeAlreadyOwned )
 			{
-				throw new AttributeAlreadyOwned( theException );
+				throw new AttributeAlreadyOwned( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeAcquisitionWasNotRequested )
 			{
-				throw new AttributeAcquisitionWasNotRequested( theException );
+				throw new AttributeAcquisitionWasNotRequested( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3392,31 +3391,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JObjectNotKnown )
 			{
-				throw new ObjectInstanceNotKnown( theException );
+				throw new ObjectInstanceNotKnown( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAttributeNotDefined )
 			{
-				throw new AttributeNotDefined( theException );
+				throw new AttributeNotDefined( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JConcurrentAccessAttempted )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3499,39 +3498,39 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeRegulationAlreadyEnabled )
 			{
-				throw new TimeRegulationAlreadyEnabled( theException );
+				throw new TimeRegulationAlreadyEnabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeRegulationPending )
 			{
-				throw new RequestForTimeRegulationPending( theException );
+				throw new RequestForTimeRegulationPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidLookahead )
 			{
-				throw new InvalidLookahead( theException );
+				throw new InvalidLookahead( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3571,23 +3570,23 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeRegulationWasNotEnabled )
 			{
-				throw new TimeRegulationIsNotEnabled( theException );
+				throw new TimeRegulationIsNotEnabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3629,31 +3628,31 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeConstrainedAlreadyEnabled )
 			{
-				throw new TimeConstrainedAlreadyEnabled( theException );
+				throw new TimeConstrainedAlreadyEnabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeConstrainedPending )
 			{
-				throw new RequestForTimeConstrainedPending( theException );
+				throw new RequestForTimeConstrainedPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3693,23 +3692,23 @@ public class Rti1516eAmbassador implements RTIambassador
 			
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeConstrainedWasNotEnabled )
 			{
-				throw new TimeConstrainedIsNotEnabled( theException );
+				throw new TimeConstrainedIsNotEnabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3759,39 +3758,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationTimeAlreadyPassed )
 			{
-				throw new LogicalTimeAlreadyPassed( theException );
+				throw new LogicalTimeAlreadyPassed( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeRegulationPending )
 			{
-				throw new RequestForTimeRegulationPending( theException );
+				throw new RequestForTimeRegulationPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeConstrainedPending )
 			{
-				throw new RequestForTimeConstrainedPending( theException );
+				throw new RequestForTimeConstrainedPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3842,39 +3841,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationTimeAlreadyPassed )
 			{
-				throw new LogicalTimeAlreadyPassed( theException );
+				throw new LogicalTimeAlreadyPassed( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeRegulationPending )
 			{
-				throw new RequestForTimeRegulationPending( theException );
+				throw new RequestForTimeRegulationPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeConstrainedPending )
 			{
-				throw new RequestForTimeConstrainedPending( theException );
+				throw new RequestForTimeConstrainedPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -3924,39 +3923,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationTimeAlreadyPassed )
 			{
-				throw new LogicalTimeAlreadyPassed( theException );
+				throw new LogicalTimeAlreadyPassed( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeRegulationPending )
 			{
-				throw new RequestForTimeRegulationPending( theException );
+				throw new RequestForTimeRegulationPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeConstrainedPending )
 			{
-				throw new RequestForTimeConstrainedPending( theException );
+				throw new RequestForTimeConstrainedPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -4006,39 +4005,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationTimeAlreadyPassed )
 			{
-				throw new LogicalTimeAlreadyPassed( theException );
+				throw new LogicalTimeAlreadyPassed( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeRegulationPending )
 			{
-				throw new RequestForTimeRegulationPending( theException );
+				throw new RequestForTimeRegulationPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeConstrainedPending )
 			{
-				throw new RequestForTimeConstrainedPending( theException );
+				throw new RequestForTimeConstrainedPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -4088,39 +4087,39 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidFederationTime )
 			{
-				throw new InvalidLogicalTime( theException );
+				throw new InvalidLogicalTime( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederationTimeAlreadyPassed )
 			{
-				throw new LogicalTimeAlreadyPassed( theException );
+				throw new LogicalTimeAlreadyPassed( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeRegulationPending )
 			{
-				throw new RequestForTimeRegulationPending( theException );
+				throw new RequestForTimeRegulationPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JEnableTimeConstrainedPending )
 			{
-				throw new RequestForTimeConstrainedPending( theException );
+				throw new RequestForTimeConstrainedPending( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -4159,23 +4158,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAsynchronousDeliveryAlreadyEnabled )
 			{
-				throw new AsynchronousDeliveryAlreadyEnabled( theException );
+				throw new AsynchronousDeliveryAlreadyEnabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -4214,23 +4213,23 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JAsynchronousDeliveryAlreadyDisabled )
 			{
-				throw new AsynchronousDeliveryAlreadyDisabled( theException );
+				throw new AsynchronousDeliveryAlreadyDisabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -4270,19 +4269,19 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{
@@ -4369,31 +4368,31 @@ public class Rti1516eAmbassador implements RTIambassador
 
 			if( theException instanceof JRTIinternalError )
 			{
-				throw new RTIinternalError( theException );
+				throw new RTIinternalError( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JInvalidLookahead )
 			{
-				throw new InvalidLookahead( theException );
+				throw new InvalidLookahead( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeRegulationWasNotEnabled )
 			{
-				throw new TimeRegulationIsNotEnabled( theException );
+				throw new TimeRegulationIsNotEnabled( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JTimeAdvanceAlreadyInProgress )
 			{
-				throw new InTimeAdvancingState( theException );
+				throw new InTimeAdvancingState( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JSaveInProgress )
 			{
-				throw new SaveInProgress( theException );
+				throw new SaveInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JRestoreInProgress )
 			{
-				throw new RestoreInProgress( theException );
+				throw new RestoreInProgress( theException.getMessage(), theException );
 			}
 			else if( theException instanceof JFederateNotExecutionMember )
 			{
-				throw new FederateNotExecutionMember( theException );
+				throw new FederateNotExecutionMember( theException.getMessage(), theException );
 			}
 			else
 			{

@@ -23,9 +23,4 @@ public final class InvalidResignAction extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidResignAction(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -24,9 +24,4 @@ public final class SaveNotInitiated extends RTIexception {
    {
       super(message, cause);
    }
-
-   public SaveNotInitiated(Throwable cause)
-   {
-      super(cause);
-   }
 }

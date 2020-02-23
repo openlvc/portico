@@ -24,9 +24,4 @@ public final class AttributeAlreadyBeingChanged extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeAlreadyBeingChanged(Throwable cause)
-   {
-      super(cause);
-   }
 }

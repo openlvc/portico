@@ -24,9 +24,4 @@ public final class InteractionClassNotPublished extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InteractionClassNotPublished(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -23,9 +23,4 @@ public final class InvalidUpdateRateDesignator extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidUpdateRateDesignator(Throwable cause)
-   {
-      super(cause);
-   }
 }

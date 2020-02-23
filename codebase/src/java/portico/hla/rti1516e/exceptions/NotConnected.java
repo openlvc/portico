@@ -23,9 +23,4 @@ public final class NotConnected extends RTIexception {
    {
       super(message, cause);
    }
-
-   public NotConnected(Throwable cause)
-   {
-      super(cause);
-   }
 }

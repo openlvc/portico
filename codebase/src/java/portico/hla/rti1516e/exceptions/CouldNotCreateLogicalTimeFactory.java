@@ -23,9 +23,4 @@ public final class CouldNotCreateLogicalTimeFactory extends RTIexception {
    {
       super(message, cause);
    }
-
-   public CouldNotCreateLogicalTimeFactory(Throwable cause)
-   {
-      super(cause);
-   }
 }
