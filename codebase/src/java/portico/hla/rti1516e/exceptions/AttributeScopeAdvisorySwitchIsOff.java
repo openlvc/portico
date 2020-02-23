@@ -24,11 +24,6 @@ public final class AttributeScopeAdvisorySwitchIsOff extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeScopeAdvisorySwitchIsOff(Throwable cause)
-   {
-      super(cause);
-   }
 }
 
 //end AttributeScopeAdvisorySwitchIsOff

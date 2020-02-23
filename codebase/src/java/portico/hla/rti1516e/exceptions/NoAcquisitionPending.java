@@ -23,9 +23,4 @@ public final class NoAcquisitionPending extends RTIexception {
    {
       super(message, cause);
    }
-
-   public NoAcquisitionPending(Throwable cause)
-   {
-      super(cause);
-   }
 }

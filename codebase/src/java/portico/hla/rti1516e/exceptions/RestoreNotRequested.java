@@ -24,9 +24,4 @@ public final class RestoreNotRequested extends RTIexception {
    {
       super(message, cause);
    }
-
-   public RestoreNotRequested(Throwable cause)
-   {
-      super(cause);
-   }
 }

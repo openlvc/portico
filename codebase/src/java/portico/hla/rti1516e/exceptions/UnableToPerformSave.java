@@ -24,9 +24,4 @@ public final class UnableToPerformSave extends RTIexception {
    {
       super(message, cause);
    }
-
-   public UnableToPerformSave(Throwable cause)
-   {
-      super(cause);
-   }
 }

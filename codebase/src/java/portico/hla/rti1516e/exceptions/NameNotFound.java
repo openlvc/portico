@@ -24,9 +24,4 @@ public final class NameNotFound extends RTIexception {
    {
       super(message, cause);
    }
-
-   public NameNotFound(Throwable cause)
-   {
-      super(cause);
-   }
 }

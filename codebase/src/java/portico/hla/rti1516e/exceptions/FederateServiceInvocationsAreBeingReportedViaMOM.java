@@ -24,9 +24,4 @@ public final class FederateServiceInvocationsAreBeingReportedViaMOM extends RTIe
    {
       super(message, cause);
    }
-
-   public FederateServiceInvocationsAreBeingReportedViaMOM(Throwable cause)
-   {
-      super(cause);
-   }
 }

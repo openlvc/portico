@@ -23,9 +23,4 @@ public final class DesignatorIsHLAstandardMIM extends RTIexception {
    {
       super(message, cause);
    }
-
-   public DesignatorIsHLAstandardMIM(Throwable cause)
-   {
-      super(cause);
-   }
 }

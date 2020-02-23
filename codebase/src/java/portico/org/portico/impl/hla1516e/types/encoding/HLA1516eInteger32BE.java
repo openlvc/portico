@@ -89,7 +89,7 @@ public class HLA1516eInteger32BE extends HLA1516eDataElement implements HLAinteg
 		byte[] asBytes = toByteArray();
 		if( byteWrapper.remaining() < asBytes.length )
 			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
-		
+
 		byteWrapper.put( toByteArray() );
 	}
 

@@ -24,9 +24,4 @@ public final class InvalidParameterHandle extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidParameterHandle(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -24,9 +24,4 @@ public final class UnknownName extends RTIexception {
    {
       super(message, cause);
    }
-
-   public UnknownName(Throwable cause)
-   {
-      super(cause);
-   }
 }

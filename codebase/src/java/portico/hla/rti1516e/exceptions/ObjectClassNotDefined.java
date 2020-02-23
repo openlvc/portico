@@ -24,9 +24,4 @@ public final class ObjectClassNotDefined extends RTIexception {
    {
       super(message, cause);
    }
-
-   public ObjectClassNotDefined(Throwable cause)
-   {
-      super(cause);
-   }
 }

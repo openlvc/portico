@@ -23,9 +23,4 @@ public final class InvalidRegion extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidRegion(Throwable cause)
-   {
-      super(cause);
-   }
 }

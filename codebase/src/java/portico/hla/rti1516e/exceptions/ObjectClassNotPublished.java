@@ -24,9 +24,4 @@ public final class ObjectClassNotPublished extends RTIexception {
    {
       super(message, cause);
    }
-
-   public ObjectClassNotPublished(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -24,9 +24,4 @@ public final class ObjectClassRelevanceAdvisorySwitchIsOff extends RTIexception 
    {
       super(message, cause);
    }
-
-   public ObjectClassRelevanceAdvisorySwitchIsOff(Throwable cause)
-   {
-      super(cause);
-   }
 }

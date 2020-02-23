@@ -24,9 +24,4 @@ public final class TimeConstrainedAlreadyEnabled extends RTIexception {
    {
       super(message, cause);
    }
-
-   public TimeConstrainedAlreadyEnabled(Throwable cause)
-   {
-      super(cause);
-   }
 }

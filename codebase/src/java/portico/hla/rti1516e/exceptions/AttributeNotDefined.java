@@ -23,9 +23,4 @@ public final class AttributeNotDefined extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeNotDefined(Throwable cause)
-   {
-      super(cause);
-   }
 }

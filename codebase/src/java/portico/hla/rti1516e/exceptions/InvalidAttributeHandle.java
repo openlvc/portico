@@ -24,9 +24,4 @@ public final class InvalidAttributeHandle extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidAttributeHandle(Throwable cause)
-   {
-      super(cause);
-   }
 }

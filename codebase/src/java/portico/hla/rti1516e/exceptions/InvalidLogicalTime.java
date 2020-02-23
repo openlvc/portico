@@ -24,9 +24,4 @@ public final class InvalidLogicalTime extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidLogicalTime(Throwable cause)
-   {
-      super(cause);
-   }
 }

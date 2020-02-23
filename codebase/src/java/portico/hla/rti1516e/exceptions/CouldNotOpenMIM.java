@@ -23,9 +23,4 @@ public final class CouldNotOpenMIM extends RTIexception {
    {
       super(message, cause);
    }
-
-   public CouldNotOpenMIM(Throwable cause)
-   {
-      super(cause);
-   }
 }

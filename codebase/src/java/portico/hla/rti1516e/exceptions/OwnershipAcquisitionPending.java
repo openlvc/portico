@@ -23,9 +23,4 @@ public final class OwnershipAcquisitionPending extends RTIexception {
    {
       super(message, cause);
    }
-
-   public OwnershipAcquisitionPending(Throwable cause)
-   {
-      super(cause);
-   }
 }

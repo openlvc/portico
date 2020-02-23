@@ -24,9 +24,4 @@ public final class InvalidDimensionHandle extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidDimensionHandle(Throwable cause)
-   {
-      super(cause);
-   }
 }
