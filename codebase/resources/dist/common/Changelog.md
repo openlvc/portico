@@ -22,6 +22,27 @@ or the GitHub pull-request number for community-sourced updates.
  * (`#XYZ`)     -- GitHub pull request number, see `https://github.com/openlvc/portico/pull`
 
 
+v2.0.3 / 2020-02-23
+--------------------
+
+#### Notes
+
+ * None
+
+#### Improvements
+
+ * None
+
+#### Bug Fixes
+
+ * `bugfix` Fixed `NoSuchMethodError` when using Portico in Java apps that have their
+            own copy of the HLA interface spec classes on the classpath. This would
+            happen whenever a standard exception was thrown. See #301.
+
+ * `bugfix` Stopped LRC keeping background threads alive when using HLA-Evolved's
+            immediate callback delivery feature. See #302.
+
+
 v2.0.2 / 2015-12-31
 --------------------
 
