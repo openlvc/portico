@@ -726,6 +726,7 @@ public class LRC
 		
 		// create the immediate callback delivery processing thread and start it
 		this.immediateCallbackDispatcher = new ImmediateCallbackDispatcher();
+		this.immediateCallbackDispatcher.setDaemon( true );
 		this.immediateCallbackDispatcher.start();
 		
 		// give the dispatch thread just a moment to start
