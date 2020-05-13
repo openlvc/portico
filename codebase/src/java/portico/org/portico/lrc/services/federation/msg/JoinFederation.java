@@ -107,7 +107,8 @@ public class JoinFederation extends PorticoMessage
 	
 	public void addJoinModule( ObjectModel module )
 	{
-		this.joinModules.add( module );
+		if( module != null )
+			this.joinModules.add( module );
 	}
 	
 	//////////////////////////////////////////////////
