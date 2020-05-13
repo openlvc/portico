@@ -569,7 +569,8 @@ public class ModelMerger
 		       JRTIinternalError
 	{
 		ArrayList<ObjectModel> completeList = new ArrayList<ObjectModel>();
-		completeList.add( base );
+		if( base != null )
+			completeList.add( base );
 		completeList.addAll( extensions );
 		return ModelMerger.merge( completeList );
 	}
@@ -586,7 +587,8 @@ public class ModelMerger
 		       JRTIinternalError
 	{
 		ArrayList<ObjectModel> completeList = new ArrayList<ObjectModel>();
-		completeList.add( base );
+		if( base != null )
+			completeList.add( base );
 		completeList.addAll( extensions );
 
 		// first we create a copy of each object model

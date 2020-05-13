@@ -696,7 +696,8 @@ public class ObjectModel implements Serializable
 	
 	public String toString()
 	{
-		return new StringRenderer().renderFOM( this );
+		return filename;
+		//return new StringRenderer().renderFOM( this );
 	}
 	
 	//----------------------------------------------------------
