@@ -1,11 +1,11 @@
 sudo: false
 language: java
 jdk:
-- oraclejdk8
+    - openjdk8
 install:
-- cd codebase
+    - cd codebase
 script:
-- ./ant release
+    - ./ant release
 notifications:
   email: false
   slack:
