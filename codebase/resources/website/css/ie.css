@@ -1,0 +1,4 @@
+.left-wrap .bg-overlay {
+	background: #161e27;
+	filter: alpha(opacity=60);
+}
