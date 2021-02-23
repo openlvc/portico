@@ -40,9 +40,9 @@
 	<!-- =========================================================== -->
 	<!-- ==== Library Path Definitions ==== -->
 	<!-- See profiles/project.libraries.xml -->
-	<!-- <property name="cppunit.dir"     location="..."/> -->
-	<!-- <property name="cppunit.include" location="..."/> -->
-	<!-- <property name="cppunit.lib"     location="..."/> -->
+	<property name="cppunit.dir"     location="${lib.dir}/cppunit/cppunit-1.15"/> 
+	<property name="cppunit.include" location="${cppunit.dir}/include"/> 
+	<property name="cppunit.lib"     location="${cppunit.dir}/linux64"/> 
 
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
@@ -68,7 +68,8 @@
 	<!-- Compiles the 1516e example federate. Doesn't do much except
 	     assure that we can actually compile and link it to Portico -->
 	<target name="example.compile" depends="compile">
-		<cpptask outfile="ieee1516e-example"
+		<cpptask compiler="g++"
+				 outfile="ieee1516e-example"
 		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
 		         type="executable"
 		         arch="amd64"
@@ -80,7 +81,7 @@
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<define name="DEBUG"/>
-			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
+			<library path="${ieee1516e.complete.dir}/gcc8" libs="rti1516e64d"/>
 			<library path="${jdk.home.linux64}/jre/lib/amd64/server" libs="jvm,jsig"/>
 		</cpptask>
 	</target>
@@ -90,7 +91,7 @@
 	<!-- ================================================================================= -->
 
 	<!-- Not implemented for C++ IEEE-1516e Inteface -->
-	<target name="test" extensionOf="cpp.test">
+	<target name="test" extensionOf="cpp.test" depends="example.compile">
 		<echo>No unit test suite for the IEEE-1516e Interface</echo>
 	</target>
 
@@ -120,7 +121,7 @@
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.so"/>
 		</copy>
 
-		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.so"/>
+		<chmod dir="${sandbox.lib.dir}/gcc8" perm="755" includes="**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
@@ -159,7 +160,7 @@
 	-->
 	<macrodef name="compile-ieee1516e">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="gcc8 or gcc4" default="gcc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
