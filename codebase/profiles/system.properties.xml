@@ -83,9 +83,9 @@
 	     is used by the compilation targets to determine whether or not to compile
 	     for a particular profile.
 	-->
-	<generateCppBuildProfile compilers="gcc4,vc8,vc9,vc10"
-	                         architectures="x86,amd64"
-	                         builds="debug,release"/>
+	<generateCppCompilerVariables compilers="gcc4,vc8,vc9,vc10"
+	                              architectures="x86,amd64"
+	                              builds="debug,release"/>
 
 	<!-- =========================================================== -->
 	<!--          Locations, Resources and Build Directories         -->
