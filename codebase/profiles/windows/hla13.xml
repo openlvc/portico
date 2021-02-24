@@ -73,6 +73,20 @@
 					 description="Compile the full HLA v1.3 interface"/>
 	
 	<!-- ================================================================= -->
+	<!--             Visual Studio 2019 (vc14.2) Compile Targets           -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2019 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_2" extensionOf="compile">
+		<compile-hla13 compiler="vc14_2" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc14_2" arch="x86" build="release"/>
+		<compile-hla13 compiler="vc14_2" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc14_2" arch="amd64" build="release"/>
+	</target>
+
+	<!-- ================================================================= -->
 	<!--             Visual Studio 2010 (vc10) Compile Targets             -->
 	<!-- ================================================================= -->
 	<!-- The Visual Studio 2010 related extension points.
@@ -250,7 +264,7 @@
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc10, vc9, or vc8"/>
+		<attribute name="compiler" description="vc14.2, vc14.1, vc14, vc10"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
