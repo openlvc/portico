@@ -83,7 +83,7 @@
 	     is used by the compilation targets to determine whether or not to compile
 	     for a particular profile.
 	-->
-	<generateCppCompilerVariables compilers="gcc4,vc8,vc9,vc10"
+	<generateCppCompilerVariables compilers="gcc4,vc10,vc14,vc14_1,vc14_2"
 	                              architectures="x86,amd64"
 	                              builds="debug,release"/>
 
@@ -92,9 +92,9 @@
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
 	<!-- NOTE these properties should be overridden in build.properties -->
-	<property name="jdk.home.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home"/>
-	<property name="jdk.home.win32"   location="c:\Program Files (x86)\Java\jdk1.7.0_45"/>
-	<property name="jdk.home.win64"   location="c:\Program Files\Java\jdk1.7.0_45"/>
+	<property name="jdk.home.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home"/>
+	<property name="jdk.home.win32"   location="c:\Program Files (x86)\Java\jdk1.8.0_144"/>
+	<property name="jdk.home.win64"   location="c:\Program Files\Java\jdk1.8.0_144"/>
 	<property name="jdk.home.linux32" location="${env.JAVA_HOME}"/>
 	<property name="jdk.home.linux64" location="${env.JAVA_HOME}"/>
 	
