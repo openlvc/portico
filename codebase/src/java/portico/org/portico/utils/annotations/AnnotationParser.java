@@ -18,13 +18,15 @@ import java.io.InputStream;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * This class handles the bytecode inspector that will look at the bytes for a class file and
  * attempt to determine if the class contained within declares a particular annotation. This
  * makes use of the ASM library for bytecode interpretation.
  */
-public class AnnotationParser extends EmptyVisitor
+public class AnnotationParser extends ClassVisitor
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -42,6 +44,7 @@ public class AnnotationParser extends EmptyVisitor
 
 	private AnnotationParser( String targetAnnotation )
 	{
+		super(Opcodes.ASM7);
 		this.targetAnnotation = targetAnnotation;
 		this.found = false;
 	}
@@ -55,7 +58,7 @@ public class AnnotationParser extends EmptyVisitor
 		if( name.equals(targetAnnotation) )
 			this.found = true;
 		
-		return this;
+		return super.visitAnnotation( name, visible);
 	}
 
 	//----------------------------------------------------------
@@ -77,7 +80,7 @@ public class AnnotationParser extends EmptyVisitor
 	 */
 	public static boolean parseForAnnotation( InputStream classBytes, String annotationString )
 		throws Exception
-	{	
+	{
 		ClassReader reader = new ClassReader( classBytes );
 		AnnotationParser parser = new AnnotationParser( annotationString );
 		reader.accept( parser, ClassReader.EXPAND_FRAMES );

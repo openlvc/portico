@@ -317,7 +317,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 #ifdef VC11
 	            << "vc11"
 #endif
-#ifdef VC11
+#ifdef VC10
 	            << "vc10"
 #endif
 #ifdef VC9

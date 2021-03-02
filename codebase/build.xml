@@ -40,7 +40,7 @@
 
 	<target name="test"
 	        description="Compile and run the automated test suite"
-	        depends="master.test"/>
+	        depends="master.test,java.sandbox.jre"/>
 
 	<target name="sandbox"
 	        description="Create a sandbox environment to test and validate in"

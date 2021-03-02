@@ -25,8 +25,8 @@
 	<property name="resources.jars.dir"       location="${resources.dir}/jars"/>
 
 	<!-- java compiler properties -->
-	<property name="java.compiler.source" value="1.7"/>
-	<property name="java.compiler.target" value="1.7"/>
+	<property name="java.compiler.source" value="15"/>
+	<property name="java.compiler.target" value="15"/>
 
 	<!-- ==== Source Related Properties ==== -->
 	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
@@ -73,7 +73,7 @@
 	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-3.2.0-beta1"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
-	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
+	<property name="asm.dir"               location="${lib.dir}/asm/asm-9.1"/>
 
 	<!-- Classpaths for individual libraries -->
 	<path id="lib.testng.classpath">

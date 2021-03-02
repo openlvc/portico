@@ -433,7 +433,7 @@ public class Module
 		IMessageHandler handler = null;
 		try
 		{
-			handler = handlerClass.newInstance();
+			handler = handlerClass.getConstructor().newInstance();
 		}
 		catch( Exception e )
 		{

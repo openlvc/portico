@@ -22,7 +22,7 @@
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
 	<verifyJdk location="${jdk.home.win32}" arch="x86"/>
-	<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
+<!--<verifyJdk location="${jdk.home.win64}" arch="amd64"/> -->
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->
@@ -104,8 +104,8 @@
 	<target name="compile.vc14_1" extensionOf="compile">
 		<trycatch>
 		<try>
-			<compile-hla13 compiler="vc14_1" arch="x86" build="debug"/>
-			<compile-hla13 compiler="vc14_1" arch="x86" build="release"/>
+		<!-->	<compile-hla13 compiler="vc14_1" arch="x86" build="debug"/>
+			<compile-hla13 compiler="vc14_1" arch="x86" build="release"/> -->
 			<compile-hla13 compiler="vc14_1" arch="amd64" build="debug"/>
 			<compile-hla13 compiler="vc14_1" arch="amd64" build="release"/>
 		</try>
@@ -196,7 +196,6 @@
 			</filterset>
 		</copy>
 		<echo>Copied testing resources to ${test13.complete.dir}</echo>
-
 		<!-- 2. run the actual test application -->
 		<exec dir="${test13.complete.dir}"
 		      executable="${test13.complete.dir}\test13.exe"
@@ -204,8 +203,9 @@
 		      failifexecutionfails="false"
 		      resultproperty="test13.result">
 			<arg value="${test13.complete.dir}\test-results.xml"/>
-			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="PATH" path="${hla13.complete.dir};${jdk.home.win64}\jre\bin\client"/>
+			<env key="RTI_HOME" path="${dist.dir}\portico-2.0.4"/>
+			<!-- PATH needs both jdk/bin and jdk/bin/server for compatibility with java 8 and java 11+ -->
+			<env key="PATH" path="${hla13.complete.dir}\vc14_1;${jdk.home.win64}\bin\server;${jdk.home.win64}\jre\bin\server"/>
 			<env key="PORTICO_DEBUG" value="OFF"/>
 			<env key="CLASSPATH" path="${sandbox.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
