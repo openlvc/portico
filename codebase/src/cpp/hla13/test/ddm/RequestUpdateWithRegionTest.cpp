@@ -181,7 +181,7 @@ void RequestUpdateWithRegionTest::testRequestUpdateWithRegionUsingInvalidObjectC
 ///////////////////////////////////////////////////////////////////
 void RequestUpdateWithRegionTest::testRequestUpdateWithRegionUsingInvalidAttributeClass()
 {
-	RTI::AttributeHandleSet *badset = defaultFederate->populatedAHS( aaHandle, abHandle, 100000 );
+	RTI::AttributeHandleSet *badset = defaultFederate->populatedAHS( 100, aaHandle, abHandle );
 	try
 	{
 		provokerFederate->rtiamb->requestClassAttributeValueUpdateWithRegion( aHandle,

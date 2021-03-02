@@ -81,23 +81,23 @@ public class NotificationManager
 		// instantiate each of the listeners
 		for( Class<?> clazz : LISTENER_CLASSES )
 		{
-   			// get the annotation and check that the class implements INotifcationListener
-   			NotificationListener annotation = getAnnotation( clazz );
-   			Class<? extends INotificationListener> listenerClass =
-   				clazz.asSubclass( INotificationListener.class );
-   			
-   			// create a new instance of the listener
-   			try
-   			{
-   				INotificationListener listener = listenerClass.newInstance();
-   				addListener( annotation.priority(), listener );
-   			}
-   			catch( Exception e )
-   			{
-   				throw new JConfigurationException(
-   				    "Error instantiating instance of INotificationListener class ["+
-   				    listenerClass.getCanonicalName()+"]", e );
-   			}
+			// get the annotation and check that the class implements INotifcationListener
+			NotificationListener annotation = getAnnotation( clazz );
+			Class<? extends INotificationListener> listenerClass =
+			    clazz.asSubclass( INotificationListener.class );
+			
+			// create a new instance of the listener
+			try
+			{
+				INotificationListener listener = listenerClass.getConstructor().newInstance();
+				addListener( annotation.priority(), listener );
+			}
+			catch( Exception e )
+			{
+				throw new JConfigurationException(
+				    "Error instantiating instance of INotificationListener class ["+
+				    listenerClass.getCanonicalName()+"]", e );
+			}
 		}
 	}
 

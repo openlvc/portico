@@ -98,7 +98,6 @@ public class Container
 		this.modules = new HashMap<String,Module>();
 		this.daemonManager = new DaemonManager( this );
 		this.userPluginPath = new ArrayList<File>();
-		
 		// do the basic container configuration (like logging and module/plugin location)
 		initializeContainer();
 		
@@ -298,19 +297,8 @@ public class Container
 	{
 		// make sure we can find the portico.jar file on the system classpath first
 		Classpath classpath = new Classpath();
-		URL[] originalSystemPath = classpath.getUrlSearchPath();
-		this.porticoJarFile = null;
-		for( URL url : originalSystemPath )
-		{
-			String path = url.getPath();
-			path = path.substring( path.lastIndexOf("/")+1 );
-			if( path.contains("portico") && path.endsWith(".jar") )
-			{
-				this.porticoJarFile = url;
-				break;
-			}
-		}
-		
+		this.porticoJarFile = classpath.getPortico();
+
 		if( this.porticoJarFile == null )
 		{
 			logger.warn( "Couldn't locate RTI_HOME/lib/portico.jar on system classpath, is RTI_HOME set?" );

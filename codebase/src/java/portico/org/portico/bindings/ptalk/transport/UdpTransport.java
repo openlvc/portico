@@ -156,7 +156,7 @@ public class UdpTransport implements ITransport
 
 			// set up the receiving socket (multicast)
 			this.receivingSocket = new MulticastSocket( multicastPort );
-			this.receivingSocket.joinGroup( multicastAddress );
+			this.receivingSocket.joinGroup( getGroupAddress(), null );
 			this.receivingSocket.setBroadcast( true );
 			this.receivingSocket.setLoopbackMode( false ); // we loop back manually
 			// SKIPPING soTimeout - controls how long receive waits for a callback
@@ -204,7 +204,7 @@ public class UdpTransport implements ITransport
 		{
 			logger.debug( "ATTEMPT Disconnecting from multicast group" );
 			this.sendingSocket.close();
-			this.receivingSocket.leaveGroup( multicastAddress );
+			this.receivingSocket.leaveGroup( getGroupAddress(), null );
 			this.receivingSocket.disconnect();
 			logger.debug( "SUCCESS Disconnected from multicast group" );
 		}

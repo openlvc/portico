@@ -168,7 +168,7 @@ public class DoubleTime implements LogicalTime
      */
 	public int hashCode()
 	{
-		return (new Double(time)).hashCode();
+		return ( Double.valueOf(time) ).hashCode();
 	}
 
 	public String toString()

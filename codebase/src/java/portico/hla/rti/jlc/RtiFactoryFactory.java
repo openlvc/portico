@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -57,7 +58,7 @@ public class RtiFactoryFactory
 		try
 		{
 			Class<?> cls = Class.forName( factoryClassName );
-			return (RtiFactory)cls.newInstance();
+			return (RtiFactory)cls.getConstructor().newInstance();
 		}
 		catch( ClassNotFoundException e )
 		{
@@ -70,6 +71,14 @@ public class RtiFactoryFactory
 		catch( IllegalAccessException e )
 		{
 			throw new RTIinternalError( "Cannot access class " + factoryClassName );
+		}
+		catch( InvocationTargetException e )
+		{
+			throw new RTIinternalError( "Cannot construct class " + factoryClassName );
+		}
+		catch( NoSuchMethodException e )
+		{
+			throw new RTIinternalError( "Cannot get constructor for class " + factoryClassName );
 		}
 	}
 

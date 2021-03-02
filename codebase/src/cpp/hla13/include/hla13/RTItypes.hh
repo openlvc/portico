@@ -299,6 +299,8 @@ public:
 
 class RTI_EXPORT FederateHandleSet {
 public:
+  virtual ~FederateHandleSet() { ; }
+  
   virtual ULong size() const = 0;
 
   virtual FederateHandle getHandle(ULong i) const
