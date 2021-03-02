@@ -38,10 +38,10 @@ FederateHandleSetTest::~FederateHandleSetTest()
 
 void FederateHandleSetTest::setUp()
 {
-    this->defaultFederate->quickCreate();
-    this->defaultFederate->quickJoin();
-    
-    this->theSet = RTI::FederateHandleSetFactory::create(0);
+	this->defaultFederate->quickCreate();
+	this->defaultFederate->quickJoin();
+
+	this->theSet = RTI::FederateHandleSetFactory::create(0);
 }
 
 void FederateHandleSetTest::tearDown()

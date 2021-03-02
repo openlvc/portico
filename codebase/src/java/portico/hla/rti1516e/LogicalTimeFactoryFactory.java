@@ -9,9 +9,9 @@
 
 package hla.rti1516e;
 
-import javax.imageio.spi.ServiceRegistry;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -37,7 +37,7 @@ public class LogicalTimeFactoryFactory {
       if (name.equals("")) {
          name = "HLAfloat64Time";
       }
-      Iterator<LogicalTimeFactory> i = ServiceRegistry.lookupProviders(LogicalTimeFactory.class);
+      Iterator<LogicalTimeFactory> i = ServiceLoader.load( LogicalTimeFactory.class ).iterator();
       while (i.hasNext()) {
          LogicalTimeFactory logicalTimeFactory = i.next();
          if (logicalTimeFactory.getName().equals(name)) {
@@ -49,7 +49,7 @@ public class LogicalTimeFactoryFactory {
 
    public static <T extends LogicalTimeFactory> T getLogicalTimeFactory(Class<T> logicalTimeFactoryClass)
    {
-      Iterator<LogicalTimeFactory> i = ServiceRegistry.lookupProviders(LogicalTimeFactory.class);
+      Iterator<LogicalTimeFactory> i = ServiceLoader.load( LogicalTimeFactory.class ).iterator();
       while (i.hasNext()) {
          LogicalTimeFactory logicalTimeFactory = i.next();
          if (logicalTimeFactoryClass.isInstance(logicalTimeFactory)) {
@@ -61,7 +61,7 @@ public class LogicalTimeFactoryFactory {
 
    public static Set<LogicalTimeFactory> getAvailableLogicalTimeFactories()
    {
-      Iterator<LogicalTimeFactory> i = ServiceRegistry.lookupProviders(LogicalTimeFactory.class);
+      Iterator<LogicalTimeFactory> i = ServiceLoader.load( LogicalTimeFactory.class ).iterator();
       Set<LogicalTimeFactory> factories = new HashSet<LogicalTimeFactory>();
       while (i.hasNext()) {
          LogicalTimeFactory logicalTimeFactory = i.next();

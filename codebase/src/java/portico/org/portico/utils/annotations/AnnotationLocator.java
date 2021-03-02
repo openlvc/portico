@@ -194,37 +194,37 @@ public class AnnotationLocator
 	{
 		try
 		{
-    		//System.out.println( "Searching for all classes with annotation [" + annotationName +
-    		//                    "] in [" + theURL + "]" );
-    
-    		// turn the URL into a file that we can work with
-    		HashSet<String> names = new HashSet<String>();
-    		JarFile jarfile = new JarFile( new File(theURL.toURI()) );
-    		
-    		Enumeration<JarEntry> entries = jarfile.entries();
-    		while( entries.hasMoreElements() )
-    		{
-    			JarEntry entry = entries.nextElement();
-    
-    			// skip directories
-    			if( entry.isDirectory() )
-    				continue;
-    
-    			// is this a class file?
-    			if( entry.getName().endsWith(".class") == false )
-    				continue;
-    			
-    			InputStream inputStream = jarfile.getInputStream( jarfile.getEntry(entry.getName()) );
-    			// does this file posses the annotation?
-    			if( AnnotationParser.parseForAnnotation(inputStream,annotationName) )
-    				names.add( entry.getName() );
-    			
-    			// close off the stream
-    			inputStream.close();
-    		}
-    		
+			//System.out.println( "Searching for all classes with annotation [" + annotationName +
+			//                    "] in [" + theURL + "]" );
+
+			// turn the URL into a file that we can work with
+			HashSet<String> names = new HashSet<String>();
+			JarFile jarfile = new JarFile( new File(theURL.toURI()) );
+			Enumeration<JarEntry> entries = jarfile.entries();
+			while( entries.hasMoreElements() )
+			{
+				JarEntry entry = entries.nextElement();
+
+				// skip directories
+				if( entry.isDirectory() )
+					continue;
+
+				// is this a class file?
+				if( entry.getName().endsWith(".class") == false )
+					continue;
+				
+				InputStream inputStream = jarfile.getInputStream( jarfile.getEntry(entry.getName()) );
+				// does this file posses the annotation?
+
+				if( AnnotationParser.parseForAnnotation(inputStream,annotationName) )
+					names.add( entry.getName() );
+				
+				// close off the stream
+				inputStream.close();
+			}
+			
 			jarfile.close();
-    		return names;
+			return names;
 		}
 		catch( Exception e )
 		{

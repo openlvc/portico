@@ -22,7 +22,7 @@
 	<!-- ==== Basic Properties ==== -->
 	<!-- Verify that we have an appropriate JDK to build against -->
 	<verifyJdk location="${jdk.home.win32}" arch="x86"/>
-	<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
+<!--	<verifyJdk location="${jdk.home.win64}" arch="amd64"/> -->
 
 	<!-- ================================================ -->
 	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->

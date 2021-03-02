@@ -75,7 +75,7 @@ public class Client
 		this.multicastIp = InetAddress.getByName( "230.1.1.1" );
 		this.multicastAddress = new InetSocketAddress( multicastIp, multicastPort );
 		this.multicastSocket = new MulticastSocket( multicastPort );
-		this.multicastSocket.joinGroup( multicastIp );
+		this.multicastSocket.joinGroup( this.multicastAddress, null );
 		System.out.println( "Joined Multicast Group " + multicastAddress );
 
 		// kick off a multicast listener if we are the master
