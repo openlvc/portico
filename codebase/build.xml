@@ -52,11 +52,11 @@
 
 	<target name="release"
 	        description="Clean, run all test sand generate a standard release package"
-	        depends="clean,build.release,master.release,installer"/>
+	        depends="clean,build.release,master.release,installer,java.sandbox.jre"/>
 
 	<target name="release.thin"
 	        description="Generate a standard release package, but skip the tests"
-	        depends="clean,build.release,sandbox,installer"/>
+	        depends="clean,build.release,sandbox,installer,java.sandbox.jre"/>
 			
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
