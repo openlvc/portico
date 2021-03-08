@@ -40,11 +40,11 @@
 	<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>
 
 	<!-- build -->
-	<property name="hla13.build.dir"           location="${build.dir}/cpp/win32/hla13"/>
+	<property name="hla13.build.dir"           location="${build.dir}/cpp/win64/hla13"/>
 	<property name="hla13.complete.dir"        location="${hla13.build.dir}/complete"/>
 
 	<!-- test build -->
-	<property name="test13.build.dir"          location="${build.dir}/cpp/win32/test13"/>
+	<property name="test13.build.dir"          location="${build.dir}/cpp/win64/test13"/>
 	<property name="test13.complete.dir"       location="${test13.build.dir}/complete"/>
 
 	<!-- =========================================================== -->
@@ -52,9 +52,9 @@
 	<!-- =========================================================== -->
 	<!-- ==== Library Path Definitions ==== -->
 	<!-- See profiles/project.libraries.xml -->
-	<!-- <property name="cppunit.dir"     location="..."/> -->
-	<!-- <property name="cppunit.include" location="..."/> -->
-	<!-- <property name="cppunit.lib"     location="..."/> -->
+	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
+	<property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
 
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
@@ -73,17 +73,46 @@
 					 description="Compile the full HLA v1.3 interface"/>
 	
 	<!-- ================================================================= -->
-	<!--             Visual Studio 2019 (vc14.2) Compile Targets           -->
+	<!--             Visual Studio 2019 (vc14_2) Compile Targets           -->
 	<!-- ================================================================= -->
 	<!-- The Visual Studio 2019 related extension points.
 	     We have one of these for each supported platform architecture so
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc14_2" extensionOf="compile">
-		<compile-hla13 compiler="vc14_2" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc14_2" arch="x86" build="release"/>
-		<compile-hla13 compiler="vc14_2" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc14_2" arch="amd64" build="release"/>
+		<trycatch>
+		<try>
+			<compile-hla13 compiler="vc14_2" arch="x86" build="debug"/>
+			<compile-hla13 compiler="vc14_2" arch="x86" build="release"/>
+			<compile-hla13 compiler="vc14_2" arch="amd64" build="debug"/>
+			<compile-hla13 compiler="vc14_2" arch="amd64" build="release"/>
+		</try>
+		<catch>
+			<echo>Skipping VC14_2, it may not be installed</echo>
+		</catch>
+		</trycatch>
+	</target>
+	
+
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2017 (vc14_1) Compile Targets           -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2017 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_1" extensionOf="compile">
+		<trycatch>
+		<try>
+			<compile-hla13 compiler="vc14_1" arch="x86" build="debug"/>
+			<compile-hla13 compiler="vc14_1" arch="x86" build="release"/>
+			<compile-hla13 compiler="vc14_1" arch="amd64" build="debug"/>
+			<compile-hla13 compiler="vc14_1" arch="amd64" build="release"/>
+		</try>
+		<catch>
+			<echo>Skipping VC14_1, it may not be installed</echo>
+		</catch>
+		</trycatch>
 	</target>
 
 	<!-- ================================================================= -->
@@ -131,23 +160,23 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.compile" depends="compile.vc10" if="vc10.x86.debug">
-		<cpptask compiler="vc10"
+	<target name="test.compile" depends="compile.vc14_1" if="vc14_1.amd64.debug">
+		<cpptask compiler="vc14_1"
 		         outfile="test13"
 		         workdir="${test13.build.dir}"
 		         outdir="${test13.complete.dir}"
 		         type="executable"
-			     arch="x86"
-		         compilerArgs="${compiler.args.debug}"
-		         linkerArgs="/DEBUG">
+			     arch="amd64"
+		         compilerArgs="${msvc.release.defaults}"
+		         linkerArgs="">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/vc10" libs="RTI-NGd,FedTimed"/>
-			<library path="${cppunit.dir}/win32/vc10" libs="cppunitd"/>
+			<library path="${hla13.complete.dir}/vc14_1" libs="RTI-NG64d,FedTime64d"/>
+			<library path="${cppunit.dir}/win64/vc14_1" libs="cppunit"/>
 		</cpptask>
 	</target>
 
@@ -176,7 +205,7 @@
 		      resultproperty="test13.result">
 			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="PATH" path="${hla13.complete.dir}\vc10;${jdk.home.win32}\jre\bin\client"/>
+			<env key="PATH" path="${hla13.complete.dir};${jdk.home.win64}\jre\bin\client"/>
 			<env key="PORTICO_DEBUG" value="OFF"/>
 			<env key="CLASSPATH" path="${sandbox.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
@@ -264,7 +293,7 @@
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc14.2, vc14.1, vc14, vc10"/>
+		<attribute name="compiler" description="vc14_2, vc14_1, vc14, vc10"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -328,13 +357,13 @@
 			* <msvc-hla13 compiler="vc10" arch="x86" build="debug"/>
 			
 		 Arguments:
-			* compiler: The compiler to use (vc10, vc9 or vc8)
+			* compiler: The compiler to use (vc14_2, vc14_1, vc10, vc9 or vc8)
 			* arch:     The platform architecture (x86 or amd64)
 			* build:    The build type (debug or release)
 	-->	 
 	<macrodef name="msvc-hla13" description="(HLA 1.3) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc10, vc9, or vc8"/>
+		<attribute name="compiler" description="vc14_2, vc14_1, vc14, vc10"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -394,7 +423,7 @@
 				</fileset>
 				<includepath path="${hla13.include.dir}"/>
 				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<includepath path="${jdk.home.win64}/include;${jdk.home.win64}/include/win32"/>
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="BUILDING_FEDTIME"/>
@@ -425,7 +454,7 @@
 				</fileset>
 				<includepath path="${hla13.include.dir}"/>
 				<includepath path="${hla13.src.dir}"/>
-				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<includepath path="${jdk.home.win64}/include;${jdk.home.win64}/include/win32"/>
 				<define name="RTI_USES_STD_FSTREAM"/>
 				<define name="BUILDING_RTI"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
