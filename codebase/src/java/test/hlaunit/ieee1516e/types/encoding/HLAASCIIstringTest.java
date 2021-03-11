@@ -160,7 +160,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAASCIIstringGetOctetBoundary() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringGetOctetBoundary()
 	{
 		HLAASCIIstring data = this.encoderFactory.createHLAASCIIstring( HELLO_WORLD );
@@ -214,7 +214,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAASCIIstringEncodeMultiple() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -315,7 +315,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAASCIIstringDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -357,7 +357,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAASCIIstringDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -406,7 +406,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAASCIIstringDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringDecodeByteWrapperEmpty()
 	{
 		HLAASCIIstring data = this.encoderFactory.createHLAASCIIstring();
@@ -433,7 +433,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	/////////////////////////////////////////
 	// testHLAASCIIstringDecodeByteArray() //
 	/////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -456,7 +456,7 @@ public class HLAASCIIstringTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// testHLAASCIIstringDecodeByteArrayEmpty() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAASCIIstringDecodeByteArrayEmpty()
 	{
 		HLAASCIIstring data = this.encoderFactory.createHLAASCIIstring();

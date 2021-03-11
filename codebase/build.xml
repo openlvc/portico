@@ -40,7 +40,7 @@
 
 	<target name="test"
 	        description="Compile and run the automated test suite"
-	        depends="master.test,java.sandbox.jre"/>
+	        depends="master.test"/>
 
 	<target name="sandbox"
 	        description="Create a sandbox environment to test and validate in"
@@ -81,26 +81,31 @@
 	<!--                        Build Profiles                       -->
 	<!-- =========================================================== -->
 	<!-- Platform neutral java build -->
-	<include file="profiles/java.xml" as="java"/>
-
+	<import file="profiles/java.xml"/>
 	<!-- Parent C++ build scaffolding to attach to -->
-	<include file="profiles/cpp.xml" as="cpp"/>
+	<import file="profiles/cpp.xml"/>
+
+	<!-- =========================================================== -->
+	<!--               Platform Dependent Build Profiles             -->
+	<!-- =========================================================== -->
 
 	<!-- Mac OS X C++ and Installer profiles -->
-	<include file="profiles/macosx/hla13.xml"        as="cpp.hla13"      if="platform.macosx"/>
-	<include file="profiles/macosx/test13.xml"       as="cpp.test13"     if="platform.macosx"/>
-	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e"  if="platform.macosx"/>
-	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
+	<import file="profiles/macosx/hla13.xml"        if="platform.macosx"/>
+	<import file="profiles/macosx/test13.xml"       if="platform.macosx"/>
+	<import file="profiles/macosx/ieee1516e.xml"    if="platform.macosx"/>
+	<import file="profiles/macosx/installer.xml"    if="platform.macosx"/>
+
 
 	<!-- Linux C++ and Installer profiles -->
-	<include file="profiles/linux/hla13.xml"         as="cpp.hla13"      if="platform.linux64"/>
-	<include file="profiles/linux/ieee1516e.xml"     as="cpp.ieee1516e"  if="platform.linux64"/>
-	<include file="profiles/linux/installer.xml"     as="installer"      if="platform.linux64"/>
+	<import file="profiles/linux/hla13.xml"         if="platform.linux64"/>
+	<import file="profiles/linux/ieee1516e.xml"     if="platform.linux64"/>
+	<import file="profiles/linux/installer.xml"     if="platform.linux64"/>
+
 
 	<!-- Windows C++ and Installer profiles -->
-	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
-	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>
-	<include file="profiles/windows/installer.xml"   as="installer"      if="platform.windows"/>
+	<import file="profiles/windows/hla13.xml"       if="platform.windows"/>
+	<import file="profiles/windows/ieee1516e.xml"   if="platform.windows"/>
+	<import file="profiles/windows/installer.xml"   if="platform.windows"/>
 
 	<!-- Deployment Tasks -->
 	<!--<include file="profiles/deploy.xml"              as="deploy"/>-->

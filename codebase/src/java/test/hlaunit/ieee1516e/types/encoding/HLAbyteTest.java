@@ -258,7 +258,7 @@ public class HLAbyteTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////
 	// TEST: testHLAbyteDecodeByteWrapperSingle() //
 	/////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbyteDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -302,7 +302,7 @@ public class HLAbyteTest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAbyteDecodeByteWrapperMultiple() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbyteDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -350,7 +350,7 @@ public class HLAbyteTest extends Abstract1516eTest
 	////////////////////////////////////////////////////
 	// TEST: testHLAbyteDecodeByteWrapperEmpty() //
 	////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbyteDecodeByteWrapperEmpty()
 	{
 		HLAbyte data = this.encoderFactory.createHLAbyte();

@@ -258,7 +258,7 @@ public class HLAoctetTest extends Abstract1516eTest
 	/////////////////////////////////////////////////
 	// TEST: testHLAoctetDecodeByteWrapperSingle() //
 	/////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -302,7 +302,7 @@ public class HLAoctetTest extends Abstract1516eTest
 	///////////////////////////////////////////////////
 	// TEST: testHLAoctetDecodeByteWrapperMultiple() //
 	///////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -350,7 +350,7 @@ public class HLAoctetTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAoctetDecodeByteWrapperEmpty() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetDecodeByteWrapperEmpty()
 	{
 		HLAoctet data = this.encoderFactory.createHLAoctet();
