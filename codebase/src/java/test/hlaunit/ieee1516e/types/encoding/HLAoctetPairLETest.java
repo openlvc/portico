@@ -154,7 +154,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAoctetPairLEEncodeSingle() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEEncodeSingle()
 	{
 		HLAoctetPairLE data = this.encoderFactory.createHLAoctetPairLE( TEST1 );
@@ -192,7 +192,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAoctetPairLEEncodeMultiple() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -244,7 +244,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAoctetPairLEEncodeEmptyWrapper() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEEncodeEmptyWrapper()
 	{
 		HLAoctetPairLE data = this.encoderFactory.createHLAoctetPairLE();
@@ -293,7 +293,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAoctetPairLEDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -335,7 +335,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAoctetPairLEDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -384,7 +384,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAoctetPairLEDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEDecodeByteWrapperEmpty()
 	{
 		HLAoctetPairLE data = this.encoderFactory.createHLAoctetPairLE();
@@ -411,7 +411,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	/////////////////////////////////////////
 	// testHLAoctetPairLEDecodeByteArray() //
 	/////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -434,7 +434,7 @@ public class HLAoctetPairLETest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// testHLAoctetPairLEDecodeByteArrayEmpty() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAoctetPairLEDecodeByteArrayEmpty()
 	{
 		HLAoctetPairLE data = this.encoderFactory.createHLAoctetPairLE();

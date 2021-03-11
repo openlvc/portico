@@ -353,7 +353,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAvariableArrayGetOctetBoundary() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayGetOctetBoundary()
 	{
 		HLAASCIIstring[] strings = wrapStringData( THREE_STRINGS );
@@ -368,7 +368,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAvariableArrayEncodeSingle() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayEncodeSingle()
 	{
 		HLAvariableArray<HLAfloat32BE> data = 
@@ -408,7 +408,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAvariableArrayEncodeMultiple() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -471,7 +471,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	////////////////////////////////////////////////////
 	// TEST: testHLAvariableArrayEncodeEmptyWrapper() //
 	////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayEncodeEmptyWrapper()
 	{
 		HLAvariableArray<HLAfloat32BE> data = 
@@ -499,7 +499,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAvariableArrayGetEncodedLength() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayGetEncodedLength()
 	{
 		HLAfloat32BE[] floats = wrapFloatData( THREE_FLOATS );
@@ -525,7 +525,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAvariableArrayDecodeByteWrapperSingle() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -578,7 +578,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	////////////////////////////////////////////////////
 	// TEST: testHLAvariableArrayDecodeByteWrapperEmpty() //
 	////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayDecodeByteWrapperEmpty()
 	{
 		HLAvariableArray<HLAfloat32BE> data = 
@@ -606,7 +606,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	///////////////////////////////////////////
 	// testHLAvariableArrayDecodeByteArray() //
 	///////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -637,7 +637,7 @@ public class HLAvariableArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////////
 	// testHLAvariableArrayDecodeByteArrayEmpty() //
 	/////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAvariableArrayDecodeByteArrayEmpty()
 	{
 		HLAvariableArray<HLAfloat32BE> data = 

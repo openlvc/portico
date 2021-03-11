@@ -33,7 +33,7 @@ import hla.rti1516e.encoding.HLAfloat64BE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAfloat64BETest", "types", "encoding"} )
+@Test( sequential = true, groups = {"HLAfloat64BETest", "types", "encoding"} )
 public class HLAfloat64BETest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
@@ -162,7 +162,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	//////////////////////////////////////////
 	// TEST: testHLAfloat64BEEncodeSingle() //
 	//////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEEncodeSingle()
 	{
 		HLAfloat64BE data = this.encoderFactory.createHLAfloat64BE( PI );
@@ -200,7 +200,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAfloat64BEEncodeMultiple() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -252,7 +252,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAfloat64BEEncodeEmptyWrapper() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEEncodeEmptyWrapper()
 	{
 		HLAfloat64BE data = this.encoderFactory.createHLAfloat64BE();
@@ -301,7 +301,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	/////////////////////////////////////////////////////
 	// TEST: testHLAfloat64BEDecodeByteWrapperSingle() //
 	/////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -343,7 +343,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAfloat64BEDecodeByteWrapperMultiple() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -392,7 +392,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	////////////////////////////////////////////////////
 	// TEST: testHLAfloat64BEDecodeByteWrapperEmpty() //
 	////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEDecodeByteWrapperEmpty()
 	{
 		HLAfloat64BE data = this.encoderFactory.createHLAfloat64BE();
@@ -442,7 +442,7 @@ public class HLAfloat64BETest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// testHLAfloat64BEDecodeByteArrayEmpty() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64BEDecodeByteArrayEmpty()
 	{
 		HLAfloat64BE data = this.encoderFactory.createHLAfloat64BE();

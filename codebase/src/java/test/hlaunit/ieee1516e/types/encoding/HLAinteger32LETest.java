@@ -157,7 +157,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAinteger32LEEncodeSingle() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEEncodeSingle()
 	{
 		HLAinteger32LE data = this.encoderFactory.createHLAinteger32LE( TEST1 );
@@ -195,7 +195,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAinteger32LEEncodeMultiple() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -247,7 +247,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAinteger32LEEncodeEmptyWrapper() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEEncodeEmptyWrapper()
 	{
 		HLAinteger32LE data = this.encoderFactory.createHLAinteger32LE();
@@ -296,7 +296,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAinteger32LEDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -338,7 +338,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAinteger32LEDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -387,7 +387,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAinteger32LEDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEDecodeByteWrapperEmpty()
 	{
 		HLAinteger32LE data = this.encoderFactory.createHLAinteger32LE();
@@ -414,7 +414,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	/////////////////////////////////////////
 	// testHLAinteger32LEDecodeByteArray() //
 	/////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -437,7 +437,7 @@ public class HLAinteger32LETest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// testHLAinteger32LEDecodeByteArrayEmpty() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAinteger32LEDecodeByteArrayEmpty()
 	{
 		HLAinteger32LE data = this.encoderFactory.createHLAinteger32LE();
