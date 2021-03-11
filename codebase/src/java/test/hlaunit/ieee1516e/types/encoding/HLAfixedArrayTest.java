@@ -276,7 +276,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	///////////////////////////////////////////
 	// TEST: testHLAfixedArrayEncodeSingle() //
 	///////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayEncodeSingle()
 	{
 		HLAfixedArray<HLAfloat32BE> data = 
@@ -315,7 +315,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
     ////////////////////////////////////////////////////
     // TEST: testHLAfixedArrayEncodeSingleUnderflow() //
     ////////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedArrayEncodeSingleUnderflow()
     {
     	try
@@ -344,7 +344,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////////
 	// TEST: testHLAfixedArrayEncodeMultiple() //
 	/////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -399,7 +399,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////////////
 	// TEST: testHLAfixedArrayEncodeEmptyWrapper() //
 	/////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayEncodeEmptyWrapper()
 	{
 		HLAfixedArray data = this.encoderFactory.createHLAfixedArray();
@@ -426,7 +426,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAfixedArrayGetEncodedLength() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayGetEncodedLength()
 	{
 		HLAfixedArray<HLAfloat32BE> data = 
@@ -437,7 +437,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////
 	// TEST: testHLAfixedArrayToByteArray() //
 	/////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayToByteArray()
 	{
 		HLAfixedArray<HLAfloat32BE> data = 
@@ -450,7 +450,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAfixedArrayDecodeByteWrapperSingle() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -503,7 +503,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////
 	// TEST: testHLAfixedArrayDecodeByteWrapperEmpty() //
 	/////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayDecodeByteWrapperEmpty()
 	{
 		HLAfixedArray<HLAfloat32BE> data = this.encoderFactory.createHLAfixedArray();
@@ -530,7 +530,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	////////////////////////////////////////
 	// testHLAfixedArrayDecodeByteArray() //
 	////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -565,7 +565,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
 	/////////////////////////////////////////////
 	// testHLAfixedArrayDecodeByteArrayEmpty() //
 	/////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayDecodeByteArrayEmpty()
 	{
 		HLAfixedArray<HLAfloat32BE> data = this.encoderFactory.createHLAfixedArray();
@@ -592,7 +592,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
     ////////////////////////////////////////////
     // testHLAfixedArrayDecodeIntoUndersize() //
     ////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayDecodeIntoUndersize()
 	{
 		// Create an array that holds less than what is coming in off the wire
@@ -620,7 +620,7 @@ public class HLAfixedArrayTest extends Abstract1516eTest
     ////////////////////////////////////////////
     // testHLAfixedArrayDecodeIntoOversize() //
     ////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedArrayDecodeIntoOversize()
 	{
 		// Create an array that holds more than what is coming in off the wire

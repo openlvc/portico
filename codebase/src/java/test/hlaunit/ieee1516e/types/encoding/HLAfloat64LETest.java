@@ -162,7 +162,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	//////////////////////////////////////////
 	// TEST: testHLAfloat64LEEncodeSingle() //
 	//////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEEncodeSingle()
 	{
 		HLAfloat64LE data = this.encoderFactory.createHLAfloat64LE( PI );
@@ -200,7 +200,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAfloat64LEEncodeMultiple() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -252,7 +252,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAfloat64LEEncodeEmptyWrapper() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEEncodeEmptyWrapper()
 	{
 		HLAfloat64LE data = this.encoderFactory.createHLAfloat64LE();
@@ -301,7 +301,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	/////////////////////////////////////////////////////
 	// TEST: testHLAfloat64LEDecodeByteWrapperSingle() //
 	/////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -343,7 +343,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAfloat64LEDecodeByteWrapperMultiple() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -392,7 +392,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	////////////////////////////////////////////////////
 	// TEST: testHLAfloat64LEDecodeByteWrapperEmpty() //
 	////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEDecodeByteWrapperEmpty()
 	{
 		HLAfloat64LE data = this.encoderFactory.createHLAfloat64LE();
@@ -442,7 +442,7 @@ public class HLAfloat64LETest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// testHLAfloat64LEDecodeByteArrayEmpty() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfloat64LEDecodeByteArrayEmpty()
 	{
 		HLAfloat64LE data = this.encoderFactory.createHLAfloat64LE();

@@ -184,7 +184,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ////////////////////////////////////////////////
     // TEST: testHLAfixedRecordGetOctetBoundary() //
     ////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordGetOctetBoundary()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -199,7 +199,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ////////////////////////////////////////////
     // TEST: testHLAfixedRecordEncodeSingle() //
     ////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordEncodeSingle()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -234,7 +234,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     //////////////////////////////////////////////
     // TEST: testHLAfixedRecordEncodeNoFields() //
     //////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordEncodeNoFields()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -263,7 +263,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     /////////////////////////////////////////////////////
     // TEST: testHLAfixedRecordEncodeSingleUnderflow() //
     /////////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordEncodeSingleUnderflow()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -293,7 +293,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     //////////////////////////////////////////////////
     // TEST: testHLAfixedRecordEncodeEmptyWrapper() //
     //////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordEncodeEmptyWrapper()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -323,7 +323,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ////////////////////////////////////////////////
     // TEST: testHLAfixedRecordGetEncodedLength() //
     ////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordGetEncodedLength()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -335,7 +335,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ///////////////////////////////////////////
     // TEST: testHLAfixedRecordToByteArray() //
     ///////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordToByteArray()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -348,7 +348,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ///////////////////////////////////////////////////////
     // TEST: testHLAfixedRecordDecodeByteWrapperSingle() //
     ///////////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordDecodeByteWrapperSingle()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -384,7 +384,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     //////////////////////////////////////////////
     // TEST: testHLAfixedRecordDecodeOversize() //
     //////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordDecodeOversize()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -417,7 +417,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ////////////////////////////////////////////////////
     // TEST: testHLAfixedRecordDecodeByteWrapperEmpty() //
     ////////////////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAfixedRecordDecodeByteWrapperEmpty()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -447,7 +447,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     ///////////////////////////////////////////
     // testHLAvariableArrayDecodeByteArray() //
     ///////////////////////////////////////////
-    @Test
+    @Test( enabled=false )
     public void testHLAvariableArrayDecodeByteArray()
     {
     	HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
@@ -481,7 +481,7 @@ public class HLAfixedRecordTest extends Abstract1516eTest
     //////////////////////////////////////////////
     // testHLAfixedRecordDecodeByteArrayEmpty() //
     //////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAfixedRecordDecodeByteArrayEmpty()
 	{
 		HLAfixedRecord data = this.encoderFactory.createHLAfixedRecord();
