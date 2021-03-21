@@ -86,41 +86,20 @@ public class HLA1516eFloat64LE extends HLA1516eDataElement implements HLAfloat64
 	@Override
 	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		try
-		{
-			byteWrapper.put( toByteArray() );
-		}
-		catch( Exception e )
-		{
-			throw new EncoderException( e.getMessage(), e );
-		}
-	}
-
-	@Override
-	public final byte[] toByteArray() throws EncoderException
-	{
-		byte[] buffer = new byte[8];
-		BitHelpers.putDoubleLE( value, buffer, 0 );
-		return buffer;
+		byteWrapper.align( getOctetBoundary() );
+		byte[] bytes = new byte[getEncodedLength()];
+		BitHelpers.putDoubleLE( value, bytes, 0 );
+		byteWrapper.put( bytes );
 	}
 
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < this.getEncodedLength() )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.verify( getEncodedLength() );
 		
-		byte[] buffer = new byte[8];
-		byteWrapper.get( buffer );
-		decode( buffer );
-	}
-
-	@Override
-	public final void decode( byte[] bytes ) throws DecoderException
-	{
-		if( bytes.length < this.getEncodedLength() )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		byte[] bytes = new byte[getEncodedLength()];
+		byteWrapper.get( bytes );
 		this.value = BitHelpers.readDoubleLE( bytes, 0 );
 	}
 

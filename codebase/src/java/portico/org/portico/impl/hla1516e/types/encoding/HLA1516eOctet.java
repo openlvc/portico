@@ -80,7 +80,8 @@ public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 	{
 		if( byteWrapper.remaining() < this.getEncodedLength() )
 			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
-		
+	
+		byteWrapper.align( getOctetBoundary() );
 		byteWrapper.put( this.value );
 	}
 
@@ -99,19 +100,38 @@ public class HLA1516eOctet extends HLA1516eDataElement implements HLAoctet
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < this.getEncodedLength() )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.verify( 1 );
 		this.value = (byte)byteWrapper.get();
 	}
 
 	@Override
 	public void decode( byte[] bytes ) throws DecoderException
 	{
-		if( bytes.length < this.getEncodedLength() )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		super.checkForUnderflow( bytes, 0, 1 );
 		this.value = bytes[0];
+	}
+
+	/**
+	 * hashCode is required so that HLA1516eOctet can be used as a key in java.util.HashMap, which
+	 * is used by HLA1516eVariantRecord to store discriminant/variant pairs.
+	 */
+	@Override
+	public int hashCode()
+	{
+		return this.getValue();
+	}
+
+	/**
+	 * equals is required so that HLA1516eOctet can be used as a key in java.util.HashMap, which
+	 * is used by HLA1516eVariantRecord to store discriminant/variant pairs.
+	 */
+	@Override
+	public boolean equals( Object other )
+	{
+		return (this == other) || ((other != null) &&
+		                          (other instanceof HLA1516eOctet) &&
+		                          (this.getValue() == ((HLA1516eOctet)other).getValue()));
 	}
 
 	//----------------------------------------------------------

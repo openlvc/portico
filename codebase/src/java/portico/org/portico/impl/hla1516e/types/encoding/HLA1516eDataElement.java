@@ -66,7 +66,12 @@ public abstract class HLA1516eDataElement implements DataElement
 	 * 
 	 * @throws EncoderException if the element can not be encoded
 	 */
-	public abstract byte[] toByteArray() throws EncoderException;
+	public byte[] toByteArray() throws EncoderException
+	{
+		ByteWrapper byteWrapper = new ByteWrapper( getEncodedLength() );
+		encode( byteWrapper );
+		return byteWrapper.array();
+	}
 
 	/**
 	 * Decodes this element from the ByteWrapper.
@@ -84,24 +89,40 @@ public abstract class HLA1516eDataElement implements DataElement
 	 * 
 	 * @throws DecoderException if the element can not be decoded
 	 */
-	public abstract void decode( byte[] bytes ) throws DecoderException;
+	public void decode( byte[] bytes ) throws DecoderException
+	{
+		ByteWrapper byteWrapper = new ByteWrapper( bytes );
+		decode( byteWrapper );
+	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////// Helper Methods /////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
-	protected final void AvalidateNotNull( Object buffer ) throws DecoderException
+	protected final void verifyNotNull( Object buffer ) throws DecoderException
 	{
 		if( buffer == null )
 			throw new DecoderException( "buffer was null" );
 	}
 
-	protected final void AvalidateBytesRemaining( byte[] buffer, int offset, int expected )
+	protected final void checkForUnderflow( byte[] buffer, int offset, int expected )
 		throws DecoderException
 	{
 		if( buffer.length-offset < expected )
 		{
-			throw new DecoderException( "buffer underflow: expected "+expected+", found "+
-			                            (buffer.length-offset) );
+			int remaining = buffer.length-offset;
+			throw new DecoderException( "Buffer Underflow. Remaining="+remaining+"b, Expected="+
+			                            expected+"b, Total Buffer="+buffer.length+"b" );
+		}
+	}
+	
+	protected final void checkForUnderflow( ByteWrapper wrapper, int expected )
+		throws DecoderException
+	{
+		if( wrapper.remaining() < expected )
+		{
+			int total = wrapper.getPos()+1+wrapper.remaining();
+			throw new DecoderException( "Buffer Underflow. Remaining="+wrapper.remaining()+
+			                            "b, Expected="+expected+"b, Total Buffer="+total+"b" );
 		}
 	}
 

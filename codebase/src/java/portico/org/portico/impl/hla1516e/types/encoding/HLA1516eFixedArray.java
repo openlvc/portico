@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class HLA1516eFixedArray<T extends DataElement>
-       extends HLA1516eDataElement
+public class HLA1516eFixedArray<T extends DataElement> extends HLA1516eDataElement
        implements HLAfixedArray<T>
 {
 	//----------------------------------------------------------
@@ -37,15 +36,18 @@ public class HLA1516eFixedArray<T extends DataElement>
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	protected List<T> elements;
+	private int boundary;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public HLA1516eFixedArray( T... provided )
+	public HLA1516eFixedArray( @SuppressWarnings("unchecked") T... provided )
 	{
 		this.elements = new ArrayList<T>( provided.length );
 		for( T element : provided )
 			this.elements.add( element );
+		
+		this.boundary = -1;
 	}
 
 	/**
@@ -57,6 +59,8 @@ public class HLA1516eFixedArray<T extends DataElement>
 		this.elements = new ArrayList<T>( size );
 		for( int i = 0; i < size; i++ )
 			elements.add( factory.createElement(i) );
+		
+		this.boundary = -1;
 	}
 
 	//----------------------------------------------------------
@@ -91,6 +95,7 @@ public class HLA1516eFixedArray<T extends DataElement>
 	 */
 	public Iterator<T> iterator()
 	{
+		this.boundary = -1;
 		return this.elements.iterator();
 	}
 
@@ -100,80 +105,51 @@ public class HLA1516eFixedArray<T extends DataElement>
 	@Override
 	public int getOctetBoundary()
 	{
-		// Return the size of the largest element
-		int maxSize = 1;
+		if( this.boundary == -1 )
+		{
+    		// Return the size of the largest element
+    		int maxSize = 1;
+    		
+    		for( T element : this.elements )
+    			maxSize = Math.max( maxSize, element.getEncodedLength() );
+    		
+    		this.boundary = maxSize;
+		}
 		
-		for( T element : this.elements )
-			maxSize = Math.max( maxSize, element.getEncodedLength() );
-		
-		return maxSize;
-	}
-
-	@Override
-	public void encode( ByteWrapper byteWrapper ) throws EncoderException
-	{
-		int length = this.size();
-		if( byteWrapper.remaining() < this.getEncodedLength() )
-			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
-		
-		// Write the array length
-		byteWrapper.putInt( length );
-		
-		// Write the array contents
-		for( T element : elements )
-			element.encode( byteWrapper );
+		return this.boundary;
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		int size = 4;
-		for( T element : this.elements )
-			size += element.getEncodedLength();
+		int length = 0;
+		for( DataElement element : this.elements )
+		{
+			// put padding to the octet buondary before the element as required by encoding rules
+			int boundary = element.getOctetBoundary();
+			while( length % boundary != 0 )
+				++length;
+			
+			length += element.getEncodedLength();
+		}
 		
-		return size;
+		return length;
 	}
 
 	@Override
-	public byte[] toByteArray() throws EncoderException
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		// Encode the array and then use the ByteWrapper's underlying byte[]
-		int length = this.getEncodedLength();
-		ByteWrapper byteWrapper = new ByteWrapper( length );
-		this.encode( byteWrapper );
-		
-		return byteWrapper.array();
+		byteWrapper.align( getOctetBoundary() );
+		for( DataElement element : elements )
+			element.encode( byteWrapper );
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		// Need at least 4 bytes to read the number of elements
-		if( byteWrapper.remaining() < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
-		// Incoming size must match the size that the array was initialised with
-		int length = byteWrapper.getInt();
-		if( length != this.elements.size() )
-		{
-			throw new DecoderException( "Element count in decoded array differs. Expected [" + 
-										this.elements.size() + 
-										"] Received [" + 
-										length + 
-										"]" );
-		}
-		
-		// Decode the elements
-		for( T element : elements )
+		byteWrapper.align( getOctetBoundary() );
+		for( DataElement element : this.elements )
 			element.decode( byteWrapper );
-	}
-
-	@Override
-	public void decode( byte[] bytes ) throws DecoderException
-	{
-		// Decode via a ByteWrapper
-		ByteWrapper byteWrapper = new ByteWrapper( bytes );
-		this.decode( byteWrapper );
 	}
 
 	//----------------------------------------------------------

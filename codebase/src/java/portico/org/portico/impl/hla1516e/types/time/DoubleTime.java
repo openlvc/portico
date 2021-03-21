@@ -114,17 +114,25 @@ public class DoubleTime implements HLAfloat64Time
 
 	public int encodedLength()
 	{
-		return 8;
+		return 12;	// 4 (size) + 8 (value)
 	}
 
 	public void encode( byte[] buffer, int offset )
 	{
-		BitHelpers.putDoubleBE( this.time, buffer, offset );
+		BitHelpers.putIntBE( 8, buffer, offset );                 // size
+		BitHelpers.putDoubleBE( this.time, buffer, offset + 4 );  // value
 	}
 
 	public double getValue()
 	{
 		return this.time;
+	}
+	
+	public byte[] toByteArray()
+	{
+		byte[] buffer = new byte[encodedLength()];
+		encode( buffer, 0 );
+		return buffer;
 	}
 
 	//----------------------------------------------------------
@@ -144,6 +152,13 @@ public class DoubleTime implements HLAfloat64Time
 		{
 			throw new InvalidLogicalTime( "Expecting DoubleTime, found: null" );
 		}
+	}
+	
+	public static DoubleTime decode( byte[] buffer, int offset )
+	{
+		// int length = BitHelpers.readIntBE( buffer, offset );        // size
+		double value = BitHelpers.readDoubleBE( buffer, offset + 4 );  // value
+		return new DoubleTime( value );
 	}
 
 }
