@@ -14,8 +14,6 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
-import org.portico.utils.bithelpers.BitHelpers;
-
 import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
@@ -82,44 +80,27 @@ public class HLA1516eBoolean extends HLA1516eDataElement implements HLAboolean
 	}
 
 	@Override
-	public void encode( ByteWrapper byteWrapper ) throws EncoderException
-	{
-		this.value.encode( byteWrapper );
-	}
-
-	@Override
 	public int getEncodedLength()
 	{
 		return this.value.getEncodedLength();
 	}
 
 	@Override
-	public byte[] toByteArray() throws EncoderException
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		return this.value.toByteArray();
+		if( this.value.getValue() != HLAfalse || this.value.getValue() != HLAtrue )
+			throw new EncoderException( "HLAboolean has invalid value: "+this.value );
+
+		this.value.encode( byteWrapper );
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
 		this.value.decode( byteWrapper );
-	}
-
-	@Override
-	public void decode( byte[] bytes ) throws DecoderException
-	{
-		try
-		{
-			int candidateValue = BitHelpers.readIntBE( bytes, 0 );
-			if( candidateValue == HLAtrue || candidateValue == HLAfalse )
-				this.value.setValue( candidateValue );
-			else
-				throw new DecoderException("Only valid values for boolean are 0 and 1, found: "+candidateValue);
-		}
-		catch( Exception e )
-		{
-			throw new DecoderException( e.getMessage(), e );
-		}
+		
+		if( this.value.getValue() != HLAfalse || this.value.getValue() != HLAtrue )
+			throw new DecoderException( "HLAboolean has invalid value: "+this.value );
 	}
 
 	//----------------------------------------------------------

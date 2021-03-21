@@ -131,7 +131,7 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	@Override
 	public final int getOctetBoundary()
 	{
-		return 4 + value.length;
+		return 4;
 	}
 
 	@Override
@@ -143,45 +143,25 @@ public class HLA1516eOpaqueData extends HLA1516eDataElement implements HLAopaque
 	@Override
 	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		if( byteWrapper.remaining() < getEncodedLength() )
-			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
-		
-		byteWrapper.putInt( this.value.length );
-		byteWrapper.put( this.value );
-	}
-
-	@Override
-	public final byte[] toByteArray() throws EncoderException
-	{
-		// Encode into a byte wrapper
-		ByteWrapper byteWrapper = new ByteWrapper( getEncodedLength() );
-		this.encode( byteWrapper );
-		
-		// Return underlying array
-		return byteWrapper.array();
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.putInt( value.length );
+		byteWrapper.put( value );
 	}
 
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		try
-		{
-    		int length = byteWrapper.getInt();
-    		this.value = new byte[length];
-    		
-    		byteWrapper.get( this.value );
-		}
-		catch( ArrayIndexOutOfBoundsException aioobe )
-		{
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		}
-	}
-
-	@Override
-	public final void decode( byte[] bytes ) throws DecoderException
-	{
-		ByteWrapper byteWrapper = new ByteWrapper( bytes );
-		this.decode( byteWrapper );
+		byteWrapper.align( getOctetBoundary() );
+		
+		// read the length
+		int length = byteWrapper.getInt();
+		
+		// verify that there is sufficient data in the buffer
+		byteWrapper.verify( length );
+		
+		// read the data
+		byte[] bytes = new byte[length];
+		byteWrapper.get( bytes );
 	}
 
 	//----------------------------------------------------------

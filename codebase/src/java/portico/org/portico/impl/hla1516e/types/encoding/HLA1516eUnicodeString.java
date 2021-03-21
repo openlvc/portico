@@ -14,8 +14,6 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
-import org.portico.utils.bithelpers.BitHelpers;
-
 import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
@@ -92,76 +90,52 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public int getOctetBoundary()
 	{
-		return 4 + getBytes().length;
+		return 4;
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		return 4 + getBytes().length;
+		return 4 + (getBytes().length*2);
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		try
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.putInt( this.value.length() );
+		
+		for( int i = 0; i < value.length(); i++ )
 		{
-			byteWrapper.put( toByteArray() );
-		}
-		catch( Exception e )
-		{
-			throw new EncoderException( e.getMessage(), e );
+			// faster just to do this by hand rather than use BitHelpers which will create an array
+			char temp = value.charAt( i );
+			byteWrapper.put( temp >>> 8 & 0xFF );
+			byteWrapper.put( temp >>> 0 & 0xFF );
 		}
 	}
-
-	@Override
-	public byte[] toByteArray() throws EncoderException
-	{
-		byte[] bytes = getBytes();
-		
-		// Include the BOM in our string length calculations
-		int len = value.length() + 1;
-		
-		// 2 bytes per unicode character
-		byte[] buffer = new byte[4 + (len * 2)];
-		BitHelpers.putIntBE( len, buffer, 0 );
-		BitHelpers.putByteArray( bytes, buffer, 4 );
-		return buffer;
-	}
+	
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		try
-		{
-    		int length = byteWrapper.getInt();
-    		byte[] buffer = new byte[length * 2];
-    		byteWrapper.get( buffer );
-    		
-    		this.value = new String( buffer, CHARSET );
-		}
-		catch( Exception e )
-		{
-			throw new DecoderException( e.getMessage(), e );
-		}
-	}
+		byteWrapper.align( getOctetBoundary() );
 
-	@Override
-	public void decode( byte[] bytes ) throws DecoderException
-	{
-		try
-		{
-    		int length = BitHelpers.readIntBE( bytes, 0 );
-    		byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length * 2 );
+		// get the length of the string and make sure there is enough space
+		int length = byteWrapper.get();
+		byteWrapper.verify( length*2 );
 		
-			this.value = new String( stringBytes, CHARSET );
-		}
-		catch( Exception e )
+		// loop through and get each 16-bit char
+		char[] chars = new char[length];
+		for( int i = 0; i < length; i++ )
 		{
-			throw new DecoderException( e.getMessage(), e );
+			int firstOctet = byteWrapper.get();
+			int secondOctet = byteWrapper.get();
+			chars[i] = (char)((firstOctet << 8) + (secondOctet << 0));
 		}
-	}
 
+		this.value = new String( chars );
+	}
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

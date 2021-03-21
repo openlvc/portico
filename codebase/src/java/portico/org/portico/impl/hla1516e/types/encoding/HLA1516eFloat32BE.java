@@ -86,41 +86,20 @@ public class HLA1516eFloat32BE extends HLA1516eDataElement implements HLAfloat32
 	@Override
 	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		try
-		{
-			byteWrapper.put( toByteArray() );
-		}
-		catch( Exception e )
-		{
-			throw new EncoderException( e.getMessage(), e );
-		}
-	}
-
-	@Override
-	public final byte[] toByteArray() throws EncoderException
-	{
-		byte[] buffer = new byte[4];
-		BitHelpers.putFloatBE( value, buffer, 0 );
-		return buffer;
+		byteWrapper.align( getOctetBoundary() );
+		byte[] bytes = new byte[getEncodedLength()];
+		BitHelpers.putFloatBE( value, bytes, 0 );
+		byteWrapper.put( bytes );
 	}
 
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.verify( getEncodedLength() );
 		
-		byte[] buffer = new byte[4];
-		byteWrapper.get( buffer );
-		decode( buffer );
-	}
-
-	@Override
-	public final void decode( byte[] bytes ) throws DecoderException
-	{
-		if( bytes.length < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
+		byte[] bytes = new byte[getEncodedLength()];
+		byteWrapper.get( bytes );
 		this.value = BitHelpers.readFloatBE( bytes, 0 );
 	}
 

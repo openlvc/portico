@@ -14,8 +14,6 @@
  */
 package org.portico.impl.hla1516e.types.time;
 
-import org.portico.utils.bithelpers.BitHelpers;
-
 import hla.rti1516e.exceptions.CouldNotDecode;
 import hla.rti1516e.time.HLAinteger64TimeFactory;
 import hla.rti1516e.time.HLAinteger64Interval;
@@ -43,12 +41,12 @@ public class LongTimeFactory implements HLAinteger64TimeFactory
 	//----------------------------------------------------------
 	public HLAinteger64Time decodeTime( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new LongTime( BitHelpers.readLongBE(buffer,offset) );
+		return LongTime.decode( buffer, offset );
 	}
 
 	public HLAinteger64Interval decodeInterval( byte[] buffer, int offset ) throws CouldNotDecode
 	{
-		return new LongTimeInterval( BitHelpers.readLongBE(buffer,offset) );
+		return LongTimeInterval.decode( buffer, offset );
 	}
 
 	public HLAinteger64Time makeInitial()

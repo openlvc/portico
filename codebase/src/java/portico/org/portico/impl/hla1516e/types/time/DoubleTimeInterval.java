@@ -109,12 +109,13 @@ public class DoubleTimeInterval implements HLAfloat64Interval
 
 	public int encodedLength()
 	{
-		return 8;
+		return 12; // 4 (size) + 8 (value)
 	}
 
 	public void encode( byte[] buffer, int offset ) throws CouldNotEncode
 	{
-		BitHelpers.putDoubleBE( this.time, buffer, offset );
+		BitHelpers.putDoubleBE( 8, buffer, offset );            // size
+		BitHelpers.putDoubleBE( this.time, buffer, offset );    // value
 	}
 
 	public double getValue()
@@ -153,5 +154,12 @@ public class DoubleTimeInterval implements HLAfloat64Interval
 		{
 			throw new InvalidLookahead( "Expecting DoubleTimeInterval, found: "+lti.getClass() );
 		}
+	}
+	
+	public static DoubleTimeInterval decode( byte[] buffer, int offset )
+	{
+		// int length = BitHelpers.readIntBE( buffer, 0 );             // size
+		double value = BitHelpers.readDoubleBE( buffer, offset + 4 );  // value
+		return new DoubleTimeInterval( value );
 	}
 }
