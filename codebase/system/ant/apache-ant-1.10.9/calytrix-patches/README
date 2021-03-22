@@ -1,0 +1,69 @@
+The Calytrix Ant profile-based build system is built on Apache Ant v1.8.0.
+To do a lot of the things we wanted to requires some subtle modifications
+to the standard Ant v1.8.4 distribution. Some to "fix" bugs in Ant, others
+to add small new features.
+
+This directory contains patch files for these changes, with a summary of
+the changes provided below:
+
+ (1) Add if/unless support to <import>/<include> tasks
+     
+	 Patch File: import-ifunless.patch
+     
+	 Description: Add support for conditional execution
+     of an import or include tasks based on the Ant standard
+     if/unless conditions. 
+
+(2) Fix Prefixed Dependency and Target Resolution
+
+    Patch File: fix-prefixed-dependency-and-target-resolution.patch
+
+    Description: In the vanilla ant install there appear to be two
+    problems:
+       1) Targets can declare themselves extensions of Extension Points.
+          When doing so, the target extending the point is associated with
+          the point by the target name. For targets declared in included
+          files, the name stores is NOT the prefixed version (all targets
+          in an included file are given a prefix so they are uniquely
+          identifiable). If the name of the target is the same as a previously
+          defined target, the target associated with the extension point
+          ends up being incorrect. In the Portico build system, this manifests
+          itself as circular dependency errors. The patch resolves this by
+          storing the correct target name.
+
+       2) When resolving task dependencies inside an included build file,
+          Ant assumes that all dependency targets should be prefixed (as they
+          normally are). However, this means that cross-build-file dependencies
+          are not possible, as all dependency names are prefixed with the prefix
+          for the local build file. The patch fixes this by storing all prefixes
+          for any imported files and then in target dependency resolution, if
+          the target cannot be found, it will try and find it by checking again
+          but stripping off any of the loaded prefixes (thus removing the part
+          that Ant added and allowing the target to be found). The name of the
+          target in the dependency still has to have the same prefix for the file
+          that it resides in. E.g. cpp.compile (in cpp.xml) can depend on
+          java.compile (in java.xml), but it must be declared as "java.compile".
+
+
+
+Building Ant Instructions
+--------------------------
+Building Ant isn't obvious or simple. Here are some very quick notes:
+
+// Set it up
+export ANT_HOME=/c/Users/tim/Developer/workspace/opensource/portico/system/ant/ant-VERSION
+export PATH=$ANT_HOME/bin:$PATH
+
+// Fetch the dependencies - from Ant source dir
+ant -f fetch.xml -Ddest=optional
+
+
+// Download dependencies
+set ANT_HOME=c:\Users\tim\Developer\workspace\opensource\portico\system\ant\ant-VERSION
+set PATH=%ANT_HOME%\bin;%PATH%
+ant -f fetch.xml -Ddest=optional
+
+// Build the distribution
+set JAVA_HOME=c:\PROGRA~1\AdoptOpenJDK\<version>
+set PATH=%JAVA_HOME%\bin;%PATH%
+build.sh

@@ -1,0 +1,158 @@
+diff --git a/src/main/org/apache/tools/ant/Main.java b/src/main/org/apache/tools/ant/Main.java
+index 18feef827..1bac58011 100644
+--- a/src/main/org/apache/tools/ant/Main.java
++++ b/src/main/org/apache/tools/ant/Main.java
+@@ -30,6 +30,7 @@ import java.util.Collections;
+ import java.util.Enumeration;
+ import java.util.HashMap;
+ import java.util.HashSet;
++import java.util.Hashtable;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+@@ -824,6 +825,23 @@ public class Main implements AntMain {
+                     }
+                 }
+ 
++                // Added by Tim
++                // Tim - When including files, target names are automatically prefixed with
++                //       a value as defined in the including build file. This prefix is given
++                //       to all targets defined in the file, including declared dependencies.
++                //       While this works fine for dependencies that reside inside the same
++                //       file (as they all get the same prefix and so are essentially still
++                //       accessible by the same name), if you want to include targets from
++                //       another file, the prefix of the file being included is stuck on the
++                //       front, thus making it appear like the target doesn't exist.
++                //       To solve this, we store any prefixes used when including files in
++                //       a project and then here, should be not be able to locate targets or
++                //       dependencies in a fully complete build, we strip the prefix off to
++                //       see if that was the cause of the problem. If it was, we rewrite the
++                //       name of the target or dependency.
++                resolvePrefixedDependencies( project );
++
++
+                 project.executeTargets(targets);
+             } finally {
+                 // put back the original security manager
+@@ -862,6 +880,63 @@ public class Main implements AntMain {
+         }
+     }
+ 
++    /**
++     * Spin through all the targets in this class and check their dependency list. If they
++     * mention a target that does not exist, try and resolve it using the name without the
++     * prefix of any imported or included files. When they are loaded, all targets (and deps)
++     * are given a prefix. If you are referencing a target outside of the local project, it
++     * will fail because the dependency will get prefixed as well. This just checks for cases
++     * where that has happened and changes the dependency to point to the correct name when
++     * it does happen.
++     *
++     * @param project The project we are working in
++     *
++     * @since Ant 1.8.4-patched (Addedy by Tim)
++     */
++    private void resolvePrefixedDependencies(Project project) {
++        Hashtable<String,Target> allTargets = project.getTargets();
++        Enumeration<Target> targetsEnumeration = allTargets.elements();
++        while( targetsEnumeration.hasMoreElements() )
++        {
++            // for each of the targets in the project, check all their depdendencies to
++            // ensure they can't be found, attempting to find with prefixes removed if not
++            Target target = (Target)targetsEnumeration.nextElement();
++            Enumeration<String> dependencies = target.getDependencies();
++            while( dependencies.hasMoreElements() ) {
++                String dependency = (String)dependencies.nextElement();
++                if( project.getTargets().containsKey(dependency) )
++                    continue;
++                
++                // this target has a dependency that we can't find in the
++                // project, try removing any of the loaded prefixes from it
++                // name to see if we can, and should we be able to, replace
++                // the dependency
++                Set<String> prefixes = project.getDeclaredPrefixes();
++                Iterator<String> iterator = prefixes.iterator();
++                Target resolved = null;
++                while( iterator.hasNext() ) {
++                    String prefix = (String)iterator.next();
++                    // check the start of the target name, don't want to replace middle pieces
++                    // of the target name and find a match! (wouldn't be a prefix then)
++                    if( dependency.startsWith(prefix) == false )
++                        continue;
++
++                    String alternative = dependency.replace( prefix+".", "" );
++                    if( project.getTargets().containsKey(alternative) ) {
++                        // Found it!
++                        resolved = (Target)allTargets.get( alternative );
++                        break;
++                    }
++                }
++                
++                // replace the target with the proper name if required
++                if( resolved != null ) {
++                    target.replaceDependency( dependency, resolved.getName() );
++                }
++            }
++        }
++    }
++
+     private void setProperties(final Project project) {
+ 
+         project.init();
+diff --git a/src/main/org/apache/tools/ant/Project.java b/src/main/org/apache/tools/ant/Project.java
+index 6104e53e6..7a729fca2 100644
+--- a/src/main/org/apache/tools/ant/Project.java
++++ b/src/main/org/apache/tools/ant/Project.java
+@@ -152,6 +152,9 @@ public class Project implements ResourceFactory {
+     /** Name of the project's default target. */
+     private String defaultTarget;
+ 
++    /** Set of prefixes that have been used by imported or included files */
++    private Set<String> declaredPrefixes = new HashSet<>(); // Added by Tim
++
+     /** Map from target names to targets (String to Target). */
+     private final Hashtable<String, Target> targets = new Hashtable<>();
+ 
+@@ -791,6 +794,16 @@ public class Project implements ResourceFactory {
+         return description;
+     }
+ 
++    /**
++     * Gets a set of all the prefixes used in this project by imported or included files
++     *
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    public Set<String> getDeclaredPrefixes() {
++        return this.declaredPrefixes;
++    }
++
++
+     /**
+      * Add a filter to the set of global filters.
+      *
+diff --git a/src/main/org/apache/tools/ant/Target.java b/src/main/org/apache/tools/ant/Target.java
+index 53473ca90..10b164a1f 100644
+--- a/src/main/org/apache/tools/ant/Target.java
++++ b/src/main/org/apache/tools/ant/Target.java
+@@ -258,6 +258,21 @@ public class Target implements TaskContainer {
+             : Collections.enumeration(dependencies);
+     }
+ 
++    /**
++     * Replaces the identified existing target dependency with the provided new one.
++     * If the given dependency does not exist in the list of dependencies that we have,
++     * no replace shall take place.
++     *
++     * @since Ant 1.8.4-patched (added by Tim)
++     */
++    public void replaceDependency( String previousDependency, String newDependency ) {
++        int index = dependencies.indexOf( previousDependency );
++        if( index >= 0 ) {
++            dependencies.set( index, newDependency );
++        }
++    }
++
++
+     /**
+      * Does this target depend on the named target?
+      * @param other the other named target.
+
