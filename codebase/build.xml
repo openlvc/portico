@@ -57,7 +57,11 @@
 	<target name="release.thin"
 	        description="Generate a standard release package, but skip the tests"
 	        depends="clean,build.release,sandbox,installer,java.sandbox.jre"/>
-			
+	
+	<target name="32.installer"
+	        description="Create a 32 bit installer from the sandbox"
+	        depends="master.32.installer"/>
+	
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
 	<!-- =========================================================== -->
@@ -76,6 +80,7 @@
 	<extension-point name="master.sandbox"/>
 	<extension-point name="master.installer"/>
 	<extension-point name="master.release"/>
+	<extension-point name="master.32.installer"/>
 
 	<!-- =========================================================== -->
 	<!--                        Build Profiles                       -->

@@ -337,6 +337,7 @@ public class ObjectModel implements Serializable
 		// add it
 		this.oclasses.put( oc.getHandle(), oc );
 		oc.setModel( this );
+		System.out.println("handle " + oc.getHandle() + oc.getLocalName() );
 	}
 	
 	/**

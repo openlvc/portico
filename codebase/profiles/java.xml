@@ -232,7 +232,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="compile,jars">
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.compile,jars">
 		<!-- create the required directories -->
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${sandbox.dir}"/>
@@ -279,7 +279,7 @@
 	<extension-point name="jars"/>
 
 	<!-- build the main portico jar file -->
-	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
+	<target name="jar.portico" extensionOf="jars" depends="java.compile,onejar">
 		<!-- construct the main portico jar file -->
 		<jar destfile="${sandbox.dir}/lib/portico.jar">
 			<!-- portico code -->
@@ -342,7 +342,7 @@
 	<!-- No special installation tasks to do for the Java build -->
 	<!--<target name="installer" extensionOf="master.installer"/>-->
 
-	<target name="sandbox.jre" depends="sandbox" description="Create JRE in sandbox">
+	<target name="sandbox.jre" depends="java.sandbox" description="Create JRE in sandbox">
 		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
 		<then>
 			<!-- For java 8 or lower can copy jre from the jdk location -->
@@ -355,7 +355,9 @@
 			<property name="jdk" value="${jdk.home.linux64}" if:set="platform.linux"/>
 			<property name="jdk" value="${jdk.home.macosx}"  if:set="platform.macosx"/>
 
-			<link destDir="${sandbox.dir}/jre" modulepath="${jdk}/jmods">
+			<property name="jreDest" value="${sandbox.dir}/jre"/>
+			
+			<link destDir="${jreDest}" modulepath="${jdk}/jmods">
 				<module name="java.base"/>
 				<module name="java.desktop"/>
 				<module name="java.logging"/>
@@ -368,7 +370,31 @@
 		</else>
 		</if>
 	</target>
-
+	
+	<target name="32.sandbox.jre" depends="java.sandbox">
+		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
+		<then>
+			<!-- For java 8 or lower can copy jre from the jdk location -->
+			<copy-jre todir="${sandbox.dir}"/>
+		</then>
+		<else>
+			<!-- For java 9+ can/must create the jre with required dependendcies -->
+			<property name="jdk" value="${jdk.home.win32}"/>
+			<property name="jreDest" value="${sandbox.dir}/jre32"/>
+			
+			<link destDir="${jreDest}" modulepath="${jdk}/jmods">
+				<module name="java.base"/>
+				<module name="java.desktop"/>
+				<module name="java.logging"/>
+				<module name="java.management"/>
+				<module name="java.naming"/>
+				<module name="java.rmi"/>
+				<module name="java.sql"/>
+				<module name="java.xml"/>
+			</link>
+		</else>
+		</if>
+	</target>
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->

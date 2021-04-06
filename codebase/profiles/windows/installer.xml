@@ -41,9 +41,9 @@
 	<!--                                     -->
 	<!-- Windows 32-bit Installer Generation -->
 	<!--                                     -->
-	<target name="nsis.win32" extensionOf="master.installer" depends="prep" if="deprecated">
+	<target name="nsis.win32" extensionOf="master.32.installer" depends="cpp.32.installer,java.sandbox,java.32.sandbox.jre,prep">
 		<!-- Verify we have a JRE we can bundle -->
-		<!-- <verifyJdk location="${jdk.home.win32}" arch="x86"/> -->
+		<verifyJdk location="${jdk.home.win32}" arch="x86" requiredVersion="${java.compiler.target}"/>
 
 		<!-- run the NSIS script for the installer -->
 		<echo>Creating Windows 32-bit Installer</echo>
@@ -53,14 +53,14 @@
 			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
 			<define name="LICENSE"      value="${license}"/>       <!-- presented during install -->
 			<define name="SANDBOX"      value="${sandbox.dir}"/>   <!-- contents of the app      -->
-			<define name="JREPATH"      value="${sandbox.dir}\jre"/> <!-- jre to bundle  -->
+			<define name="JREPATH"      value="${sandbox.dir}\jre32"/> <!-- jre to bundle  -->
 		</nsis-installer>
 	</target>
 
 	<!--                                     -->
 	<!-- Windows 64-bit Installer Generation -->
 	<!--                                     -->
-	<target name="nsis.win64" extensionOf="master.installer" depends="prep,java.sandbox.jre">
+	<target name="nsis.win64" extensionOf="master.installer" depends="sandbox,prep,java.sandbox.jre">
 		<!-- Verify we have a JRE we can bundle -->
 		<verifyJdk location="${jdk.home.win64}" arch="amd64" requiredVersion="${java.compiler.target}"/>
 
@@ -84,7 +84,7 @@
 	<!--                                    -->
 	<!-- Windows 32-bit Zip FIle Generation -->
 	<!--                                    -->
-	<target name="zip.win32" if="deprecated">
+	<target name="zip.win32">
 		<!-- Verify we have a JRE we can bundle -->
 		<!-- <verifyJdk location="${jdk.home.win32}" arch="x86"/> -->
 
