@@ -21,7 +21,7 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<!-- <verifyJdk location="${jdk.home.win32}" arch="x86"/> -->
+	<verifyJdk location="${jdk.home.win32}" arch="x86" requiredVersion="${java.compiler.target}"/>
 	<verifyJdk location="${jdk.home.win64}" arch="amd64" requiredVersion="${java.compiler.target}"/>
 
 	<!-- ==================================== -->
@@ -71,6 +71,10 @@
 	<extension-point name="hla13.compile"
 	                 extensionOf="cpp.compile"
 	                 description="Compile the full HLA v1.3 interface"/>
+	
+	<extension-point name="hla13.32.compile"
+	                 extensionOf="cpp.32.installer"
+	                 description="Compile the full 32 bit HLA v1.3 interface"/>
 
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2019 (vc14_2) Compile Targets           -->
@@ -82,10 +86,20 @@
 	<target name="compile.vc14_2" extensionOf="hla13.compile">
 		<trycatch>
 		<try>
-			<compile-hla13 compiler="vc14_2" arch="x86" build="debug"/>
-			<compile-hla13 compiler="vc14_2" arch="x86" build="release"/>
 			<compile-hla13 compiler="vc14_2" arch="amd64" build="debug"/>
 			<compile-hla13 compiler="vc14_2" arch="amd64" build="release"/>
+		</try>
+		<catch>
+			<echo>Skipping VC14_2, it may not be installed</echo>
+		</catch>
+		</trycatch>
+	</target>
+	
+	<target name="32.compile.vc14_2" extensionOf="hla13.32.compile">
+		<trycatch>
+		<try>
+			<compile-hla13 compiler="vc14_2" arch="x86" build="debug"/>
+			<compile-hla13 compiler="vc14_2" arch="x86" build="release"/>
 		</try>
 		<catch>
 			<echo>Skipping VC14_2, it may not be installed</echo>
@@ -104,10 +118,20 @@
 	<target name="compile.vc14_1" extensionOf="hla13.compile">
 		<trycatch>
 		<try>
-			<compile-hla13 compiler="vc14_1" arch="x86" build="debug"/>
-			<compile-hla13 compiler="vc14_1" arch="x86" build="release"/>
 			<compile-hla13 compiler="vc14_1" arch="amd64" build="debug"/>
 			<compile-hla13 compiler="vc14_1" arch="amd64" build="release"/>
+		</try>
+		<catch>
+			<echo>Skipping VC14_1, it may not be installed</echo>
+		</catch>
+		</trycatch>
+	</target>
+	
+	<target name="32.compile.vc14_1" extensionOf="hla13.32.compile">
+		<trycatch>
+		<try>
+			<compile-hla13 compiler="vc14_1" arch="x86" build="debug"/>
+			<compile-hla13 compiler="vc14_1" arch="x86" build="release"/>
 		</try>
 		<catch>
 			<echo>Skipping VC14_1, it may not be installed</echo>
@@ -123,12 +147,14 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc10" extensionOf="hla13.compile">
-		<compile-hla13 compiler="vc10" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc10" arch="x86" build="release"/>
 		<compile-hla13 compiler="vc10" arch="amd64" build="debug"/>
 		<compile-hla13 compiler="vc10" arch="amd64" build="release"/>
 	</target>
 
+	<target name="32.compile.vc10" extensionOf="hla13.32.compile">
+		<compile-hla13 compiler="vc10" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc10" arch="x86" build="release"/>
+	</target>
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2008 (vc9) Compile Targets              -->
 	<!-- ================================================================= -->
@@ -137,12 +163,14 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc9" extensionOf="hla13.compile">
-		<compile-hla13 compiler="vc9" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc9" arch="x86" build="release"/>
 		<compile-hla13 compiler="vc9" arch="amd64" build="debug"/>
 		<compile-hla13 compiler="vc9" arch="amd64" build="release"/>
 	</target>
 
+	<target name="32.compile.vc9" extensionOf="hla13.32.compile">
+		<compile-hla13 compiler="vc9" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc9" arch="x86" build="release"/>
+	</target>
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2005 (vc8) Compile Targets              -->
 	<!-- ================================================================= -->
@@ -151,12 +179,14 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc8" extensionOf="hla13.compile">
-		<compile-hla13 compiler="vc8" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc8" arch="x86" build="release"/>
 		<compile-hla13 compiler="vc8" arch="amd64" build="debug"/>
 		<compile-hla13 compiler="vc8" arch="amd64" build="release"/>
 	</target>
 	
+	<target name="32.compile.vc8" extensionOf="hla13.32.compile">
+		<compile-hla13 compiler="vc8" arch="x86" build="debug"/>
+		<compile-hla13 compiler="vc8" arch="x86" build="release"/>
+	</target>
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
@@ -258,12 +288,48 @@
 			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
 	</target>
+	
+	<target name="hla13.32.sandbox" depends="java.sandbox,hla13.32.compile">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${sandbox.dir}/include/hla13"/>
+		<copy todir="${sandbox.dir}/include/hla13">
+			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
+		</copy>
+		<!-- Copy across the C++ dlls -->
+		<mkdir dir="${sandbox.bin.dir}"/>
+		<copy todir="${sandbox.bin.dir}">
+			<fileset dir="${hla13.complete.dir}" includes="**/*.dll"/>
+		</copy>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
+		<copy todir="${sandbox.examples.dir}/cpp/hla13">
+			<fileset dir="${hla13.example.dir}" includes="**/*"/>
+		</copy>
+	</target>
 
 	<!-- ================================================================================= -->
 	<!--                                 Installer Targets                                 -->
 	<!-- ================================================================================= -->
 	<!-- Not required for an interface build -->
-
+	
+	<target name="hla13.32.installer"
+	        extensionOf="cpp.32.installer"
+	        depends="hla13.32.sandbox"/>
+	
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
@@ -303,39 +369,24 @@
 			<!-- Only run this if it's in the requested build profile -->
 			<if><isset property="@{compiler}.@{arch}.@{build}"/>
 			<then>
-				<!-- ====================== -->
-				<!-- 2. Check if deprecated -->
-				<!-- ====================== -->
-				<!-- Only run 32 bit build if deprecated property is set -->
-				<if>
-					<and>
-						<equals arg1="@{arch}" arg2="x86"/>
-						<not><isset property="deprecated"/></not>
-					</and>
-				<then>
-					<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- 32bit is deprecated"/>
-				</then>
+				<!-- ========================== -->
+				<!-- 2. Check for Visual Studio -->
+				<!-- ========================== -->
+				<!-- Make sure the requested version of Visual Studio is present on the system -->
+				<if><isVisualStudioPresent version="@{compiler}"/>
+					<then>
+						<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
+						<msvc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+					</then>
+				<elseif><istrue value="${cpp.strict}"/>
+					<then>
+						<!-- Visual Studio NOT installed - strict build, fail out -->
+						<fail message="[Error] (HLA v1.3) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
+					</then>
+				</elseif>
 				<else>
-					<!-- ========================== -->
-					<!-- 3. Check for Visual Studio -->
-					<!-- ========================== -->
-					<!-- Make sure the requested version of Visual Studio is present on the system -->
-					<if><isVisualStudioPresent version="@{compiler}"/>
-						<then>
-							<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
-							<msvc-hla13 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
-						</then>
-					<elseif><istrue value="${cpp.strict}"/>
-						<then>
-							<!-- Visual Studio NOT installed - strict build, fail out -->
-							<fail message="[Error] (HLA v1.3) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
-						</then>
-					</elseif>
-					<else>
-						<!-- This is not a strict build, just skip this compile -->
-						<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- @{compiler} is not installed"/>
-					</else>
-					</if>
+					<!-- This is not a strict build, just skip this compile -->
+					<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- @{compiler} is not installed"/>
 				</else>
 				</if>
 			</then>
