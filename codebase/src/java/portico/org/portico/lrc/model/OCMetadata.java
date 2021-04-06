@@ -17,6 +17,7 @@ package org.portico.lrc.model;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.io.Serializable;
@@ -26,7 +27,7 @@ import org.portico.lrc.PorticoConstants;
 /**
  * This class contains metadata information about a FOM object class 
  */
-public class OCMetadata implements Serializable
+public class OCMetadata implements Serializable, Comparable<OCMetadata>
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -58,7 +59,7 @@ public class OCMetadata implements Serializable
 		this.handle      = handle;
 		this.parent      = null;
 		this.attributes  = new HashMap<Integer,ACMetadata>();
-		this.children    = new HashSet<OCMetadata>();
+		this.children    = new TreeSet<OCMetadata>();
 	}
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
@@ -159,6 +160,16 @@ public class OCMetadata implements Serializable
 		
 		// remove our link to the model //
 		this.model = null;
+	}
+	
+	/**
+	 * Compares this object with the given one lexicographically based on their local names.
+	 * Needed so that children can use a TreeSet to be consistent across different federates
+	 * @see String#compareTo(String)
+	 */
+	public int compareTo(OCMetadata object)
+	{
+		return object.getLocalName().compareTo( this.getLocalName() );
 	}
 
 	////////////////////////////////////////////////////////////

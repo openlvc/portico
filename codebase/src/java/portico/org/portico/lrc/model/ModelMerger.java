@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.portico.lrc.compat.JInconsistentFDD;
@@ -194,7 +195,7 @@ public class ModelMerger
 		//////////////////////////////////
 		// check to see if there are any types in the extension that can be inserted into the base
 		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
-		Set<OCMetadata> extensionChildren = new HashSet<OCMetadata>( extension.getChildTypes() );
+		TreeSet<OCMetadata> extensionChildren = new TreeSet<OCMetadata>( extension.getChildTypes() );
 		for( OCMetadata extensionChild : extensionChildren )
 		{
 			// if the child does not exist in the base model, insert it, otherwise we need to
@@ -619,6 +620,7 @@ public class ModelMerger
 		}
 
 		// run a merge on the clones to ensure it passes happily
+		cloneList.get(0).unlock();
 		ModelMerger.merge( cloneList );
 	}
 }
