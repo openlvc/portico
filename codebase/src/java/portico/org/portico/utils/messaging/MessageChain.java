@@ -80,7 +80,7 @@ public class MessageChain extends AbstractMessageHandler implements IMessageHand
 	}
 
 	/**
-	 * Insert the given handler into the chain. Its position in the chain will be depenant on its
+	 * Insert the given handler into the chain. Its position in the chain will be dependant on its
 	 * priority. Those with a higher priority will be placed at the front of the chain. If there
 	 * are other handlers with equal priority, it will be added behind all those that already exist
 	 * for that level.

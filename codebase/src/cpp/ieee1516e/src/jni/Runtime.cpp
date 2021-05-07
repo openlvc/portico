@@ -337,7 +337,10 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
-	string jrelocation( getenv("JAVA_HOME") );
+	char *javaHome = getenv( "JAVA_HOME" );
+	string jrelocation;
+	if( javaHome )
+		string jrelocation( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -442,7 +445,10 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
-	string jrelocation( getenv("JAVA_HOME") );
+	char *javaHome = getenv( "JAVA_HOME" );
+	string jrelocation;
+	if( javaHome )
+		string jrelocation( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above

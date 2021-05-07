@@ -83,7 +83,7 @@ public class MessageSink extends AbstractMessageHandler
 	//----------------------------------------------------------
 	//                      ENUMERATIONS
 	//----------------------------------------------------------
-	/** Enum outlinging the possible chains a glocal handler can be added to. The NONE option
+	/** Enum outlining the possible chains a global handler can be added to. The NONE option
 	    is necessary so that the {@link MessageHandler} annotation can have a default (which
 	    i */
 	public enum Global{ PREPROCESS, POSTPROCESS, BOTH, NONE };
@@ -482,7 +482,7 @@ public class MessageSink extends AbstractMessageHandler
 	 * interested in handling it within the sink. 
 	 *
 	 * @param clazz The class for the message
-	 * @return True if this sink will accept messages of the given type, false otherwsie
+	 * @return True if this sink will accept messages of the given type, false otherwise
 	 */
 	public boolean isSupported( Class<? extends PorticoMessage> clazz )
 	{
@@ -490,7 +490,7 @@ public class MessageSink extends AbstractMessageHandler
 	}
 	
 	/**
-	 * Get a set of all the message classes currenty supported by this sink. This only includes the
+	 * Get a set of all the message classes currently supported by this sink. This only includes the
 	 * classes that have general handlers associated with them. The returned set is NOT modifiable.
 	 */
 	public Set<Class<? extends PorticoMessage>> getSupportedMessages()

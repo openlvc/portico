@@ -203,7 +203,6 @@ public class ModelMerger
 			OCMetadata baseChild = base.getChildType( extensionChild.getLocalName() );
 			if( baseChild == null )
 			{
-				logger.warn("here ");
 				insertObjectClass( base, extensionChild );
 			}
 			else
