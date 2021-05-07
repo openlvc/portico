@@ -6,7 +6,7 @@
 	<classpathentry kind="src" path="codebase/src/java/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="codebase/resources/test-data"/>
-	<classpathentry kind="lib" path="codebase/lib/asm/asm-3.1/asm-3.1.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/asm/asm-9.1/asm-9.1.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-1.2.15/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/jgroups/JGroups-2.8.0.GA.bin/commons-logging.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/testng/testng-5.12.1/testng-5.12.1.jar"/>
