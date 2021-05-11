@@ -185,10 +185,11 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	string compiler = getCompiler();
 	string hlaVersion = getHlaVersion();
 	string architecture = getArch();
+	string ipv4( "-Djava.net.preferIPv4Stack=true" );
 
 	// before we can create or connect to the JVM, we need to specify its environment
 	JavaVMInitArgs vmargs;
-	JavaVMOption options[7];
+	JavaVMOption options[8];
 	options[0].optionString = const_cast<char*>(paths.first.c_str());
 	options[1].optionString = const_cast<char*>(paths.second.c_str());
 	options[2].optionString = const_cast<char*>(mode.c_str());         // build mode
@@ -196,7 +197,8 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	options[4].optionString = const_cast<char*>(hlaVersion.c_str());   // hla interface version
 	options[5].optionString = const_cast<char*>(architecture.c_str()); // architecture
 	options[6].optionString = const_cast<char*>(stackSize.c_str());
-	vmargs.nOptions = 7;
+	options[7].optionString = const_cast<char*>(ipv4.c_str());
+	vmargs.nOptions = 8;
 	vmargs.version = getJNIVersion();
 	vmargs.options = options;
 	vmargs.ignoreUnrecognized = JNI_TRUE;
