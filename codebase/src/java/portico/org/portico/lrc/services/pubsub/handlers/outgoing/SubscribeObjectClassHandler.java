@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JObjectClassNotSubscribed;
 import org.portico.lrc.model.OCInstance;
@@ -75,8 +76,8 @@ public class SubscribeObjectClassHandler extends LRCMessageHandler
 			logger.debug( message );
 		}
 		
-		// if this is a is a request with 0-attributes, it is an implicit unsubscribe //
-		if( attributes.isEmpty() )
+		// if this is a is a request with 0-attributes, for HLA13 it is an implicit unsubscribe //
+		if( attributes.isEmpty() && lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 )
 		{
 			////////////////////////
 			// IMPLICIT UNPUBLISH //
