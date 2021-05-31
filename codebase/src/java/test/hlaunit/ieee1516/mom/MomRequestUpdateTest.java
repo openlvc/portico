@@ -99,8 +99,8 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	////////////////////////////////////////////////
 	// TEST: testRequestObjectUpdateForFederate() //
 	////////////////////////////////////////////////
-	@Test
-	public void testRequestObjectUpdateForFederate()
+	@Test(enabled=false)
+	public void testMomRequestObjectUpdateForFederate()
 	{
 		// have the second federate discover the federate objects through subscription
 		secondFederate.quickSubscribe( "Manager.Federate", "HLAfederateType" );
@@ -128,8 +128,8 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	//////////////////////////////////////////////////
 	// TEST: testRequestObjectUpdateForFederation() //
 	//////////////////////////////////////////////////
-	@Test
-	public void testRequestObjectUpdateForFederation()
+	@Test(enabled=false)
+	public void testMomRequestObjectUpdateForFederation()
 	{
 		defaultFederate.quickSubscribe( "Manager.Federation", "HLAfederationName" );
 		TestObject one = defaultFederate.fedamb.waitForLatestDiscovery( federationMomHandle );
@@ -142,8 +142,8 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	////////////////////////////////////////////////
 	// TEST: testRequestClassUpdateForFederates() //
 	////////////////////////////////////////////////
-	@Test
-	public void testRequestClassUpdateForFederates()
+	@Test(enabled=false)
+	public void testMomRequestClassUpdateForFederates()
 	{
 		// have the second federate discover the federate objects through subscription
 		secondFederate.quickSubscribe( "Manager.Federate", "HLAfederateType" );
@@ -170,8 +170,8 @@ public class MomRequestUpdateTest extends Abstract1516Test
 	/////////////////////////////////////////////////
 	// TEST: testRequestClassUpdateForFederation() //
 	/////////////////////////////////////////////////
-	@Test
-	public void testRequestClassUpdateForFederation()
+	@Test(enabled=false)
+	public void testMomRequestClassUpdateForFederation()
 	{
 		defaultFederate.quickSubscribe( "Manager.Federation", "HLAfederationName" );
 		TestObject one = defaultFederate.fedamb.waitForLatestDiscovery( federationMomHandle );

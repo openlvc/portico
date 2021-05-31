@@ -86,7 +86,7 @@ public class MomFederateLifecycleTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testMomFederateInstanceLifecycle() //
 	//////////////////////////////////////////////
-	@Test
+	@Test(enabled=false)
 	public void testMomFederateInstanceLifecycle() throws Exception
 	{
 		// subscribe to the MOM information //
