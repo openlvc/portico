@@ -24,9 +24,4 @@ public final class AttributeNotRecognized extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeNotRecognized(Throwable cause)
-   {
-      super(cause);
-   }
 }

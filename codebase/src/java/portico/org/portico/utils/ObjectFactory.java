@@ -14,6 +14,8 @@
  */
 package org.portico.utils;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * The {@link ObjectFactory} class provides a couple of instance-creation convenience methods.
  * These methods can take care of the process of instantiating an instance of a class from a given
@@ -51,7 +53,7 @@ public class ObjectFactory
 	 * @return An instance of the class requested
 	 */
 	public static <T> T create( String classname, Class<T> targetClass )
-		throws ClassNotFoundException, IllegalAccessException, InstantiationException
+		throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
 	{
 		return create( classname, ObjectFactory.class.getClassLoader(), targetClass );
 	}
@@ -62,7 +64,7 @@ public class ObjectFactory
 	 * post-instantiation checks, removing that burdern from the user.
 	 */
 	public static <T> T create( Class<?> clazz, Class<T> targetClass )
-		throws ClassNotFoundException, IllegalAccessException, InstantiationException
+		throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
 	{
 		return create( clazz.getCanonicalName(), targetClass );
 	}
@@ -78,7 +80,7 @@ public class ObjectFactory
 	 * @return An instance of the given class name
 	 */
 	public static <T> T create( String classname, ClassLoader loader, Class<T> targetClass )
-		throws ClassNotFoundException, IllegalAccessException, InstantiationException
+		throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
 	{
 		// check the parameters
 		if( classname == null || targetClass == null )
@@ -88,7 +90,7 @@ public class ObjectFactory
 		}
 		
 		// we've got class name, attempt to create the instance
-		Object retVal = Class.forName( classname, true, loader ).newInstance();
+		Object retVal = Class.forName( classname, true, loader ).getConstructor().newInstance();
 		// got an instance of something, is it one of what we want?
 		if( targetClass.isInstance(retVal) )
 		{

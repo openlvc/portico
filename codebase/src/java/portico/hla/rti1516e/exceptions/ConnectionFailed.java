@@ -23,9 +23,4 @@ public final class ConnectionFailed extends RTIexception {
    {
       super(message, cause);
    }
-
-   public ConnectionFailed(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -16,10 +16,8 @@ package org.portico.utils.classpath;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,8 +40,7 @@ public class Classpath
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
-	private Method addURL;
-	private URLClassLoader systemLoader;
+	private URLSystemClassLoader systemLoader;
 	private FilenameFilter filter;
 	private Logger logger;
 
@@ -58,27 +55,9 @@ public class Classpath
 	public Classpath() throws ClasspathException
 	{
 		this.logger = Logger.getLogger( "portico.container" );
-		
-		// get the system class loader and ensure that it is a URLClassLoader
-		if( (ClassLoader.getSystemClassLoader() instanceof URLClassLoader) == false )
-		{
-			throw new ClasspathException( "System classloader isn't a URLClassLoader" );
-		}
-		
-		systemLoader = (URLClassLoader)ClassLoader.getSystemClassLoader();
-		
-		// prefetch the addURL method for later invocation
-		try
-		{
-			addURL = URLClassLoader.class.getDeclaredMethod( "addURL", new Class[] {URL.class} );
-			addURL.setAccessible( true ); // SOOOOOOO DIRTY!!!!!!!!
-		}
-		catch( Exception e )
-		{
-			// this shouldn't occur, but throw a RuntimeException if it does.
-			throw new ClasspathException( "Error creating Classpath instance: "+e.getMessage(), e );
-		}
-		
+
+		systemLoader = new URLSystemClassLoader( new URL[0], ClassLoader.getSystemClassLoader() );
+
 		// create the filename filter
 		filter = new FilenameFilter()
 		{
@@ -96,21 +75,12 @@ public class Classpath
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	/**
-	 * This method will extend the *system* classpath, adding the given URL. If there is an error
-	 * doing so, a {@link ClasspathException} will be thrown. 
+	 * This method will extend the *system* classpath, adding the given URL.
 	 */
-	public void extend( URL url ) throws ClasspathException
+	public void extend( URL url )
 	{
-		try
-		{
-			// invoke the method
-			addURL.invoke( systemLoader, new Object[] {url} );
-			logger.trace( "Extended system classpath with location: " + url );
-		}
-		catch( Exception e )
-		{
-			throw new ClasspathException( "Can't extend classpath: " + e.getMessage(), e );
-		}
+		systemLoader.addURL( url );
+		logger.trace( "Extended system classpath with location: " + url );
 	}
 	
 	/**
@@ -280,6 +250,23 @@ public class Classpath
 	public boolean containsPath( String location )
 	{
 		return containsPath( new File(location) );
+	}
+
+	/**
+	 * Returns the URL where the portico jar is located to load its classes
+	 */
+	public URL getPortico()
+	{
+		String rtiHome = System.getenv( "RTI_HOME" );
+		File porticoJar = new File( rtiHome + "/lib/portico.jar" );
+		try
+		{
+			return porticoJar.toURI().toURL();
+		}
+		catch( MalformedURLException e )
+		{
+			return null;
+		}
 	}
 	
 	//----------------------------------------------------------

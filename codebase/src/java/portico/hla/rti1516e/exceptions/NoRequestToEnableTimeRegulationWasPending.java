@@ -24,9 +24,4 @@ public final class NoRequestToEnableTimeRegulationWasPending extends RTIexceptio
    {
       super(message, cause);
    }
-
-   public NoRequestToEnableTimeRegulationWasPending(Throwable cause)
-   {
-      super(cause);
-   }
 }

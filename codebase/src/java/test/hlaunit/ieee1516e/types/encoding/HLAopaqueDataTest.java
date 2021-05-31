@@ -165,7 +165,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAopaqueDataGetOctetBoundary() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataGetOctetBoundary()
 	{
 		HLAopaqueData data = this.encoderFactory.createHLAopaqueData( TEST_ONE );
@@ -181,7 +181,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAopaqueDataEncodeSingle() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataEncodeSingle()
 	{
 		HLAopaqueData data = this.encoderFactory.createHLAopaqueData( TEST_ONE );
@@ -219,7 +219,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAopaqueDataEncodeMultiple() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -271,7 +271,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAopaqueDataEncodeEmptyWrapper() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataEncodeEmptyWrapper()
 	{
 		HLAopaqueData data = this.encoderFactory.createHLAopaqueData();
@@ -320,7 +320,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAopaqueDataDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -363,7 +363,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAopaqueDataDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -412,7 +412,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAopaqueDataDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataDecodeByteWrapperEmpty()
 	{
 		HLAopaqueData data = this.encoderFactory.createHLAopaqueData();
@@ -439,7 +439,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	/////////////////////////////////////////
 	// testHLAopaqueDataDecodeByteArray() //
 	/////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -463,7 +463,7 @@ public class HLAopaqueDataTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// testHLAopaqueDataDecodeByteArrayEmpty() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAopaqueDataDecodeByteArrayEmpty()
 	{
 		HLAopaqueData data = this.encoderFactory.createHLAopaqueData();

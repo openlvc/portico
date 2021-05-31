@@ -24,9 +24,4 @@ public final class UnsupportedCallbackModel extends RTIexception {
    {
       super(message, cause);
    }
-
-   public UnsupportedCallbackModel(Throwable cause)
-   {
-      super(cause);
-   }
 }

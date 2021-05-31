@@ -25,8 +25,7 @@ import hla.rti1516e.encoding.DecoderException;
 import hla.rti1516e.encoding.EncoderException;
 import hla.rti1516e.encoding.HLAvariableArray;
 
-public class HLA1516eVariableArray<T extends DataElement>
-       extends HLA1516eDataElement
+public class HLA1516eVariableArray<T extends DataElement> extends HLA1516eDataElement
        implements HLAvariableArray<T>
 {
 	//----------------------------------------------------------
@@ -38,6 +37,7 @@ public class HLA1516eVariableArray<T extends DataElement>
 	//----------------------------------------------------------
 	private DataElementFactory<T> factory;
 	private List<T> elements;
+	private int boundary;
 	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -46,6 +46,7 @@ public class HLA1516eVariableArray<T extends DataElement>
 	{
 		this.factory = factory;
 		this.elements = new ArrayList<T>( provided.length );
+		this.boundary = -1;
 		
 		for( T element : provided )
 			this.elements.add( element );
@@ -62,6 +63,7 @@ public class HLA1516eVariableArray<T extends DataElement>
 	public void addElement( T dataElement )
 	{
 		this.elements.add( dataElement );
+		this.boundary = -1;
 	}
 
 	/**
@@ -72,20 +74,15 @@ public class HLA1516eVariableArray<T extends DataElement>
 	 */
 	public void resize( int newSize )
 	{
-		int existingSize = this.elements.size();
-		if( newSize > existingSize )
+		if( newSize < elements.size() )
 		{
-			// Up-sizing to a larger capacity, so make up the difference using elements created
-			// from the provided factory
-			int deltaSize = newSize - existingSize;
-			for( int i = 0 ; i < deltaSize ; ++i )
-				this.elements.add( this.factory.createElement(existingSize + i) );
+			while( newSize < elements.size() )
+				elements.remove( elements.size()-1 );
 		}
-		else if ( newSize < existingSize )
+		else if( newSize > elements.size() )
 		{
-			// Down-sizing to a smaller capacity, so cull items from the end of the list 
-			while( this.elements.size() > newSize )
-				this.elements.remove( this.elements.size() - 1 );
+			while( newSize > elements.size() )
+				elements.add( (T)factory.createElement(elements.size()) );
 		}
 	}
 
@@ -101,6 +98,7 @@ public class HLA1516eVariableArray<T extends DataElement>
 
 	public Iterator<T> iterator()
     {
+		this.boundary = -1;
 	    return this.elements.iterator();
     }
 
@@ -109,87 +107,68 @@ public class HLA1516eVariableArray<T extends DataElement>
     /////////////////////////////////////////////////////////////////////////////////////////
 	@Override
     public int getOctetBoundary()
-    {
-		// Return the size of the largest element
-		int maxSize = 1;
-		
-		for( T element : this.elements )
-			maxSize = Math.max( maxSize, element.getEncodedLength() );
-		
-		return maxSize;
-    }
+	{
+		if( this.boundary == -1 )
+		{
+			int calculated = 4;
+			for( DataElement dataElement : this.elements )
+				calculated = Math.max( calculated, dataElement.getOctetBoundary() );
 
-	@Override
-    public void encode( ByteWrapper byteWrapper )
-        throws EncoderException
-    {
-		if( byteWrapper.remaining() < this.getEncodedLength() )
-			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
-		
-		// Write the number of elements encoded
-		byteWrapper.putInt( this.elements.size() );
-		
-		// Write the elements
-		for( T element : this.elements )
-			element.encode( byteWrapper );
-    }
+			// if the list if empty we need to create the default type of element
+			// and pull the boundary from there - but minimum will be 4
+			if( this.elements.isEmpty() )
+				calculated = Math.max( calculated, factory.createElement(0).getOctetBoundary() );
 
+			this.boundary = calculated;
+		}
+
+		return this.boundary;
+	}
+	
 	@Override
     public int getEncodedLength()
-    {
+	{
 		int length = 4;
-		
-		for( T element : this.elements )
-			length += element.getEncodedLength();
-		
-	    return length;
-    }
-
-	@Override
-    public byte[] toByteArray()
-        throws EncoderException
-    {
-		// Create a ByteWrapper to encode into
-		int length = this.getEncodedLength();
-		ByteWrapper byteWrapper = new ByteWrapper( length );
-		this.encode( byteWrapper );
-		
-		// Return the underlying array
-	    return byteWrapper.array();
-    }
-
-	@Override
-    public void decode( ByteWrapper byteWrapper )
-        throws DecoderException
-    {
-		// Read in the number of elements to decode
-		if( byteWrapper.remaining() < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-		
-		// Clear the underlying collection so that it's ready to receive the new values
-		this.elements.clear();
-		
-		int size = byteWrapper.getInt();
-		for( int i = 0 ; i < size ; ++i )
+		for( DataElement dataElement : this.elements )
 		{
-			// Create a new element to house the new value and read it in from the byte wrapper
-			T element = this.factory.createElement( i );
-			element.decode( byteWrapper );
+			// pad out to the octet boundary
+			while( length % dataElement.getOctetBoundary() != 0 )
+				++length;
 			
-			// Add the new element to the collection
-			this.elements.add( element );
+			length += dataElement.getEncodedLength();
 		}
-		
-    }
+
+		return length;
+	}
+
 
 	@Override
-    public void decode( byte[] bytes )
-        throws DecoderException
-    {
-		// Wrap the byte array in a ByteWrapper to decode from
-		ByteWrapper byteWrapper = new ByteWrapper( bytes );
-		this.decode( byteWrapper );
-    }
+    public void encode( ByteWrapper byteWrapper ) throws EncoderException
+	{
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.putInt( this.elements.size() );
+		for( DataElement dataElement : this.elements )
+			dataElement.encode( byteWrapper );
+	}
+
+	@Override
+	public void decode( ByteWrapper byteWrapper ) throws DecoderException
+	{
+		byteWrapper.align( getOctetBoundary() );
+		
+		// get the size and make sure there is enough data to feed us
+		int size = byteWrapper.getInt();
+		byteWrapper.verify( size ); // this ain't right - size is length; not size. Refactor.
+		
+		// if for some reason we don't have a factory then everything will have gone to poo, UNLESS
+		// the arrays happen to be exactly the same size
+		if( this.factory == null && this.elements.size() < size )
+			throw new DecoderException( "We have wrong number of elements and no factory we can use to fix this" );
+
+		resize( size );
+		for( DataElement dataElement : this.elements )
+			dataElement.decode( byteWrapper );
+	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

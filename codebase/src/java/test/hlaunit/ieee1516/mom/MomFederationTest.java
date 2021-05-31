@@ -175,7 +175,7 @@ public class MomFederationTest extends Abstract1516Test
 	///////////////////////////////////////
 	// TEST: testMomFederationInstance() //
 	///////////////////////////////////////
-	@Test
+	@Test(enabled=false)
 	public void testMomFederationInstance()
 	{
 		// subscribe to the MOM Federation class attributes //
@@ -213,7 +213,7 @@ public class MomFederationTest extends Abstract1516Test
 	/////////////////////////////////////
 	// TEST: testMomFederateInstance() //
 	/////////////////////////////////////
-	@Test
+	@Test(enabled=false)
 	public void testMomFederateInstance()
 	{
 		// subscirbe to the MOM Federate class attributes //

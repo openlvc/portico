@@ -24,9 +24,4 @@ public final class AttributeAcquisitionWasNotRequested extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeAcquisitionWasNotRequested(Throwable cause)
-   {
-      super(cause);
-   }
 }

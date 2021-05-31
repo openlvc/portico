@@ -86,43 +86,21 @@ public class HLA1516eInteger32BE extends HLA1516eDataElement implements HLAinteg
 	@Override
 	public final void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		byte[] asBytes = toByteArray();
-		if( byteWrapper.remaining() < asBytes.length )
-			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
-		
-		byteWrapper.put( toByteArray() );
-	}
-
-	@Override
-	public final byte[] toByteArray() throws EncoderException
-	{
-		byte[] buffer = new byte[4];
-		BitHelpers.putIntBE( value, buffer, 0 );
-		return buffer;
+		byteWrapper.align( getOctetBoundary() );
+		byte[] bytes = new byte[getEncodedLength()];
+		BitHelpers.putIntBE( value, bytes, 0 );
+		byteWrapper.put( bytes );
 	}
 
 	@Override
 	public final void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( byteWrapper.remaining() < 4 )
-			throw new DecoderException( "Insufficient space remaining in buffer to decode this value" );
-			
-		byte[] buffer = new byte[4];
-		byteWrapper.get( buffer );
-		decode( buffer );
-	}
-
-	@Override
-	public final void decode( byte[] bytes ) throws DecoderException
-	{
-		try
-		{
-			this.value = BitHelpers.readIntBE( bytes, 0 );
-		}
-		catch( Exception e )
-		{
-			throw new DecoderException( e.getMessage(), e );
-		}
+		byteWrapper.align( getOctetBoundary() );
+		byteWrapper.verify( getEncodedLength() );
+		
+		byte[] bytes = new byte[getEncodedLength()];
+		byteWrapper.get( bytes );
+		this.value = BitHelpers.readIntBE( bytes, 0 );
 	}
 
 	//----------------------------------------------------------

@@ -24,9 +24,4 @@ public final class ObjectInstanceNameInUse extends RTIexception {
    {
       super(message, cause);
    }
-
-   public ObjectInstanceNameInUse(Throwable cause)
-   {
-      super(cause);
-   }
 }

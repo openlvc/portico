@@ -23,9 +23,4 @@ public final class InvalidRangeBound extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidRangeBound(Throwable cause)
-   {
-      super(cause);
-   }
 }

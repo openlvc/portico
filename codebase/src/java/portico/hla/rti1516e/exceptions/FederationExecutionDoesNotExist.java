@@ -23,9 +23,4 @@ public final class FederationExecutionDoesNotExist extends RTIexception {
    {
       super(message, cause);
    }
-
-   public FederationExecutionDoesNotExist(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -23,9 +23,4 @@ public final class RestoreNotInProgress extends RTIexception {
    {
       super(message, cause);
    }
-
-   public RestoreNotInProgress(Throwable cause)
-   {
-      super(cause);
-   }
 }

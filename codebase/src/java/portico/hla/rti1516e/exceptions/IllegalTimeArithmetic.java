@@ -23,9 +23,4 @@ public final class IllegalTimeArithmetic extends RTIexception {
    {
       super(message, cause);
    }
-
-   public IllegalTimeArithmetic(Throwable cause)
-   {
-      super(cause);
-   }
 }

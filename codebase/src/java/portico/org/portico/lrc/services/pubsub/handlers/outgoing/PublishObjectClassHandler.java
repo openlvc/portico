@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JObjectClassNotPublished;
@@ -71,17 +72,30 @@ public class PublishObjectClassHandler extends LRCMessageHandler
 			              acMoniker(attributes) );
 		}
 		
-		// if this is a is a request with 0-attributes, it is an implicit unpublish //
+		// if this is a is a request with 0-attributes, for HLA131 it is an implicit unpublish //
 		if( attributes.isEmpty() )
 		{
-			////////////////////////
-			// IMPLICIT UNPUBLISH //
-			////////////////////////
-			// queue an unpublish request
-			logger.debug( "NOTICE  Publish with 0 attributes. Queue implicit unpublish request" );
-			UnpublishObjectClass unpublish = fill( new UnpublishObjectClass(classHandle) );
-			context.setRequest( unpublish );
-			lrc.getOutgoingSink().process( context );
+			if( lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 )
+			{
+    			////////////////////////
+    			// IMPLICIT UNPUBLISH //
+    			////////////////////////
+    			// queue an unpublish request
+    			logger.debug( "NOTICE  Publish with 0 attributes. Queue implicit unpublish request" );
+    			UnpublishObjectClass unpublish = fill( new UnpublishObjectClass(classHandle) );
+    			context.setRequest( unpublish );
+    			lrc.getOutgoingSink().process( context );
+			}
+			else
+			{
+    			////////////////////////
+				// 1516(e) NO OP  //////
+    			////////////////////////
+    			logger.debug( "NOTICE  Publish with 0 attributes. NO ACTION TAKEN." );
+    			context.success();
+			}
+			
+			// No need for more action!
 			return;
 		}
 		

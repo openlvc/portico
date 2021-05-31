@@ -25,9 +25,8 @@ public class DoubleTimeInterval implements LogicalTimeInterval
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static final double ZERO    = (new Double(0.0)).doubleValue();
-	public static final double EPSILON = (new Double(0.0001)).doubleValue();
-	
+	public static final double ZERO    = Double.valueOf(0.0);
+	public static final double EPSILON = Double.valueOf(0.0001);
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------

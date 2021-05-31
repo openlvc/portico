@@ -24,9 +24,4 @@ public final class ObjectInstanceNotKnown extends RTIexception {
    {
       super(message, cause);
    }
-
-   public ObjectInstanceNotKnown(Throwable cause)
-   {
-      super(cause);
-   }
 }

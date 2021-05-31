@@ -154,7 +154,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAunicodeCharEncodeSingle() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharEncodeSingle()
 	{
 		HLAunicodeChar data = this.encoderFactory.createHLAunicodeChar( TEST1 );
@@ -192,7 +192,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAunicodeCharEncodeMultiple() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -244,7 +244,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAunicodeCharEncodeEmptyWrapper() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharEncodeEmptyWrapper()
 	{
 		HLAunicodeChar data = this.encoderFactory.createHLAunicodeChar();
@@ -293,7 +293,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAunicodeCharDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -335,7 +335,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAunicodeCharDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -384,7 +384,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAunicodeCharDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharDecodeByteWrapperEmpty()
 	{
 		HLAunicodeChar data = this.encoderFactory.createHLAunicodeChar();
@@ -434,7 +434,7 @@ public class HLAunicodeCharTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// testHLAunicodeCharDecodeByteArrayEmpty() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeCharDecodeByteArrayEmpty()
 	{
 		HLAunicodeChar data = this.encoderFactory.createHLAunicodeChar();

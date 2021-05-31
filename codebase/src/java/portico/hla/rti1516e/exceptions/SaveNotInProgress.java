@@ -23,9 +23,4 @@ public final class SaveNotInProgress extends RTIexception {
    {
       super(message, cause);
    }
-
-   public SaveNotInProgress(Throwable cause)
-   {
-      super(cause);
-   }
 }

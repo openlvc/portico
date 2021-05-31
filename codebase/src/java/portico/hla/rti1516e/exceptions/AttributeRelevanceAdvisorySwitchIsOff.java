@@ -24,9 +24,4 @@ public final class AttributeRelevanceAdvisorySwitchIsOff extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeRelevanceAdvisorySwitchIsOff(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -42,10 +42,11 @@
 	<!--                Extension Points                   -->
 	<!-- ================================================= -->
 	<!-- extension points for C++ child builds to attach to -->
-	<extension-point name="clean"   extensionOf="master.clean"/>
-	<extension-point name="compile" extensionOf="master.compile" description="Compile all C++ interfaces and tests"/>
-	<extension-point name="test"    extensionOf="master.test"/>
-	<extension-point name="sandbox" extensionOf="master.sandbox"/>
+	<extension-point name="cpp.clean"   extensionOf="master.clean"/>
+	<extension-point name="cpp.compile" extensionOf="master.compile" description="Compile all C++ interfaces and tests"/>
+	<extension-point name="cpp.test"    extensionOf="master.test"/>
+	<extension-point name="cpp.sandbox" extensionOf="master.sandbox"/>
+	<extension-point name="cpp.32.installer" extensionOf="master.32.installer"/>
 
 	<!-- ================================================= -->
 	<!--                Common Libraries                   -->
@@ -54,9 +55,11 @@
 	<!-- Note that when updating this library, the expected directory structure
 	     is ${lib.dir}/cppunit/[version]/[platform]/[vcver] (vcver is only relevant)
 	     for windows and should be the Visual Studio version (e.g. vc10) -->
-	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+
+	<!-- <property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
 	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
-	<property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
+	<property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/> -->
+
 
 	<!-- ================================================= -->
 	<!--                task: cpp.strict                   -->

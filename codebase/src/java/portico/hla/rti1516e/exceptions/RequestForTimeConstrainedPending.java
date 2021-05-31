@@ -24,9 +24,4 @@ public final class RequestForTimeConstrainedPending extends RTIexception {
    {
       super(message, cause);
    }
-
-   public RequestForTimeConstrainedPending(Throwable cause)
-   {
-      super(cause);
-   }
 }

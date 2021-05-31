@@ -23,9 +23,4 @@ public final class InvalidServiceGroup extends RTIexception {
    {
       super(message, cause);
    }
-
-   public InvalidServiceGroup(Throwable cause)
-   {
-      super(cause);
-   }
 }

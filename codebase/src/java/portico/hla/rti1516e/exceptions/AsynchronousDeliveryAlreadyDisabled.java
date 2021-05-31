@@ -23,9 +23,4 @@ public final class AsynchronousDeliveryAlreadyDisabled extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AsynchronousDeliveryAlreadyDisabled(Throwable cause)
-   {
-      super(cause);
-   }
 }

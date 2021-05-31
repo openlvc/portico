@@ -52,12 +52,16 @@
 
 	<target name="release"
 	        description="Clean, run all test sand generate a standard release package"
-	        depends="clean,build.release,master.release,installer"/>
+	        depends="clean,build.release,master.release,installer,java.sandbox.jre"/>
 
 	<target name="release.thin"
 	        description="Generate a standard release package, but skip the tests"
-	        depends="clean,build.release,sandbox,installer"/>
-			
+	        depends="clean,build.release,sandbox,installer,java.sandbox.jre"/>
+	
+	<target name="32.installer"
+	        description="Create a 32 bit installer from the sandbox"
+	        depends="master.32.installer"/>
+	
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
 	<!-- =========================================================== -->
@@ -76,31 +80,37 @@
 	<extension-point name="master.sandbox"/>
 	<extension-point name="master.installer"/>
 	<extension-point name="master.release"/>
+	<extension-point name="master.32.installer"/>
 
 	<!-- =========================================================== -->
 	<!--                        Build Profiles                       -->
 	<!-- =========================================================== -->
 	<!-- Platform neutral java build -->
-	<include file="profiles/java.xml" as="java"/>
-
+	<import file="profiles/java.xml"/>
 	<!-- Parent C++ build scaffolding to attach to -->
-	<include file="profiles/cpp.xml" as="cpp"/>
+	<import file="profiles/cpp.xml"/>
+
+	<!-- =========================================================== -->
+	<!--               Platform Dependent Build Profiles             -->
+	<!-- =========================================================== -->
 
 	<!-- Mac OS X C++ and Installer profiles -->
-	<include file="profiles/macosx/hla13.xml"        as="cpp.hla13"      if="platform.macosx"/>
-	<include file="profiles/macosx/test13.xml"       as="cpp.test13"     if="platform.macosx"/>
-	<include file="profiles/macosx/ieee1516e.xml"    as="cpp.ieee1516e"  if="platform.macosx"/>
-	<include file="profiles/macosx/installer.xml"    as="installer"      if="platform.macosx"/>
+	<import file="profiles/macosx/hla13.xml"        if="platform.macosx"/>
+	<import file="profiles/macosx/test13.xml"       if="platform.macosx"/>
+	<import file="profiles/macosx/ieee1516e.xml"    if="platform.macosx"/>
+	<import file="profiles/macosx/installer.xml"    if="platform.macosx"/>
+
 
 	<!-- Linux C++ and Installer profiles -->
-	<include file="profiles/linux/hla13.xml"         as="cpp.hla13"      if="platform.linux64"/>
-	<include file="profiles/linux/ieee1516e.xml"     as="cpp.ieee1516e"  if="platform.linux64"/>
-	<include file="profiles/linux/installer.xml"     as="installer"      if="platform.linux64"/>
+	<import file="profiles/linux/hla13.xml"         if="platform.linux64"/>
+	<import file="profiles/linux/ieee1516e.xml"     if="platform.linux64"/>
+	<import file="profiles/linux/installer.xml"     if="platform.linux64"/>
+
 
 	<!-- Windows C++ and Installer profiles -->
-	<include file="profiles/windows/hla13.xml"       as="cpp.hla13"      if="platform.windows"/>
-	<include file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e"  if="platform.windows"/>
-	<include file="profiles/windows/installer.xml"   as="installer"      if="platform.windows"/>
+	<import file="profiles/windows/hla13.xml"       if="platform.windows"/>
+	<import file="profiles/windows/ieee1516e.xml"   if="platform.windows"/>
+	<import file="profiles/windows/installer.xml"   if="platform.windows"/>
 
 	<!-- Deployment Tasks -->
 	<!--<include file="profiles/deploy.xml"              as="deploy"/>-->

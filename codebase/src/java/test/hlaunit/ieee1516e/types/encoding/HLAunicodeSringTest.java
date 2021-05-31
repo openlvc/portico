@@ -174,7 +174,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringGetOctetBoundary() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringGetOctetBoundary()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString();
@@ -184,7 +184,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	////////////////////////////////////////////
 	// TEST: testHLAunicodeStringEncodeSingle() //
 	////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringEncodeSingle()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString( "Hello World" );
@@ -222,7 +222,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// TEST: testHLAunicodeStringEncodeMultiple() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -274,7 +274,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringEncodeEmptyWrapper() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringEncodeEmptyWrapper()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString();
@@ -301,7 +301,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringGetEncodedLength() //
 	////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringGetEncodedLength()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString( HELLO_WORLD );
@@ -311,7 +311,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	///////////////////////////////////////////
 	// TEST: testHLAunicodeStringToByteArray() //
 	///////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringToByteArray()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString( HELLO_WORLD );
@@ -323,7 +323,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	///////////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -365,7 +365,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -414,7 +414,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	//////////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringDecodeByteWrapperEmpty()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString();
@@ -441,7 +441,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	/////////////////////////////////////////
 	// testHLAunicodeStringDecodeByteArray() //
 	/////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -464,7 +464,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	//////////////////////////////////////////////
 	// testHLAunicodeStringDecodeByteArrayEmpty() //
 	//////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAunicodeStringDecodeByteArrayEmpty()
 	{
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString();

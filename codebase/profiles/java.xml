@@ -10,7 +10,7 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="java">
+<project name="java" xmlns:if="ant:if">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->
@@ -25,8 +25,8 @@
 	<property name="resources.jars.dir"       location="${resources.dir}/jars"/>
 
 	<!-- java compiler properties -->
-	<property name="java.compiler.source" value="1.7"/>
-	<property name="java.compiler.target" value="1.7"/>
+	<property name="java.compiler.source" value="11"/>
+	<property name="java.compiler.target" value="11"/>
 
 	<!-- ==== Source Related Properties ==== -->
 	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
@@ -73,7 +73,7 @@
 	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-3.2.0-beta1"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
-	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
+	<property name="asm.dir"               location="${lib.dir}/asm/asm-9.1"/>
 
 	<!-- Classpaths for individual libraries -->
 	<path id="lib.testng.classpath">
@@ -126,19 +126,19 @@
 	     Local compilation extension point for all Java targets. Each Java compilation target
 	     should declare itself an extension of this point to link into the main build.
 	-->
-	<extension-point name="compile"
+	<extension-point name="java.compile"
 	                 extensionOf="master.compile"
 	                 description="Compile the core RTI, HLA interfaces, Java test suite and examples"/>
 
 	<!-- compile the main production code -->	
-	<target name="compile.portico" extensionOf="compile">
+	<target name="compile.portico" extensionOf="java.compile">
 		<java-compile srcdir="${portico.src.dir}"
 		              outdir="${portico.classes.dir}"
 		              classpath="compile.classpath"/>
 	</target>
 
 	<!-- compile the hlaunit test suite code -->
-	<target name="compile.tests" extensionOf="compile" depends="compile.portico">
+	<target name="compile.tests" extensionOf="java.compile" depends="compile.portico">
 		<java-compile srcdir="${test.src.dir}"
 		              outdir="${test.classes.dir}"
 		              classpath="test.classpath"/>
@@ -146,7 +146,7 @@
 
 	<!-- Compiles the HLA 1.3 example federate. Doesn't do much except
 	     assure that the code can compile without errors -->
-	<target name="compile.examples.hla13" extensionOf="compile" depends="compile.portico">
+	<target name="compile.examples.hla13" extensionOf="java.compile" depends="compile.portico">
 		<java-compile srcdir="${examples.hla13.dir}/src"
 		              outdir="${examples.hla13.classes.dir}"
 		              classpath="test.classpath"/>
@@ -154,7 +154,7 @@
 
 	<!-- Compiles the IEEE-1516e example federate. Doesn't do much except
 	     assure that the code can compile without errors -->
-	<target name="compile.examples.ieee1516e" extensionOf="compile" depends="compile.portico">
+	<target name="compile.examples.ieee1516e" extensionOf="java.compile" depends="compile.portico">
 		<java-compile srcdir="${examples.ieee1516e.dir}/src"
 		              outdir="${examples.ieee1516e.classes.dir}"
 		              classpath="test.classpath"/>
@@ -232,7 +232,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="compile,jars">
+	<target name="sandbox" extensionOf="master.sandbox" depends="java.compile,jars">
 		<!-- create the required directories -->
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${sandbox.dir}"/>
@@ -279,7 +279,7 @@
 	<extension-point name="jars"/>
 
 	<!-- build the main portico jar file -->
-	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
+	<target name="jar.portico" extensionOf="jars" depends="java.compile,onejar">
 		<!-- construct the main portico jar file -->
 		<jar destfile="${sandbox.dir}/lib/portico.jar">
 			<!-- portico code -->
@@ -314,6 +314,8 @@
 	<target name="onejar">
 		<mkdir dir="${onejar.dir}"/>
 
+		<!-- Need to delete this to prevent the modules in lib jars being mistaken for portico's (non-existent) module-->
+		<delete file="module-info.java"/>
 		<!-- Check to see if we need to extract things again due to dependency changes
 		     or new dependencies being added. Otherwise we skip this step. -->
 		<uptodate property="deps.uptodate" targetfile="${onejar.dir}/.created">
@@ -340,14 +342,59 @@
 	<!-- No special installation tasks to do for the Java build -->
 	<!--<target name="installer" extensionOf="master.installer"/>-->
 
-	<target name="sandbox.jre"
-	        depends="sandbox"
-	        extensionOf="master.sandbox"
-	        description="Copy JRE into place in sandbox">
-		<!-- copy across the jre into our sandbox -->
-		<copy-jre todir="${sandbox.dir}"/>
-	</target>
+	<target name="sandbox.jre" depends="java.sandbox" description="Create JRE in sandbox">
+		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
+		<then>
+			<!-- For java 8 or lower can copy jre from the jdk location -->
+			<copy-jre todir="${sandbox.dir}"/>
+		</then>
+		<else>
+			<!-- For java 9+ can/must create the jre with required dependendcies -->
+			<property name="jdk" value="${jdk.home.win64}"   if:set="platform.win64"/>
+			<property name="jdk" value="${jdk.home.win32}"   if:set="platform.win32"/>
+			<property name="jdk" value="${jdk.home.linux64}" if:set="platform.linux"/>
+			<property name="jdk" value="${jdk.home.macosx}"  if:set="platform.macosx"/>
 
+			<property name="jreDest" value="${sandbox.dir}/jre"/>
+			
+			<link destDir="${jreDest}" modulepath="${jdk}/jmods">
+				<module name="java.base"/>
+				<module name="java.desktop"/>
+				<module name="java.logging"/>
+				<module name="java.management"/>
+				<module name="java.naming"/>
+				<module name="java.rmi"/>
+				<module name="java.sql"/>
+				<module name="java.xml"/>
+			</link>
+		</else>
+		</if>
+	</target>
+	
+	<target name="32.sandbox.jre" depends="java.sandbox">
+		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
+		<then>
+			<!-- For java 8 or lower can copy jre from the jdk location -->
+			<copy-jre todir="${sandbox.dir}"/>
+		</then>
+		<else>
+			<!-- For java 9+ can/must create the jre with required dependendcies -->
+			<property name="jdk" value="${jdk.home.win32}"/>
+			<property name="jreDest" value="${sandbox.dir}/jre32"/>
+			
+			<link destDir="${jreDest}" modulepath="${jdk}/jmods">
+				<module name="java.base"/>
+				<module name="java.desktop"/>
+				<module name="java.logging"/>
+				<module name="java.management"/>
+				<module name="java.naming"/>
+				<module name="java.rmi"/>
+				<module name="java.sql"/>
+				<module name="java.xml"/>
+			</link>
+		</else>
+		</if>
+	</target>
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->

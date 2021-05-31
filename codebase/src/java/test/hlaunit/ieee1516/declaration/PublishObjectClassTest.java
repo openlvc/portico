@@ -215,7 +215,7 @@ public class PublishObjectClassTest extends Abstract1516Test
 	/**
 	 * This is valid, but acts as an implicit unpublish
 	 */
-	@Test
+	@Test(groups="poop")
 	public void testOCPublishWithEmptyHandleSet()
 	{
 		// do a quick publication and validate it first (so that we can test
@@ -235,8 +235,9 @@ public class PublishObjectClassTest extends Abstract1516Test
 			unexpectedException( "publishing empty attribute set", e );
 		}
 		
-		// ensure that we no longer publish anything
-		defaultFederate.quickRegisterFail( aHandle );
+		// make sure that we still publish the same set of attributes
+		// this is different functionality to hla13, in which this is an implicit unpublish
+		validatePublished( defaultFederate, aHandle, aaHandle, abHandle );
 	}
 
 	////////////////////////////////////////////////////////

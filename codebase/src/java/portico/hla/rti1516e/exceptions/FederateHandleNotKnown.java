@@ -23,9 +23,4 @@ public final class FederateHandleNotKnown extends RTIexception {
    {
       super(message, cause);
    }
-
-   public FederateHandleNotKnown(Throwable cause)
-   {
-      super(cause);
-   }
 }

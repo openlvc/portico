@@ -174,7 +174,6 @@ void DDMSupportServicesTest::testGetDimensionName()
 	
 	char *dimensionName = defaultFederate->rtiamb->getDimensionName( dimensionHandle, spaceHandle );
 	int result = strcmp( "TestDimension", dimensionName );
-	delete dimensionName;
 	
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 }
@@ -212,7 +211,6 @@ void DDMSupportServicesTest::testGetRoutingSpaceHandle()
 	RTI::SpaceHandle spaceHandle = defaultFederate->quickSpaceHandle( "TestSpace" );
 	char *spaceName = defaultFederate->rtiamb->getRoutingSpaceName( spaceHandle );
 	int result = strcmp( "TestSpace", spaceName );
-	delete spaceName;
 	
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 }
@@ -231,7 +229,6 @@ void DDMSupportServicesTest::testGetRoutingSpaceName()
 	
 	char *spaceName = defaultFederate->rtiamb->getRoutingSpaceName( spaceHandle );
 	int result = strcmp( "TestSpace", spaceName );
-	delete spaceName;
 	
 	CPPUNIT_ASSERT_EQUAL( 0, result );
 }

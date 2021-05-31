@@ -14,7 +14,7 @@
  */
 package org.portico.impl.hla1516e.types.encoding;
 
-import org.portico.utils.bithelpers.BitHelpers;
+import java.io.UnsupportedEncodingException;
 
 import hla.rti1516e.encoding.ByteWrapper;
 import hla.rti1516e.encoding.DecoderException;
@@ -90,7 +90,7 @@ public class HLA1516eASCIIstring extends HLA1516eDataElement implements HLAASCII
 	@Override
 	public int getOctetBoundary()
 	{
-		return 4 + this.value.length();
+		return 4;
 	}
 
 	@Override
@@ -105,50 +105,32 @@ public class HLA1516eASCIIstring extends HLA1516eDataElement implements HLAASCII
 		if( byteWrapper.remaining() < getEncodedLength() )
 			throw new EncoderException( "Insufficient space remaining in buffer to encode this value" );
 		
-		byte[] buffer = getBytes();
-		byteWrapper.putInt( buffer.length );
-		byteWrapper.put( buffer );
-	}
-
-	@Override
-	public byte[] toByteArray() throws EncoderException
-	{
+		byteWrapper.align( getOctetBoundary() );
 		byte[] bytes = getBytes();
-		byte[] buffer = new byte[4+bytes.length];
-		BitHelpers.putIntBE( bytes.length, buffer, 0 );
-		BitHelpers.putByteArray( bytes, buffer, 4 );
-		return buffer;
+		byteWrapper.putInt( value.length() );
+		byteWrapper.put( bytes );
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
+		// align to the boundary so we're ready to read from the right spot
+		byteWrapper.align( getOctetBoundary() );
+		
+		// get the length of the string and verify we won't underflow
+		int length = byteWrapper.getInt();
+		byteWrapper.verify( length );
+		
+		// get the string
+		byte[] bytes = new byte[length];
+		byteWrapper.get( bytes );
 		try
 		{
-			int length = byteWrapper.getInt();
-			byte[] buffer = new byte[length];
-			byteWrapper.get( buffer );
-			
-			this.value = new String( buffer, CHARSET );
+			this.value = new String( bytes, CHARSET );
 		}
-		catch( Exception e )
+		catch( UnsupportedEncodingException e )
 		{
-			throw new DecoderException( e.getMessage(), e );
-		}
-	}
-
-	@Override
-	public void decode( byte[] bytes ) throws DecoderException
-	{
-		try
-		{
-			int length = BitHelpers.readIntBE( bytes, 0 );
-			byte[] stringBytes = BitHelpers.readByteArray( bytes, 4, length );
-			this.value = new String( stringBytes, CHARSET );
-		}
-		catch( Exception e )
-		{
-			throw new DecoderException( e.getMessage(), e );
+			throw new DecoderException( "Charset is unsupported: "+e.getMessage(), e );
 		}
 	}
 

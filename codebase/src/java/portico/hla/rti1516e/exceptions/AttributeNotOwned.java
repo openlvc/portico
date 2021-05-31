@@ -24,9 +24,4 @@ public final class AttributeNotOwned extends RTIexception {
    {
       super(message, cause);
    }
-
-   public AttributeNotOwned(Throwable cause)
-   {
-      super(cause);
-   }
 }

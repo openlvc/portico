@@ -24,9 +24,4 @@ public final class RegionDoesNotContainSpecifiedDimension extends RTIexception {
    {
       super(message, cause);
    }
-
-   public RegionDoesNotContainSpecifiedDimension(Throwable cause)
-   {
-      super(cause);
-   }
 }

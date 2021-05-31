@@ -282,10 +282,12 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	//  * DLLs for the Portico C++ interface   - $RTI_HOME/bin/[compiler_ver]
 	//  * DLLs for the JVM                     - $RTI_HOME/jre/lib/amd64/server
 	
-	// Assume a default JRE location of the current directory. We'll look inside RTI_HOME to try
-	// and find a JRE. If we don't, we'll use %JAVA_HOME% as a fallback if it exists. If it also
-	// does not exist, we'll fall back to what is set below.
-	string jrelocation( "." );
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	char *javaHome = getenv( "JAVA_HOME" );
+	string jrelocation;
+	if( javaHome )
+		string jrelocation( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -317,7 +319,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 #ifdef VC11
 	            << "vc11"
 #endif
-#ifdef VC11
+#ifdef VC10
 	            << "vc10"
 #endif
 #ifdef VC9
@@ -393,7 +395,10 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
-	string jrelocation( "." );
+	char *javaHome = getenv( "JAVA_HOME" );
+	string jrelocation;
+	if( javaHome )
+		string jrelocation( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above

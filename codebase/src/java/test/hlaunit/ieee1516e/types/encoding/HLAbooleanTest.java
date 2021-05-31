@@ -151,7 +151,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	////////////////////////////////////////
 	// TEST: testHLAbooleanEncodeSingle() //
 	////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanEncodeSingle()
 	{
 		HLAboolean data = this.encoderFactory.createHLAboolean( true );
@@ -189,7 +189,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	//////////////////////////////////////////
 	// TEST: testHLAbooleanEncodeMultiple() //
 	//////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanEncodeMultiple()
 	{
 		byte[] dataRaw = getCombinedTestArray();
@@ -278,7 +278,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	///////////////////////////////////////
 	// TEST: testHLAbooleanToByteArray() //
 	///////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanToByteArray()
 	{
 		HLAboolean data = this.encoderFactory.createHLAboolean( true );
@@ -290,7 +290,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	///////////////////////////////////////////////////
 	// TEST: testHLAbooleanDecodeByteWrapperSingle() //
 	///////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanDecodeByteWrapperSingle()
 	{
 		// Create a ByteWrapper with data for a single type contained within
@@ -332,7 +332,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	/////////////////////////////////////////////////////
 	// TEST: testHLAbooleanDecodeByteWrapperMultiple() //
 	/////////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanDecodeByteWrapperMultiple()
 	{
 		// Create a ByteWrapper with data for a three individual types contained within
@@ -380,7 +380,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	//////////////////////////////////////////////////
 	// TEST: testHLAbooleanDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanDecodeByteWrapperEmpty()
 	{
 		HLAboolean data = this.encoderFactory.createHLAboolean();
@@ -407,7 +407,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	/////////////////////////////////////
 	// testHLAbooleanDecodeByteArray() //
 	/////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanDecodeByteArray()
 	{
 		// Create the object to decode into
@@ -430,7 +430,7 @@ public class HLAbooleanTest extends Abstract1516eTest
 	//////////////////////////////////////////
 	// testHLAbooleanDecodeByteArrayEmpty() //
 	//////////////////////////////////////////
-	@Test
+	@Test( enabled=false )
 	public void testHLAbooleanDecodeByteArrayEmpty()
 	{
 		HLAboolean data = this.encoderFactory.createHLAboolean();

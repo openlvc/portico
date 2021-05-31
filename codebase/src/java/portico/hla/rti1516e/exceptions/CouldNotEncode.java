@@ -23,9 +23,4 @@ public final class CouldNotEncode extends RTIexception {
    {
       super(message, cause);
    }
-
-   public CouldNotEncode(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -24,9 +24,4 @@ public final class FederatesCurrentlyJoined extends RTIexception {
    {
       super(message, cause);
    }
-
-   public FederatesCurrentlyJoined(Throwable cause)
-   {
-      super(cause);
-   }
 }

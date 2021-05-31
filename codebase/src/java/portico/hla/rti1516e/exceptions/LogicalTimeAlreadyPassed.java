@@ -24,9 +24,4 @@ public final class LogicalTimeAlreadyPassed extends RTIexception {
    {
       super(message, cause);
    }
-
-   public LogicalTimeAlreadyPassed(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -24,9 +24,4 @@ public final class TimeConstrainedIsNotEnabled extends RTIexception {
    {
       super(message, cause);
    }
-
-   public TimeConstrainedIsNotEnabled(Throwable cause)
-   {
-      super(cause);
-   }
 }

@@ -22,9 +22,9 @@
 	<!-- ================================================================================= -->
 	<!--                             Installer Creation Targets                            -->
 	<!-- ================================================================================= -->
-	<target name="installer" extensionOf="master.installer">
+	<target name="installer" extensionOf="master.installer" depends="java.sandbox.jre">
 		<!-- Verify that we have access to a JRE we can package -->
-		<verifyJdk location="${jdk.home.linux64}" arch="amd64"/>
+		<verifyJdk location="${jdk.home.linux64}" arch="amd64" requiredVersion="${java.compiler.target}"/>
 
 		<!-- Generate the tarball with the sandbox and the JRE in it -->
 		<!-- We have to use exec as the result tar task gives us problems with
@@ -33,7 +33,7 @@
 
 		<echo>Creating tarball: ${tarball.file}</echo>
 		<exec executable="tar" dir="${dist.dir}" failonerror="true">
-			<arg line="-czpf ${tarball.file} --transform=s,jre,${dist.name}/jre,g ./${dist.name} -C${jdk.home.linux64} ./jre"/>
+			<arg line="-czpf ${tarball.file} --transform=s,jre,${dist.name}/jre,g ./${dist.name} -C${dist.dir}/${dist.name} ./jre"/>
 		</exec>
 	</target>
 </project>

@@ -185,10 +185,11 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	string compiler = getCompiler();
 	string hlaVersion = getHlaVersion();
 	string architecture = getArch();
+	string ipv4( "-Djava.net.preferIPv4Stack=true" );
 
 	// before we can create or connect to the JVM, we need to specify its environment
 	JavaVMInitArgs vmargs;
-	JavaVMOption options[7];
+	JavaVMOption options[8];
 	options[0].optionString = const_cast<char*>(paths.first.c_str());
 	options[1].optionString = const_cast<char*>(paths.second.c_str());
 	options[2].optionString = const_cast<char*>(mode.c_str());         // build mode
@@ -196,7 +197,8 @@ void Runtime::initializeJVM() throw( RTIinternalError )
 	options[4].optionString = const_cast<char*>(hlaVersion.c_str());   // hla interface version
 	options[5].optionString = const_cast<char*>(architecture.c_str()); // architecture
 	options[6].optionString = const_cast<char*>(stackSize.c_str());
-	vmargs.nOptions = 7;
+	options[7].optionString = const_cast<char*>(ipv4.c_str());
+	vmargs.nOptions = 8;
 	vmargs.version = getJNIVersion();
 	vmargs.options = options;
 	vmargs.ignoreUnrecognized = JNI_TRUE;
@@ -335,11 +337,26 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	//  * DLLs for the Portico C++ interface
 	//  * DLLs for the JVM
 	
-	// Portico ships a JRE with it, make sure it is there
-	string jrelocation = string(rtihome).append( "\\jre" );
-	string temp = string(jrelocation).append( "\\bin\\java.exe" );
-	if( pathExists(temp) == false )
-		throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	char *javaHome = getenv( "JAVA_HOME" );
+	string jrelocation;
+	if( javaHome )
+		string jrelocation( javaHome );
+	
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
+	string temp = string(rtihome).append( "\\jre\\bin\\java.exe" );
+	if( pathExists(temp) )
+	{
+		jrelocation = string(rtihome).append("\\jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
+	}
+	else
+	{
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME%: [%s]",
+		              jrelocation.c_str() );
+	}
 
 	// Get the system path so we can ensure it is on our library path
 	const char *systemPath = getenv( "PATH" );
@@ -427,11 +444,30 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 		systemPath = string( getenv("LD_LIBRARY_PATH") );
 	#endif
 
-	// Portico ships with a JRE - ake sure it is there
-	string jrelocation = string(rtihome).append( "/jre" );
-	string temp = string(jrelocation).append( "/bin/java" );
-	if( pathExists(temp) == false )
-		throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+	// make sure we have a system path
+	if( !systemPath )
+		systemPath = "";
+
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	char *javaHome = getenv( "JAVA_HOME" );
+	string jrelocation;
+	if( javaHome )
+		string jrelocation( javaHome );
+	
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
+	string temp = string(rtihome).append( "/jre/bin/java" );
+	if( pathExists(temp) )
+	{
+		jrelocation = string(rtihome).append("/jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
+	}
+	else
+	{
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on $JAVA_HOME: [%s]",
+		              jrelocation.c_str() );
+	}
 
 	// Create our system path
 	stringstream libraryPath;

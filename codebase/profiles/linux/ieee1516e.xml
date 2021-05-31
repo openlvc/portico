@@ -21,7 +21,7 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Verify that we have an appropriate JDK to build against -->
-	<verifyJdk location="${jdk.home.linux64}" arch="amd64"/>
+	<verifyJdk location="${jdk.home.linux64}" arch="amd64" requiredVersion="${java.compiler.target}"/>
 
 	<!-- ================================================ -->
 	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
@@ -40,9 +40,9 @@
 	<!-- =========================================================== -->
 	<!-- ==== Library Path Definitions ==== -->
 	<!-- See profiles/project.libraries.xml -->
-	<!-- <property name="cppunit.dir"     location="..."/> -->
-	<!-- <property name="cppunit.include" location="..."/> -->
-	<!-- <property name="cppunit.lib"     location="..."/> -->
+	<property name="cppunit.dir"     location="${lib.dir}/cppunit/cppunit-1.15"/> 
+	<property name="cppunit.include" location="${cppunit.dir}/include"/> 
+	<property name="cppunit.lib"     location="${cppunit.dir}/linux64"/> 
 
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
@@ -57,7 +57,7 @@
 	<!-- ==================================== -->
 	<!--       Main IEEE-1516e Interface      -->
 	<!-- ==================================== -->
-	<target name="compile">
+	<target name="ieee1516e.compile">
 		<compile-ieee1516e arch="amd64" build="debug"/>
 		<compile-ieee1516e arch="amd64" build="release"/>
 	</target>
@@ -67,21 +67,25 @@
 	<!-- ==================================== -->
 	<!-- Compiles the 1516e example federate. Doesn't do much except
 	     assure that we can actually compile and link it to Portico -->
-	<target name="example.compile" depends="compile">
-		<cpptask outfile="ieee1516e-example"
+	<target name="example.compile" depends="ieee1516e.compile">
+		<condition property="jvm" value="${jdk.home.linux64}/jre/lib/amd64/server" else="${jdk.home.linux64}/lib/server">
+			<contains substring="${java.compiler.target}" string="1.7,1.8"/>
+		</condition>
+		<cpptask compiler="g++"
+				 outfile="ieee1516e-example"
 		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
 		         type="executable"
 		         arch="amd64"
 		         compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
+		         linkerArgs="-Wl,-rpath-link ${jvm}">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="RTI_DISABLE_WARNINGS"/>
 			<define name="DEBUG"/>
-			<library path="${ieee1516e.build.dir}/complete" libs="rti1516e64d"/>
-			<library path="${jdk.home.linux64}/jre/lib/amd64/server" libs="jvm,jsig"/>
+			<library path="${ieee1516e.complete.dir}/gcc8" libs="rti1516e64d"/>
+			<library path="${jvm}" libs="jvm,jsig"/>
 		</cpptask>
 	</target>
 
@@ -90,7 +94,7 @@
 	<!-- ================================================================================= -->
 
 	<!-- Not implemented for C++ IEEE-1516e Inteface -->
-	<target name="test" extensionOf="cpp.test">
+	<target name="test" extensionOf="cpp.test" depends="example.compile">
 		<echo>No unit test suite for the IEEE-1516e Interface</echo>
 	</target>
 
@@ -102,7 +106,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,compile">
+	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,ieee1516e.compile">
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
@@ -120,7 +124,7 @@
 			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.so"/>
 		</copy>
 
-		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.so"/>
+		<chmod dir="${sandbox.lib.dir}/gcc8" perm="755" includes="**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
@@ -159,7 +163,7 @@
 	-->
 	<macrodef name="compile-ieee1516e">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="gcc8 or gcc4" default="gcc8"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -224,7 +228,7 @@
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
-				<property name="_jdklib" value="${jdk.home.linux64}/jre/lib/amd64/server"/>
+				<property name="_jdklib" value="${jdk.home.linux64}/lib/server:${jdk.home.linux64}/jre/lib/amd64/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
 				<property name="_jdklib" value="${jdk.home.linux32}/jre/lib/i586/client"/>

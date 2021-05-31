@@ -23,9 +23,4 @@ public final class FederateNameAlreadyInUse extends RTIexception {
    {
       super(message, cause);
    }
-
-   public FederateNameAlreadyInUse(Throwable cause)
-   {
-      super(cause);
-   }
 }

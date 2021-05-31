@@ -34,7 +34,6 @@ import hla.rti1516e.TimeQueryReturn;
 import hla.rti1516e.exceptions.AlreadyConnected;
 
 import org.apache.log4j.Logger;
-import org.portico.impl.cpp1516e.NativeLibraryLoader;
 import org.portico.impl.hla1516e.Rti1516eAmbassador;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;

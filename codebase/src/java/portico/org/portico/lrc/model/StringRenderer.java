@@ -88,6 +88,9 @@ public class StringRenderer
 
 	private void renderObject( OCMetadata clazz, StringBuilder builder, int level )
 	{
+		if( clazz == null )
+			return;
+
 		////////////////////////
 		// log the class name //
 		////////////////////////
@@ -119,6 +122,9 @@ public class StringRenderer
 	
 	private void renderInteraction( ICMetadata clazz, StringBuilder builder, int level )
 	{
+		if( clazz == null )
+			return;
+
 		////////////////////////
 		// log the class name //
 		////////////////////////

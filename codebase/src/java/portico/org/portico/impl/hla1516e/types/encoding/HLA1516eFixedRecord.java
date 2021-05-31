@@ -34,6 +34,7 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private List<DataElement> elements;
+	private int boundary;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -41,6 +42,7 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	public HLA1516eFixedRecord()
 	{
 		this.elements = new ArrayList<DataElement>();
+		this.boundary = -1;
 	}
 
 	//----------------------------------------------------------
@@ -53,8 +55,8 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	 */
 	public void add( DataElement dataElement )
 	{
-		if( dataElement != null )
-			this.elements.add( dataElement );
+		this.elements.add( dataElement );
+		this.boundary = -1;
 	}
 
 	/**
@@ -86,6 +88,7 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	 */
 	public Iterator<DataElement> iterator()
 	{
+		this.boundary = -1;
 		return this.elements.iterator();
 	}
 
@@ -95,67 +98,53 @@ public class HLA1516eFixedRecord extends HLA1516eDataElement implements HLAfixed
 	@Override
 	public int getOctetBoundary()
 	{
-		// Return the size of the largest element
-		int maxSize = 1;
-		
-		for( DataElement element : this.elements )
-			maxSize = Math.max( maxSize, element.getEncodedLength() );
-		
-		return maxSize;
-	}
+		if( this.boundary == -1 )
+		{
+			int temp = 1; // minimum boundary is 1
+			for( DataElement dataElement : this.elements )
+				temp = Math.max( temp, dataElement.getOctetBoundary() ); 
 
-	@Override
-	public void encode( ByteWrapper byteWrapper ) throws EncoderException
-	{
-		if( this.elements.size() == 0 )
-			throw new EncoderException( "Cannot encode an empty fixed record!" );
+			this.boundary = temp;
+		}
 		
-		for( DataElement element : this.elements )
-			element.encode( byteWrapper );
+		return this.boundary;
 	}
 
 	@Override
 	public int getEncodedLength()
 	{
-		int size = 0;
-		
+		int length = 0;
 		for( DataElement element : this.elements )
-			size += element.getEncodedLength();
-		
-		return size;
+		{
+			// get the boundary of the element and make sure we pad out to it
+			int boundary = element.getOctetBoundary();
+			while( length % boundary != 0 )
+				length++;
+			
+			length += element.getEncodedLength();
+		}
+
+		return length;
 	}
 
 	@Override
-	public byte[] toByteArray() throws EncoderException
+	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		// Encode into a byte wrapper
-		int length = this.getEncodedLength();
-		ByteWrapper byteWrapper = new ByteWrapper( length );
-		this.encode( byteWrapper );
-		
-		// Return the underlying array
-		return byteWrapper.array();
+		byteWrapper.align( getOctetBoundary() );
+		for( DataElement element : this.elements )
+			element.encode( byteWrapper );
 	}
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		if( this.elements.size() == 0 )
-			throw new EncoderException( "Cannot decode into an empty fixed record!" );
-		
-		for( DataElement element : this.elements )
-			element.decode( byteWrapper );
-	}
-
-	@Override
-	public void decode( byte[] bytes ) throws DecoderException
-	{
-		// Wrap in a byte wrapper and decode
-		ByteWrapper byteWrapper = new ByteWrapper( bytes );
-		this.decode( byteWrapper );
+		byteWrapper.align( getOctetBoundary() );
+		for( DataElement dataElement : this.elements )
+			dataElement.decode( byteWrapper );
 	}
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+
 }

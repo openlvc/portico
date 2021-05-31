@@ -86,7 +86,6 @@ public class Container
 		this.activeLrcs = new HashMap<String,LRC>();
 		this.handlerRegistry = new HandlerRegistry();
 		this.daemonManager = new DaemonManager( this );
-		
 		// do the basic container configuration (like logging and module/plugin location)
 		initializeContainer();
 		

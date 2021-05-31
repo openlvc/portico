@@ -414,8 +414,9 @@ public class SubscribeObjectClassTest extends Abstract1516eTest
 		
 		// validate the subscription
 		int oHandle = senderFederate.quickRegister( bHandle );
-		// seeing as we are no longer subscribed to anything, we should never discover this
-		defaultFederate.fedamb.waitForDiscoveryTimeout( oHandle );
+		// the no-attribute subscribe should not have changed anything and we should be
+		// able to discover as per normal.
+		defaultFederate.fedamb.waitForDiscovery( oHandle );
 	}
 
 	/////////////////////////////////////////////////////

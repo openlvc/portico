@@ -1,7 +1,10 @@
 sudo: false
 language: java
 jdk:
-- oraclejdk8
+  - openjdk15
+
+dist: bionic
+
 install:
 - cd codebase
 script:
