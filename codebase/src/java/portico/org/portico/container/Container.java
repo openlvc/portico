@@ -86,7 +86,6 @@ public class Container
 		this.activeLrcs = new HashMap<String,LRC>();
 		this.handlerRegistry = new HandlerRegistry();
 		this.daemonManager = new DaemonManager( this );
-		this.userPluginPath = new ArrayList<File>();
 		// do the basic container configuration (like logging and module/plugin location)
 		initializeContainer();
 		
@@ -160,123 +159,7 @@ public class Container
 			logger.info( "[RID] Unable to locate a RID file, skipping..." );
 		}
 
-		// load all the plugins
-		locatePlugins();
-	}
-
-	/**
-	 * This method will find all the libraries in the plugins directory, load them, scan them for
-	 * messaging modules and {@link Daemon}s. Any found modules will be stored for later use,
-	 * Daemons will be added to the containers {@link DaemonManager}.
-	 * <p/>
-	 * This method will scan the plugins directories (as specified by
-	 * {@link #getContainerPluginPath()}). It will add any contained jar files to the system
-	 * classpath.
-	 * <p/>
-	 * It will then use the {@link AnnotationLocator} to find all {@link Daemon} classes. For each
-	 * class found, an instance will be instantiated, have its name set and then added to the
-	 * {@link DaemonManager}.
-	 * <p/>
-	 * Following this, all the {@link Module}s on the classpath will be located and stored for
-	 * later use when creating and configuring new {@link LRC} instances.
-	 * <p/>
-	 * <b>NOTE:</b> The directory $RTI_HOME/plugins and ./plugins will ALWAYS be added to the
-	 *              search path, regardless of whether another path is specified or not.
-	 * 
-	 * @throws JConfigurationException If there is a problem reading the plugins directory, locating
-	 *                                 or instantiating any {@link IDaemon} instances or Modules.
-	 */
-	private void locatePlugins() throws JConfigurationException
-	{
-		// make sure we can find the portico.jar file on the system classpath first
-		Classpath classpath = new Classpath();
-		this.porticoJarFile = classpath.getPortico();
-
-		if( this.porticoJarFile == null )
-		{
-			logger.warn( "Couldn't locate RTI_HOME/lib/portico.jar on system classpath, is RTI_HOME set?" );
-		}
-		else
-		{
-			logger.debug( "Found portico.jar at location: " + this.porticoJarFile );
-		}
-		
-		//////////////////////////////////////////////////////////////
-		// Step One: Find all jar files on the provided plugin path //
-		//////////////////////////////////////////////////////////////
-		// User specified locations to search for plugins. This data comes from the RID file
-		this.userPluginPath = getContainerPluginPath();
-
-		// print the search path being used
-		if( this.userPluginPath.size() == 0 )
-		{
-			logger.debug( "(PluginLoader) No user defined plugin path to search" );
-		}
-		else
-		{
-    		logger.debug( "(PluginLoader) The following paths will be searched for plugins" );
-    		for( File file : this.userPluginPath )
-    			logger.debug( "(PluginLoader) "+file );
-		}
-
-		// For each location provided on the plugin path, look for all the jar files contained
-		// within it. This will recursively search through the subdirectories looking for jar files
-		// Note that the scan method will add all found files to the system classpath
-		Set<File> userPluginLocations = new HashSet<File>();
-		for( File pluginLocation : this.userPluginPath )
-		{
-			logger.trace( "(PluginLoader) SCANNING location for jar files: "+pluginLocation );
-			Set<File> found = classpath.scan( pluginLocation, true );
-			userPluginLocations.addAll( found );
-			for( File foundJarFile : found )
-				logger.trace( "(PluginLoader)  found: "+foundJarFile );
-			
-			// if the file itself is a directory, add it to the classpath
-			if( pluginLocation.isDirectory() && pluginLocation.canRead() )
-			{
-				userPluginLocations.add( pluginLocation );
-				classpath.extend( pluginLocation );
-				logger.trace( "(PluginLoader)  found: "+pluginLocation );
-			}
-		}
-
-		//////////////////////////////////////////////////////////////////
-		// Step Two: Search all relevant jar files for plugins/handlers //
-		//////////////////////////////////////////////////////////////////
-		// To make sure we find all the core handlers, we need to at an absolute minimum scan
-		// the RTI_HOME/lib/portico.jar file. This can be a touch problematic if RTI_HOME isn't
-		// set properly. Previously we just defaulted back to scanning the entire classpath as the
-		// only way this code could execute would be if it was on there.
-		//
-		// To optimize this process a little, we now only scan the following locations:
-		//  1) All the jar/zip files found via the user-defined plugin-path
-		//  2) Search the system classpath for all files called "portico.jar" & scan them.
-		//
-		// There could be problems here if a user extracts all of portico and bundles it into their
-		// own application jar file (as we do with things like log4j), but that is a pretty fringe
-		// case and we'll worry about it when it becomes a problem.
-
-		// scan the portico.jar file for plugins so that we apply the default stuff first
-		// Make sure we found the jar file first. If we are running the tests, we don't use it, but
-		// rather, the code is just put on the user plugin-path. This is valid, but will cause an
-		// NPE if we attempt to scan it when it doesn't exist. Hence this check 
-		if( this.porticoJarFile != null )
-			scanForDaemons( this.porticoJarFile );
-		
-		// scan each of the entries on the user plugin path for Daemons
-		for( File file : userPluginLocations )
-			scanForDaemons( PorticoConstants.fileToUrl(file) );
-
-		// scan the portico.jar for messaging modules
-		// check to make sure we found the jar, see above scanForDaemons call a few lines up for
-		// the full description of why we do this.
-		if( this.porticoJarFile != null )
-			scanForModules( this.porticoJarFile );
-		
-		// scan each of the entries on the user plugin path for messaging Modules
-		for( File file : userPluginLocations )
-			scanForModules( PorticoConstants.fileToUrl(file) );
-		
+		// Print some information about the loaded Daemons and Handlers
 		logger.info( "Located the following plugins:" );
 		for( IDaemon daemon : daemonManager.getAllDaemons() )
 			logger.info( "  (daemon) -> " + daemon.getClass().getCanonicalName() );
