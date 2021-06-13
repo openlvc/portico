@@ -307,6 +307,14 @@ public class ObjectModel implements Serializable
 			if( root.getQualifiedName().equals("HLAobjectRoot") )
 			{
 				this.ocroot = root;
+				
+				// check that privilegeToDelete is present
+				if( root.getAttributeHandle("HLAprivilegeToDeleteObject") == INVALID_HANDLE )
+				{
+					// It is missing. COME ON GUYS. I'll add it for you.
+					root.addAttribute( this.newAttribute("HLAprivilegeToDeleteObject") );
+				}
+
 				// set the handle for privilegeToDelete
 				this.privilegeToDelete = root.getAttributeHandle( "HLAprivilegeToDeleteObject" );
 			}
@@ -696,8 +704,8 @@ public class ObjectModel implements Serializable
 	
 	public String toString()
 	{
-		return filename;
-		//return new StringRenderer().renderFOM( this );
+		//return filename;
+		return new StringRenderer().renderFOM( this );
 	}
 	
 	//----------------------------------------------------------
