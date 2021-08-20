@@ -124,8 +124,9 @@ public class RegisterObjectHandler extends RTIMessageHandler
 
 		DiscoverObject discover = fill( new DiscoverObject(newInstance), federateHandle );
 		subscriptions.remove( federateHandle ); // don't need to notify the one who created it
-		
-		super.queueManycast( discover, subscriptions.keySet() );
+
+		if ( !subscriptions.isEmpty() )
+			super.queueManycast( discover, subscriptions.keySet() );
 	}
 
 	/**
