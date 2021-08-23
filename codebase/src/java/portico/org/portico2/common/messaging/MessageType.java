@@ -120,14 +120,14 @@ public enum MessageType
 	
 	// Management Object Model (150-159)
 	SetServiceReporting     ( (short)150 ),
-	SetExceptionReporting   ( (short)151 );
+	SetExceptionReporting   ( (short)151 ),
 	
 	// Reserved for future use (160-253)
 	
 	// RESERVED (UPDATE/SEND - 254, 255 - Above)
 	
 	// Messages that are for processing within a specific federation
-	// ...
+	FederationLBTS((short) 255);
 	// ...
 	
 

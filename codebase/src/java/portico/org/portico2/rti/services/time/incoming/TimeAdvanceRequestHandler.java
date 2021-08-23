@@ -20,6 +20,7 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JException;
 import org.portico2.common.messaging.MessageContext;
 import org.portico2.common.services.time.data.TimeStatus;
+import org.portico2.common.services.time.msg.FederationLBTS;
 import org.portico2.common.services.time.msg.TimeAdvanceGrant;
 import org.portico2.common.services.time.msg.TimeAdvanceRequest;
 import org.portico2.rti.services.RTIMessageHandler;
@@ -70,7 +71,16 @@ public class TimeAdvanceRequestHandler extends RTIMessageHandler
 		// record the time advance request in the time manager
 		TimeStatus status = timeManager.getTimeStatus( federate );
 		status.timeAdvanceRequested( newTime );
+		double oldLbts = timeManager.getLBTS();
 		double federationLbts = timeManager.recalculateLBTS();
+
+		if (federationLbts > oldLbts) {
+			// Update the LRCs on the new LBTS, so they can release TSO messages with a lower timestamp
+			FederationLBTS federationLbtsMessage = new FederationLBTS(federationLbts);
+			federationLbtsMessage.setImmediateProcessingFlag(true);
+			federationLbtsMessage.setIsFromRti(true);
+			queueBroadcast(federationLbtsMessage);
+		}
 		
 		//////////////////////////////////
 		// Is the federate CONSTRAINED? //
