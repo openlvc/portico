@@ -70,7 +70,7 @@ public class ResponseCorrelator<T>
 	private AtomicInteger idGenerator;
 	private long timeout;
 	
-	private Map<Integer,Holder> responseMap;
+	private final Map<Integer,Holder> responseMap;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -101,7 +101,10 @@ public class ResponseCorrelator<T>
 			idGenerator.set( 0 );
 		}
 
-		responseMap.put( id, new Holder() );
+		synchronized (responseMap)
+		{
+			responseMap.put(id, new Holder());
+		}
 		return id;
 	}
 	
@@ -112,13 +115,19 @@ public class ResponseCorrelator<T>
 	
 	public T waitFor( int id, long timeout )
 	{
+		Holder holder;
+
 		// Make sure we know about the request
-		if( responseMap.containsKey(id) == false )
-			throw new IllegalArgumentException( "ID not registered with response correlator: "+id );
-		
-		// Wait for a response to turn up
-		Holder holder = responseMap.get( id );
-		if( holder.isPresent() == false )
+		synchronized (responseMap)
+		{
+			if( !responseMap.containsKey(id) )
+				throw new IllegalArgumentException( "ID not registered with response correlator: "+id );
+
+			// Wait for a response to turn up
+			holder = responseMap.get( id );
+			responseMap.remove( id );
+		}
+		if( !holder.isPresent() )
 		{
 			try
 			{
@@ -135,7 +144,6 @@ public class ResponseCorrelator<T>
 		
 		// We either have a response or not.
 		// Remove the request from the map and either return the response or null
-		responseMap.remove( id );
 		return holder.get();
 	}
 	
@@ -143,11 +151,15 @@ public class ResponseCorrelator<T>
 	public void offer( int id, T response )
 	{
 		// check to see if we are waiting for this request
-		if( responseMap.containsKey(id) == false )
-			return;
-		
-		// get the placeholder and notify anyone waiting on it
-		Holder holder = responseMap.get( id );
+		Holder holder;
+		synchronized (responseMap)
+		{
+			if ( !responseMap.containsKey(id) )
+				return;
+
+			// get the placeholder and notify anyone waiting on it
+			holder = responseMap.get(id);
+		}
 		synchronized( holder )
 		{
     		holder.set( response );
@@ -166,7 +178,9 @@ public class ResponseCorrelator<T>
 	
 	public boolean isRegistered( int id )
 	{
-		return responseMap.containsKey(id);
+		synchronized (responseMap) {
+			return responseMap.containsKey(id);
+		}
 	}
 
 	//----------------------------------------------------------
