@@ -75,15 +75,15 @@ public class RID
 		else
 			RID_LOADED = true;
 
-		// check the environment variable for the file (PORT-592)
-		String ridfile = System.getenv( "RTI_RID_FILE" );
-		if( ridfile != null )
+		// Check to see if user has specified a RID file
+		String ridpath = System.getenv( "RTI_RID_FILE" );
+		if( ridpath != null )
 		{
-			// found an environment variable with the RID file, try to read it
-			File file = new File( ridfile );
+			// User has explicitly specified a file - try to find it and fail if we can't
+			File file = new File( ridpath );
 			if( file.exists() == false )
 			{
-				throw new JConfigurationException( "RID file specified in RTI_RID_FILE env.var "+
+				throw new JConfigurationException( "RID file specified in RTI_RID_FILE env var "+
 				                                   "could not be located: "+file );
 			}
 			
@@ -96,21 +96,21 @@ public class RID
 			RID_PROPERTIES = ResourceLocator.loadPropertiesFile( file.getAbsolutePath() );
 			RID_LOCATION = file;
 		}
-		
-		// fall back on the default RID file location, if it doesn't exist, just exit
-		File file = new File( "RTI.rid" );
-		if( file.exists() == false )
-		{
-			RID_PROPERTIES = new Properties(); // use an empty Properties
-		}
-		else if( file.canRead() == false )
-		{
-			throw new JConfigurationException( "RID file exists but cannot be read:" +file );
-		}
 		else
 		{
-			RID_PROPERTIES = ResourceLocator.loadPropertiesFile( file.getAbsolutePath() );
-			RID_LOCATION = file;
+			// User did not specify a RID file, try to load defaults
+			File file = new File( "RTI.rid" );
+			Properties properties = new Properties();
+			if( file.exists() )
+			{
+				RID_PROPERTIES = ResourceLocator.loadPropertiesFile( file.getAbsolutePath() );
+				RID_LOCATION = file;
+			}
+			else
+			{
+				// defaults
+				RID_PROPERTIES = new Properties();
+			}
 		}
 	}
 
