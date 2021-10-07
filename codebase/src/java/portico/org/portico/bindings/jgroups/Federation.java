@@ -166,11 +166,15 @@ public class Federation
 	 */
 	private void findCoordinator() throws Exception
 	{
-		// 1. Send out the Coordinator discovery request to see if anyone is already in the role
+		logger.debug( "Attempting to find Federation Co-ordinator..." );
+		
+		// 1. Send out the Coordinator discovery request to see if anyone is already in the role.
+		//    We don't send explicit to WAN. All our traffic loops back and we send from there.
 		channel.sendFindCoordinator();
 		
-		// 2. Allow some time for the responses to come in
-		PorticoConstants.sleep( 2000 ); // FIXME replace with configurable -- especially for WAN
+		// 2. Allow a reasonable amount of time for a response to come back in from the network.
+		//    Defaults to 1000ms, but should be increased if using site-to-site connectivity.
+		PorticoConstants.sleep( Configuration.getResponseTimeout() );
 		
 		// 3. Check to see if we have a manifest. If there is a coordinator out there, they
 		//    will have sent this through to us. If there isn't one out there, we will have
@@ -180,6 +184,10 @@ public class Federation
 			logger.info( "No co-ordinator found - appointing myself!" );
 			this.manifest = new Manifest( this.fedname, this.uuid );
 			this.manifest.setCoordinator( this.uuid );
+		}
+		else
+		{
+			logger.info( "Found co-ordinator: "+this.manifest.getCoordinator() );
 		}
 	}
 	
@@ -225,6 +233,8 @@ public class Federation
 		// send out create federation call and get an ack from everyone
 		byte[] buffer = Util.objectToByteBuffer( fom );
 		channel.sendCreateFederation( buffer );
+		
+		// TODO: Add check/wait here to see that it actually turns up
 		
 		logger.info( "SUCCESS createFederation: name=" + fedname );
 	}
@@ -286,6 +296,8 @@ public class Federation
 		
 		// send the message out
 		channel.sendJoinFederation( federateName.getBytes() );
+		
+		// TODO: Add wait until we can confirm we have joined
 		
 		logger.info( "SUCCESS Joined federation with name="+federateName );
 		return federateName;	
@@ -440,7 +452,8 @@ public class Federation
 		if( this.manifest == null )
 			return;
 
-		if( manifest.isCoordinator() )
+		// Am I the coordinator? If I am I better respond
+		if( manifest.isCoordinator(this.uuid) )
 		{
         	// read off the UUID of the requester
         	logger.debug( "Received request for manifest from "+sender );

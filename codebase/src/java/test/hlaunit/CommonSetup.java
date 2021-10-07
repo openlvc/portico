@@ -109,7 +109,7 @@ public class CommonSetup
 				// this can take a while and really slows the tests down, but seeing as
 				// we're running everything off the same machine, there is little worry
 				// about needing a bigger timeout to discover an active group
-				System.setProperty( Configuration.PROP_JGROUPS_GMS_TIMEOUT, "100" );
+				System.setProperty( Configuration.PROP_JGROUPS_RESPONSE_TIMEOUT, "100" );
 				
 				String jgroupsInterface = System.getProperty( JGROUPS_INTERFACE );
 				if( jgroupsInterface != null )

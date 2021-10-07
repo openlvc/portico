@@ -1,10 +1,10 @@
 # ================================
 # Portico RTI Initialization Data
 # ================================
-# This file contains all the configuration options for Portico. They are initially all
-# commented out, so you can selectively enable the relevant pieces of configuration you require.
+# This file contains all available configuration options for Portico. 
+# Values are initially commented out and are provided shown with their default settings.
 #
-# All options are formatted as name=value pairs, the '#' and '!' characters mark a line as a comment
+# All options are formatted as name=value pairs, the '#' and '!' characters mark comment lines
 #
 # To make use of this file, put it in the directory that your federate is executed from, or set the
 # RTI_RID_FILE environment variable to point at wherever it is located.
@@ -29,20 +29,14 @@
 #
 # portico.loglevel = INFO
 
-# (1.3) Portico Container Log Level
-#        Specify the log level that Portico will use for its infrastructure elements (like the
-#        messaging framework, configuration, etc...). By default, this logger is disabled. 
-#
-# portico.container.loglevel = OFF
-
-# (1.4) Print FOM when federate Joins
+# (1.3) Print FOM when federate Joins
 #        When a federate joins a federation, Portico can pretty-print the FOM data of that
 #        federation. If this is enabled, the FOM is logged to the INFO level (so make sure you
 #        have logging turned up high enough). By default this is disabled.
 #
 # portico.fom.print = disabled
 
-# (1.5) Logging by Handle/Name
+# (1.4) Logging by Handle/Name
 #        Making sense of log files can be difficult. To help make sense of this data, various bits
 #        of HLA information can be logged by their HLA handle or their name. For example, an HLA
 #        object class can be logged by its handle, or by its name.
@@ -123,24 +117,15 @@
 # ================================
 # These really shouldn't be changed unless you really know what you want
 
-# (3.1) Portico Plugin Path
-#        This is a path that should be searched for Portico plugins. The format is a ";" separated
-#        list of locations for windows, or a ":" separated list for *nix. The default value is empty.
-#        (NOTE) Two locations are *ALWAYS* searched: ./plugins and $RTI_HOME/plugins
+# (3.1) Portico Communications Binding
+#        Defines the mechanism used by federates to communicate. Two valid options: jgroups, jvm.
 #
-# portico.pluginpath = /opt/portico/plugins
-
-# (3.2) Portico Communications Binding
-#        This defines the communications binding Portico uses to talk to the federation. Two
-#        implementations are provided with Portico: "jgroups" (default) and "jvm". If you have
-#        a different binding, you can specify the fully-qualified name of the class that implements
-#        IConnection (e.g. an alternate way to specify the default JGroups communications binding
-#        would be "org.portico.bindings.jgroups.JGroupsConnection")
-#        DEFAULT = jgroups
+#        jgroups: Use for LAN/WAN communications (default)
+#            jvm: Use when running many federates in separate threads within a single process.
 #
 # portico.connection = jgroups
 
-# (3.3) LRC Tick Timeout
+# (3.2) LRC Tick Timeout
 #        When a federate calls tick() and there is no work to do, the LRC will wait for a period of
 #        time to allow work to arrive before it returns. This is designed to avoid a busy-looping
 #        situation where people are calling tick in a loop while waiting for some event.
@@ -155,105 +140,210 @@
 
 
 # =========================================
-# 4. JGroups Network Binding Options
+# 4. JGroups Network Settings
 # =========================================
-# The JGroups XML configuration is contained within the jar file at the location
-# "etc/jgroups-udp.xml". If you want to replace that configuration wholesale, you can put an
-# alternate configuration file at this location on the filesystem and it will be found ahead
-# of the one in the jar-file. Alternatively, you can just set these properties to control some
-# of the more prominent properties as it relates to Portico.
+# Portico uses the JGroups library for its inter-federate network communication.
+# These settings control various parameters of the network layer and JGroups itself.
 
-# (4.1) JGroups Binding Log Level
-#        The log level used by the internal JGroups logger. By default this is turned off, but if
-#        you want to see more information about what is happening at a network level, you can lower
-#        the threshold for this level (down to something like DEBUG or even TRACE). Note that this
-#        will only alter the JGroups logger, not the general Portico logger.
-#        DEFAULT: OFF
-# portico.jgroups.loglevel = OFF
-
-# (4.2) JGroups Response Timeout
-#        Certain operations Portico uses wait for a specific amount of time for a response. The
-#        length of time a JGroups binding will wait for is specified by this property (in
-#        milliseconds). If you are having reliability problems, try making this value larger, but
-#        note that actions like sync point registration, or registering an object with a name will
-#        take longer if you do.
-#        DEFAULT = 1000
+# (4.1) JGroups UDP Address and Port
+#        Address and port to use for communication between federates.
+#        DEFAULT: 239.20.9.13:20913
 #
-# portico.jgroups.timeout = 1000
-
-# (4.3) JGroups UDP Address
-#        The UDP address the JGroups binding will communicate on.
-#        DEFAULT: 228.10.10.10
-#
-# portico.jgroups.udp.address = 228.10.10.10 
-
-# (4.4) JGroups UDP Port
-#        The UDP port the JGroups binding will communicate on.
-#        DEFAULT: 20913
-#
+# portico.jgroups.udp.address = 239.20.9.13
 # portico.jgroups.udp.port = 20913
 
-# (4.5) JGroups Bind Address
-#        The address/NIC JGroups should use. Try setting this to your desired NIC if setting
-#        the send/receive interfaces don't work.
-#
-# portico.jgroups.udp.bindAddress = 
 
-# (4.6) JGroups UDP Receive Buffer Size
-#        The size of the buffer that incoming messages are stored in before they're passed in to
-#        the LRC. If you find that you are sending messages that are quite large or quite small,
-#        you may want to adjust this value appropriately. Default is quite large (about 24mb).
+# (4.2) JGroups Bind Address
+#        The address/NIC Portico should use. Can use an IP address associated with a NIC, or
+#        one of the following special values:
 #
-# portico.jgroups.udp.receiveBuffer = 25000000
-
-# (4.7) JGroups UDP Send Buffer Size
-#        The size of the buffer that messages are put in before they are sent out. Don't modify
-#        this unless you know what you're doing. 640k is enough for everything (ZING!)
+#            GLOBAL: Pick a global IP address if available. If not, falls back to a SITE_LOCAL IP address.
+#        SITE_LOCAL: Picks a site local (non routable) IP address, e.g. from the 192.168.0.0 or 10.0.0.0 address range.
+#        LINK_LOCAL: Picks a link-local IP address, from 169.254.1.0 through 169.254.254.255.
+#      NON_LOOPBACK: Picks any non loopback address.
+#          LOOPBACK: Pick a loopback address, e.g. 127.0.0.1.
+#   match-interface: Pick an address which matches a pattern against the interface name, e.g. match-interface:eth.*
+#     match-address: Pick an address which matches a pattern against the host address, e.g. match-address:192.168.*
+#        match-host: Pick an address which matches a pattern against the host name, e.g. match-host:linux.*
 #
-# portico.jgroups.udp.sendBuffer = 640000
+#        DEFAULT: SITE_LOCAL
+#
+# portico.jgroups.udp.bindAddress = SITE_LOCAL
 
-# (4.8) JGroups Bundling Support
+
+# (4.3) JGroups Response Timeout
+#       How long (in milliseconds) to wait for responses to any questions we send out before
+#       we move on. This affects a number of things, including how long the federate will wait
+#       for responses to its "Find Coordinator" requests during connection. 
+#
+#       The default value is 1000ms, which is plenty for a LAN, but may need to be increased if
+#       you are in a WAN environment where there are multiple hops that messages must traverse to
+#       get from one local network to another (local JGroups channel, to WAN Router, to the other
+#       local JGroups channel and back again).
+#
+# portico.jgroups.responseTimeout = 2000
+
+
+# (4.4) JGroups UDP Sent/Receive Buffer Size
+#        Incoming/Outgoing buffer sizes. Default receive buffer is quite large to allow ample
+#        space on fast networks and avoid dropped packets.
+#
+# portico.jgroups.udp.receiveBuffer = 25M
+# portico.jgroups.udp.sendBuffer = 640K
+
+
+# (4.5) JGroups Bundling Support
 #         If you are sending lots of smaller messages, higher overall throughput can be obtained by
 #         bundling them together into a fewer number of larger messages. However, doing so comes at
-#         the cost of latency. Messages will be stored up until either a timeout period is reached,
-#         or the total size of the messages exceeds a threshold. By default, the JGroups binding
-#         has bundling ENABLED. To disable bundling, set this to false.
+#         the cost of latency. Messages are buffered until either the timeout period (milliseconds)
+#         is reached, or the total size of the messages exceeds the specified threshold. Bundling
+#         is enabled by default. For latency-critical tasks, disable it or reduce the max-timeout.
 #
 # portico.jgroups.bundling = true
+# portico.jgroups.bundling.maxSize = 64K
+# portico.jgroups.bundling.maxTime = 30
 
-# (4.9) JGroups Bundling Max Size
-#         If bundling is enabled, messages will be queued until their total size exceeds this
-#         threshold value (or a timeout occurs, see below). Once the total size reaches this point,
-#         all queued messages will be bundled together and sent out in one packet.
-#         *Bundling must be enabled* if you want to configure this value.
-#         NOTE: Values over 63000 are not allowed by JGroups on some platforms.
+
+# (4.6) JGroups Flow Control
+#         Flow control is used to rate limit transmission so that slow receivers don't get overrun,
+#         causing them to drop messages and requiring expensive retransmission.
 #
-# portico.jgroups.bundling.maxSize = 63000
-
-# (4.10) JGroups Bundling Max Timeout
-#         If bundling is enabled, messages will be queue either until their total size exceeds a
-#         threshold (see above) or the time that a message has been queued exceeds this value
-#         (provided in milliseconds). When this time is passed, a message is sent out, regardless
-#         of whether or not the bunding size threshold has been reached. Default: 25 milliseconds.
+#         This value sets the maximum number of bytes that can be sent by a federate before it
+#         needs to receive more credits from other cluster members. These credits are not sent
+#         until the other federates have processed enough of the prior sent messages. The ratio
+#         setting defines how far through its current credits a sender can get before it should
+#         issue a request for more.
 #
-# portico.jgroups.bundling.maxTime = 25
-
-# (4.11) JGroups Flow Control
-#         Flow control is used to limit the rate at which messages are sent so that slow receivers
-#         don't get overwhelmed, causing them to drop messages and requiring potentially expensive
-#         retransmission. This value sets the maximum number of bytes that can be sent by a federate
-#         before it needs to request more tokens from the other federates (which won't happen until
-#         they consume pending messages and thus have free capacity). Setting this higher will allow
-#         a federate to send more before it gets choked off, but runs the risk of overflowing
-#         receiving federates. Consider a value for this in conjunction with UDP receive buffer
-#         size (bigger the buffer there, the more messages that can be held before dropped messages
-#         start becoming a problem).
+#         Setting the credit limit higher will allow a federate to send more messages before it
+#         gets blocked. Consider adjusting this value in conjunction with the buffer sizes, as
+#         they will dictate storage capacity on the sender side.
 #
 #         Note: If you start experiencing unstable behaviour, turn this value down. Flow control
 #               can be sensitive to the number of messages you try to send out in a hurry. If
-#               bundling is enabled, you can have a higher value for this, because although you are
-#               requesting more messages to be sent, the actual number hitting the network is smaller.
+#               bundling is enabled, you can use a higher value because although you are sending
+#               more messages, the actual number hitting the network is smaller.
 #
-# portico.jgroups.flow.credits = 1000000
+# portico.jgroups.flow.credits = 2M
+# portico.jgroups.flow.threshold = 0.4
 
+
+# (4.7) Packet Fragmentation Size
+#         Messages larger than this size will be broken down into smaller ones for transmission,
+#         reducing potentially lengthy delays retransmitting whole large messages when a single
+#         datagram is lost.
+#         Note: The max bundling size must be greater than this value.
+#
+# portico.jgroups.frag.size = 60K
+
+
+# (4.8) JGroups Traffic Auditing
+#         If this option is enabled a special log file will be produced for each federate listing
+#         the messages it has sent and received, along with their size and other useful details.
+#         This information can be used to make judgements about network config (such as bundling
+#         limits) or to just see what is happening in the federation at a network level.
+#
+#         The audit files are placed in the logs directory (see sec 1.1) with the name:
+#         "audit-FEDERATENAME.log"
+#
+#         If the auditor is enabled you can specify a detail level to control what is logged.
+#         When set to "full", each message will be logged with its specific details. (default)
+#         When set to "summary", only the summary tables will be printed
+#
+# portico.jgroups.auditor.enabled = false
+# portico.jgroups.auditor.details = full
+
+
+# (4.9) JGroups Traffic Audit Filtering
+#         Federates can generate a lot of messages. Sometimes you really just want to zero in
+#         on a particular type of message, or messages for a particular FOM type. These filters
+#         let you do that. These filters work in combination. For example, consider the following:
+#             - action  = sent
+#             - type    = UpdateAttributes
+#             - fomtype = Lifeform, GroundVehicle
+#
+#         Given this, only attribute updates for the FOM classes "Lifeform" and "GroundVehicle"
+#         that the local federate sends will be logged. Leaving a value empty, or using the
+#         keyword "all" will cause no filtering for that type to be applied.
+#
+#         NOTE: If the detail level is set to "summary", -no- individual messages will be logged,
+#               regardless of the filter settings.
+#         
+# portico.jgroups.auditor.filter.direction = 
+# portico.jgroups.auditor.filter.message   = 
+# portico.jgroups.auditor.filter.fomtype   = 
+
+# =========================================
+# 5. WAN Connection Options
+# =========================================
+
+# (5.1) WAN Mode Enable/Disable
+#       If true, WAN mode will be enabled and this federate will act as both a
+#       local participant, and also as a bridge for all the local federates.
+#       Messages exchanged on the local JGroups channel will be forwarded to a
+#       central router (see 5.2) to be reflected out to other sites. Messagest
+#       received from the router will be pushed out to the local JGroups channel
+#       so everyone here can process them.
+#
+#       Note that this mode does not support bundling. If enabled in the RID, it
+#       will be active on the local JGroups network, but ignored for the WAN.
+#
+#       Note: Router must be running before federate startup. If not - federates
+#             will fail to start.
+#
+#       Default: false
+#       
+# portico.wan.enabled = false
+
+
+# (5.2) Router Address/Port
+#       Specifies the address and port of the WAN router to use. Note that the
+#       syntax is "address:port".
+#
+#       Default: 127.0.0.1:23114
+#
+# portico.wan.router = 127.0.0.1:23114
+
+
+# (5.3) Enable / Disable Bundling
+#       Bundling enables higher throughput by grouping together a number of
+#       smaller messages and sending them as one. This makes much more efficient
+#       use of the network and provides considerable improvements to throughput
+#       at a minor cost to latency.
+#
+#       If enabled, the subsequent options will control how it is applied.
+#
+#       Default: true
+#
+# portico.wan.bundle.enabled = true
+
+
+# (5.4) Max Bundle Size
+#       Messages sent over the WAN will be grouped into bundles and sents as
+#       a batch when their total size exceeds this value. Specify a size with
+#       a suffix of 'b', 'k' or 'm' (or 'g' if you dare!)
+#
+#       Default: 64k
+#
+# portico.wan.bundle.maxsize = 64K
+
+
+# (5.5) Max Bundle Timeout
+#       The maximum amount of time we will hold messages in the bundler for while
+#       waiting for more messages to arrive and bundle together. From the time that
+#       a message is received, the bundler will hold it for no longer than this
+#       value (specified in milliseconds).
+#
+#       Default: 20
+#
+# portico.wan.bundle.timeout = 20
+
+
+# =========================================
+# A51. Undocumented Settings
+# =========================================
+# This section is a catch-all of settings we use for internal work, and infrequently.
+# Their specific usecase and function is undocumented as they are not intended for general use.
+# portico.container.loglevel = OFF
+# portico.jgroups.loglevel = OFF
+# portico.jgroups.timeout = 1000
 

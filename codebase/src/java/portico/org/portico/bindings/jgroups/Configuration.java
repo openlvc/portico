@@ -44,11 +44,11 @@ public class Configuration
 
 	/** The system property that specifies the timeout value is used when waiting for response
 	    messages (in milliseconds), default value is 1000 */
-	public static final String PROP_JGROUPS_TIMEOUT = "portico.jgroups.timeout";
+	public static final String PROP_JGROUPS_RESPONSE_TIMEOUT = "portico.jgroups.responseTimeout";
 
 	/** The period of time to wait for a response when joining a channel before assuming
 	    that there is no existing co-ordinator and appointing ourselves to that lofty title */
-	public static final String PROP_JGROUPS_GMS_TIMEOUT = "portico.jgroups.gms.jointimeout";
+	public static final String PROP_JGROUPS_GMS_TIMEOUT2 = "portico.jgroups.gms.jointimeout";
 
 	///// auditor settings
 	/** Whether or not the auditor is enabled */
@@ -59,12 +59,6 @@ public class Configuration
 	public static final String PROP_JGROUPS_AUDITOR_FILTER_DIR = "portico.jgroups.auditor.filter.direction";
 	public static final String PROP_JGROUPS_AUDITOR_FILTER_MSG = "portico.jgroups.auditor.filter.message";
 	public static final String PROP_JGROUPS_AUDITOR_FILTER_FOM = "portico.jgroups.auditor.filter.fomtype";
-
-	///// jgroups properties /////////////////////////////////////////////////////////////////
-	/** The amount of time (in milliseconds) to wait for a response to a request, defaults to 1000,
-	    controllable through system property {@link #PROP_JGROUPS_TIMEOUT}  */
-	public static long RESPONSE_TIMEOUT =
-		Long.parseLong(System.getProperty(PROP_JGROUPS_TIMEOUT,"1000") );
 
 	
 	///// wan properties /////////////////////////////////////////////////////////////////////
@@ -95,6 +89,11 @@ public class Configuration
 	public static final String getLogLevel()
 	{
 		return System.getProperty( PROP_JGROUPS_LOGLEVEL, "OFF" );
+	}
+	
+	public static final long getResponseTimeout()
+	{
+		return Integer.parseInt( System.getProperty(PROP_JGROUPS_RESPONSE_TIMEOUT,"1000") );
 	}
 	
 	/**
@@ -235,7 +234,7 @@ public class Configuration
 		}
 	}
 
-	/** Is bundling turned on? Default to `true()` */
+	/** Is bundling turned on? Default to <code>true()<code> */
 	public static boolean isWanBundlingEnabled()
 	{
 		String value = System.getProperty( PROP_JGROUPS_WAN_BUNDLE_ENABLE, "true" );
