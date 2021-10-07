@@ -171,7 +171,20 @@
 # portico.jgroups.udp.bindAddress = SITE_LOCAL
 
 
-# (4.3) JGroups UDP Sent/Receive Buffer Size
+# (4.3) JGroups Response Timeout
+#       How long (in milliseconds) to wait for responses to any questions we send out before
+#       we move on. This affects a number of things, including how long the federate will wait
+#       for responses to its "Find Coordinator" requests during connection. 
+#
+#       The default value is 1000ms, which is plenty for a LAN, but may need to be increased if
+#       you are in a WAN environment where there are multiple hops that messages must traverse to
+#       get from one local network to another (local JGroups channel, to WAN Router, to the other
+#       local JGroups channel and back again).
+#
+# portico.jgroups.responseTimeout = 2000
+
+
+# (4.4) JGroups UDP Sent/Receive Buffer Size
 #        Incoming/Outgoing buffer sizes. Default receive buffer is quite large to allow ample
 #        space on fast networks and avoid dropped packets.
 #
@@ -179,7 +192,7 @@
 # portico.jgroups.udp.sendBuffer = 640K
 
 
-# (4.4) JGroups Bundling Support
+# (4.5) JGroups Bundling Support
 #         If you are sending lots of smaller messages, higher overall throughput can be obtained by
 #         bundling them together into a fewer number of larger messages. However, doing so comes at
 #         the cost of latency. Messages are buffered until either the timeout period (milliseconds)
@@ -191,7 +204,7 @@
 # portico.jgroups.bundling.maxTime = 30
 
 
-# (4.5) JGroups Flow Control
+# (4.6) JGroups Flow Control
 #         Flow control is used to rate limit transmission so that slow receivers don't get overrun,
 #         causing them to drop messages and requiring expensive retransmission.
 #
@@ -214,7 +227,7 @@
 # portico.jgroups.flow.threshold = 0.4
 
 
-# (4.6) Packet Fragmentation Size
+# (4.7) Packet Fragmentation Size
 #         Messages larger than this size will be broken down into smaller ones for transmission,
 #         reducing potentially lengthy delays retransmitting whole large messages when a single
 #         datagram is lost.
@@ -223,7 +236,7 @@
 # portico.jgroups.frag.size = 60K
 
 
-# (4.7) JGroups Traffic Auditing
+# (4.8) JGroups Traffic Auditing
 #         If this option is enabled a special log file will be produced for each federate listing
 #         the messages it has sent and received, along with their size and other useful details.
 #         This information can be used to make judgements about network config (such as bundling
@@ -239,7 +252,8 @@
 # portico.jgroups.auditor.enabled = false
 # portico.jgroups.auditor.details = full
 
-# (4.8) JGroups Traffic Audit Filtering
+
+# (4.9) JGroups Traffic Audit Filtering
 #         Federates can generate a lot of messages. Sometimes you really just want to zero in
 #         on a particular type of message, or messages for a particular FOM type. These filters
 #         let you do that. These filters work in combination. For example, consider the following:
@@ -280,6 +294,7 @@
 #       
 # portico.wan.enabled = false
 
+
 # (5.2) Router Address/Port
 #       Specifies the address and port of the WAN router to use. Note that the
 #       syntax is "address:port".
@@ -288,7 +303,8 @@
 #
 # portico.wan.router = 127.0.0.1:23114
 
-# (5.2) Enable / Disable Bundling
+
+# (5.3) Enable / Disable Bundling
 #       Bundling enables higher throughput by grouping together a number of
 #       smaller messages and sending them as one. This makes much more efficient
 #       use of the network and provides considerable improvements to throughput
@@ -300,7 +316,8 @@
 #
 # portico.wan.bundle.enabled = true
 
-# (5.3) Max Bundle Size
+
+# (5.4) Max Bundle Size
 #       Messages sent over the WAN will be grouped into bundles and sents as
 #       a batch when their total size exceeds this value. Specify a size with
 #       a suffix of 'b', 'k' or 'm' (or 'g' if you dare!)
@@ -309,7 +326,8 @@
 #
 # portico.wan.bundle.maxsize = 64K
 
-# (5.4) Max Bundle Timeout
+
+# (5.5) Max Bundle Timeout
 #       The maximum amount of time we will hold messages in the bundler for while
 #       waiting for more messages to arrive and bundle together. From the time that
 #       a message is received, the bundler will hold it for no longer than this

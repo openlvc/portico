@@ -168,7 +168,7 @@ public class JGroupsConnection implements IConnection
 	{
 		validateConnected();
 		joinedFederation.send( message );
-		PorticoConstants.sleep( Configuration.RESPONSE_TIMEOUT );
+		PorticoConstants.sleep( Configuration.getResponseTimeout() );
 	}
 
 	/**
@@ -339,7 +339,7 @@ public class JGroupsConnection implements IConnection
 			// That exception would in turn cascade out and prevent us from disconnecting
 			// unless we did something about it!
 			federation.disconnect();
-			federations.remove( federation );
+			federations.remove( federation.getFederationName() );
 		}
 	}
 

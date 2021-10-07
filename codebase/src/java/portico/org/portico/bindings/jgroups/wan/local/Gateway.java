@@ -188,6 +188,8 @@ public class Gateway
 			// tell the router that we're ready!
 			outstream.writeByte( Header.READY );
 
+			// potentially should wait for an ACK on that message?
+			
 			//
 			// Start the sending and receiving threads
 			//
@@ -197,6 +199,7 @@ public class Gateway
 			this.bundler.connect( this.outstream );
 
 			// all done!
+			logger.info( "[WanRouter]: WAN connection established" );
 			this.connected = true;
 		}
 		catch( IOException e )
