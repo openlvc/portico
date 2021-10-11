@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="codebase/lib/jgroups/JGroups-2.8.0.GA.bin/commons-logging.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/testng/testng-5.12.1/testng-5.12.1.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/jgroups/jgroups-3.2.0-beta1/jgroups-3.2.0.Beta1.jar" sourcepath="/Users/tim/Developer/workspace/external/JGroups/src"/>
+	<classpathentry kind="lib" path="codebase/resources/jars/portico.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>

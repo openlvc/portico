@@ -135,9 +135,6 @@ public class FOM
 			throw new JConfigurationException("<objectModel> missing <interactions> child element");
 		}
 
-		// Mommify the fom
-		ObjectModel.mommify( this.fom );
-		
 		// return the completed FOM
 		return this.fom;
 	}

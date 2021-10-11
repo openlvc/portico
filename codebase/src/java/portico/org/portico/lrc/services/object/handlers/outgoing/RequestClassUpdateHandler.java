@@ -21,7 +21,6 @@ import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JObjectClassNotDefined;
 import org.portico.lrc.compat.JRegionNotKnown;
-import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.services.object.msg.RequestClassUpdate;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
@@ -102,7 +101,9 @@ public class RequestClassUpdateHandler extends LRCMessageHandler
 		//  3. Class handle isn't part of the MOM or if for Federate
 		//      -We want to broadcast it. If it's non-mom, we're fine, if it's Mom-Federate, then
 		//       we need to notify the appropriate LRC
-		if( classHandle == Mom.FederationClass )
+		String qName = metadata.getQualifiedName();
+		if( qName.equals("HLAobjectRoot.HLAmanager.HLAfederation") ||
+			qName.equals("ObjectRoot.Manager.Federation") )
 		{
 			// it's just Manager.Federation, handle locally, no broadcast
 			respondToMomFederationUpdateRequest( request.getAttributes() );
@@ -110,13 +111,13 @@ public class RequestClassUpdateHandler extends LRCMessageHandler
 		else
 		{
 			// if it's for manager, handle the federation part locally and broadcast as per
-			// normal for the federation part
-			if( classHandle == Mom.ManagerClass )
+			// normal for the federate part
+			if( qName.equals("HLAobjectRoot.HLAmanager") || qName.equals("ObjectRoot.Manager") )
 				respondToMomFederationUpdateRequest( request.getAttributes() );
 			
 			connection.broadcast( request );
 		}
-
+		
 		context.success();
 		if( logger.isInfoEnabled() )
 		{

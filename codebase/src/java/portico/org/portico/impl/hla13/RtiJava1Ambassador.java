@@ -86,7 +86,6 @@ import org.portico.lrc.model.ACInstance;
 import org.portico.lrc.model.ACMetadata;
 import org.portico.lrc.model.Dimension;
 import org.portico.lrc.model.ICMetadata;
-import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.ObjectModel;
@@ -5231,16 +5230,9 @@ public class RtiJava1Ambassador
 		// get the class
 		OCMetadata cls = helper.getFOM().getObjectClass( theHandle );
 		if( cls == null )
-		{
 			throw new ObjectClassNotDefined( "handle: " + theHandle );
-		}
 		else
-		{
-			if( theHandle < ObjectModel.MAX_MOM_HANDLE )
-				return Mom.strip1516Crap( cls.getQualifiedName() );
-			else
-				return cls.getQualifiedName();
-		}
+			return cls.getQualifiedName();
 	}
 
 	// 10.4
@@ -5281,16 +5273,9 @@ public class RtiJava1Ambassador
 		{
 			String name = cls.getAttributeName( theHandle );
 			if( name == null )
-			{
 				throw new AttributeNotDefined( "handle: " + theHandle );
-			}
 			else
-			{
-				if( theHandle < ObjectModel.MAX_MOM_HANDLE )
-					return Mom.strip1516Crap( name );
-				else
-					return name;
-			}
+				return name;
 		}
 	}
 

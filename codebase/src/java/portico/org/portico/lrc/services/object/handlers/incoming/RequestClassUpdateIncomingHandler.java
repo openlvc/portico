@@ -21,7 +21,6 @@ import java.util.Set;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.model.ACInstance;
-import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.model.RegionInstance;
@@ -74,7 +73,12 @@ public class RequestClassUpdateIncomingHandler extends LRCMessageHandler
 		}
 
 		// check to see if this is MOM related
-		if( classHandle == Mom.FederateClass || classHandle == Mom.ManagerClass )
+		OCMetadata metadata = super.getObjectClass( classHandle );
+		String qName = metadata.getQualifiedName();
+		if( qName.equals("HLAobjectRoot.HLAmanager.HLAfederate") ||
+		    qName.equals("HLAobjectRoot.HLAmanager" ) ||
+		    qName.equals("ObjectRoot.Manager" ) ||
+		    qName.equals("ObjectRoot.Manager.Federate") )
 		{
 			respondToMomFederateUpdateRequest( requested );
 			veto("Update was for MOM type, automatically handled by LRC");

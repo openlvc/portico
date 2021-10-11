@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
@@ -37,7 +38,8 @@ public class CreateFederationHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-
+	private static final String MIM_PATH = "etc/ieee1516e/HLAstandardMIM.xml";
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
@@ -58,9 +60,19 @@ public class CreateFederationHandler extends LRCMessageHandler
 	public void process( MessageContext context ) throws Exception
 	{
 		CreateFederation request = context.getRequest( CreateFederation.class, this );
-		
-		// try and parse each of the fed files that we have
+	
+		// we always start with the MIM as the base
+		//URL mimModule = ClassLoader.getSystemResource( "" )
+
+		//
+		// 1. Try and parse each of the fed files that we have
+		//
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
+		// For 1516e, we always add the MIM first
+		if( lrc.getSpecHelper().getHlaVersion() != HLAVersion.HLA13 )
+			foms.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH)) );
+		
+		// Load all the provided modules
 		for( URL module : request.getFomModules() )
 			foms.add( FomParser.parse(module) );
 		
@@ -73,7 +85,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		ObjectModel combinedFOM = ModelMerger.merge( foms );
 		
 		// dump out the MIM if it is present and then re-insert with specific handles
-		ObjectModel.mommify( combinedFOM );
+//		ObjectModel.mommify( combinedFOM );
 
 		// we have our grand unified FOM!
 		request.setModel( combinedFOM );

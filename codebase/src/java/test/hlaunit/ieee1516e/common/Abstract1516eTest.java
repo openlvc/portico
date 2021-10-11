@@ -14,6 +14,11 @@
  */
 package hlaunit.ieee1516e.common;
 
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.time.DoubleTime;
@@ -145,6 +150,51 @@ public abstract class Abstract1516eTest
 		return DoubleTime.decode( time, 0 ).getTime();
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	/// General Helpers    //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * Turn the given list of paths into a URL[]. If any of the paths is a file URL, it will be
+	 * included as is. If it is not, we turn it into a file and if the file exists we turn it into
+	 * a URL. If the file does not exist we try to load it as a classpath resource. If none of that
+	 * works the current test will be failed.
+	 * 
+	 * @param paths The set of paths we want as an array of URLs
+	 * @return A URL[] of the given paths converted to URLs.
+	 */
+	public URL[] toUrlArray( String... paths )
+	{
+		try
+		{
+    		List<URL> list = new ArrayList<>();
+    		for( String path : paths )
+    		{
+    			if( path.startsWith("file:") )
+    			{
+    				list.add( new URL(path) );
+    			}
+    			else
+    			{
+    				File file = new File( path );
+    				if( file.exists() )
+    					list.add( file.toURI().toURL() );
+    				else
+    					list.add( ClassLoader.getSystemResource(path) );
+    			}
+    		}
+    		
+    		return list.toArray( new URL[]{} );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Error converting path to URL: "+e.getMessage(), e );
+			return null; // will never get called
+		}
+	}
+	
+	
+
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

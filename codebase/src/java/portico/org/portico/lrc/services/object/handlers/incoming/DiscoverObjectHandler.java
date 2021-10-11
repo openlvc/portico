@@ -17,7 +17,6 @@ package org.portico.lrc.services.object.handlers.incoming;
 import java.util.Map;
 
 import org.portico.lrc.LRCMessageHandler;
-import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
 import org.portico.lrc.model.OCMetadata;
 import org.portico.lrc.services.object.msg.DiscoverObject;
@@ -71,7 +70,7 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 		
 		if( logger.isDebugEnabled() )
 		{
-			if( classHandle == Mom.FederateClass )
+			if( classHandle == fom().getObjectClassHandle("HLAfederate") )
 			{
 				logger.trace( "@REMOTE Received MOM object discovery for federate ["+
 				              notice.getObjectName()+"]" );

@@ -63,6 +63,9 @@ public class ObjectModel implements Serializable
 	private ICMetadata icroot;
 	
 	private int privilegeToDelete; // set when object root is set
+	
+	private Map<String,Integer> momCache; // lazy-loaded cache for MOM class handles
+	
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
@@ -80,6 +83,8 @@ public class ObjectModel implements Serializable
 		this.version  = HLAVersion.HLA13;
 		
 		this.privilegeToDelete = INVALID_HANDLE;
+		
+		this.momCache = new HashMap<>();
 	}
 	
 	/**
@@ -225,9 +230,8 @@ public class ObjectModel implements Serializable
 		if( name.equalsIgnoreCase("objectroot") || name.equalsIgnoreCase("hlaobjectroot") )
 			return this.getObjectRoot();
 		
-		// the only other thing that could have gotten missed is a MOM class
-		// below will return null if it isn't a MOM class
-		return this.getObjectClass( Mom.getMomClassHandle(version,name) );
+		// it couldn't be anything else - it can't be found
+		return null;
 	}
 	
 	/**
@@ -241,32 +245,11 @@ public class ObjectModel implements Serializable
 		OCMetadata ocMetadata = this.oclasses.get( classHandle );
 		// do we have a class?
 		if( ocMetadata == null )
-		{
 			return null;
-		}
-		
-		// find the attribute //
-		// Is this a MOM class? //
-		if( classHandle < MAX_MOM_HANDLE )
-		{
-			// make sure we aren't talking privilegeToDelete
-			if( attributeName.equals("privilegeToDelete") ||
-				attributeName.equals("HLAprivilegeToDelete") )
-			{
-				return this.ocroot.getDeclaredAttribute( this.privilegeToDelete );
-			}
-			
-			// it sure is, do a special lookup because of the requirement to map names
-			// depending on the HLA version involved
-			int aHandle = Mom.getMomAttributeHandle( version, classHandle, attributeName );
-			return ocMetadata.getAttribute( aHandle );
-		}
-		else
-		{
-			// it isn't, we can just look directly in the class
-			int aHandle = ocMetadata.getAttributeHandle( attributeName );
-			return ocMetadata.getAttribute( aHandle );
-		}
+
+		// find the attribute in the class //
+		int aHandle = ocMetadata.getAttributeHandle( attributeName );
+		return ocMetadata.getAttribute( aHandle );
 	}
 	
 	/**
@@ -711,76 +694,5 @@ public class ObjectModel implements Serializable
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	
-	/////////////////////////////////////////////////////////////
-	///////////// Temporary Methods : DO NOT USE!!! /////////////
-	/////////////////////////////////////////////////////////////
-	/**
-	 * <b>DO NOT USE!!!</b>
-	 * <p/>
-	 * This method will take the given model, rip out any MOM classes and then insert a bunch of
-	 * MOM specific classes that conform to the structure/handles we expect. Use of this method is
-	 * <i>a temporary solution for PORT-313</i>. I reserve the right to remove it at any point in
-	 * time, without warning, hinting or even a cryptic blog post that might hint towards a
-	 * potential impending action which may or may not pertain to the removal of said method. This
-	 * won't ever be marked deprecated, rather, I'll just go all "preemptive strike" on it. One day
-	 * you WILL wake up and it WILL just be gone.
-	 */
-	public static void mommify( ObjectModel model )
-	{
-		// let the abomonation begin //
-		boolean wasLocked = model.locked;
-		if( wasLocked )
-			model.unlock();
-		
-		/////////////////////////////////////////////////////////////
-		// remove any MOM stuff that currently exists in the model //
-		/////////////////////////////////////////////////////////////
-		String managerName = "ObjectRoot.Manager";
-		if( model.version == HLAVersion.IEEE1516 || model.version == HLAVersion.IEEE1516e )
-		{
-			managerName = "HLAobjectRoot.HLAmanager";
-		}
-		
-		OCMetadata ocManager = model.getObjectClass( managerName );
-		if( ocManager != null )
-		{
-			// we have MOM stuff, nurse, pass my cleaver
-			ocManager.cleave();
-			model.oclasses.remove( ocManager.getHandle() );
-			
-			// remove all its children from the model //
-			// have to create a separate set to avoid a ConcurrentModificationException
-			Set<OCMetadata> children = new HashSet<OCMetadata>( ocManager.getChildTypes() );
-			for( OCMetadata clazz : children )
-			{
-				clazz.cleave();
-				model.oclasses.remove( clazz.getHandle() );
-			}
-		}
-		
-		// do the same for any MOM interactions //
-		// FIXME still need to add this //
-
-		//////////////////////////////////
-		// add the predefined MOM stuff //
-		//////////////////////////////////
-		switch( model.version )
-		{
-			case HLA13:
-			case IEEE1516:
-				Mom.insertMomHierarchy( model );
-				break;
-			case IEEE1516e:
-				Mom.insertMomHierarchy1516e( model );
-				break;
-			default:
-				throw new RuntimeException( "Could't determine spec version when inserting MOM" );
-		}
-		
-		// lock the model again //
-		if( wasLocked )
-			model.lock();
-	}
 	
 }

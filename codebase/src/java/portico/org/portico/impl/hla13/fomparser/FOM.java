@@ -61,8 +61,6 @@ public class FOM implements FOMConstants
 			parser.parse( theModel );
 			// lock the model
 			theModel.lock();
-			// mommify the thing
-			ObjectModel.mommify( theModel );
 			// return the model
 			return theModel;
 		}

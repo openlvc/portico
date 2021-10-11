@@ -14,9 +14,13 @@
  */
 package hlaunit.ieee1516e.common;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -239,8 +243,9 @@ public class TestFederate
 	}
 	
 	/**
-	 * Same as {@link #quickCreate()} except that you can specify the FOM modules that we want
-	 * to load.
+	 * Tris to create a new federation with the default name using the given FOM modules.
+	 * 
+	 * @param modules List of modules that we want to give to the RTI when creating the federation.
 	 */
 	public void quickCreateWithModules( URL... modules )
 	{
@@ -249,12 +254,55 @@ public class TestFederate
 
 		try
 		{
-			URL fom = ClassLoader.getSystemResource( "fom/ieee1516e/testfom.xml" );
 			this.rtiamb.createFederationExecution( this.simpleName, modules );
 		}
 		catch( Exception e )
 		{
 			Assert.fail( "Exception in quickCreate in " + simpleName + " ("+e.getClass()+")", e );
+		}
+	}
+	
+	/**
+	 * Create a federation using ONLY the given modules (will not automatically add the testfom).
+	 * Will first resolve the string paths to URLs and then try to create the federation of the
+	 * given name with the specified modules. This method will connect to the RTI if that hasn't
+	 * already happened.
+	 * 
+	 * @param modules Set of paths to modules to use in creation. If these are file urls, they will
+	 *                be used as is. If they are not we will try to turn them into files, and then
+	 *                into URLs from there.
+	 */
+	public void quickCreateWithModules( String... modules )
+	{
+		// try to resolve the module names to a list of URLs
+		List<URL> moduleUrls = new ArrayList<>();
+		try
+		{
+    		for( String name : modules )
+    		{
+    			if( name.startsWith("file:") )
+    				moduleUrls.add( new URL(name) );
+    			else
+    				moduleUrls.add( new File(name).toURI().toURL() );
+    		}
+		}
+		catch( MalformedURLException mue )
+		{
+			Assert.fail( "Error turning module path into a URL: "+mue.getMessage(), mue );
+		}
+		
+		// connect if we haven't yet
+		quickConnectIfNot();
+		
+		// create the federation
+		try
+		{
+			URL[] array = moduleUrls.toArray( new URL[] {} );
+			this.rtiamb.createFederationExecution( this.simpleName, array );
+		}
+		catch( Exception e )
+		{
+			Assert.fail( "Exception in quickCreateWithModules in +"+simpleName+" ("+e.getClass()+")", e );
 		}
 	}
 	

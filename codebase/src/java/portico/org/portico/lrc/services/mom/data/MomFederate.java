@@ -15,6 +15,7 @@
 package org.portico.lrc.services.mom.data;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -26,8 +27,9 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JEncodingHelpers;
 import org.portico.lrc.management.Federate;
-import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.model.OCMetadata;
+import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
 
 /**
@@ -40,22 +42,67 @@ public class MomFederate
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-
+	//
+	// Names and types from 1516e MIM
+	//
+	// HLAfederateHandle,                  // HLAhandle
+	// HLAfederateName,                    // 1516e, HLAunicodeString
+	// HLAfederateType,                    // HLAunicodeString
+	// HLAfederateHost,                    // HLAunicodeString
+	// HLARTIversion,                      // HLAunicodeString
+	// HLAFOMmoduleDesignatorList,         // 1516e, HLAmoduleDesignatorList
+	// FedID, // Not in 1516e?
+	// HLAtimeConstrained,                 // HLAboolean
+	// HLAtimeRegulating,                  // HLAboolean
+	// HLAasynchronousDelivery,            // HLAboolean
+	// HLAfederateState,                   // HLAfederateState
+	// HLAtimeManagerState,                // HLAtimeState
+	// HLAlogicalTime,                     // HLAlogicalTime
+	// HLAlookahead,                       // HLAtimeInterval
+	// LBTS, // synonym for LITS
+	// HLAGALT,                            // HLAlogicalTime
+	// HLALITS,                            // HLAlogicalTime; NextMinEventTime in 1.3,
+	// HLAROlength,                        // HLAcount
+	// HLATSOlength,                       // HLAcount
+	// HLAreflectionsReceived,             // HLAcount
+	// HLAupdatesSent,                     // HLAcount
+	// HLAinteractionsReceived,            // HLAcount
+	// HLAinteractionsSent,                // HLAcount
+	// HLAobjectInstancesThatCanBeDeleted, // HLAcount; ObjectsOwned in 1.3
+	// HLAobjectInstancesUpdated,          // HLAcount; ObjectsUpdated in 1.3
+	// HLAobjectInstancesReflected,        // HLAcount; ObjectsReflected in 1.3
+	// HLAobjectInstancesDeleted,          // HLAcount
+	// HLAobjectInstancesRemoved,          // HLAcount
+	// HLAobjectInstancesRegistered,       // HLAcount
+	// HLAobjectInstancesDiscovered,       // HLAcount
+	// HLAtimeGrantedTime,                 // HLAmsec; Wallclock time reference - see OMT
+	// HLAtimeAdvancingTime;               // HLAmsec; Wallclock time reference - see OMT
+	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	protected OCInstance federateObject;
 	protected Federate federate;
 	protected Logger momLogger;
+	private Map<Integer,IMomVariable> handleMap;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public MomFederate( Federate federate, OCInstance federateObject, Logger momLogger )
+	protected MomFederate( HLAVersion hlaVersion,
+	                       Federate federate,
+	                       OCInstance federateObject,
+	                       Logger momLogger )
 	{
 		this.federate = federate;
 		this.federateObject = federateObject;
 		this.momLogger = momLogger;
+		
+		// populate the handles map from the object model
+		if( hlaVersion == HLAVersion.HLA13 )
+			this.handleMap = loadHla13HandlesFrom( federateObject.getRegisteredType() );
+		else
+			this.handleMap = loadHla1516HandlesFrom( federateObject.getRegisteredType() );
 	}
 
 	//----------------------------------------------------------
@@ -237,109 +284,13 @@ public class MomFederate
 		// loop through the attributes and get the appropriate values
 		for( Integer attributeHandle : handles )
 		{
-			Mom.Federate enumValue = Mom.Federate.forHandle( attributeHandle );
-			switch( enumValue )
+			IMomVariable variable = this.handleMap.get( attributeHandle );
+			if( variable != null )
 			{
-				case FederateName:
-					attributes.put( attributeHandle, getFederateName(version) );
-					break;
-				case FederateHandle:
-					attributes.put( attributeHandle, getFederateHandle(version) );
-					break;
-				case FederateType:
-					attributes.put( attributeHandle, getFederateType(version) );
-					break;
-				case FederateHost:
-					attributes.put( attributeHandle, getFederateHost(version) );
-					break;
-				case FomModuleDesignatorList:
-					attributes.put( attributeHandle, getFomModuleDesignatorList(version) );
-					break;
-				case RtiVersion:
-					attributes.put( attributeHandle, getRTIversion(version) );
-					break;
-				case FedID:
-					attributes.put( attributeHandle, getFEDid(version) );
-					break;
-				case TimeConstrained:
-					attributes.put( attributeHandle, getTimeConstrained(version) );
-					break;
-				case TimeRegulating:
-					attributes.put( attributeHandle, getTimeRegulating(version) );
-					break;
-				case AsynchronousDelivery:
-					attributes.put( attributeHandle, getAsynchronousDelivery(version) );
-					break;
-				case FederateState:
-					attributes.put( attributeHandle, getFederateState(version) );
-					break;
-				case TimeManagerState:
-					attributes.put( attributeHandle, getTimeManagerState(version) );
-					break;
-				case LogicalTime:
-					attributes.put( attributeHandle, getFederateTime(version) );
-					break;
-				case Lookahead:
-					attributes.put( attributeHandle, getLookahead(version) );
-					break;
-				case LBTS:
-					attributes.put( attributeHandle, getLBTS(version) );
-					break;
-				case GALT:
-					attributes.put( attributeHandle, getGALT(version) );
-					break;
-				case LITS:
-					attributes.put( attributeHandle, getLITS(version) );
-					break;
-				case ROlength:
-					attributes.put( attributeHandle, getROlength(version) );
-					break;
-				case TSOlength:
-					attributes.put( attributeHandle, getTSOlength(version) );
-					break;
-				case ReflectionsReceived:
-					attributes.put( attributeHandle, getReflectionsReceived(version) );
-					break;
-				case UpdatesSent:
-					attributes.put( attributeHandle, getUpdatesSent(version) );
-					break;
-				case InteractionsReceived:
-					attributes.put( attributeHandle, getInteractionsReceived(version) );
-					break;
-				case InteractionsSent:
-					attributes.put( attributeHandle, getInteractionsSent(version) );
-					break;
-				case ObjectInstancesThatCanBeDeleted:
-					attributes.put( attributeHandle, getObjectsOwned(version) );
-					break;
-				case ObjectInstancesUpdated:
-					attributes.put( attributeHandle, getObjectsUpdated(version) );
-					break;
-				case ObjectInstancesReflected:
-					attributes.put( attributeHandle, getObjectsReflected(version) );
-					break;
-				case ObjectInstancesDeleted:
-					attributes.put( attributeHandle, getObjectInstancesDeleted(version) );
-					break;
-				case ObjectInstancesRemoved:
-					attributes.put( attributeHandle, getObjectInstancesRemoved(version) );
-					break;
-				case ObjectInstancesRegistered:
-					attributes.put( attributeHandle, getObjectInstancesRegistered(version) );
-					break;
-				case ObjectInstancesDiscovered:
-					attributes.put( attributeHandle, getObjectInstancesDiscovered(version) );
-					break;
-				case TimeGrantedTime:
-					attributes.put( attributeHandle, getTimeGrantedTime(version) );
-					break;
-				case TimeAdvancingTime:
-					attributes.put( attributeHandle, getTimeAdvancingTime(version) );
-					break;
-				default:
-					break; // ignore
+				byte[] value = variable.getValue( version );
+				if( value != null )
+					attributes.put( attributeHandle, value );
 			}
-			
 		}
 		
 		UpdateAttributes update = new UpdateAttributes( federateObject.getHandle(),
@@ -348,11 +299,94 @@ public class MomFederate
 		update.setSourceFederate( PorticoConstants.RTI_HANDLE );
 		return update;
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///  Handle Mapping Methods   ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
+	private HashMap<Integer,IMomVariable> loadHla1516HandlesFrom( OCMetadata type )
+	{
+		//
+		// CURRENTLY ONLY SUPPORTS 1516e
+		//
+		HashMap<Integer,IMomVariable> map = new HashMap<>();
+		map.put( type.getAttributeHandle("HLAfederateHandle"), this::getFederateHandle );
+		map.put( type.getAttributeHandle("HLAfederateName"), this::getFederateName );
+		map.put( type.getAttributeHandle("HLAfederateType"), this::getFederateType );
+		map.put( type.getAttributeHandle("HLAfederateHost"), this::getFederateHost );
+		map.put( type.getAttributeHandle("HLARTIversion"), this::getRTIversion );
+		map.put( type.getAttributeHandle("HLAFOMmoduleDesignatorList"), this::getFomModuleDesignatorList );
+		map.put( type.getAttributeHandle("HLAtimeConstrained"), this::getTimeConstrained );
+		map.put( type.getAttributeHandle("HLAtimeRegulating"), this::getTimeRegulating );
+		map.put( type.getAttributeHandle("HLAasynchronousDelivery"), this::getAsynchronousDelivery );
+		map.put( type.getAttributeHandle("HLAfederateState"), this::getFederateState );
+		map.put( type.getAttributeHandle("HLAtimeManagerState"), this::getTimeManagerState );
+		map.put( type.getAttributeHandle("HLAlogicalTime"), this::getFederateTime );
+		map.put( type.getAttributeHandle("HLAlookahead"), this::getLookahead );
+		//map.put( type.getAttributeHandle(""), this::getLBTS ); -- this is LITS
+		map.put( type.getAttributeHandle("HLAGALT"), this::getGALT );
+		map.put( type.getAttributeHandle("HLALITS"), this::getLITS );
+		map.put( type.getAttributeHandle("HLAROlength"), this::getROlength );
+		map.put( type.getAttributeHandle("HLATSOlength"), this::getTSOlength );
+		map.put( type.getAttributeHandle("HLAreflectionsReceived"), this::getReflectionsReceived );
+		map.put( type.getAttributeHandle("HLAupdatesSent"), this::getUpdatesSent );
+		map.put( type.getAttributeHandle("HLAinteractionsReceived"), this::getInteractionsReceived );
+		map.put( type.getAttributeHandle("HLAinteractionsSent"), this::getInteractionsSent );
+		//map.put( type.getAttributeHandle("HLAobjectInstancesThatCanBeDeleted"), NOT SUPPORTED );
+		map.put( type.getAttributeHandle("HLAobjectInstancesUpdated"), this::getObjectsUpdated );
+		map.put( type.getAttributeHandle("HLAobjectInstancesReflected"), this::getObjectsReflected );
+		map.put( type.getAttributeHandle("HLAobjectInstancesDeleted"), this::getObjectInstancesDeleted );
+		map.put( type.getAttributeHandle("HLAobjectInstancesRemoved"), this::getObjectInstancesRemoved );
+		map.put( type.getAttributeHandle("HLAobjectInstancesRegistered"), this::getObjectInstancesRegistered );
+		map.put( type.getAttributeHandle("HLAobjectInstancesDiscovered"), this::getObjectInstancesDiscovered );
+		map.put( type.getAttributeHandle("HLAtimeGrantedTime"), this::getTimeGrantedTime );
+		map.put( type.getAttributeHandle("HLAtimeAdvancingTime"), this::getTimeAdvancingTime );
+		
+		// remove any that were invalid
+		map.remove( ObjectModel.INVALID_HANDLE );
+		return map;
+	}
 	
+	private HashMap<Integer,IMomVariable> loadHla13HandlesFrom( OCMetadata type )
+	{
+		HashMap<Integer,IMomVariable> map = new HashMap<>();
+		map.put( type.getAttributeHandle("FederateHandle"), this::getFederateHandle );
+		map.put( type.getAttributeHandle("FederateType"), this::getFederateType );
+		map.put( type.getAttributeHandle("FederateHost"), this::getFederateHost );
+		map.put( type.getAttributeHandle("RTIversion"), this::getRTIversion );
+		map.put( type.getAttributeHandle("TimeConstrained"), this::getTimeConstrained );
+		map.put( type.getAttributeHandle("TimeRegulating"), this::getTimeRegulating );
+		map.put( type.getAttributeHandle("AsynchronousDelivery"), this::getAsynchronousDelivery );
+		map.put( type.getAttributeHandle("FederateState"), this::getFederateState );
+		map.put( type.getAttributeHandle("TimeManagerState"), this::getTimeManagerState );
+		map.put( type.getAttributeHandle("FederateTime"), this::getFederateTime );
+		map.put( type.getAttributeHandle("Lookahead"), this::getLookahead );
+		map.put( type.getAttributeHandle("LBTS"), this::getLBTS );
+		map.put( type.getAttributeHandle("MinNextEventTime"), this::getMinNextEventTime );
+		map.put( type.getAttributeHandle("ROlength"), this::getROlength );
+		map.put( type.getAttributeHandle("TSOlength"), this::getTSOlength );
+		map.put( type.getAttributeHandle("ReflectionsReceived"), this::getReflectionsReceived );
+		map.put( type.getAttributeHandle("UpdatesSent"), this::getUpdatesSent );
+		map.put( type.getAttributeHandle("InteractionsReceived"), this::getInteractionsReceived );
+		map.put( type.getAttributeHandle("InteractionsSent"), this::getInteractionsSent );
+		
+		map.put( type.getAttributeHandle("ObjectsOwned"), this::getObjectsOwned );
+		map.put( type.getAttributeHandle("ObjectsUpdated"), this::getObjectsUpdated );
+		map.put( type.getAttributeHandle("ObjectsReflected"), this::getObjectsReflected );
+		
+		// remove any that were invalid
+		map.remove( ObjectModel.INVALID_HANDLE );
+		return map;
+	}
+
+	
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///  Encoding Helper Methods   ///////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 	private byte[] notYetSupported( HLAVersion version, String property )
 	{
 		momLogger.trace( "Requeted MOM property that isn't supported yet: Federate." + property );
-		return encodeString( version, "property ["+property+"] not yet supported" );
+		//return encodeString( version, "property ["+property+"] not yet supported" );
+		return null; // this is a signal that it isn't supported
 	}
 
 	private byte[] encodeString( HLAVersion version, String string )

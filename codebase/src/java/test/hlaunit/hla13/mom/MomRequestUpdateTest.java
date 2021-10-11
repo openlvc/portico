@@ -76,13 +76,13 @@ public class MomRequestUpdateTest extends Abstract13Test
 		defaultFederate.quickJoin();
 		secondFederate.quickJoin();
 
-		this.federateMomHandle = defaultFederate.quickOCHandle( "HLAmanager.HLAfederate" );
+		this.federateMomHandle = defaultFederate.quickOCHandle( "Manager.Federate" );
 		this.federateTypeMomHandle =
-			defaultFederate.quickACHandle( "HLAmanager.HLAfederate", "FederateType" );
+			defaultFederate.quickACHandle( "Manager.Federate", "FederateType" );
 		
-		this.federationMomHandle = defaultFederate.quickOCHandle( "HLAmanager.HLAfederation" );
+		this.federationMomHandle = defaultFederate.quickOCHandle( "Manager.Federation" );
 		this.federationNameMomHandle =
-			defaultFederate.quickACHandle( "HLAmanager.HLAfederation", "FederationName" );
+			defaultFederate.quickACHandle( "Manager.Federation", "FederationName" );
 	}
 	
 	@AfterMethod(alwaysRun=true)

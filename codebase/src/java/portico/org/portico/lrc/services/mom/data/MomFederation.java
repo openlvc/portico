@@ -25,8 +25,9 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAttributeNotDefined;
 import org.portico.lrc.compat.JEncodingHelpers;
 import org.portico.lrc.management.Federation;
-import org.portico.lrc.model.Mom;
 import org.portico.lrc.model.OCInstance;
+import org.portico.lrc.model.OCMetadata;
+import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
 
 /**
@@ -39,6 +40,20 @@ public class MomFederation
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
+	//
+	// Names and types from 1516e MIM
+	// HLAfederationName            // HLAunicodeString
+	// HLAfederatesInFederation     // HLAhandleList
+	// HLARTIversion                // HLAunicodeString
+	// HLAMIMdesignator             // HLAunicodeString
+	// HLAFOMmoduleDesignatorList   // HLAmoduleDesignatorList
+	// HLAcurrentFDD                // HLAunicodeString
+	// HLAtimeImplementationName    // HLAunicodeString
+	// HLAlastSaveName              // HLAunicodeString
+	// HLAlastSaveTime              // HLAlogicalTime
+	// HLAnextSaveName              // HLAunicodeString
+	// HLAnextSaveTime              // HLAlogicalTime
+	// HLAautoProvide               // HLAswitch
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -47,16 +62,26 @@ public class MomFederation
 	protected Map<Integer,MomFederate> federates;
 	protected OCInstance federationObject;
 	protected Logger momLogger;
+	private Map<Integer,IMomVariable> handleMap;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
-	public MomFederation( Federation federation, OCInstance federationObject, Logger lrcLogger )
+	public MomFederation( HLAVersion version,
+	                      Federation federation,
+	                      OCInstance federationObject,
+	                      Logger lrcLogger )
 	{
 		this.federation = federation;
 		this.federates = new HashMap<Integer,MomFederate>();
 		this.federationObject = federationObject;
 		this.momLogger = lrcLogger;
+		
+		// populate the handles map from the object model
+		if( version == HLAVersion.HLA13 )
+			this.handleMap = this.loadHla13HandlesFrom( federationObject.getRegisteredType() );
+		else
+			this.handleMap = this.loadHla1516HandlesFrom( federationObject.getRegisteredType() );
 	}
 
 	//----------------------------------------------------------
@@ -149,6 +174,11 @@ public class MomFederation
 		//return JEncodingHelpers.encodeDouble( 0.0 );
 		return notYetSupported( version, "NextSaveTime" );
 	}
+	
+	private byte[] getAutoProvide( HLAVersion version )
+	{
+		return notYetSupported( version, "AutoProvide" );
+	}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// Update Generating Methods ///////////////////////////
@@ -161,53 +191,12 @@ public class MomFederation
 		// loop through the attributes and get the appropriate values
 		for( Integer attributeHandle : handles )
 		{
-			Mom.Federation enumValue = Mom.Federation.forHandle( attributeHandle );
-			switch( enumValue )
+			IMomVariable variable = this.handleMap.get( attributeHandle );
+			if( variable != null )
 			{
-				case FederationName:
-					attributes.put( attributeHandle, getFederationName(version) );
-					break;
-				case FederatesInFederation:
-					attributes.put( attributeHandle, getFederatesInFederation(version) );
-					break;
-				case RtiVersion:
-					attributes.put( attributeHandle, getRtiVersion(version) );
-					break;
-				case MimDesignator:
-					attributes.put( attributeHandle, getMimDesignator(version) );
-					break;
-				case FomModuleDesignatorList:
-					attributes.put( attributeHandle, getFomModuleDesignatorList(version) );
-					break;
-				case CurrentFdd:
-					attributes.put( attributeHandle, getCurrentFdd(version) );
-					break;
-				case FedID:
-					attributes.put( attributeHandle, getFedID(version) );
-					break;
-				case TimeImplementationName:
-					attributes.put( attributeHandle, getTimeImplementationName(version) );
-					break;
-				case LastSaveName:
-					attributes.put( attributeHandle, getLastSaveName(version) );
-					break;
-				case LastSaveTime:
-					attributes.put( attributeHandle, getLastSaveTime(version) );
-					break;
-				case NextSaveName:
-					attributes.put( attributeHandle, getNextSaveName(version) );
-					break;
-				case NextSaveTime:
-					attributes.put( attributeHandle, getNextSaveTime(version) );
-					break;
-				case AutoProvide:
-					attributes.put( attributeHandle, notYetSupported(version,"AutoProvide") );
-					break;
-				case ConveyRegionDesignatorSets:
-					attributes.put( attributeHandle, notYetSupported(version,"ConveyRegionDesignatorSets") );
-					break;
-				default:
-					break;
+				byte[] value = variable.getValue( version );
+				if( value != null )
+					attributes.put( attributeHandle, value );
 			}
 		}
 		
@@ -218,10 +207,59 @@ public class MomFederation
 		return update;
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///  Handle Mapping Methods   ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
+	private HashMap<Integer,IMomVariable> loadHla1516HandlesFrom( OCMetadata type )
+	{
+		//
+		// CURRENTLY ONLY SUPPORTS 1516e
+		//
+		HashMap<Integer,IMomVariable> map = new HashMap<>();
+		map.put( type.getAttributeHandle("HLAfederationName"), this::getFederationName );
+		map.put( type.getAttributeHandle("HLAfederatesInFederation"), this::getFederatesInFederation );
+		map.put( type.getAttributeHandle("HLARTIversion"), this::getRtiVersion );
+		map.put( type.getAttributeHandle("HLAMIMdesignator"), this::getMimDesignator );
+		map.put( type.getAttributeHandle("HLAFOMmoduleDesignatorList"), this::getFomModuleDesignatorList );
+		map.put( type.getAttributeHandle("HLAcurrentFDD"), this::getCurrentFdd );
+		map.put( type.getAttributeHandle("HLAtimeImplementationName"), this::getTimeImplementationName );
+		map.put( type.getAttributeHandle("HLAlastSaveName"), this::getLastSaveName );
+		map.put( type.getAttributeHandle("HLAlastSaveTime"), this::getLastSaveTime );
+		map.put( type.getAttributeHandle("HLAnextSaveName"), this::getNextSaveName );
+		map.put( type.getAttributeHandle("HLAnextSaveTime"), this::getNextSaveTime );
+		map.put( type.getAttributeHandle("HLAautoProvide"), this::getAutoProvide );
+
+		// remove any that were invalid
+		map.remove( ObjectModel.INVALID_HANDLE );
+		return map;
+	}
+	
+	public HashMap<Integer,IMomVariable> loadHla13HandlesFrom( OCMetadata type )
+	{
+		HashMap<Integer,IMomVariable> map = new HashMap<>();
+		map.put( type.getAttributeHandle("FederationName"), this::getFederationName );
+		map.put( type.getAttributeHandle("FederatesInFederation"), this::getFederatesInFederation );
+		map.put( type.getAttributeHandle("RTIversion"), this::getRtiVersion );
+		map.put( type.getAttributeHandle("FEDid"), this::getCurrentFdd );
+		map.put( type.getAttributeHandle("HLAtimeImplementationName"), this::getTimeImplementationName );
+		map.put( type.getAttributeHandle("LastSaveName"), this::getLastSaveName );
+		map.put( type.getAttributeHandle("LastSaveTime"), this::getLastSaveTime );
+		map.put( type.getAttributeHandle("NextSaveName"), this::getNextSaveName );
+		map.put( type.getAttributeHandle("NextSaveTime"), this::getNextSaveTime );
+
+		// remove any that were invalid
+		map.remove( ObjectModel.INVALID_HANDLE );
+		return map;
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////
+	///  Encoding Helper Methods   ///////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
 	private byte[] notYetSupported( HLAVersion version, String property )
 	{
 		momLogger.trace( "Requeted MOM property that isn't supported yet: Federation." + property );
-		return encodeString( version, "property ["+property+"] not yet supported" );
+		//eturn encodeString( version, "property ["+property+"] not yet supported" );
+		return null; // this is a signal that it isn't supported
 	}
 	
 	private byte[] encodeString( HLAVersion version, String string )
