@@ -14,6 +14,7 @@
  */
 package org.portico.bindings.jgroups;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -29,6 +30,7 @@ import org.portico.lrc.compat.JFederationExecutionAlreadyExists;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.compat.JResignAction;
+import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.lrc.utils.MessageHelpers;
@@ -181,7 +183,7 @@ public class Federation
 		//    to take up the role and create out own Manifest.
 		if( manifest == null )
 		{
-			logger.info( "No co-ordinator found - appointing myself!" );
+			logger.warn( "No co-ordinator found - appointing myself!" );
 			this.manifest = new Manifest( this.fedname, this.uuid );
 			this.manifest.setCoordinator( this.uuid );
 		}
@@ -249,13 +251,14 @@ public class Federation
 	 * in most cases will be the one that they requested.
 	 * 
 	 * @param federateName The name the federate wishes to use
+	 * @param joinModules The FOM modules that this federate is seeking to join with
 	 * @param lrc The {@link LRC} this federate should ultimately route incoming messages to
 	 * @return The name that the federate has been given
 	 * @throws JFederationExecutionDoesNotExist If there is no active federation
 	 * @throws JFederateAlreadyExecutionMember If the name is taken and unique name are required
 	 * @throws Exception If there is a comms problem sending the message
 	 */
-	public String sendJoinFederation( String federateName, LRC lrc )
+	public String sendJoinFederation( String federateName, List<ObjectModel> joinModules, LRC lrc )
 		throws JFederationExecutionDoesNotExist,
 		       JFederateAlreadyExecutionMember,
 		       Exception
@@ -287,17 +290,21 @@ public class Federation
 			}
 		}
 
+		// send the message out
+		JoinRequest request = new JoinRequest( federateName, joinModules );
+		channel.sendJoinFederation( Util.objectToByteBuffer(request) );
+		
+		// wait to see if we get acknowledgement from the coordinator
+		PorticoConstants.sleep( Configuration.getResponseTimeout() );
+		if( manifest.isLocalFederateJoined() == false )
+			throw new JRTIinternalError( "Federation coordinator never acknowledged that we joined" );
+		
 		// store the LRC locally so that we can route incoming messages to it
 		this.joinedLRC = lrc;
 
 		// Enable the auditor if we are configured to use it
 		if( Configuration.isAuditorEnabled() )
 			this.auditor.startAuditing( fedname, federateName, lrc );
-		
-		// send the message out
-		channel.sendJoinFederation( federateName.getBytes() );
-		
-		// TODO: Add wait until we can confirm we have joined
 		
 		logger.info( "SUCCESS Joined federation with name="+federateName );
 		return federateName;	
@@ -443,6 +450,27 @@ public class Federation
 	/// Incoming Control Message Handlers  ///////////////////////
 	//////////////////////////////////////////////////////////////
 	/**
+	 * Sent our manifest out to the federation. If the manifest DOES NOT list us as the coordinator
+	 * we won't take any action at all.
+	 */
+	private void sendSetManifest()
+	{
+		if( this.manifest.isCoordinator() == false )
+			return;
+		
+    	// send the response
+		try
+		{
+			byte[] buffer = Util.objectToByteBuffer( this.manifest );
+			channel.sendSetManifest( buffer );
+		}
+		catch( Exception e )
+		{
+			logger.error( "Error while sending manifest: "+e.getMessage(), e );
+		}
+	}
+	
+	/**
 	 * Someone has send a "FindCoordinator" request. If we are the coordinator, respond with
 	 * our manifest, otherwise disregard.
 	 */
@@ -462,16 +490,7 @@ public class Federation
         	manifest.memberConnectedToChannel( sender );
         	
         	// send the response
-			try
-			{
-				byte[] buffer = Util.objectToByteBuffer( this.manifest );
-				channel.sendSetManifest( buffer );
-				logger.debug( "Sent manifest ("+buffer.length+"b) to "+sender );
-			}
-			catch( Exception e )
-			{
-				logger.error( "Error while sending manifest to ["+sender+"]: "+e.getMessage(), e );
-			}
+        	this.sendSetManifest();
 		}
 	}
 
@@ -481,12 +500,36 @@ public class Federation
 		// otherwise, take the updated manifest
 		if( manifest != null && manifest.isCoordinator() )
 			return;
-		
+
 		logger.debug( "Received updated manifest from "+sender );
 		
 		try
 		{
+			// Get the manifest
 			Manifest manifest = (Manifest)Util.objectFromByteBuffer( payload );
+			
+			// If this manifest is from someone who WAS NOT previously our coordinator, let's make
+			// some noise about it. This could be legitimate (maybe the coordinator left), but more
+			// likely it's someone who has just wrongfully elected themselves and is trying to tell
+			// us what the state of the world is.
+			if( this.manifest != null &&
+				this.manifest.getManifestVersion() > manifest.getManifestVersion() )
+			{
+				System.out.println( "//" );
+				System.out.println( "// WARNING - DISCARDING MANIFEST" );
+				System.out.println( "// Received manifest with earlier version than current one." );
+				System.out.println( "// It is likely that a federate has improperly elected "+
+				                       "themselves coordinator." );
+				System.out.println( "//" );
+				System.out.println( "// Existing manifest version: "+this.manifest.getManifestVersion()+
+				                    " (co-ordinator: "+this.manifest.getCoordinator()+")" );
+				System.out.println( "// Incoming manifest version: "+manifest.getManifestVersion()+
+				                    " (co-ordinator: "+manifest.getCoordinator()+")" );
+				System.out.println( "//" );
+				return;
+			}
+				
+			// Update our local manifest
 			manifest.setLocalUUID( this.uuid );
 			this.manifest = manifest;
 			logger.debug( "Installed new manifest (follows)" );
@@ -498,7 +541,7 @@ public class Federation
 		}
 	}
 
-	public void receiveCreateFederation( UUID sender, byte[] payload )
+	public synchronized void receiveCreateFederation( UUID sender, byte[] payload )
 	{
 		// tell our Manifest that a federation has been created using the FOM in the payload
 		logger.debug( "Received federation creation notification: federation="+fedname+
@@ -523,14 +566,52 @@ public class Federation
 		}
 	}
 
-	public void receiveJoinFederation( UUID sender, byte[] payload )
+	public synchronized void receiveJoinFederation( UUID sender, byte[] payload )
 	{
-		// tell our Manifest that a federate has joined the federation
-		String federateName = new String( payload );
-		logger.debug( "Received federate join notification: federate="+federateName+
-		              ", federation="+fedname+", source="+sender );
+		// Only process these messages if we are the coordinator
+		if( manifest.isCoordinator() == false )
+			return;
 		
-		manifest.federateJoined( sender, federateName );
+		//
+		// Extract the Join Request from the incoming payload
+		//
+		String federateName = null;
+		List<ObjectModel> joinModules = null;
+		try
+		{
+			JoinRequest joinRequest = (JoinRequest)Util.objectFromByteBuffer( payload );
+			federateName = joinRequest.getFederateName();
+			joinModules = joinRequest.getFomModules();
+
+			logger.debug( "Received federate join notification: federate="+federateName+
+			              ", federation="+fedname+", source="+sender );
+		}
+		catch( Exception e )
+		{
+			logger.error( "(Coordinator) Error parsing request to join federation", e );
+		}
+
+		//
+		// Try to merge the joiners modules with the base FOM. If we can record that they joined.
+		//
+		try
+		{
+			ModelMerger.mergeDryRun( manifest.getFom(), joinModules );
+			ObjectModel merged = ModelMerger.merge( manifest.getFom(), joinModules );
+			manifest.setFom( merged );
+			manifest.federateJoined( sender, federateName );
+		}
+		catch( Exception e )
+		{
+			logger.error( "(Coordinator) Failed to join federate ["+federateName+"] to federation ["+
+			              fedname+"]: Couldn't merge their FOM modules with our base FOM", e );
+			return;
+		}
+		
+		//
+		// We've updated the manifest, so we should let people know
+		//
+		this.sendSetManifest();
 		logger.info( "Federate ["+federateName+"] joined federation ["+fedname+"]" );
 	}
 	

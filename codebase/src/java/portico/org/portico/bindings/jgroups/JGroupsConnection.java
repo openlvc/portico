@@ -248,7 +248,9 @@ public class JGroupsConnection implements IConnection
 		logger.debug( "Modules can be merged successfully, continue with join" );
 
 		// tell the channel that we're joining the federation
-		String joinedName = federation.sendJoinFederation( joinMessage.getFederateName(), this.lrc );
+		String joinedName = federation.sendJoinFederation( joinMessage.getFederateName(),
+		                                                   joinMessage.getJoinModules(),
+		                                                   this.lrc );
 		
 		// the joined name could be different from what we asked for, so update the request
 		// to make sure it is correct
