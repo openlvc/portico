@@ -126,7 +126,7 @@ public class JoinFederationHandler extends LRCMessageHandler
 		// broadcast out the notification so that other federates know we're in the federation
 		rolecall.setSourceFederate( federateHandle );
 		rolecall.setImmediateProcessingFlag( true );
-		rolecall.addAdditionalFomModules( request.getJoinModules() );
+		//rolecall.addAdditionalFomModules( request.getJoinModules() ); -- shouldn't be required now
 		connection.broadcast( rolecall );
 		
 		// wait until we have gotten a RoleCall from everyone, this ensures we don't end

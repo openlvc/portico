@@ -149,7 +149,7 @@ public class HandleFetchingTest extends Abstract13Test
 	////////////////////////////////////////
 	// TEST: testCrossVersionFetchHandles //
 	////////////////////////////////////////
-	@Test 
+	@Test
 	public void testCrossVersionFetchHandles()
 	{
 		try
@@ -202,7 +202,7 @@ public class HandleFetchingTest extends Abstract13Test
 	///////////////////////////////////////////
 	// TEST: testCrossVersionFetchMomHandles //
 	///////////////////////////////////////////
-	@Test
+	@Test(enabled=false) // Stop supporting this
 	public void testCrossVersionFetchMomHandles()
 	{
 		/////////////////////
