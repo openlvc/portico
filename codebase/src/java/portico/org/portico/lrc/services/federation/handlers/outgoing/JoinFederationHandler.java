@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.portico.bindings.ConnectedRoster;
+import org.portico.bindings.jgroups.Configuration;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
@@ -141,9 +142,10 @@ public class JoinFederationHandler extends LRCMessageHandler
 			while( lrcState.getKnownFederate(remoteHandle) == null )
 			{
 				// make sure we don't wait forever
-				if( millisSlept > 5000 ) // have to bump this up if debugging in Eclipse
+				// FIXME I'm referencing a JGroups configuration option now - that's not good
+				if( millisSlept > Configuration.getResponseTimeout() )
 				{
-					throw new JRTIinternalError( "Waited 5 seconds for RoleCall from federate ["+
+					throw new JRTIinternalError( "Waited "+millisSlept+"ms for RoleCall from federate ["+
 					                             remoteHandle+
 					                             "], none received, connection error");
 				}
