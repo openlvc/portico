@@ -71,9 +71,6 @@ public class ResignNotificationHandler extends LRCMessageHandler
 		// the resign message is set to true)
 		vetoIfMessageFromUs( request );  
 
-		// see method comment for the full, hairy details of why this exists
-		dealWithJGroupsResignHack( request.getSourceFederate() );
-		
 		// remove the information about the federate for LRC use
 		String federateName = moniker( request );
 		int federateHandle = request.getSourceFederate();
@@ -195,35 +192,6 @@ public class ResignNotificationHandler extends LRCMessageHandler
 			              objectMoniker(objectInstance.getHandle())+"] after resign of federate ["+
 			              moniker(federateHandle)+"]" );
 		}
-	}
-
-	/**
-	 * Make sure we know about the federate (this is to get around a solution to a separate
-	 * problem with the JGroups binding where the connection.resignFederation() implementation was
-	 * used to pass the resign message to federations. Normally, the federate would broadcast out
-	 * that message, then the connection would be told to resign and would just do
-	 * connection-specific resignation stuff. However, under some conditions in the JGroups binding,
-	 * the connection was being terminated after the regular broadcast of the resign has been given
-	 * to it, but before it has progressed all the way through the protocol stack and been sent.
-	 * Thus, remote federates were never receiving the resign message into their LRCQueues.
-	 * <p/>
-	 * To solve this problem I had the connection.resignFederation() method in JGroups serialize
-	 * and send the message and then drop it on the incoming handler on the other side. The resign
-	 * control message always got through, because it was an OOB/High Priority message that all
-	 * other federates had to respond to. However, this began mixing concerns. Connections shouldn't
-	 * have to deal with message creation, and for the other big-4 methods (create/destroy/join)
-	 * they didn't. I didn't want to have this one be a special case, so I decided to just add this
-	 * check here. If when using JGroups, the resign message does get through before the
-	 * connection control message, two resign messages for a particular federate will be generated.
-	 * This method checks to see if the resigning federate is known, and if it isn't, the message
-	 * is veto'd. This way, if two messages do get through, the second is ignored and the process
-	 * of only mixing HLA and connection implementation remains confined to one call inside the
-	 * JGroups implementation and not the mandated way all connection implementations have to deal
-	 * with resignations. 
-	 */
-	private void dealWithJGroupsResignHack( int federateHandle )
-	{
-		vetoIfSourceNotJoined( federateHandle );
 	}
 
 	//----------------------------------------------------------

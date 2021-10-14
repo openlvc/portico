@@ -15,7 +15,9 @@
 package org.portico.lrc.services.federation.handlers.outgoing;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.portico.bindings.ConnectedRoster;
 import org.portico.bindings.jgroups.Configuration;
@@ -24,7 +26,9 @@ import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JFederateAlreadyExecutionMember;
 import org.portico.lrc.compat.JFederationExecutionDoesNotExist;
 import org.portico.lrc.compat.JRTIinternalError;
+import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.services.federation.msg.JoinFederation;
+import org.portico.lrc.services.federation.msg.ResignFederation;
 import org.portico.lrc.services.federation.msg.RoleCall;
 import org.portico.utils.fom.FomParser;
 import org.portico.utils.messaging.MessageContext;
@@ -127,32 +131,21 @@ public class JoinFederationHandler extends LRCMessageHandler
 		rolecall.setSourceFederate( federateHandle );
 		rolecall.setImmediateProcessingFlag( true );
 		connection.broadcast( rolecall );
-		
-		// wait until we have gotten a RoleCall from everyone, this ensures we don't end
-		// up with partial state problems as we start processing requests while other federates
-		// try to tell us they're here
-		logger.trace( "joined federation, waiting for RoleCalls from "+roster.getRemoteHandles() );
-		for( Integer remoteHandle : roster.getRemoteHandles() )
+
+		// wait for the role call
+		try
 		{
-			if( remoteHandle == PorticoConstants.NULL_HANDLE )
-				continue;
+			waitForRoleCall( roster );
+		}
+		catch( Exception e )
+		{
+			// The role call went bad, so now we need to back out gracefully if we can.
+			// Send a resign so that people know we just can't bear to continue.
+			ResignFederation message = fill( new ResignFederation(JResignAction.NO_ACTION) );
+			connection.resignFederation( message );
 			
-			long millisSlept = 0;
-			while( lrcState.getKnownFederate(remoteHandle) == null )
-			{
-				// make sure we don't wait forever
-				// FIXME I'm referencing a JGroups configuration option now - that's not good
-				if( millisSlept > Configuration.getResponseTimeout() )
-				{
-					throw new JRTIinternalError( "Waited "+millisSlept+"ms for RoleCall from federate ["+
-					                             remoteHandle+
-					                             "], none received, connection error");
-				}
-				
-				// wait a little
-				PorticoConstants.sleep( 5 );
-				millisSlept += 5;
-			}
+			// Throw our exception.
+			throw e;
 		}
 		
 		// set the result of the message context to be the federate handle
@@ -163,6 +156,54 @@ public class JoinFederationHandler extends LRCMessageHandler
 		// if FOM printing is enabled, do so
 		if( PorticoConstants.isPrintFom() )
 			logger.info( "FOM in use for federation ["+federation+"]:\n"+fom() );
+	}
+
+	/**
+	 * Wait for responses to our role call request, throwing an exception if we don't get them all.
+	 * We'll wait up to the configured JGroups response timeout from the RID for all the responses
+	 * to come back. If they don't all come back in time, we've got to bail.
+	 * 
+	 * @param roster The roster of everyone we're waiting for
+	 * @throws JRTIinternalError Didn't get all the responses we need - time to bail.
+	 */
+	private void waitForRoleCall( ConnectedRoster roster ) throws JRTIinternalError
+	{
+		// We've sent a RoleCall notification out - now we just need to wait until everyone
+		// has responded to us.
+		logger.debug( "joined federation, waiting for RoleCalls from "+roster.getRemoteHandles() );
+		
+		// get a list of everyone we're waiting for that we can freely edit
+		Set<Integer> waitingFor = new HashSet<>( roster.getRemoteHandles() );
+		waitingFor.remove( PorticoConstants.NULL_HANDLE ); // just to be sure
+		int startingCount = waitingFor.size();
+		
+		// wait for responses
+		long deadline = System.currentTimeMillis() + Configuration.getResponseTimeout();
+		while( waitingFor.isEmpty() == false )
+		{
+			// sleep, then remove anyone who answered from the waiting list
+			PorticoConstants.sleep( 5 );
+			
+			// remove anyone we've discovered from the list we're waiting for
+			waitingFor.removeAll( lrcState.getFederation().getFederateHandles() );
+			
+			// has everyone responded, or have we waited long enough?
+			if( waitingFor.isEmpty() || deadline < System.currentTimeMillis() )
+				break;
+		}
+		
+		// did time elapse before everyone had a chance to respond?
+		if( waitingFor.isEmpty() == false )
+		{
+			String missing = waitingFor.size() == startingCount ? "All" : ""+waitingFor.size();
+			throw new JRTIinternalError( "Waited "+Configuration.getResponseTimeout()+
+			                             "ms for RoleCall responses, but still missing ["+
+			                             missing+"]. Connection error, must resign." );
+		}
+		else
+		{
+			return;
+		}
 	}
 	
 	//----------------------------------------------------------
