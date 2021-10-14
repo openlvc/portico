@@ -282,10 +282,6 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		timeManager.joinedFederation( remoteHandle, federateStatus.getTimeStatus() );
 		saveManager.joinedFederation( remoteHandle );
 		restoreManager.joinedFederation( remoteHandle );
-
-		// merge in additional FOM modules if we have them
-		if( federateStatus.hasAdditionalFomModules() )
-			mergeAdditionalFomModules( federateStatus.getAdditionalFomModules(), remoteName );
 	}
 
 	/**
