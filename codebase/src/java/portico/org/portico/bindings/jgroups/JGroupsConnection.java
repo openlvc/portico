@@ -26,7 +26,6 @@ import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JFederateNotExecutionMember;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
-import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.lrc.services.federation.msg.JoinFederation;
@@ -259,27 +258,6 @@ public class JGroupsConnection implements IConnection
 		// now that we've joined a federation, store it here so we can route messages to it
 		this.joinedFederation = federation;
 		
-		// We have to merge the FOMs together here before we return to the Join handler and
-		// a RoleCall is sent out. We do this because although we receive our own RoleCall
-		// notice (with the additional modules) we won't process it as we can't tell if it's
-		// one we sent out because we joined (and thus need to merge) or because someone else
-		// joined. Additional modules will only be present if it is a new join, so
-		// we could figure it out that way, but that will cause redundant merges for the JVM
-		// binding (as all connections share the same object model reference). To cater to the
-		// specifics of this connection it's better to put the logic in the connection rather than
-		// in the generic-to-all-connections RoleCallHandler. Long way of saying we need to merge
-		// in the additional join modules that were provided here. F*** IT! WE'LL DO IT LIVE!
-		if( joinMessage.getJoinModules().size() > 0 )
-		{
-			logger.debug( "Merging "+joinMessage.getJoinModules().size()+
-			              " additional FOM modules that we receive with join request" );
-
-			ObjectModel fom = federation.getManifest().getFom();
-			fom.unlock();
-			federation.getManifest().setFom( ModelMerger.merge(fom,joinMessage.getJoinModules()) );
-			fom.lock();
-		}
-
 		// create and return the roster
 		return new Roster( federation.getManifest().getLocalFederateHandle(),
 		                   federation.getManifest().getFederateHandles(),
