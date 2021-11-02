@@ -52,6 +52,7 @@ public class Host
 	private boolean running;
 	private Thread receiveThread;
 	private Thread sendThread;
+	private volatile boolean handshakeComplete;
 
 	// message transmission stats
 	private boolean useMetrics; // whether we should record metrics or not -- from global config
@@ -108,15 +109,21 @@ public class Host
 		if( this.running )
 			return;
 
+		// handshake the connection before we start
+		handshake();
+		
 		// create our threads
 		this.receiveThread = new Thread( new Receiver(), "Receiver["+hostID+"]" );
 		this.sendThread = new Thread( new Sender(), "Sender["+hostID+"]" );
+		
+		// Register ourselves with the repeater. This doesn't do anything but put us
+		// in the store so that other messages can come our way
+		this.repeater.addHost( this );
+				
+		// start the receiver first and make sure we handshake properly
 		this.receiveThread.start();
 		this.sendThread.start();
 
-		// add ourselves to the repeater
-		this.repeater.addHost( this );
-				
 		// mark us as up and running
 		this.running = true;
 	}
@@ -178,9 +185,6 @@ public class Host
 		{
 			try
 			{
-				// complete the handshake with the new connection
-				handshake();
-    
     			// Process requests from the client
     			while( Thread.interrupted() == false )
     				receiveLoop();
@@ -213,27 +217,35 @@ public class Host
 		repeater.offer( message );
 	}
 
-	private void handshake() throws IOException
+	private void handshake()
 	{
-		//
-		// Welcome Message
-		// (Send)
-		//
-		String welcome = "Portico Router ("+PorticoConstants.RTI_VERSION+"): Your ID"+hostID;
-		byte[] buffer = welcome.getBytes();
-		outstream.writeByte( Header.WELCOME );
-		outstream.writeInt( buffer.length );
-		outstream.write( buffer );
-
-		//
-		// Synchronize on ready code
-		// (Send and Receive)
-		//
-		outstream.writeByte( Header.READY );
-		byte received = instream.readByte();
-		if( received != Header.READY )
+		try
 		{
-			throw new RuntimeException( "Expected code READY but got"+Header.toString(received) );
+			//
+			// Welcome Message
+			// (Send)
+			//
+			String welcome = "Portico Router ("+PorticoConstants.RTI_VERSION+"): Your ID" + hostID;
+			byte[] buffer = welcome.getBytes();
+			outstream.writeByte( Header.WELCOME );
+			outstream.writeInt( buffer.length );
+			outstream.write( buffer );
+
+			//
+			// Synchronize on ready code
+			// (Send and Receive)
+			//
+			outstream.writeByte( Header.READY );
+			byte received = instream.readByte();
+			if( received != Header.READY )
+			{
+				throw new RuntimeException( "Expected code READY but got: "+
+				                            Header.toString(received)+" ("+received+")" );
+			}
+		}
+		catch( IOException ioe )
+		{
+			throw new RuntimeException( "IOException during handshake; connection failure", ioe );
 		}
 	}
 

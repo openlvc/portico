@@ -166,7 +166,7 @@ public class Server
 				{
 					if( Thread.interrupted() )
 						break;
-					else
+					else // connection error with client; server should stay up for new connections
 						logger.error( "Error starting host. "+e.getMessage(), e );
 				}
 			}

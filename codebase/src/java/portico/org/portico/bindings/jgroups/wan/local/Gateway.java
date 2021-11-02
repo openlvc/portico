@@ -187,6 +187,7 @@ public class Gateway
 			
 			// tell the router that we're ready!
 			outstream.writeByte( Header.READY );
+			outstream.flush();
 
 			// potentially should wait for an ACK on that message?
 			
