@@ -485,6 +485,7 @@ public class Federation
 		{
         	// read off the UUID of the requester
         	logger.debug( "Received request for manifest from "+sender );
+        	System.out.println( "I am coordinator - received request for me from "+sender );
         
         	// tell the manifest a member has connected - this is where the handle is assigned
         	manifest.memberConnectedToChannel( sender );
