@@ -90,7 +90,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	private String  federateName;
 	private int     federateHandle;
 	private String  federationName;
-	private boolean joined;
+	private volatile boolean joined;
 
 	// Object Model //
 	private ObjectModel fom;

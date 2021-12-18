@@ -115,6 +115,13 @@ public class JoinFederationHandler extends LRCMessageHandler
 		                                                   federation,
 		                                                   roster.getFOM() );
 		
+		// Wait until we can confirm that we have processed the join notification just
+		// in case we run off and return from this method before our LRC State has been
+		// able to flip the "joined" flag
+		long maxWait = System.currentTimeMillis() + 100;
+		while( lrcState.isJoined() == false && maxWait > System.currentTimeMillis() )
+			PorticoConstants.sleep( 10 );
+		
 		//////////////////////////////////////////////////
 		// notify the federation and wait for RoleCalls //
 		//////////////////////////////////////////////////
