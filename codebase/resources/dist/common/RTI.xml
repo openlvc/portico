@@ -1,0 +1,318 @@
+<?xml version="1.0"?>
+<rid>
+	<!-- 
+	# ====================================================================================
+	# 1. Logging Settings
+	# ====================================================================================
+	#
+	# These settings control how Portico will produce logging data. They are generally
+	# applicable to both the RTI and LRC.
+	-->
+	<logging>
+		<!-- 
+		# (1.1) Portico Log Level
+		#        Specify the level that Portico will log at.
+		#        Valid values are: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF.
+		#
+		#        Default: WARN
+		-->
+		<loglevel>INFO</loglevel>
+
+		<!-- 
+		# (1.2) Portico Log Directory
+		#        Specify the directory to put the Portico log-files into. If a relative path is
+		#        used, it will be relative to the location of the process Portico is running in
+		#        (either the RTI or the Federate).
+		#
+		#        Default: "logs"
+		-->
+		<logdir>logs</logdir>
+
+		<!--
+		# (1.3) Print FOM when federate Joins
+		#        When a federate joins a federation, Portico can pretty-print the FOM data of that
+		#        federation. If this is enabled, the FOM is logged to the INFO level (so make sure
+		#        you have logging turned up high enough).
+		#
+		#        Default: false
+		-->
+		<printFom>false</printFom>
+
+		<!-- 
+		# (1.4) Log by Handle/Name
+		#        Making sense of log files can be difficult. To help, Portico can be configured to
+		#        print common HLA data by either the HLA handle value (int), or by a human-readable
+		#        name (string). For example, Object Class references in log files can be configured
+		#        to appear either as the class handle, or as the class name.
+		# 
+		#        In the attributes for this tag you can specify either "handle" or "name" to tell
+		#        Portico what values it should use for logging.
+		-->
+		<logWith objectClass="handle"
+		         attributeClass="handle"
+		         interactionClass="handle"
+		         parameterClass="handle"
+		         objectInstance="name"
+		         space="handle"
+		         dimension="handle"
+		         federate="name"/>
+
+	</logging>
+
+	<!-- 
+	# ====================================================================================
+	# 2. RTI Settings
+	# ====================================================================================
+	#
+	# RTI configuration options control the setup of the RTI server itself. Settings in
+	# here are only read and applicable to the RTI, not to any connected federates.
+	-->
+	<rti>
+		<!--
+		# Connections
+		#    Federate clients can contact a Portico RTI via many different means.
+		#    A connection represents one of those means. When an RTI starts up, it will
+		#    also start a set of connections, that will provide the access points for
+		#    federates to contact it on. Below, we define the configuration for those
+		#    connections.
+		#
+		#    Supported Connection Types:
+		#      * multicast (jgroups)
+		#      * unicast (jgroups)
+		#      * rest (portico)
+		#      * wan (portico)
+		-->
+		<connections>
+
+			<!--
+			# (2.1) Multicast Connection 
+			#        Receives messages from clients over a local multicast group.
+			-->
+			<multicast enabled="true">
+
+				<!--
+				# (2.1a) JGroups UDP Address and Port
+				#         Multicast group address and port to listen on.
+				#         Default: 239.20.9.13:20913
+				-->
+				<groupAddress>239.20.9.13</groupAddress>
+				<groupPort>20913</groupPort>
+
+				<!--
+				# (2.1b) Network Interface
+				#         Tell Portico which NIC to use. You can specify the NIC by entering the
+				#         IP address it is using, or using one of the following category values:
+				#
+				#            GLOBAL: Pick the NIC that has a globally routable IP address.
+				#        SITE_LOCAL: Pick the NIC with a private/local IP address such as those in the ranges:
+				#                    192.168.x.x, 10.x.x.x/8, 172.16-31.x.x
+				#          LOOPBACK: Pick the local loopback address.
+				#
+				#        Default: SITE_LOCAL
+				-->
+				<networkInterface>SITE_LOCAL</networkInterface>
+
+				<!-- 
+				# (2.1c) Advanced Configuration Options
+				#         Options that are passed to the underlying multicast library.
+				-->
+				<options>
+					<responseTimeout>2000</responseTimeout>
+					<receiveBuffer>25M</receiveBuffer>
+					<sendBuffer>640K</sendBuffer>
+					<bundling>
+						<enabled>true</enabled>
+						<maxSize>64K</maxSize>
+						<maxTime>30</maxTime>
+					</bundling>
+					<flowControl>
+						<credits>2M</credits>
+						<threshold>0.4</threshold>
+					</flowControl>
+				</options>
+			</multicast>
+
+			<!--
+			# (2.2) REST Server Connection
+			#        This connection runs an embedded web server that allows federates to send
+			#        HLA messages via REST to the RTI.
+			-->
+			<rest enabled="true">
+				<!--
+				# (2.2a) Web Server Port
+				#         The port that the web server will listen on.
+				#         Default: 20913
+				-->
+				<port>20913</port>
+
+				<!-- 
+				# (2.2b) Web Server URL
+				#         The URL path on the server that the REST endpoints should listen at.
+				#         Default: /api
+				-->
+				<url>/api</url>
+
+				<!-- 
+				# (2.2c) Web Server Network Interface
+				#         The network interface that the web server should use. Can be either an
+				#         explicit IP address, or can be one of the following categories:
+				#
+				#            GLOBAL: Pick the NIC that has a globally routable IP address.
+				#        SITE_LOCAL: Pick the NIC with a private/local IP address such as those in the ranges:
+				#                    192.168.x.x, 10.x.x.x/8, 172.16-31.x.x
+				#          LOOPBACK: Pick the local loopback address.
+				#
+				#         Default: SITE_LOCAL
+				-->
+				<networkInterface>SITE_LOCAL</networkInterface>
+			</rest>
+
+		</connections>
+
+		<options>
+			<!--
+			# (2.1) Management Object Model
+			#        Controls whether the MOM is enabled or not. If it is not being used then
+			#        network traffic and RTI load can be reduced by disabling it.
+			#
+			#        Default: true
+			-->
+			<mom>
+				<enabled>true</enabled>
+			</mom>
+
+			<!--
+			# (2.2) Save/Restore Data Files Directory
+			#        Specify the path to the directory used by Portico for save/restore data files.
+			#        If a relative path is provided, it will be relative to ${RTI_HOME}.
+			#
+			#        Default: ./savedata
+			-->
+			<save-restore>
+				<directory>./savedata</directory>
+			</save-restore>
+
+			<!--
+			# (2.x) Unsupported Methods Throw Exceptions
+			#        Portico does not support all the RTIambassador methods in all HLA versions.
+			#        To alert when a method is called that isn't support, Portico logs a warning
+			#        but does not throw an error. This can hide problems with some federates.
+			#        If this value is enabled, unsupported methods will throw an exception.
+			#
+			#        Default: false
+			-->
+			<unsupportedExceptions>false</unsupportedExceptions>
+
+			<!--
+			# (2.x) Unique Federate Names
+			#        If enabled, Portico will ensure that all federates within a federation have
+			#        a unique name. However, in some cases it's easier disable this enforcement.
+			#
+			#        If disabled, when a federate tries to join with an name that is taken, the
+			#        RTI will change the name to "GivenName (handle)", thus making it unique.
+			#
+			#        Default: true
+			-->
+			<uniqueFederateNames>true</uniqueFederateNames>
+
+			<!-- 
+			# DEPRECATED
+			-->
+			<negotiateObjectNames>false</negotiateObjectNames>
+		</options>
+	</rti>
+
+	<!-- 
+		# ====================================================================================
+		# 3. LRC Settings
+		# ====================================================================================
+		#
+		# LRC settings configure the specifics of federates that are connecting to an RTI. 
+		# They are only read by federates, not by the RTI.
+	-->
+	<lrc>
+
+		<!--
+		# (3.1) Carrier Settings
+		#        Portico allows a federate to communicate with the RTI over a number
+		#        of different mediums. A federate can also use different mediums for
+		#        different types of traffic. For example, general management messages
+		#        may be pushed over more reliable, unicast channels, while higher-frequency
+		#        data may be pushed to a group of federates through more network efficient
+		#        means.
+		#
+		#        In this setting you define the connection type that should be used for 
+		#        each class of traffic. 
+		#
+		#          * management:   All federation administrative messages
+		#          * reflections:  Attribute reflection messages
+		#          * interactions: Interaction messages
+		-->
+		<carrier>
+			<management>default</management>
+			<reflections>multicast</reflections>
+			<interactions>multicast</interactions>
+		</carrier>
+
+
+		<!-- 
+		# (3.x) Connections
+		#        This property lets a user configure the connections that an LRC will use
+		#        when trying to talk to the RTI.
+		#
+		#        A number of connections can be configured,
+		#        with each of them responsible for serving different subsets HLA messages.
+		#        See the Carrier settings for more information.
+		-->
+		<connections default="multicast">
+			<multicast enabled="true"
+			           address="239.20.9.13"
+					   port="20913"/>
+
+			<multicast enabled="true">
+				<address>239.20.9.13</address>
+				<port>20913</port>
+				<bindAddress>SITE_LOCAL</bindAddress>
+				<responseTimeout>2000</responseTimeout>
+				<receiveBuffer>25M</receiveBuffer>
+				<sendBuffer>640K</sendBuffer>
+				<bundling>
+					<enabled>true</enabled>
+					<maxSize>64K</maxSize>
+					<maxTime>30</maxTime>
+				</bundling>
+				<flowControl>
+					<credits>2M</credits>
+					<threshold>0.4</threshold>
+				</flowControl>
+			</multicast>
+
+			<rest enabled="true">
+				<url>${discover}/api</url>
+			</rest>
+
+		</connections>
+
+
+		<options>
+			<!--
+			# (3.x) LRC Tick Timeout
+			#        When a federate calls tick() and there is no work to do, the LRC will
+			#        sleep for a set period of time to allow work to arrive before the tick
+			#        call returns. This is done to prevent busy-looping when federates call
+			#        tick() but there is no work to do.
+			#
+			#        The period of time the LRC will wait, specified in MILLISECONDS.
+			#        DEFAULT = 5
+			#
+			#        (NOTE) This does not apply to the tick(min,max) call. That call will
+			#               cause the LRC to wait for at most "min" seconds for work to arrive).
+			#
+			-->
+			<tickTimeout>5</tickTimeout>
+		</options>
+
+	</lrc>
+
+</rid>
+

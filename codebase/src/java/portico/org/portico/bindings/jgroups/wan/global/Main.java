@@ -18,7 +18,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
-import org.portico.utils.logging.Log4jConfigurator;
+import org.portico3.common.logging.Log4jConfigurator;
 
 public class Main
 {

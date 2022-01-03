@@ -30,8 +30,8 @@ import org.portico.lrc.services.federation.msg.CreateFederation;
 import org.portico.lrc.services.federation.msg.DestroyFederation;
 import org.portico.lrc.services.federation.msg.JoinFederation;
 import org.portico.lrc.services.federation.msg.ResignFederation;
-import org.portico.utils.logging.Log4jConfigurator;
 import org.portico.utils.messaging.PorticoMessage;
+import org.portico3.common.logging.Log4jConfigurator;
 
 public class JGroupsConnection implements IConnection
 {

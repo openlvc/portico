@@ -26,9 +26,9 @@ import org.portico.lrc.LRC;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.utils.RID;
-import org.portico.utils.logging.Log4jConfigurator;
 import org.portico.utils.messaging.HandlerRegistry;
 import org.portico.utils.messaging.Module;
+import org.portico3.common.logging.Log4jConfigurator;
 
 /**
  * A {@link Container} represents the top-level in the Portico environment. Into a Container, a

@@ -19,7 +19,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
-import org.portico.utils.SystemInformation;
+import org.portico3.common.utils.SystemInformation;
 
 /**
  * Server class has x main purposes:

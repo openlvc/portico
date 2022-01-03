@@ -56,10 +56,10 @@
 	<!-- ==== Javadoc Related Properties ==== -->
 	<property name="javadoc.oracle"           value="http://docs.oracle.com/javase/7/docs/api/"/>
 	<property name="javadoc.sisocopyright"    value="Copyright Simulation Interoperability Standard Organization"/>
-	<property name="javadoc.ppcopyright"      value="Copyright The Portico Project ${YEAR}."/>
+	<property name="javadoc.ppcopyright"      value="Copyright Open LVC ${YEAR}."/>
 	<property name="javadoc.ppwindow"         value="${build.shortname} [${build.version} build] Javadoc"/>
 	<!-- defaults used by the macro -->
-	<property name="javadoc.windowtitle"      value="The Portico Project [${build.version} build]"/>
+	<property name="javadoc.windowtitle"      value="Open LVC [${build.version} build]"/>
 	<property name="javadoc.header"           value="${javadoc.windowtitle}"/>
 	<property name="javadoc.footer"           value="${javadoc.windowtitle}"/>
 
@@ -81,15 +81,15 @@
 	</path>
 	
 	<path id="lib.jgroups.classpath">
-		<fileset dir="${jgroups.dir}" includes="**/*"/>
+		<fileset dir="${jgroups.dir}" includes="**/*.jar"/>
 	</path>
 
 	<path id="lib.log4j.classpath">
-		<fileset dir="${log4j.dir}" includes="**/*"/>
+		<fileset dir="${log4j.dir}" includes="**/*.jar"/>
 	</path>
 
 	<path id="lib.asm.classpath">
-		<fileset dir="${asm.dir}" includes="**/*"/>
+		<fileset dir="${asm.dir}" includes="**/*.jar"/>
 	</path>
 
 	<!-- ========================== -->
@@ -109,7 +109,12 @@
 		<pathelement path="${resources.dir}/jars/portico.jar"/>
 		<pathelement path="${resources.dir}/test-data"/>
 	</path>
-	
+
+	<!-- generate the classpath for the manifest -->
+	<manifestclasspath property="portico.manifest.classpath" jarfile="${lib.dir}/portico.jar">
+		<classpath refid="compile.classpath"/>
+	</manifestclasspath>
+
 	<!-- ================================================================================= -->
 	<!--                                   Clean Targets                                   -->
 	<!-- ================================================================================= -->
@@ -240,6 +245,13 @@
 
 		<!-- copy across the dependant libraries -->
 		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="asm/**/*"/>
+				<include name="jgroups/**/*"/>
+				<include name="log4j/**/*"/>
+			</fileset>
+		</copy>
 
 		<!-- copy across the resources -->
 		<copy todir="${sandbox.dir}">
@@ -279,15 +291,12 @@
 	<extension-point name="jars"/>
 
 	<!-- build the main portico jar file -->
-	<target name="jar.portico" extensionOf="jars" depends="java.compile,onejar">
+	<target name="jar.portico" extensionOf="jars" depends="java.compile">
 		<!-- construct the main portico jar file -->
 		<jar destfile="${sandbox.dir}/lib/portico.jar">
 			<!-- portico code -->
 			<fileset dir="${portico.classes.dir}" includes="**/*.class"/>
 			
-			<!-- dependency code (onejar stuff) -->
-			<fileset dir="${onejar.dir}" includes="**/*"/>
-
 			<!-- internal jar resources -->
 			<fileset dir="${resources.jars.dir}/portico.jar" includes="**/*"/>
 
@@ -299,41 +308,20 @@
 
 			<!-- MANIFEST -->
 			<manifest>
-				<attribute name="Main-Class" value="org.portico.Main"/>
-				<attribute name="Built-By" value="Calytrix Technologies"/>
+				<attribute name="Product"          value="Portico"/>
+				<attribute name="Product-Version"  value="${build.version}"/>
+				<attribute name="Built-By"         value="Open LVC"/>
+				<attribute name="Built-Date"       value="${TODAY}"/>
+				<attribute name="Main-Class"       value="org.portico3.Main"/>
+				<attribute name="Class-Path"       value="../ ${portico.manifest.classpath}"/>
+
 				<section name="org/portico">
 					<attribute name="Implementation-Title" value="portico"/>
 					<attribute name="Implementation-Version" value="${build.version} (build ${build.number}) ${TODAY}"/>
-					<attribute name="Implementation-Vendor" value="Calytrix Technologies"/>
+					<attribute name="Implementation-Vendor" value="Open LVC"/>
 				</section>
 			</manifest>
 		</jar>
-	</target>
-
-	<!-- Extract all the releant dependencies into the onejar location -->	
-	<target name="onejar">
-		<mkdir dir="${onejar.dir}"/>
-
-		<!-- Need to delete this to prevent the modules in lib jars being mistaken for portico's (non-existent) module-->
-		<delete file="module-info.java"/>
-		<!-- Check to see if we need to extract things again due to dependency changes
-		     or new dependencies being added. Otherwise we skip this step. -->
-		<uptodate property="deps.uptodate" targetfile="${onejar.dir}/.created">
-			<srcfiles dir="${lib.dir}" includes="**/*.jar"/>
-		</uptodate>
-		
-		<if><isset property="deps.uptodate"/>
-		<then>
-			<echo>No need to unjar deps again - they're up to date</echo>
-		</then>
-		<else>
-			<touch file="${onejar.dir}/.created"/>
-			<!-- extract the deps for the one-jar style distribution -->
-			<unjar dest="${onejar.dir}">
-				<fileset dir="${lib.dir}" includes="**/*.jar" excludes="testng/**/*"/>
-			</unjar>
-		</else>
-		</if>
 	</target>
 
 	<!-- ================================================================================= -->

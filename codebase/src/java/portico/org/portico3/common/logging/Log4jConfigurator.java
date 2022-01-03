@@ -1,5 +1,5 @@
 /*
- *   Copyright 2009 The Portico Project
+ *   Copyright 2022 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -12,7 +12,7 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.utils.logging;
+package org.portico3.common.logging;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -24,7 +24,6 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 
 public class Log4jConfigurator
@@ -32,14 +31,12 @@ public class Log4jConfigurator
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static boolean LOGGING_CONFIGURED = false;
-	
+	private static boolean LOGGING_CONFIGURED = false;	
+
 	/** The default pattern to use in layouts */
 	public static String DEFAULT_PATTERN = "%-5p [%t] %c: %x%m%n";
 	
-	/** Flag to tell setConsoleLevel() methods to create color console appenders */
-	//public static boolean USE_COLOR_CONSOLE = false;
-	
+
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
@@ -88,7 +85,7 @@ public class Log4jConfigurator
 			logger.setLevel( log4jLevel );
 		}
 	}
-	
+
 	/**
 	 * Redirects portico's log file output to a file at the given location.
 	 */
@@ -137,6 +134,7 @@ public class Log4jConfigurator
 		}
 	}
 	
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////// Bootstrapping Methods ////////////////////////////////// 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -149,25 +147,13 @@ public class Log4jConfigurator
 		if( LOGGING_CONFIGURED )
 			return;
 
-		// fetch and validate the levels for the various loggers
-		Level porticoLevel = validateLevel(
-		      System.getProperty(PorticoConstants.PROPERTY_PORTICO_LOG_LEVEL,
-		                         PorticoConstants.PORTICO_LOG_LEVEL) );
-		Level containerLevel = validateLevel(
-		      System.getProperty( PorticoConstants.PROPERTY_CONTAINER_LOG_LEVEL,
-		                          PorticoConstants.CONTAINER_LOG_LEVEL) );
-	
-		// if all logging is turned off, don't bother doing anything
-		if( porticoLevel == Level.OFF && containerLevel == Level.OFF )
-			return;
-		
+		// Set up the console but use a default level of "OFF".
+		// The RTI/LRC should override this during their setup.
 		// set up the console and file loggers
 		enableConsole();
-		enableFile();
 
 		// set the level on the loggers as appropritate to the configuration
-		Logger.getLogger("portico").setLevel( porticoLevel );
-		Logger.getLogger("portico.container").setLevel( containerLevel );
+		Logger.getLogger("portico").setLevel( validateLevel("OFF") );
 	}
 	
 	private static final void enableConsole()
@@ -191,15 +177,7 @@ public class Log4jConfigurator
 		// attach the appender
 		logger.addAppender( appender );
 	}
-	
-	private static final void enableFile() throws JConfigurationException
-	{
-		// get the log file location
-		String logfile = System.getProperty(PorticoConstants.PROPERTY_LOG_DIR,"logs")+"/portico.log";
-		
-		redirectFileOutput( logfile, true );
-	}
-	
+
 	/**
 	 * Validates the given String, ensuring that it identifies a proper log4j level. If it doesn't
 	 * an exception is thrown. If it does, the appropriate <code>Level</code> object is returned.
@@ -225,4 +203,5 @@ public class Log4jConfigurator
 		else
 			throw new RuntimeException( "Log Level [" + level + "] not valid" );
 	}
+
 }

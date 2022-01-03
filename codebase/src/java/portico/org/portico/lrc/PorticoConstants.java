@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.utils.ResourceLocator;
 
+@Deprecated
 public class PorticoConstants
 {
 	//----------------------------------------------------------

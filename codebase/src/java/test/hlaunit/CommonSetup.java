@@ -19,7 +19,7 @@ import java.io.File;
 import org.portico.bindings.jgroups.Configuration;
 import org.portico.bindings.jvm.JVMConnection;
 import org.portico.lrc.PorticoConstants;
-import org.portico.utils.logging.Log4jConfigurator;
+import org.portico3.common.logging.Log4jConfigurator;
 import org.testng.Assert;
 
 public class CommonSetup

@@ -21,7 +21,9 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<!-- Disabled for JDK17; re-enable when updating JRE packaging
 	<verifyJdk location="${jdk.home.win64}" arch="amd64" requiredVersion="${java.compiler.target}"/>
+	-->
 
 	<!-- ==================================== -->
 	<!-- ==== HLA13 Interface Properties ==== -->

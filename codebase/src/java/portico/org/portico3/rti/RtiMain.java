@@ -1,5 +1,5 @@
 /*
- *   Copyright 2013 The Portico Project
+ *   Copyright 2022 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -12,24 +12,17 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico;
+package org.portico3.rti;
 
-import org.portico.container.Container;
-import org.portico3.common.logging.Log4jConfigurator;
-import org.portico3.common.utils.SystemInformation;
+import org.portico3.Container;
+import org.portico3.rti.commandline.CommandLine;
 
 /**
- * `Main` is set as the Portico jar file's main class in the manifest. If invoked with no
- * arguments, it will just print some diagnostic information. If it is invoked with arguments,
- * the first argument will be considered the "application" we want to load. Currently, the
- * following applications are supported:
- * 
- *   - "wanrouter": The Portico WAN Router for connecting disconnected sites
- * 
- * If the application is known, processing, and all additional command line args will be
- * handed off the applicable application.
+ * Main launcher class for the RTI server. The {@link #main(String[])} method will pass control
+ * directly to the {@link Container} class that will then handle all the command-line argument
+ * processing and bootstrapping. 
  */
-public class Main
+public class RtiMain
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -50,29 +43,29 @@ public class Main
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
-	public static void main( String[] args )
+	public static void main( String[] args ) throws Exception
 	{
 		// Initialize environment
 		// The container will parse config the set up logging
 		System.setProperty( "java.net.preferIPv4Stack", "true" );
 
-		if( args.length == 0 )
-			System.out.println( SystemInformation.getSystemInformationSummary() );
+		//if( args.length == 0 )
+		//	System.out.println( SystemInformation.getSystemInformationSummary() );
 
-		//
-		// look for an application we support
-		//
-		if( args[0].equals("wanrouter") )
+		for( String arg : args )
 		{
-			/////////////////////////////////
-			// Application: WAN Router   ////
-			/////////////////////////////////
-			// configure logging first
-			Log4jConfigurator.DEFAULT_PATTERN = "%-5p [%c]: %x%m%n";
-			Container.instance();
-			Log4jConfigurator.setLevel( "INFO", "org.jgroups" );
-			org.portico.bindings.jgroups.wan.global.Main.main( args );
-			return;
+			if( arg.equalsIgnoreCase("--help") )
+			{
+				System.out.println( CommandLine.getUsage() );
+				return;
+			}
 		}
+		
+		// Load the Container and get a new RTI instance from it
+		RtiServer server = Container.instance().createRti( args );
+		
+		// Initialize and start the server
+		server.initialize();
+		server.start();
 	}
 }

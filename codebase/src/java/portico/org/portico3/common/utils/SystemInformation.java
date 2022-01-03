@@ -1,5 +1,5 @@
 /*
- *   Copyright 2013 The Portico Project
+ *   Copyright 2022 The Portico Project
  *
  *   This file is part of portico.
  *
@@ -12,13 +12,13 @@
  *   (that goes for your lawyer as well)
  *
  */
-package org.portico.utils;
+package org.portico3.common.utils;
 
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.portico.lrc.PorticoConstants;
+import org.portico3.common.rid.RID;
 
 /**
  * This singleton provides a number of useful pieces of information about the current system.
@@ -255,6 +255,21 @@ public class SystemInformation
 	/** Fetch some system information printed out in a nice command-line friendly table. */
 	public static String getSystemInformationSummary()
 	{
+		return getSystemInformationSummary( null );
+	}
+
+	/** Fetch some system information printed out in a nice command-line friendly table. */
+	public static String getSystemInformationSummary( RID rid )
+	{
+		// Set up some defaults, in case the RID file is null
+		String ridfile = "<defaults>";
+		String loglevel = "INFO";
+		if( rid != null )
+		{
+			ridfile = rid.getRidFileLocation();
+			loglevel = rid.getLogSettings().getLogLevel();
+		}
+		
 		// get the system information
 		SystemInformation info = SystemInformation.LOCAL;
 		StringBuilder buf = new StringBuilder( "\n" );
@@ -272,7 +287,7 @@ public class SystemInformation
 		buf.append( "#                                                        #\n" );
 		buf.append( "#                    System Information                  #\n" );
 		buf.append( "#                                                        #\n" );
-		buf.append( pad( "# Portico Version:          " + PorticoConstants.RTI_VERSION ) );
+		buf.append( pad( "# Portico Version:          " + PorticoConstants2.RTI_VERSION ) );
 		buf.append( pad( "# Platform Architecture:    " + info.getPlatform() ) );
 		buf.append( pad( "# CPUs:                     " + info.getCPUCount() ) );
 		buf.append( pad( "# Operating System:         " + info.getOS() ) );
@@ -281,12 +296,11 @@ public class SystemInformation
 		buf.append( pad( "# Java Vendor:              " + info.getJavaVendor() ) );
 		buf.append( "#                                                        #\n" );
 		buf.append( pad( "# Startup Time:             "+info.getStartupTime() ) );
-		buf.append( pad( "# RID File:                 "+PorticoConstants.getRidFileLocation()) );
-		buf.append( pad( "# Log Level:                "+PorticoConstants.PORTICO_LOG_LEVEL) );
+		buf.append( pad( "# RID File:                 "+ridfile) );
+		buf.append( pad( "# Log Level:                "+loglevel) );
 		buf.append( "#                                                        #\n" );
 		buf.append( "##########################################################\n" );
-		buf.append( " => RTI Home: "+PorticoConstants.getRtiHome() );
-
+		buf.append( " => RTI Home: "+PorticoConstants2.getRtiHome() );
 		return buf.toString();
 	}
 
