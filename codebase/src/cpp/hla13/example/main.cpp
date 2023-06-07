@@ -3,7 +3,7 @@
 int main( int argc, char *argv[] )
 {
 	// check to see if we have a federate name
-	char* federateName = "exampleFederate";
+	const char* federateName = "exampleFederate";
 	if( argc > 1 )
 		federateName = argv[1];
 

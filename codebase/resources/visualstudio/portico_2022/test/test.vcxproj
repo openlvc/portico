@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\ActiveSR.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Common.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\main.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13Federate.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13FederateAmbassador.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13Interaction.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\common\Test13Object.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\AssociateRegionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\DDMSupportServicesTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\ModifyRegionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\RegisterObjectDDMTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\RequestUpdateWithRegionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\SendInteractionWithRegionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeInteractionWithRegionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeObjectWithRegionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishInteractionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishObjectTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeInteractionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeObjectTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\CreateFederationTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\DestroyFederationTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\JoinFederationTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\federation\ResignFederationTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\DeleteObjectTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\ReflectAttributesTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\RegisterObjectTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\object\SendInteractionTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ownership\AcquireOwnershipTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ownership\DivestOwnershipTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\ownership\QueryAttributeOwnershipTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationRestoreTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationSaveTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\support\QueryTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\synchronization\RegisterSyncPointTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\synchronization\SynchronizationTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\time\FedTimeTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\time\FlushQueueRequestTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\time\TimeAdvanceRequestTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleSetTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleValuePairSetTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\FederateHandleSetTest.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\test\types\ParameterHandleValuePairSetTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\ActiveSR.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Common.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13Federate.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13FederateAmbassador.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13Interaction.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\common\Test13Object.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\AssociateRegionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\DDMSupportServicesTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\ModifyRegionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\RegisterObjectDDMTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\RequestUpdateWithRegionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\SendInteractionWithRegionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeInteractionWithRegionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ddm\SubscribeObjectWithRegionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishInteractionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\PublishObjectTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeInteractionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\declaration\SubscribeObjectTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\CreateFederationTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\DestroyFederationTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\JoinFederationTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\federation\ResignFederationTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\DeleteObjectTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\ReflectAttributesTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\RegisterObjectTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\object\SendInteractionTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ownership\AcquireOwnershipTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ownership\DivestOwnershipTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\ownership\QueryAttributeOwnershipTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationRestoreTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\saverestore\FederationSaveTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\support\QueryTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\synchronization\RegisterSyncPointTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\synchronization\SynchronizationTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\time\FedTimeTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\time\FlushQueueRequestTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\time\TimeAdvanceRequestTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleSetTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\AttributeHandleValuePairSetTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\FederateHandleSetTest.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\test\types\ParameterHandleValuePairSetTest.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{8be9e8e9-a60b-4f8e-bcc8-4e9a0619cb75}</ProjectGuid>
+    <RootNamespace>test</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2022\output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2022\intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>RTI_USES_STD_FSTREAM;_CRT_SECURE_NO_WARNINGS;_DEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\src\cpp\hla13\include\hla13;$(ProjectDir)..\..\..\..\lib\cppunit\cppunit-1.12.1\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(OutDir);$(ProjectDir)..\..\..\..\lib\cppunit\cppunit-1.12.1\win32\vc143</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cppunit_64d.lib;libRTI-NG64d.lib;libFedTime64d.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
