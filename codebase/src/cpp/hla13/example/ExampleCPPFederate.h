@@ -24,7 +24,7 @@ class ExampleCPPFederate
 		// public methods //
 		ExampleCPPFederate();
 		virtual ~ExampleCPPFederate();
-		void runFederate( char* federateName );
+		void runFederate( const char* federateName );
 
 
 	private:

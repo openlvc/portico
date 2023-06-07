@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="jni">
+      <UniqueIdentifier>{7e00cae2-5946-483f-b22a-fe143133b48f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="services">
+      <UniqueIdentifier>{f1914b71-ea97-4960-b68b-7c1101b8323f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="types">
+      <UniqueIdentifier>{3b4e5dd6-d4ca-4036-a35e-1400f6278cbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{962280aa-8277-414a-81cb-1a034cfefdb8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\jni\ExceptionManager.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\jni\FederateAmbassadorLink.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\jni\JavaRTI.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\jni\Runtime.cpp">
+      <Filter>jni</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13Constructors.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13DDM.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13DeclarationManagement.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13FederationManagement.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13ObjectManagement.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13OwnershipManagement.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13Private.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13Support.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\services\HLA13TimeManagement.cpp">
+      <Filter>services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\AttributeHandleSet.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\AttributeHandleValuePairSet.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\Exception.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\FederateHandleSet.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\GenericHandleValuePair.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\ParameterHandleValuePairSet.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\Region.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\utils\ExceptionHacks.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\utils\Logger.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\globals.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\hla13\src\types\Factories.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\jni\JavaRTI.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\jni\org_portico_impl_cpp13_ExceptionManager.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\jni\org_portico_impl_cpp13_FederateAmbassadorLink.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\jni\Runtime.h">
+      <Filter>jni</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\services\HLA13Common.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\services\HLA13Private.h">
+      <Filter>services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\types\AttributeHandleSet.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\types\AttributeHandleValuePairSet.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\types\FederateHandleSet.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\types\GenericHandleValuePair.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\types\ParameterHandleValuePairSet.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\types\Region.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\utils\ExceptionHacks.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\utils\Logger.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\cpp\hla13\src\common.h" />
+  </ItemGroup>
+</Project>

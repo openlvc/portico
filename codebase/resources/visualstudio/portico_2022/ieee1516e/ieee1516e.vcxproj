@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{927150cc-40dc-40ef-99d4-46aa4751d3ce}</ProjectGuid>
+    <RootNamespace>ieee1516e</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2022\output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2022\intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>librti1516e64d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2022\output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\..\build\cpp\visualstudio\2022\intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>librti1516e64</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>BUILDING_RTI;RTI_DISABLE_WARNINGS;_CRT_SECURE_NO_WARNINGS;_DEBUG</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\include;$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\src;C:\Program Files\Java\jdk1.8.0_144\include;C:\Program Files\Java\jdk1.8.0_144\include\win32;$(ProjectDir)..\..\..\..\lib\pugixml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_144\lib;$(SolutionDir)..\..\..\lib\pugixml\win64\vc143</AdditionalLibraryDirectories>
+      <AdditionalDependencies>jvm.lib;pugixmld.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>BUILDING_RTI;RTI_DISABLE_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\include;$(ProjectDir)..\..\..\..\src\cpp\ieee1516e\src;C:\Program Files\Java\jdk1.8.0_144\include;C:\Program Files\Java\jdk1.8.0_144\include\win32;$(ProjectDir)..\..\..\..\lib\pugixml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files\Java\jdk1.8.0_144\lib;$(SolutionDir)..\..\..\lib\pugixml\win64\vc143</AdditionalLibraryDirectories>
+      <AdditionalDependencies>jvm.lib;pugixml.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\common.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\org_portico_impl_cpp1516e_FederateAmbassadorLink.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JavaRTI.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JniUtils.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\org_portico_impl_cpp1516e_ExceptionManager.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\jni\Runtime.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\PorticoRtiAmbassador.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\AggregateTypeImpl.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\BasicTypeImpl.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\BitHelpers.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\HandleFriends.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\HandleImplementations.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\TimeImplementations.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\BitHelpers.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\ExceptionHacks.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\Logger.h" />
+    <ClInclude Include="..\..\..\..\src\cpp\ieee1516e\src\utils\StringUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\FederateAmbassador.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\FederateAmbassadorLink.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\fedamb\NullFederateAmbassador.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\globals.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\ExceptionManager.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JavaRTI.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\JniUtils.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\jni\Runtime.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\DatatypeRetrieval.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\PorticoRtiAmbassadorEx.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\AlternativeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\ArrayTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\BasicTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\DimensionImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratedTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\EnumeratorImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\FieldImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\FixedRecordTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\NaTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\SimpleTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\portico\types\VariantRecordTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\ApiSpecificServices.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\Constructors.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\DataDistributionManagement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\DeclarationManagement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\FederationManagement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\ObjectManagement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\OwnershipManagement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\RTIambassadorFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\SaveAndRestoreServices.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\SupportServices.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\SynchronizationServices.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\rtiamb\TimeManagement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\AggregateTypeImpl.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAfixedArray.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAfixedRecord.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAopaqueData.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAvariableArray.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\aggregate\HLAvariantRecord.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAASCIIChar.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAASCIIstring.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAboolean.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAbyte.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat32BE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat32LE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat64BE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAfloat64LE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger16BE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger16LE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger32BE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger32LE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger64BE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAinteger64LE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAoctet.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAoctetPairBE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAoctetPairLE.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAunicodeChar.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\basic\HLAunicodeString.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\BitHelpers.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\encoding\DataElement.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\Exceptions.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\AttributeHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\DimensionHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\FederateHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\HandleFriends.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\InteractionClassHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\MessageRetractionHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\ObjectClassHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\ObjectInstanceHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\ParameterHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\handles\RegionHandle.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\RangeBounds.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\SupportTypes.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAfloat64Interval.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAfloat64Time.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAfloat64TimeFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAinteger64Interval.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAinteger64Time.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAinteger64TimeFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\HLAlogicalTimeFactoryFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTime.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTimeFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\time\LogicalTimeInterval.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\types\VariableLengthData.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\ExceptionHacks.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\Logger.cpp" />
+    <ClCompile Include="..\..\..\..\src\cpp\ieee1516e\src\utils\StringUtils.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
