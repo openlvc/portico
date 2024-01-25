@@ -833,7 +833,7 @@ public class ObjectModel implements Serializable
 		try
 		{
 			TransformerFactory tf = TransformerFactory.newInstance();
-			tf.setAttribute("indent-number", new Integer(4));			
+			tf.setAttribute("indent-number", Integer.valueOf(4));			
 			Transformer transformer = tf.newTransformer();			
 			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");	
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");			

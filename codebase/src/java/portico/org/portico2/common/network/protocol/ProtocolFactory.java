@@ -99,7 +99,7 @@ public class ProtocolFactory
 		
 		try
 		{
-			return clazz.newInstance();
+			return clazz.getDeclaredConstructor().newInstance();
 		}
 		catch( Exception e )
 		{

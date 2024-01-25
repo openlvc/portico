@@ -135,7 +135,7 @@ public class DoubleTimeInterval implements LogicalTimeInterval
      */
 	public int hashCode()
 	{
-		return (new Double(this.time)).hashCode();
+		return Double.valueOf(this.time).hashCode();
 	}
 
 	public String toString()

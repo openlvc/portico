@@ -39,7 +39,6 @@ import hla.rti1516e.exceptions.AlreadyConnected;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.portico.impl.cpp1516e.NativeLibraryLoader;
 import org.portico.impl.hla1516e.Rti1516eAmbassadorEx;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;

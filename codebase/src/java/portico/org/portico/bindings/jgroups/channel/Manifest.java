@@ -34,7 +34,7 @@ public class Manifest implements Serializable
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private int manifestVersion; // updated each time the manifest changes
-	private String name;
+	private String channelName;
 	private transient UUID localUUID;
 	private UUID coordinator;
 
@@ -57,7 +57,7 @@ public class Manifest implements Serializable
 	public Manifest( String name, UUID localUUID )
 	{
 		this.manifestVersion = 0;
-		this.name = name;
+		this.channelName = name;
 		this.localUUID = localUUID;
 		this.coordinator = null;  // set after creation
 		this.highestHandle = 0;
@@ -255,7 +255,7 @@ public class Manifest implements Serializable
 	{
 		StringBuilder builder = new StringBuilder();
 		builder.append( "\n-----------------------------------" );
-		builder.append( "\nManifest: channel="+name );
+		builder.append( "\nManifest: channel="+channelName );
 		builder.append( "\n-----------------------------------" );
 		builder.append( "\n Version        = "+manifestVersion );
 		builder.append( "\n Local UUID     = "+localUUID );

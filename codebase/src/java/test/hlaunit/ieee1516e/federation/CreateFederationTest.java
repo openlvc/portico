@@ -14,6 +14,7 @@
  */
 package hlaunit.ieee1516e.federation;
 
+import java.net.URI;
 import java.net.URL;
 
 import hla.rti1516e.exceptions.CouldNotCreateLogicalTimeFactory;
@@ -139,8 +140,8 @@ public class CreateFederationTest extends Abstract1516eTest
 		// attempt to create with invalid fom URL //
 		try
 		{
-			URL url = new URL( "http://localhost/dummyURL" );
-			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, url );
+			URI uri = new URI( "http://localhost/dummyURL" );
+			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, uri.toURL() );
 			Assert.fail( "No exception while creating federation with invalid FOM (invalid URL)" );
 		}
 		catch( CouldNotOpenFDD cnof )

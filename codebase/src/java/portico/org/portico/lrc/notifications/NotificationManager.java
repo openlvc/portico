@@ -88,7 +88,7 @@ public class NotificationManager
    			// create a new instance of the listener
    			try
    			{
-   				INotificationListener listener = listenerClass.newInstance();
+   				INotificationListener listener = listenerClass.getDeclaredConstructor().newInstance();
    				addListener( annotation.priority(), listener );
    			}
    			catch( Exception e )

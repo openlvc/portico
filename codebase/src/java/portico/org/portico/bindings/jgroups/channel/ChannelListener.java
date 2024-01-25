@@ -34,7 +34,6 @@ import org.jgroups.View;
 import org.jgroups.blocks.RequestHandler;
 import org.jgroups.blocks.Response;
 import org.portico.bindings.jgroups.Federation;
-import org.portico.bindings.jgroups.channel.ControlHeader;
 
 /**
  * This class implements the various JGroups listener interface methods that allow it to

@@ -57,7 +57,7 @@ public class RtiFactoryFactory
 		try
 		{
 			Class<?> cls = Class.forName( factoryClassName );
-			return (RtiFactory)cls.newInstance();
+			return (RtiFactory)cls.getDeclaredConstructor().newInstance();
 		}
 		catch( ClassNotFoundException e )
 		{
@@ -70,6 +70,10 @@ public class RtiFactoryFactory
 		catch( IllegalAccessException e )
 		{
 			throw new RTIinternalError( "Cannot access class " + factoryClassName );
+		}
+		catch( Exception e )
+		{
+			throw new RTIinternalError( e );
 		}
 	}
 
