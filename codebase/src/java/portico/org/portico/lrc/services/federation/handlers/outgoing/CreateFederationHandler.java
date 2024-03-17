@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
@@ -59,14 +60,23 @@ public class CreateFederationHandler extends LRCMessageHandler
 	{
 		CreateFederation request = context.getRequest( CreateFederation.class, this );
 		
-		// try and parse each of the fed files that we have
+		// list of parsed FOMs
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
+
+		// if we are 1516e, load the standard MIM first - we always want it but only for 1516e
+		if( super.lrc.getSpecHelper().getHlaVersion() == HLAVersion.IEEE1516e )
+		{
+    		// load the standard MIM first - we always want it
+    		foms.add( FomParser.parse(get1516eStandardMim()) );
+		}
+		
+		// try and parse each of the fed files that we have
 		for( URL module : request.getFomModules() )
 			foms.add( FomParser.parse(module) );
-		
+
 		// check to make sure we have the standard MIM as well - if not, load it
 		validateStandardMimPresent( foms );
-		
+
 		// merge all the modules together and store the grand unified fom!
 		request.setModel( ModelMerger.merge(foms) );
 		
@@ -99,6 +109,11 @@ public class CreateFederationHandler extends LRCMessageHandler
 			URL mim = ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
 			foms.add( 0, FomParser.parse(mim) );
 		}
+	}
+
+	private URL get1516eStandardMim()
+	{
+		return ClassLoader.getSystemResource( "etc/ieee1516e/HLAstandardMIM.xml" );
 	}
 
 	//----------------------------------------------------------
