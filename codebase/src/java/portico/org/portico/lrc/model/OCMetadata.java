@@ -167,7 +167,8 @@ public class OCMetadata implements Serializable, Comparable<OCMetadata>
 	 * Needed so that children can use a TreeSet to be consistent across different federates
 	 * @see String#compareTo(String)
 	 */
-	public int compareTo(OCMetadata object)
+	@Override
+	public int compareTo( OCMetadata object )
 	{
 		return object.getLocalName().compareTo( this.getLocalName() );
 	}

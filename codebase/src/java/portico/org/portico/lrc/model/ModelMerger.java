@@ -19,7 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -195,7 +194,7 @@ public class ModelMerger
 		//////////////////////////////////
 		// check to see if there are any types in the extension that can be inserted into the base
 		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
-		TreeSet<OCMetadata> extensionChildren = new TreeSet<OCMetadata>( extension.getChildTypes() );
+		Set<OCMetadata> extensionChildren = new TreeSet<OCMetadata>( extension.getChildTypes() );
 		for( OCMetadata extensionChild : extensionChildren )
 		{
 			// if the child does not exist in the base model, insert it, otherwise we need to
@@ -304,7 +303,7 @@ public class ModelMerger
 		//////////////////////////////////
 		// check to see if there are any types in the extension that can be inserted into the base
 		// take copy of the set to avoid concurrent modificiation exceptions if we extend the model
-		Set<ICMetadata> extensionChildren = new HashSet<ICMetadata>( extension.getChildTypes() );
+		Set<ICMetadata> extensionChildren = new TreeSet<ICMetadata>( extension.getChildTypes() );
 		for( ICMetadata extensionChild : extensionChildren )
 		{
 			// if the child does not exist in the base model, insert it, otherwise we need to

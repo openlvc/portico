@@ -16,6 +16,7 @@ package org.portico.lrc.model;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.io.Serializable;
@@ -25,7 +26,7 @@ import org.portico.lrc.PorticoConstants;
 /**
  * This class contains metadata information about a FOM object class 
  */
-public class ICMetadata implements Serializable
+public class ICMetadata implements Serializable, Comparable<ICMetadata>
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -63,7 +64,7 @@ public class ICMetadata implements Serializable
 		this.space       = null;
 		this.parent      = null;
 		this.model       = null;
-		this.children    = new HashSet<ICMetadata>();
+		this.children    = new TreeSet<ICMetadata>();
 		this.parameters  = new HashMap<Integer,PCMetadata>();
 	}
 	
@@ -91,6 +92,17 @@ public class ICMetadata implements Serializable
 		return null;
 	}
 
+	/**
+	 * Compares this object with the given one lexicographically based on their local names.
+	 * Needed so that children can use a TreeSet to be consistent across different federates
+	 * @see String#compareTo(String)
+	 */
+	@Override
+	public int compareTo( ICMetadata interaction )
+	{
+		return interaction.getLocalName().compareTo( this.getLocalName() );
+	}
+	
 	////////////////////////////////////////////////////////////
 	///////////////////// Parameter Methods ////////////////////
 	////////////////////////////////////////////////////////////
