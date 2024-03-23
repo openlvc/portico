@@ -24,7 +24,7 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final String CHARSET = "UTF-16";
+	private static final String CHARSET = "UTF-16";	
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -70,7 +70,7 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 			this.value = value;
 	}
 
-	public byte[] getBytes() throws EncoderException
+	private final byte[] getUnicodeBytes() throws EncoderException
 	{
 		try
 		{
@@ -83,6 +83,12 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 			throw new EncoderException( e.getMessage(), e );
 		}
 	}
+	
+	private final int getUnicodeValueLength()
+	{
+		return this.value.length() * 2;
+	}
+	
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////// DataElement Methods //////////////////////////////////
@@ -96,44 +102,61 @@ public class HLA1516eUnicodeString extends HLA1516eDataElement implements HLAuni
 	@Override
 	public int getEncodedLength()
 	{
-		return 4 + (getBytes().length*2);
+		return 4 + getUnicodeValueLength();
 	}
 
 	@Override
 	public void encode( ByteWrapper byteWrapper ) throws EncoderException
 	{
-		byteWrapper.align( getOctetBoundary() );
-		byteWrapper.putInt( this.value.length() );
-		
-		for( int i = 0; i < value.length(); i++ )
+		try
 		{
-			// faster just to do this by hand rather than use BitHelpers which will create an array
-			char temp = value.charAt( i );
-			byteWrapper.put( temp >>> 8 & 0xFF );
-			byteWrapper.put( temp >>> 0 & 0xFF );
+    		byteWrapper.align( getOctetBoundary() );
+    		byteWrapper.putInt( this.value.length() ); // number of chars
+
+    		for( int i = 0; i < value.length(); i++ )
+    		{
+    			// faster just to do this by hand rather than use BitHelpers which will create an array
+    			char temp = value.charAt( i );
+    			byteWrapper.put( temp >>> 8 & 0xFF );
+    			byteWrapper.put( temp >>> 0 & 0xFF );
+    		}
+		}
+		catch( EncoderException ee )
+		{
+			throw ee;
+		}
+		catch( Exception e )
+		{
+			throw new EncoderException( "Error encoding ["+value+"]: "+e.getMessage(), e );
 		}
 	}
-	
 
 	@Override
 	public void decode( ByteWrapper byteWrapper ) throws DecoderException
 	{
-		byteWrapper.align( getOctetBoundary() );
-
-		// get the length of the string and make sure there is enough space
-		int length = byteWrapper.get();
-		byteWrapper.verify( length*2 );
-		
-		// loop through and get each 16-bit char
-		char[] chars = new char[length];
-		for( int i = 0; i < length; i++ )
+		try
 		{
-			int firstOctet = byteWrapper.get();
-			int secondOctet = byteWrapper.get();
-			chars[i] = (char)((firstOctet << 8) + (secondOctet << 0));
+    		byteWrapper.align( getOctetBoundary() );
+    
+    		// get the length of the string and make sure there is enough space
+    		int length = byteWrapper.getInt();
+    		byteWrapper.verify( length*2 );
+    		
+    		// loop through and get each 16-bit char
+    		char[] chars = new char[length];
+    		for( int i = 0; i < length; i++ )
+    		{
+    			int firstOctet = byteWrapper.get();
+    			int secondOctet = byteWrapper.get();
+    			chars[i] = (char)((firstOctet << 8) + (secondOctet << 0));
+    		}
+    
+    		this.value = new String( chars );
 		}
-
-		this.value = new String( chars );
+		catch( Exception e )
+		{
+			throw new DecoderException( "Error decoding: "+e.getMessage(), e );
+		}
 	}
 	
 	//----------------------------------------------------------

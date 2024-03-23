@@ -16,7 +16,6 @@ package hlaunit.ieee1516e.types.encoding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -42,41 +41,52 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	private static final String NOTHING = "Nothing";
 	
 	private static final String HELLO_WORLD = "Hello World";
-	private static final byte[] HELLO_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00, (byte)0x00, 
-	                                                          (byte)0x0c, (byte)0xfe, (byte)0xff,
-	                                                          (byte)0x00, (byte)0x48, (byte)0x00, 
-	                                                          (byte)0x65, (byte)0x00, (byte)0x6c, 
-	                                                          (byte)0x00, (byte)0x6c, (byte)0x00, 
-	                                                          (byte)0x6f, (byte)0x00, (byte)0x20, 
-	                                                          (byte)0x00, (byte)0x57, (byte)0x00, 
-	                                                          (byte)0x6f, (byte)0x00, (byte)0x72, 
-	                                                          (byte)0x00, (byte)0x6c, (byte)0x00, 
-	                                                          (byte)0x64 };
+	private static final byte[] HELLO_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00,
+	                                                          (byte)0x00, (byte)0x0b,
+	                                                          (byte)0x00, (byte)0x48,
+	                                                          (byte)0x00, (byte)0x65,
+	                                                          (byte)0x00, (byte)0x6c,
+	                                                          (byte)0x00, (byte)0x6c,
+	                                                          (byte)0x00, (byte)0x6f,
+	                                                          (byte)0x00, (byte)0x20, 
+	                                                          (byte)0x00, (byte)0x57,
+	                                                          (byte)0x00, (byte)0x6f,
+	                                                          (byte)0x00, (byte)0x72,
+	                                                          (byte)0x00, (byte)0x6c,
+	                                                          (byte)0x00, (byte)0x64 };
 	
 	private static final String BONJOUR_WORLD = "Bonjour World";
-	private static final byte[] BONJOUR_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00, (byte)0x00, 
-		                                                        (byte)0x0e, (byte)0xfe, (byte)0xff, 
-		                                                        (byte)0x00, (byte)0x42, (byte)0x00, 
-		                                                        (byte)0x6f, (byte)0x00, (byte)0x6e, 
-		                                                        (byte)0x00, (byte)0x6a, (byte)0x00, 
-		                                                        (byte)0x6f, (byte)0x00, (byte)0x75, 
-		                                                        (byte)0x00, (byte)0x72, (byte)0x00, 
-		                                                        (byte)0x20, (byte)0x00, (byte)0x57, 
-		                                                        (byte)0x00, (byte)0x6f, (byte)0x00, 
-		                                                        (byte)0x72, (byte)0x00, (byte)0x6c, 
+	private static final byte[] BONJOUR_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00,
+	                                                            (byte)0x00, (byte)0x0e,  
+		                                                        (byte)0x00, (byte)0x42,
+		                                                        (byte)0x00, (byte)0x6f,
+		                                                        (byte)0x00, (byte)0x6e,
+		                                                        (byte)0x00, (byte)0x6a,
+		                                                        (byte)0x00, (byte)0x6f,
+		                                                        (byte)0x00, (byte)0x75, 
+		                                                        (byte)0x00, (byte)0x72,
+		                                                        (byte)0x00, (byte)0x20,
+		                                                        (byte)0x00, (byte)0x57,
+		                                                        (byte)0x00, (byte)0x6f,
+		                                                        (byte)0x00, (byte)0x72,
+		                                                        (byte)0x00, (byte)0x6c, 
 		                                                        (byte)0x00, (byte)0x64};
 	
 	private static final String OH_HAI_WORLD = "OH HAI World";
-	private static final byte[] OH_HAI_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00, (byte)0x00, 
-		                                                       (byte)0x0d, (byte)0xfe, (byte)0xff, 
-		                                                       (byte)0x00, (byte)0x4f, (byte)0x00, 
-		                                                       (byte)0x48, (byte)0x00, (byte)0x20, 
-		                                                       (byte)0x00, (byte)0x48, (byte)0x00, 
-		                                                       (byte)0x41, (byte)0x00, (byte)0x49, 
-		                                                       (byte)0x00, (byte)0x20, (byte)0x00, 
-		                                                       (byte)0x57, (byte)0x00, (byte)0x6f, 
-		                                                       (byte)0x00, (byte)0x72, (byte)0x00, 
-		                                                       (byte)0x6c, (byte)0x00, (byte)0x64 };
+	private static final byte[] OH_HAI_WORLD_BIN = new byte[]{ (byte)0x00, (byte)0x00,
+	                                                           (byte)0x00, (byte)0x0d,  
+		                                                       (byte)0x00, (byte)0x4f,
+		                                                       (byte)0x00, (byte)0x48,
+		                                                       (byte)0x00, (byte)0x20, 
+		                                                       (byte)0x00, (byte)0x48,
+		                                                       (byte)0x00, (byte)0x41,
+		                                                       (byte)0x00, (byte)0x49, 
+		                                                       (byte)0x00, (byte)0x20,
+		                                                       (byte)0x00, (byte)0x57,
+		                                                       (byte)0x00, (byte)0x6f, 
+		                                                       (byte)0x00, (byte)0x72,
+		                                                       (byte)0x00, (byte)0x6c,
+		                                                       (byte)0x00, (byte)0x64 };
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -117,7 +127,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 		super.afterClass();
 	}
 	
-	private byte[] getCombinedTestArray()
+	private byte[] getCombinedTestArray2()
 	{
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream( HELLO_WORLD_BIN.length + 
 		                                                         BONJOUR_WORLD_BIN.length +
@@ -219,36 +229,45 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 		}
 	}
 
-	//////////////////////////////////////////////
-	// TEST: testHLAunicodeStringEncodeMultiple() //
-	//////////////////////////////////////////////
-	@Test
+	//////////////////////////////////////////////////////
+	// TEST: testHLAunicodeStringEncodeDecodeMultiple() //
+	//////////////////////////////////////////////////////
+	@Test(groups="poop")
 	public void testHLAunicodeStringEncodeMultiple()
 	{
-		byte[] dataRaw = getCombinedTestArray();
-		
 		HLAunicodeString[] data = { this.encoderFactory.createHLAunicodeString( HELLO_WORLD ),
-		                        this.encoderFactory.createHLAunicodeString( BONJOUR_WORLD ),
-		                        this.encoderFactory.createHLAunicodeString( OH_HAI_WORLD ) };
+		                            this.encoderFactory.createHLAunicodeString( BONJOUR_WORLD ),
+		                            this.encoderFactory.createHLAunicodeString( OH_HAI_WORLD ) };
 
-		// Encode with a wrapper that can contain up to 3 of this type
-		ByteWrapper wrapper = new ByteWrapper( dataRaw.length );
+		//////////////////////////////////
+		// ENCODE   //////////////////////
+		//////////////////////////////////
+		// Figure out the encoded length, including byte alignment
+		int arrayLength = 0;
+		for( int i = 0; i < data.length; i++ )
+		{
+			while( arrayLength % data[i].getOctetBoundary() != 0 )
+				arrayLength++;
+
+			arrayLength += data[i].getEncodedLength();
+		}
+
+		// Create a wrapper to hold everything
+		ByteWrapper wrapper = new ByteWrapper( arrayLength );
 		int expectedPosition = 0;
 		
-		for( int i = 0; i < 3; ++i )
+		for( int i = 0; i < data.length; i++ )
 		{
 			Assert.assertEquals( expectedPosition, wrapper.getPos() );
 
 			// Does the position increment by the expected amount?
 			data[i].encode( wrapper );
-			expectedPosition += data[i].getEncodedLength();
 			
+			// Are we where we expect to be in the array?
+			while( expectedPosition % data[i].getOctetBoundary() != 0 ) // alignment
+				expectedPosition++;
+			expectedPosition += data[i].getEncodedLength(); // length
 			Assert.assertEquals( wrapper.getPos(), expectedPosition );
-
-			// Are the contents of the ByteWrapper what was expected?
-			byte[] wrapperContents = Arrays.copyOf( wrapper.array(), expectedPosition );
-			byte[] dataToHere = Arrays.copyOf( dataRaw, expectedPosition );
-			Assert.assertEquals( wrapperContents, dataToHere );
 		}
 
 		// Attempting to encode beyond the ByteWrapper's bounds should result in an EncoderException
@@ -268,6 +287,47 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 		{
 			// FAIL: Wrong exception thrown
 			wrongException( e, EncoderException.class );
+		}
+		
+		//////////////////////////////////
+		// DECODE   //////////////////////
+		//////////////////////////////////
+		// Decode the strings
+		HLAunicodeString one = this.encoderFactory.createHLAunicodeString();
+		HLAunicodeString two = this.encoderFactory.createHLAunicodeString();
+		HLAunicodeString three = this.encoderFactory.createHLAunicodeString();
+		try
+		{
+			wrapper.reset();
+			one.decode( wrapper );
+			two.decode( wrapper );
+			three.decode( wrapper );
+		}
+		catch( Exception e )
+		{
+			// FAIL
+			unexpectedException( "Decoding set of strings", e );
+		}
+		
+		// Compare the values
+		Assert.assertEquals( one.getValue(), data[0].getValue() );
+		Assert.assertEquals( two.getValue(), data[1].getValue() );
+		Assert.assertEquals( three.getValue(), data[2].getValue() );
+		
+		// Make sure we get the right exception when attempting to decode another (past the end)
+		try
+		{
+			HLAunicodeString temp = this.encoderFactory.createHLAunicodeString();
+			temp.decode( wrapper );
+		}
+		catch( DecoderException de )
+		{
+			// PASS: Expected this exception
+		}
+		catch( Exception e )
+		{
+			// FAIL: Wrong exception thrown
+			wrongException( e, DecoderException.class );
 		}
 	}
 
@@ -362,55 +422,6 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 		}
 	}
 
-	/////////////////////////////////////////////////////////
-	// TEST: testHLAunicodeStringDecodeByteWrapperMultiple() //
-	/////////////////////////////////////////////////////////
-	@Test
-	public void testHLAunicodeStringDecodeByteWrapperMultiple()
-	{
-		// Create a ByteWrapper with data for a three individual types contained within
-		byte[] buffer = getCombinedTestArray();
-		String[] values = { HELLO_WORLD, BONJOUR_WORLD, OH_HAI_WORLD };
-		ByteWrapper wrapper = new ByteWrapper( buffer );
-
-		// Attempt to decode all three types contained within the wrapper
-		try
-		{
-			for( int i = 0; i < 3; ++i )
-			{
-				// Create an object to decode into
-				HLAunicodeString data = this.encoderFactory.createHLAunicodeString( NOTHING );
-				data.decode( wrapper );
-
-				Assert.assertFalse( data.getValue().equals(NOTHING) );
-				Assert.assertEquals( data.getValue(), values[i] );
-			}
-		}
-		catch( Exception e )
-		{
-			unexpectedException( "Decoding a HLAunicodeString", e );
-		}
-
-		// Attempting to decode another type should result in a DecoderException
-		try
-		{
-			HLAunicodeString data = this.encoderFactory.createHLAunicodeString();
-			data.decode( wrapper );
-
-			// FAIL: expected a DecoderException
-			expectedException( DecoderException.class );
-		}
-		catch( DecoderException de )
-		{
-			// PASS: Expected this exception
-		}
-		catch( Exception e )
-		{
-			// FAIL: Expected a DecoderException
-			wrongException( e, DecoderException.class );
-		}
-	}
-
 	//////////////////////////////////////////////////////
 	// TEST: testHLAunicodeStringDecodeByteWrapperEmpty() //
 	//////////////////////////////////////////////////////
@@ -446,6 +457,7 @@ public class HLAunicodeSringTest extends Abstract1516eTest
 	{
 		// Create the object to decode into
 		HLAunicodeString data = this.encoderFactory.createHLAunicodeString( NOTHING );
+		Assert.assertEquals( data.getValue(), NOTHING );
 
 		try
 		{
