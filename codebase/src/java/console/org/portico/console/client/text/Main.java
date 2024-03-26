@@ -18,7 +18,7 @@ import com.lbf.commons.config.ConfigurationException;
 import com.lbf.commons.logging.Log4jConfigurator;
 import org.portico.console.client.text.config.CLConfigurator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class Main
 {
@@ -54,7 +54,7 @@ public class Main
 		// 1. bootstrap the logging //
 		//////////////////////////////
 		Log4jConfigurator.bootstrap( MainProperties.getLog4jConfig() );
-		Main.LOG = Logger.getLogger( "portico.console" );
+		Main.LOG = LogManager.getLogger( "portico.console" );
 		
 		///////////////////////////////
 		// 2. parse the command line //

@@ -19,7 +19,8 @@ import hlaunit.CommonSetup;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.testng.Assert;
 
@@ -47,7 +48,7 @@ public abstract class Abstract13Test
 
 	protected Abstract13Test()
 	{
-		this.logger = Logger.getLogger( "portico." + this.getClass().getSimpleName() );
+		this.logger = LogManager.getLogger( "portico." + this.getClass().getSimpleName() );
 		this.federates = new HashSet<Test13Federate>();
 	}
 

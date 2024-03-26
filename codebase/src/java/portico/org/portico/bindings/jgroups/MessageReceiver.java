@@ -14,7 +14,8 @@
  */
 package org.portico.bindings.jgroups;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.Message;
 import org.portico.lrc.LRC;
 import org.portico.lrc.utils.MessageHelpers;
@@ -46,7 +47,7 @@ public class MessageReceiver
 	public MessageReceiver()
 	{
 		this.lrc = null;
-		this.logger = Logger.getLogger( "portico.lrc.jgroups" );
+		this.logger = LogManager.getLogger( "portico.lrc.jgroups" );
 	}
 
 	//----------------------------------------------------------

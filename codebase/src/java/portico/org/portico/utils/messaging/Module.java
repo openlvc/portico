@@ -23,7 +23,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.utils.annotations.AnnotationLocator;
@@ -56,7 +57,7 @@ public class Module
 	protected Module( String name )
 	{
 		this.name = name;
-		this.logger = Logger.getLogger( "portico.container" );
+		this.logger = LogManager.getLogger( "portico.container" );
 		this.handlers = new HashSet<Class<? extends IMessageHandler>>();
 	}
 

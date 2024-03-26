@@ -19,7 +19,8 @@ import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.ptalk.Common;
 import org.portico.bindings.ptalk.channel.Channel;
 import org.portico.bindings.ptalk.channel.Header;
@@ -86,7 +87,7 @@ public class GroupManagement extends AbstractProtocol
 		super.configure( channel, properties );
 		this.master = false;
 		this.roster = null;
-		this.logger = Logger.getLogger( Common.getLogger().getName()+".GM" );
+		this.logger = LogManager.getLogger( Common.getLogger().getName()+".GM" );
 	}
 
 	/**

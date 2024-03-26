@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.ptalk.Common;
 import org.portico.bindings.ptalk.protocol.IProtocol;
 import org.portico.bindings.ptalk.protocol.Protocol;

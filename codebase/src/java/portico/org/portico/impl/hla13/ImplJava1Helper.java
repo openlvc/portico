@@ -26,7 +26,7 @@ import hla.rti13.java1.SaveInProgress;
 import hla.rti13.java1.SynchronizationPointLabelWasNotAnnounced;
 import hla.rti13.java1.TimeAdvanceAlreadyInProgress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.portico.impl.HLAVersion;
 import org.portico.impl.ISpecHelper;

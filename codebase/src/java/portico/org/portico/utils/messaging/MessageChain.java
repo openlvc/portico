@@ -17,7 +17,8 @@ package org.portico.utils.messaging;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The {@link MessageChain} class provides a simple implementation of a chain-like structure,
@@ -43,7 +44,7 @@ public class MessageChain extends AbstractMessageHandler implements IMessageHand
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
 	/** Just share a single logger */
-	private Logger logger = Logger.getLogger( "portico.container" );
+	private Logger logger = LogManager.getLogger( "portico.container" );
 
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES

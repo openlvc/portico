@@ -20,7 +20,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.ConnectedRoster;
 import org.portico.bindings.IConnection;
 import org.portico.bindings.jgroups.JGroupsRoster;
@@ -93,7 +94,7 @@ public class JVMConnection implements IConnection
 		throws JConfigurationException
 	{
 		this.lrc = lrc;
-		this.logger = Logger.getLogger( "portico.lrc.jvmconn" );
+		this.logger = LogManager.getLogger( "portico.lrc.jvmconn" );
 	}
 	
 	public void connect()

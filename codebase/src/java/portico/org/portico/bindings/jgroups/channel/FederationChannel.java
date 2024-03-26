@@ -19,14 +19,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.Message.Flag;
 import org.jgroups.blocks.MessageDispatcher;
 import org.jgroups.util.DefaultThreadFactory;
 import org.jgroups.util.Util;
-
 import org.portico.bindings.jgroups.JGroupsProperties;
 import org.portico.bindings.jgroups.MessageReceiver;
 import org.portico.lrc.LRC;
@@ -80,7 +80,7 @@ public class FederationChannel
 	public FederationChannel( String federationName )
 	{
 		this.federationName = federationName;
-		this.logger = Logger.getLogger( "portico.lrc.jgroups" );
+		this.logger = LogManager.getLogger( "portico.lrc.jgroups" );
 		
 		// set the appropriate level for the jgroups logger, by default we'll just turn it
 		// off because it is quite noisy. that said, we will allow for it to be turned back

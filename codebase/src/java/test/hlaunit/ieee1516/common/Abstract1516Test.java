@@ -14,7 +14,8 @@
  */
 package hlaunit.ieee1516.common;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.testng.Assert;
 
@@ -39,7 +40,7 @@ public abstract class Abstract1516Test
 
 	protected Abstract1516Test()
 	{
-		this.logger = Logger.getLogger( "portico." + this.getClass().getSimpleName() );
+		this.logger = LogManager.getLogger( "portico." + this.getClass().getSimpleName() );
 	}
 
 	//----------------------------------------------------------

@@ -21,7 +21,8 @@ import java.io.FileInputStream;
 import java.lang.String;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla13.Rti13Ambassador;
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.DoubleTimeInterval;
@@ -78,7 +79,7 @@ public class ProxyRtiAmbassador
 		this.rtiamb = new Rti13Ambassador();
 		
 		// fetch the LRC logger so that we have somewhere to notify of our events
-		this.logger = Logger.getLogger( "portico.lrc.cpp13" );
+		this.logger = LogManager.getLogger( "portico.lrc.cpp13" );
 		this.logger.debug( "C++ ProxyRtiAmbassador.class created (java-side)" );
 
 		// load the C++ libraries

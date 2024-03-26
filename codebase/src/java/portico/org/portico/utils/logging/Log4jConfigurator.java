@@ -14,17 +14,22 @@
  */
 package org.portico.utils.logging;
 
-import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter.Result;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 
@@ -62,31 +67,31 @@ public class Log4jConfigurator
 	 */
 	public static void setLevel( String level, String... loggers ) throws JConfigurationException
 	{
-		Level log4jLevel = validateLevel( level );
+		// Level log4jLevel = validateLevel( level );
 		for( String loggerName : loggers )
 		{
 			// get the logger, thus instantiating it if it doesn't already exist
-			Logger logger = Logger.getLogger( loggerName );
+			// Logger logger = LogManager.getLogger( loggerName );
 			
 			// check to see if it has any appenders anywhere in the hierarchy. If not, we'll
 			// want to add one, otherwise there will be no logging output!
-			boolean appenderFound = false;
-			Logger temp = logger;
-			while( temp != null )
-			{
-				if( temp.getAllAppenders().hasMoreElements() )
-				{
-					appenderFound = true;
-					break;
-				}
+			// boolean appenderFound = false;
+			// Logger temp = logger;
+			// while( temp != null )
+			// {
+			// 	if( temp.getAllAppenders().hasMoreElements() )
+			// 	{
+			// 		appenderFound = true;
+			// 		break;
+			// 	}
 				
-				temp = (Logger)temp.getParent();
-			}
+			// 	temp = (Logger)temp.getParent();
+			// }
 			
-			if( appenderFound == false )
-				attachConsoleAppender( logger );
+			// if( appenderFound == false )
+			// 	attachConsoleAppender( logger );
 			
-			logger.setLevel( log4jLevel );
+			Configurator.setLevel( loggerName, level );
 		}
 	}
 	
@@ -99,36 +104,35 @@ public class Log4jConfigurator
 		// remove any existing file appenders from the portico logger
 		removeFileAppenders();
 		
-		try
-		{
-    		// create the appender
-    		PatternLayout layout = new PatternLayout( DEFAULT_PATTERN );
-    		RollingFileAppender appender = new RollingFileAppender( layout, logfile, true );
-    		appender.setMaxBackupIndex( 2 );
-    		appender.setMaxFileSize( "10MB" );
-    		
-    		// attach the appender
-    		Logger porticoLogger = Logger.getLogger( "portico" );
-    		porticoLogger.addAppender( appender );
-    		
-    		// attach the same appender to the jgroups logger
-    		Logger jgroupsLogger = Logger.getLogger( "org.jgroups" );
-    		jgroupsLogger.addAppender( appender );
-		}
-		catch( IOException ioex )
-		{
-			throw new JConfigurationException( ioex );
-		}
+		// create the appender
+		PatternLayout layout = PatternLayout.newBuilder().withPattern( DEFAULT_PATTERN ).build();
+		DefaultRolloverStrategy rolloverStrategy = DefaultRolloverStrategy.newBuilder().withMax("2").build();
+		SizeBasedTriggeringPolicy triggerPolicy = SizeBasedTriggeringPolicy.createPolicy( "10MB" );
+		RollingFileAppender appender = RollingFileAppender.newBuilder()
+		                                                  .setLayout( layout )
+		                                                  .withFileName( logfile )
+		                                                  .withStrategy( rolloverStrategy )
+		                                                  .withPolicy( triggerPolicy )
+		                                                  .withAppend( append )
+		                                                  .build();
+		appender.start();
+	
+		// attach the appender
+		Logger porticoLogger = LogManager.getLogger( "portico" );
+		((org.apache.logging.log4j.core.Logger)porticoLogger).addAppender( appender );
+		
+		// attach the same appender to the jgroups logger
+		Logger jgroupsLogger = LogManager.getLogger( "org.jgroups" );
+		((org.apache.logging.log4j.core.Logger)jgroupsLogger).addAppender( appender );
 	}
 	
 	private static void removeFileAppenders()
 	{
-		Logger logger = Logger.getLogger( "portico" );
-		Enumeration<?> appenders = logger.getAllAppenders();
-		HashSet<Appender> toRemove = new HashSet<Appender>();
-		while( appenders.hasMoreElements() )
+		org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger( "portico" );
+		Collection<Appender> appenders = logger.getAppenders().values();
+		HashSet<Appender> toRemove = new HashSet<>();
+		for( Appender appender : appenders )
 		{
-			Appender appender = (Appender)appenders.nextElement();
 			if( appender instanceof FileAppender )
 				toRemove.add( appender );
 		}
@@ -136,7 +140,7 @@ public class Log4jConfigurator
 		for( Appender appender : toRemove )
 		{
 			logger.removeAppender( appender );
-			appender.close();
+			appender.stop();
 		}
 	}
 	
@@ -168,26 +172,31 @@ public class Log4jConfigurator
 		enableConsole();
 		enableFile();
 
-		// set the level on the loggers as appropritate to the configuration
-		Logger.getLogger("portico").setLevel( porticoLevel );
-		Logger.getLogger("portico.container").setLevel( containerLevel );
+		// set the level on the loggers as appropriate to the configuration
+		Configurator.setLevel( "portico", porticoLevel );
+		Configurator.setLevel( "portico.container", containerLevel );
 	}
 	
 	private static final void enableConsole()
 	{
-		attachConsoleAppender( Logger.getLogger("portico") );
-		attachConsoleAppender( Logger.getLogger("org.jgroups") );
+		attachConsoleAppender( LogManager.getLogger("portico") );
+		attachConsoleAppender( LogManager.getLogger("org.jgroups") );
 	}
 	
 	private static final void attachConsoleAppender( Logger logger )
 	{
+		PatternLayout layout = PatternLayout.newBuilder().withPattern( DEFAULT_PATTERN ).build();
+		ThresholdFilter logFilter = ThresholdFilter.createFilter( Level.TRACE, Result.ACCEPT, Result.DENY );
+		
 		// create the appender
-		PatternLayout layout = new PatternLayout( DEFAULT_PATTERN );
-		ConsoleAppender appender = new ConsoleAppender( layout, ConsoleAppender.SYSTEM_OUT );
-		appender.setThreshold( Level.TRACE ); // output restricted at logger level, not appender
-
+		ConsoleAppender appender = ConsoleAppender.newBuilder()
+		                                          .setLayout( layout )
+		                                          .setTarget( ConsoleAppender.Target.SYSTEM_OUT )
+		                                          .setFilter( logFilter )
+		                                          .build();
+		
 		// attach the appender
-		logger.addAppender( appender );
+		((org.apache.logging.log4j.core.Logger)logger).addAppender( appender );
 	}
 	
 	private static final void enableFile() throws JConfigurationException

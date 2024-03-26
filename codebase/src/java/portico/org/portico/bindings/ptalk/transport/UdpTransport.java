@@ -24,7 +24,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.ptalk.Common;
 import org.portico.bindings.ptalk.channel.Channel;
 import org.portico.bindings.ptalk.channel.Packet;

@@ -18,7 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.lbf.commons.component.ComponentException;
 import com.lbf.commons.config.ConfigurationException;
@@ -59,7 +59,7 @@ public class TextConsole implements FSContextVisitor
 	{
 		this.bindingEndpoint = newBindingEndpoint;
 
-		this.logger = Logger.getLogger( "text-console" );
+		this.logger = LogManager.getLogger( "text-console" );
 		this.rootContext = FSContextFactory.createRootContext();
 		this.currentContext = this.rootContext;
 	}

@@ -20,7 +20,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.portico.console.binding.ConsoleBootstrap;
 

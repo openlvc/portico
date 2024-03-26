@@ -20,10 +20,12 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.portico.bindings.ptalk.Common;
+import org.portico.bindings.ptalk.LrcConnection;
 import org.portico.bindings.ptalk.protocol.GroupManagement;
+import org.portico.bindings.ptalk.transport.ITransport;
 import org.portico.bindings.ptalk.transport.UdpTransport;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
@@ -385,12 +387,12 @@ public class Channel
 	// for pushing and popping Log4j Nested Dialogue Context while logging
 	private void pushContext()
 	{
-		NDC.push( "   ("+name+") " );
+		ThreadContext.push( "   ("+name+") " );
 	}
 	
 	private void popContext()
 	{
-		NDC.pop();
+		ThreadContext.pop();
 	}
 	
 	/**

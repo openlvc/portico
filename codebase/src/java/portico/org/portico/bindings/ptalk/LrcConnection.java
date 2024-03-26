@@ -17,7 +17,7 @@ package org.portico.bindings.ptalk;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.ConnectedRoster;
 import org.portico.bindings.IConnection;
 import org.portico.bindings.ptalk.channel.Channel;

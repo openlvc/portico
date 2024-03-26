@@ -18,7 +18,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCState;
 import org.portico.lrc.PorticoConstants;

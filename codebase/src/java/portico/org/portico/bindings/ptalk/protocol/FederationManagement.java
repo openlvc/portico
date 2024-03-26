@@ -18,7 +18,8 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.ptalk.Common;
 import org.portico.bindings.ptalk.channel.Channel;
 import org.portico.bindings.ptalk.channel.Header;
@@ -84,7 +85,7 @@ public class FederationManagement extends AbstractProtocol
 		throws JConfigurationException
 	{
 		super.configure( channel, properties );
-		this.logger = Logger.getLogger( Common.getLogger().getName()+".FederationManagement" );
+		this.logger = LogManager.getLogger( Common.getLogger().getName()+".FederationManagement" );
 		
 		// when the master has to create a new channel, it does so by using the same multicast
 		// address as before, just incrementing the port number. the initial address/port combo

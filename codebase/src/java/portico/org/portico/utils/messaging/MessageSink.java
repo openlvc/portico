@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 import static org.portico.utils.messaging.Module.className;
@@ -117,7 +118,7 @@ public class MessageSink extends AbstractMessageHandler
 		this.defaultHandler = new DefaultHandler( this.name );
 		this.gPreprocess = new MessageChain( this.name + ".preprocess" );
 		this.gPostprocess = new MessageChain( this.name + ".postprocess" );
-		this.logger = Logger.getLogger( "portico.container.sink." + this.name );
+		this.logger = LogManager.getLogger( "portico.container.sink." + this.name );
 	}
 	
 	public MessageSink( String name, Logger logger )

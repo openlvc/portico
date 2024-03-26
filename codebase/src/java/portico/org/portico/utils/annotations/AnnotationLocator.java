@@ -26,7 +26,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class contains methods to locating classes (either in a specific location, or on the
@@ -54,7 +55,7 @@ public class AnnotationLocator
 
 	private AnnotationLocator()
 	{
-		this.logger = Logger.getLogger( "portico.container" );
+		this.logger = LogManager.getLogger( "portico.container" );
 	}
 	
 	//----------------------------------------------------------

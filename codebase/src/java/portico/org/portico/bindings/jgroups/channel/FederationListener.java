@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.Address;
 import org.jgroups.MembershipListener;
 import org.jgroups.Message;
@@ -26,7 +26,6 @@ import org.jgroups.MessageListener;
 import org.jgroups.View;
 import org.jgroups.blocks.RequestHandler;
 import org.jgroups.util.Util;
-
 import org.portico.lrc.compat.JResignAction;
 import org.portico.lrc.model.ObjectModel;
 import org.portico.lrc.services.federation.msg.ResignFederation;

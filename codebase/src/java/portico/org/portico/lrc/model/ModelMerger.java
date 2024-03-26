@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JRTIinternalError;
 
@@ -49,7 +50,7 @@ public class ModelMerger
 	//----------------------------------------------------------
 	public ModelMerger()
 	{
-		this.logger = Logger.getLogger( "portico.lrc.merger" );
+		this.logger = LogManager.getLogger( "portico.lrc.merger" );
 	}
 
 	//----------------------------------------------------------
