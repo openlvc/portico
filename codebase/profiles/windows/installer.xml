@@ -40,25 +40,6 @@
 	<extension-point name="installer" extensionOf="master.installer"/>
 
 	<!--                                     -->
-	<!-- Windows 32-bit Installer Generation -->
-	<!--                                     -->
-	<target name="nsis.win32" extensionOf="installer" depends="prep">
-		<!-- Verify we have a JRE we can bundle -->
-		<verifyJdk location="${jdk.home.win32}" arch="x86"/>
-
-		<!-- run the NSIS script for the installer -->
-		<echo>Creating Windows 32-bit Installer</echo>
-		<nsis-installer script="${nsis.resources.dir}/installer-win32.nsi">
-			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put the installer here   -->
-			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
-			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
-			<define name="LICENSE"      value="${license}"/>       <!-- presented during install -->
-			<define name="SANDBOX"      value="${sandbox.dir}"/>   <!-- contents of the app      -->
-			<define name="JREPATH"      value="${jdk.home.win32}\jre"/> <!-- jre to bundle  -->
-		</nsis-installer>
-	</target>
-
-	<!--                                     -->
 	<!-- Windows 64-bit Installer Generation -->
 	<!--                                     -->
 	<target name="nsis.win64" extensionOf="installer" depends="prep">

@@ -21,7 +21,7 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
-	<verifyJdk location="${jdk.home.win32}" arch="x86"/>
+	<!-- <verifyJdk location="${jdk.home.win32}" arch="x86"/> -->
 	<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
 
 	<!-- ==================================== -->
@@ -71,6 +71,27 @@
 	<extension-point name="compile"
 	                 extensionOf="cpp.compile"
 					 description="Compile the full HLA v1.3 interface"/>
+	
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2022 (vc14_3) Compile Targets           -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2022 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_3" extensionOf="compile">
+		<trycatch>
+		<try>
+			<compile-hla13 compiler="vc14_3" arch="x86" build="debug"/>
+			<compile-hla13 compiler="vc14_3" arch="x86" build="release"/>
+			<compile-hla13 compiler="vc14_3" arch="amd64" build="debug"/>
+			<compile-hla13 compiler="vc14_3" arch="amd64" build="release"/>
+		</try>
+		<catch>
+			<echo>Skipping VC14_3, it may not be installed</echo>
+		</catch>
+		</trycatch>
+	</target>
 	
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2019 (vc14_2) Compile Targets           -->
@@ -123,10 +144,17 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc10" extensionOf="compile">
-		<compile-hla13 compiler="vc10" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc10" arch="x86" build="release"/>
-		<compile-hla13 compiler="vc10" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc10" arch="amd64" build="release"/>
+		<trycatch>
+			<try>
+				<compile-hla13 compiler="vc10" arch="x86" build="debug"/>
+				<compile-hla13 compiler="vc10" arch="x86" build="release"/>
+				<compile-hla13 compiler="vc10" arch="amd64" build="debug"/>
+				<compile-hla13 compiler="vc10" arch="amd64" build="release"/>
+			</try>
+			<catch>
+				<echo>Skipping VC10, it may not be installed</echo>
+			</catch>
+		</trycatch>
 	</target>
 
 	<!-- ================================================================= -->
@@ -137,10 +165,17 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc9" extensionOf="compile">
-		<compile-hla13 compiler="vc9" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc9" arch="x86" build="release"/>
-		<compile-hla13 compiler="vc9" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc9" arch="amd64" build="release"/>
+		<trycatch>
+			<try>
+				<compile-hla13 compiler="vc9" arch="x86" build="debug"/>
+				<compile-hla13 compiler="vc9" arch="x86" build="release"/>
+				<compile-hla13 compiler="vc9" arch="amd64" build="debug"/>
+				<compile-hla13 compiler="vc9" arch="amd64" build="release"/>
+			</try>
+			<catch>
+				<echo>Skipping VC9, it may not be installed</echo>
+			</catch>
+		</trycatch>
 	</target>
 
 	<!-- ================================================================= -->
@@ -151,10 +186,17 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc8" extensionOf="compile">
-		<compile-hla13 compiler="vc8" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc8" arch="x86" build="release"/>
-		<compile-hla13 compiler="vc8" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc8" arch="amd64" build="release"/>
+		<trycatch>
+			<try>
+				<compile-hla13 compiler="vc8" arch="x86" build="debug"/>
+				<compile-hla13 compiler="vc8" arch="x86" build="release"/>
+				<compile-hla13 compiler="vc8" arch="amd64" build="debug"/>
+				<compile-hla13 compiler="vc8" arch="amd64" build="release"/>
+			</try>
+			<catch>
+				<echo>Skipping VC8, it may not be installed</echo>
+			</catch>
+		</trycatch>
 	</target>
 	
 	<!-- ==================================== -->
@@ -293,7 +335,7 @@
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc14_2, vc14_1, vc14, vc10"/>
+		<attribute name="compiler" description="vc14_3, vc14_2, vc14_1, vc14, vc10"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -363,7 +405,7 @@
 	-->	 
 	<macrodef name="msvc-hla13" description="(HLA 1.3) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc14_2, vc14_1, vc14, vc10"/>
+		<attribute name="compiler" description="vc14_3, vc14_2, vc14_1, vc14, vc10"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 

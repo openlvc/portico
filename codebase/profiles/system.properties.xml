@@ -83,7 +83,7 @@
 	     is used by the compilation targets to determine whether or not to compile
 	     for a particular profile.
 	-->
-	<generateCppCompilerVariables compilers="gcc4,gcc8,vc10,vc14,vc14_1,vc14_2"
+	<generateCppCompilerVariables compilers="gcc4,gcc8,vc10,vc14,vc14_1,vc14_2,vc14_3"
 	                              architectures="x86,amd64"
 	                              builds="debug,release"/>
 

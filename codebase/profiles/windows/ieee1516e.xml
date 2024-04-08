@@ -21,7 +21,6 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Verify that we have an appropriate JDK to build against -->
-	<verifyJdk location="${jdk.home.win32}" arch="x86"/>
 	<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
 
 	<!-- ================================================ -->
@@ -66,6 +65,27 @@
 	<extension-point name="compile"
 	                 extensionOf="cpp.compile"
 					 description="Compile the full IEEE-1516e interface"/>
+	
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2022 (vc14_3) Compile Targets             -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2022 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_3" extensionOf="compile">
+		<trycatch>
+		<try>
+			<compile-ieee1516e compiler="vc14_3" arch="x86" build="debug"/>
+			<compile-ieee1516e compiler="vc14_3" arch="x86" build="release"/>
+			<compile-ieee1516e compiler="vc14_3" arch="amd64" build="debug"/>
+			<compile-ieee1516e compiler="vc14_3" arch="amd64" build="release"/>
+		</try>
+		<catch>
+			<echo>Skipping VC14_3, it may not be installed</echo>
+		</catch>
+		</trycatch>
+	</target>
 	
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2019 (vc14_2) Compile Targets             -->
@@ -117,10 +137,17 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc10" extensionOf="compile">
-		<compile-ieee1516e compiler="vc10" arch="x86" build="debug"/>
-		<compile-ieee1516e compiler="vc10" arch="x86" build="release"/>
-		<compile-ieee1516e compiler="vc10" arch="amd64" build="debug"/>
-		<compile-ieee1516e compiler="vc10" arch="amd64" build="release"/>
+		<trycatch>
+			<try>
+				<compile-ieee1516e compiler="vc10" arch="x86" build="debug"/>
+				<compile-ieee1516e compiler="vc10" arch="x86" build="release"/>
+				<compile-ieee1516e compiler="vc10" arch="amd64" build="debug"/>
+				<compile-ieee1516e compiler="vc10" arch="amd64" build="release"/>
+			</try>
+			<catch>
+				<echo>Skipping VC14_1, it may not be installed</echo>
+			</catch>
+		</trycatch>
 	</target>
 
 	<!-- ================================================================= -->
@@ -131,10 +158,17 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc9" extensionOf="compile">
-		<compile-ieee1516e compiler="vc9" arch="x86" build="debug"/>
-		<compile-ieee1516e compiler="vc9" arch="x86" build="release"/>
-		<compile-ieee1516e compiler="vc9" arch="amd64" build="debug"/>
-		<compile-ieee1516e compiler="vc9" arch="amd64" build="release"/>
+		<trycatch>
+			<try>
+				<compile-ieee1516e compiler="vc9" arch="x86" build="debug"/>
+				<compile-ieee1516e compiler="vc9" arch="x86" build="release"/>
+				<compile-ieee1516e compiler="vc9" arch="amd64" build="debug"/>
+				<compile-ieee1516e compiler="vc9" arch="amd64" build="release"/>
+			</try>
+			<catch>
+				<echo>Skipping VC14_1, it may not be installed</echo>
+			</catch>
+		</trycatch>
 	</target>
 
 	<!-- ================================================================= -->
@@ -145,10 +179,17 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc8" extensionOf="compile">
-		<compile-ieee1516e compiler="vc8" arch="x86" build="debug"/>
-		<compile-ieee1516e compiler="vc8" arch="x86" build="release"/>
-		<compile-ieee1516e compiler="vc8" arch="amd64" build="debug"/>
-		<compile-ieee1516e compiler="vc8" arch="amd64" build="release"/>
+		<trycatch>
+			<try>
+				<compile-ieee1516e compiler="vc8" arch="x86" build="debug"/>
+				<compile-ieee1516e compiler="vc8" arch="x86" build="release"/>
+				<compile-ieee1516e compiler="vc8" arch="amd64" build="debug"/>
+				<compile-ieee1516e compiler="vc8" arch="amd64" build="release"/>
+			</try>
+			<catch>
+				<echo>Skipping VC14_1, it may not be installed</echo>
+			</catch>
+		</trycatch>
 	</target>
 
 	<!-- ==================================== -->
