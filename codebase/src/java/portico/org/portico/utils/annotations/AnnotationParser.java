@@ -18,13 +18,14 @@ import java.io.InputStream;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 
 /**
  * This class handles the bytecode inspector that will look at the bytes for a class file and
  * attempt to determine if the class contained within declares a particular annotation. This
  * makes use of the ASM library for bytecode interpretation.
  */
-public class AnnotationParser extends EmptyVisitor
+public class AnnotationParser extends ClassVisitor
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -42,6 +43,8 @@ public class AnnotationParser extends EmptyVisitor
 
 	private AnnotationParser( String targetAnnotation )
 	{
+		super( 262144 );
+		
 		this.targetAnnotation = targetAnnotation;
 		this.found = false;
 	}
@@ -55,7 +58,53 @@ public class AnnotationParser extends EmptyVisitor
 		if( name.equals(targetAnnotation) )
 			this.found = true;
 		
-		return this;
+		return new AnnotationVis(262144);
+	}
+	
+	private class AnnotationVis extends AnnotationVisitor
+	{
+
+		public AnnotationVis( int api )
+		{
+			super( api );
+			//TODO Auto-generated constructor stub
+		}
+		
+		public void visit(String name, Object value) 
+		{
+			if (this.av != null) 
+			{
+				this.av.visit(name, value);
+			}
+
+		}
+
+		public void visitEnum(String name, String desc, String value) 
+		{
+			if (this.av != null) 
+			{
+				this.av.visitEnum(name, desc, value);
+			}
+
+		}
+
+		public AnnotationVisitor visitAnnotation(String name, String desc)
+		{
+			return this.av != null ? this.av.visitAnnotation(name, desc) : null;
+		}
+
+		public AnnotationVisitor visitArray(String name) 
+		{
+			return this.av != null ? this.av.visitArray(name) : null;
+		}
+
+		public void visitEnd() 
+		{
+			if (this.av != null) 
+			{
+				this.av.visitEnd();
+			}
+		}
 	}
 
 	//----------------------------------------------------------
@@ -78,10 +127,17 @@ public class AnnotationParser extends EmptyVisitor
 	public static boolean parseForAnnotation( InputStream classBytes, String annotationString )
 		throws Exception
 	{	
-		ClassReader reader = new ClassReader( classBytes );
-		AnnotationParser parser = new AnnotationParser( annotationString );
-		reader.accept( parser, ClassReader.EXPAND_FRAMES );
-		return parser.found;
+		try
+		{
+			ClassReader reader = new ClassReader( classBytes );
+			AnnotationParser parser = new AnnotationParser( annotationString );
+			reader.accept( parser, ClassReader.EXPAND_FRAMES );
+			return parser.found;
+		}
+		catch( Exception e )
+		{
+			return false;
+		}
 	}
 
 }

@@ -41,8 +41,13 @@ import org.objectweb.asm.MethodVisitor;
  * 
  * @author Eric Bruneton
  */
-public class EmptyVisitor implements ClassVisitor, FieldVisitor, MethodVisitor, AnnotationVisitor
+public class EmptyVisitor extends AnnotationVisitor// ClassVisitor, FieldVisitor, MethodVisitor, AnnotationVisitor
 {
+
+	public EmptyVisitor( int api )
+	{
+		super( api );
+	}
 
 	public void visit( final int version,
 	                   final int access,
@@ -77,23 +82,23 @@ public class EmptyVisitor implements ClassVisitor, FieldVisitor, MethodVisitor, 
 	{
 	}
 
-	public FieldVisitor visitField( final int access,
-	                                final String name,
-	                                final String desc,
-	                                final String signature,
-	                                final Object value )
-	{
-		return this;
-	}
+	// public FieldVisitor visitField( final int access,
+	//                                 final String name,
+	//                                 final String desc,
+	//                                 final String signature,
+	//                                 final Object value )
+	// {
+	// 	return this;
+	// }
 
-	public MethodVisitor visitMethod( final int access,
-	                                  final String name,
-	                                  final String desc,
-	                                  final String signature,
-	                                  final String[] exceptions )
-	{
-		return this;
-	}
+	// public MethodVisitor visitMethod( final int access,
+	//                                   final String name,
+	//                                   final String desc,
+	//                                   final String signature,
+	//                                   final String[] exceptions )
+	// {
+	// 	return this;
+	// }
 
 	public void visitEnd()
 	{

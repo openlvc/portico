@@ -264,10 +264,12 @@ public class FOM
 			ICMetadata interactionClass = fom.newInteraction( interactionClassName );
 
 			// get the transport and order
-			String interactionOrder = getChildValue( current, "order" );
-			String interactionTransport = getChildValue( current, "transportation" );
-			interactionClass.setOrder( Order.fromFomString(interactionOrder) );
-			interactionClass.setTransport( Transport.fromFomString(interactionTransport) );
+			String interactionOrder = getChildValueForgiving( current, "order" );
+			String interactionTransport = getChildValueForgiving( current, "transportation" );
+			if( interactionOrder != null )
+				interactionClass.setOrder( Order.fromFomString(interactionOrder) );
+			if( interactionTransport != null )
+				interactionClass.setTransport( Transport.fromFomString(interactionTransport) );
 
 			// get all the interaction parameters
 			extractParameters( interactionClass, current );

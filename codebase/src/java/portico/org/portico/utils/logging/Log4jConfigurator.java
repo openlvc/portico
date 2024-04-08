@@ -109,8 +109,10 @@ public class Log4jConfigurator
 		DefaultRolloverStrategy rolloverStrategy = DefaultRolloverStrategy.newBuilder().withMax("2").build();
 		SizeBasedTriggeringPolicy triggerPolicy = SizeBasedTriggeringPolicy.createPolicy( "10MB" );
 		RollingFileAppender appender = RollingFileAppender.newBuilder()
+		                                                  .setName( "file" )
 		                                                  .setLayout( layout )
 		                                                  .withFileName( logfile )
+		                                                  .withFilePattern( logfile + ".%i" )
 		                                                  .withStrategy( rolloverStrategy )
 		                                                  .withPolicy( triggerPolicy )
 		                                                  .withAppend( append )
@@ -190,10 +192,13 @@ public class Log4jConfigurator
 		
 		// create the appender
 		ConsoleAppender appender = ConsoleAppender.newBuilder()
+		                                          .setName( "console" )
 		                                          .setLayout( layout )
 		                                          .setTarget( ConsoleAppender.Target.SYSTEM_OUT )
 		                                          .setFilter( logFilter )
 		                                          .build();
+		
+		appender.start();
 		
 		// attach the appender
 		((org.apache.logging.log4j.core.Logger)logger).addAppender( appender );
