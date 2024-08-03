@@ -28,7 +28,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true,groups={"deleteRegion", "DeleteRegionTest", "ddm"})
+@Test(singleThreaded=true,groups={"deleteRegion", "DeleteRegionTest", "ddm"})
 public class DeleteRegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

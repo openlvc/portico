@@ -34,7 +34,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"ProvideUpdateTest", "provideUpdate", "objectManagement"})
+@Test(singleThreaded=true, groups={"ProvideUpdateTest", "provideUpdate", "objectManagement"})
 public class ProvideUpdateTest extends Abstract1516Test
 {
 	//----------------------------------------------------------

@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
  * tests to ensure that the proper time-status for federates is saved/restored are located in the
  * time management tests. 
  */
-@Test(sequential=true, groups={"FederationRestoreTest", "federationRestore", "SaveRestore"})
+@Test(singleThreaded=true, groups={"FederationRestoreTest", "federationRestore", "SaveRestore"})
 public class FederationRestoreTest extends Abstract13Test
 {
 	//----------------------------------------------------------

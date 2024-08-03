@@ -35,7 +35,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"FlushQueueRequestTest", "optimistic", "timeManagement"})
+@Test(singleThreaded=true, groups={"FlushQueueRequestTest", "optimistic", "timeManagement"})
 public class FlushQueueRequestTest extends Abstract1516Test
 {
 	//----------------------------------------------------------

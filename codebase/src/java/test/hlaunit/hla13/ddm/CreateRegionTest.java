@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
  * They do not explicitly test the implementation of the region class itself (that is left to
  * the {@link RegionTest} class).
  */
-@Test(sequential=true,groups={"createRegion", "CreateRegionTest", "ddm"})
+@Test(singleThreaded=true,groups={"createRegion", "CreateRegionTest", "ddm"})
 public class CreateRegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

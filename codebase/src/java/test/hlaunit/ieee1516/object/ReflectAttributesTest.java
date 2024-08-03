@@ -36,7 +36,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"ReflectAttributesTest", "reflectAttributes", "objectManagement"})
+@Test(singleThreaded=true, groups={"ReflectAttributesTest", "reflectAttributes", "objectManagement"})
 public class ReflectAttributesTest extends Abstract1516Test
 {
 	//----------------------------------------------------------

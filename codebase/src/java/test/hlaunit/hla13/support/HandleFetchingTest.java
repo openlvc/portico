@@ -23,7 +23,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"HandleFetchingTest", "model", "fetchHandles", "supportServices"})
+@Test(singleThreaded=true, groups={"HandleFetchingTest", "model", "fetchHandles", "supportServices"})
 public class HandleFetchingTest extends Abstract13Test
 {
 	//----------------------------------------------------------

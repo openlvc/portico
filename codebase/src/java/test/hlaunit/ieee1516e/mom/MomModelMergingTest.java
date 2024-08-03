@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 import hlaunit.ieee1516e.common.TestFederate;
 
-@Test(sequential=true, groups={"MomModelMergingTest","mom"})
+@Test(singleThreaded=true, groups={"MomModelMergingTest","mom"})
 public class MomModelMergingTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

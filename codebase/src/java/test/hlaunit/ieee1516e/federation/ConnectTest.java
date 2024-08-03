@@ -26,7 +26,7 @@ import hla.rti1516e.exceptions.AlreadyConnected;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 import hlaunit.ieee1516e.common.TestFederate;
 
-@Test(sequential=true, groups={"ConnectTest", "basic", "connect", "federationManagement"})
+@Test(singleThreaded=true, groups={"ConnectTest", "basic", "connect", "federationManagement"})
 public class ConnectTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

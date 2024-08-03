@@ -35,11 +35,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"SubscribeObjectClassTest",
-                               "subscribeObject",
-                               "subscribe",
-                               "pubsub",
-                               "declarationManagement"})
+@Test(singleThreaded=true, groups={"SubscribeObjectClassTest",
+                                   "subscribeObject",
+                                   "subscribe",
+                                   "pubsub",
+                                   "declarationManagement"})
 public class SubscribeObjectClassTest extends Abstract13Test
 {
 	//----------------------------------------------------------

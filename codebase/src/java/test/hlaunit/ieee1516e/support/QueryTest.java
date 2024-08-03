@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  * This test covers the basics of state information that can be obtained from the RTIambassador
  * through the queryXxx methods (we're talking, time, lbts, etc...)
  */
-@Test(sequential=true, groups={"QueryTest", "state", "query", "timeManagement", "supportServices"})
+@Test(singleThreaded=true, groups={"QueryTest", "state", "query", "timeManagement", "supportServices"})
 public class QueryTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

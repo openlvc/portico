@@ -25,7 +25,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"TimeManagementSaveRestoreTest", "timeManagement", "SaveRestore"})
+@Test(singleThreaded=true, groups={"TimeManagementSaveRestoreTest", "timeManagement", "SaveRestore"})
 public class TimeManagementSaveRestoreTest extends Abstract13Test
 {
 	//----------------------------------------------------------

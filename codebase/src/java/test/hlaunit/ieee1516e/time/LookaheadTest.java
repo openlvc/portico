@@ -40,7 +40,7 @@ import org.testng.annotations.Test;
  * also using the various helper methods of {@link TestFederate} to validate that lookahead
  * values are enforces for things like interactions and attribute updates. 
  */
-@Test(sequential=true, groups={"LookaheadTest", "lookahead", "timeManagement"})
+@Test(singleThreaded=true, groups={"LookaheadTest", "lookahead", "timeManagement"})
 public class LookaheadTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

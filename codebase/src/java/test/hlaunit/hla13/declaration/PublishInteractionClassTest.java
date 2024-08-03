@@ -28,11 +28,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"PublishInteractionClassTest",
-                               "publishInteraction",
-                               "publish",
-                               "pubsub",
-                               "declarationManagement"})
+@Test(singleThreaded=true, groups={"PublishInteractionClassTest",
+                                   "publishInteraction",
+                                   "publish",
+                                   "pubsub",
+                                   "declarationManagement"})
 public class PublishInteractionClassTest extends Abstract13Test
 {
 	//----------------------------------------------------------

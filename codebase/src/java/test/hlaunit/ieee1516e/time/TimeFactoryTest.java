@@ -31,7 +31,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"TimeFactoryTest", "timeManagement"})
+@Test(singleThreaded=true, groups={"TimeFactoryTest", "timeManagement"})
 public class TimeFactoryTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

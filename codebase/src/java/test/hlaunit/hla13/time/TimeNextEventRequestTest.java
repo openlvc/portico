@@ -33,7 +33,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"TimeNextEventRequestTest", "nextEventRequest", "timeManagement"})
+@Test(singleThreaded=true, groups={"TimeNextEventRequestTest", "nextEventRequest", "timeManagement"})
 public class TimeNextEventRequestTest extends Abstract13Test
 {
 	//----------------------------------------------------------

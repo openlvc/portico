@@ -28,10 +28,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"RegisterSyncPointTest",
-                               "registerSyncPoint",
-                               "synchronization",
-                               "federationManagement"})
+@Test(singleThreaded=true, groups={"RegisterSyncPointTest",
+                                   "registerSyncPoint",
+                                   "synchronization",
+                                   "federationManagement"})
 public class RegisterSyncPointTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

@@ -30,7 +30,7 @@ import org.testng.annotations.Test;
  * been created, that it behaves as expected. The methods DO NOT explicitly test the process of
  * create/destroying a region etc...
  */
-@Test(sequential=true,groups={"RegionTest", "ddm","supportServices"})
+@Test(singleThreaded=true,groups={"RegionTest", "ddm","supportServices"})
 public class RegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

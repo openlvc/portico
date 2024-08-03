@@ -27,7 +27,7 @@ import hlaunit.ieee1516.common.TestFederate;
 import hlaunit.ieee1516.common.TestObject;
 import hlaunit.ieee1516.common.TimeoutException;
 
-@Test(sequential=true, groups={"MomFederateLifecycleTest", "mom"})
+@Test(singleThreaded=true, groups={"MomFederateLifecycleTest", "mom"})
 public class MomFederateLifecycleTest extends Abstract1516Test
 {
 	//----------------------------------------------------------

@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 
 import hlaunit.hla13.common.Abstract13Test;
 
-@Test(sequential=true, groups={"MomObjectModelTest", "mom"})
+@Test(singleThreaded=true, groups={"MomObjectModelTest", "mom"})
 public class MomObjectModelTest extends Abstract13Test
 {
 	//----------------------------------------------------------
