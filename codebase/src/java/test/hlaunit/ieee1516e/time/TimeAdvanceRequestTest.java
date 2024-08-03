@@ -32,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"TimeAdvanceRequestTest", "timeAdvanceRequest", "timeManagement"})
+@Test(singleThreaded=true, groups={"TimeAdvanceRequestTest", "timeAdvanceRequest", "timeManagement"})
 public class TimeAdvanceRequestTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

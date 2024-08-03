@@ -45,7 +45,7 @@ public class PorticoTestListener implements ITestListener
 	public void onTestStart( ITestResult result )
 	{
 		String className = result.getTestClass().getRealClass().getSimpleName();
-		String methodName = result.getMethod().getMethod().getName();
+		String methodName = result.getMethod().getMethodName();
 		CommonSetup.testStarting( className, methodName );
 	}
 

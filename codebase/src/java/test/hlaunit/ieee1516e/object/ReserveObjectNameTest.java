@@ -26,7 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"ReserveObjectNameTest", "reserveObjectName", "objectManagement"})
+@Test(singleThreaded=true, groups={"ReserveObjectNameTest", "reserveObjectName", "objectManagement"})
 public class ReserveObjectNameTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

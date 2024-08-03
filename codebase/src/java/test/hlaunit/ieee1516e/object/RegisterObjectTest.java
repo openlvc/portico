@@ -32,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"RegisterObjectTest", "registerObject", "objectManagement"})
+@Test(singleThreaded=true, groups={"RegisterObjectTest", "registerObject", "objectManagement"})
 public class RegisterObjectTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

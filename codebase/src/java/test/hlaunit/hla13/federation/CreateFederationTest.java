@@ -28,7 +28,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"CreateFederationTest", "basic", "create", "federationManagement"})
+@Test(singleThreaded=true, groups={"CreateFederationTest", "basic", "create", "federationManagement"})
 public class CreateFederationTest
 {
 	//----------------------------------------------------------

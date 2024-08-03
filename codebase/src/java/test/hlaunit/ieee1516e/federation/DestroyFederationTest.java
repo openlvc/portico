@@ -26,7 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"DestroyFederationTest", "basic", "destroy", "federationManagement"})
+@Test(singleThreaded=true, groups={"DestroyFederationTest", "basic", "destroy", "federationManagement"})
 public class DestroyFederationTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

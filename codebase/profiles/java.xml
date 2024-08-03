@@ -70,26 +70,21 @@
 	<!-- These properties are set so that any information relating to a specific path
 	     for a library can be changed in a single spot. The properties should be used
 	     when defining paths and the like later in the build file -->
-	<property name="testng.dir"            location="${lib.dir}/testng/testng-5.12.1"/>
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-3.2.0-beta1"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-1.2.15"/>
 	<property name="asm.dir"               location="${lib.dir}/asm/asm-9.1"/>
 
 	<!-- Classpaths for individual libraries -->
-	<path id="lib.testng.classpath">
-		<fileset dir="${testng.dir}" includes="**/*.jar"/>
-	</path>
-	
 	<path id="lib.jgroups.classpath">
-		<fileset dir="${jgroups.dir}" includes="**/*"/>
+		<fileset dir="${jgroups.dir}" includes="**/*.jar"/>
 	</path>
 
 	<path id="lib.log4j.classpath">
-		<fileset dir="${log4j.dir}" includes="**/*"/>
+		<fileset dir="${log4j.dir}" includes="**/*.jar"/>
 	</path>
 
 	<path id="lib.asm.classpath">
-		<fileset dir="${asm.dir}" includes="**/*"/>
+		<fileset dir="${asm.dir}" includes="**/*.jar"/>
 	</path>
 
 	<!-- ========================== -->
@@ -103,7 +98,7 @@
 	
 	<path id="test.classpath">
 		<path refid="compile.classpath"/>
-		<path refid="lib.testng.classpath"/>
+		<path refid="sys.testng.classpath"/>
 		<pathelement path="${portico.classes.dir}"/>
 		<pathelement path="${test.classes.dir}"/>
 		<pathelement path="${resources.dir}/jars/portico.jar"/>

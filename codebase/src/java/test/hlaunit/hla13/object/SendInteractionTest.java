@@ -43,7 +43,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"SendInteractionTest", "sendInteraction", "objectManagement"})
+@Test(singleThreaded=true, groups={"SendInteractionTest", "sendInteraction", "objectManagement"})
 public class SendInteractionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
  * This will be achieved by having a federate fire object update events that the default federate
  * is interested in, along with validation that these are/aren't processed as appropriate.
  */
-@Test(sequential=true, groups={"CallbacksTest", "callbacks", "supportServices"})
+@Test(singleThreaded=true, groups={"CallbacksTest", "callbacks", "supportServices"})
 public class CallbacksTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

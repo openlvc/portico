@@ -24,10 +24,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"SynchronizationSaveRestoreTest",
-                               "synchronization",
-                               "federationManagement",
-                               "SaveRestore"})
+@Test(singleThreaded=true, groups={"SynchronizationSaveRestoreTest",
+                                   "synchronization",
+                                   "federationManagement",
+                                   "SaveRestore"})
 public class SynchronizationSaveRestoreTest extends Abstract13Test
 {
 	//----------------------------------------------------------

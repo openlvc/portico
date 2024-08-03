@@ -41,7 +41,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"SendInteractionWithRegionTest", "sendInteractionWithRegion","ddm"})
+@Test(singleThreaded=true, groups={"SendInteractionWithRegionTest", "sendInteractionWithRegion","ddm"})
 public class SendInteractionWithRegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------
