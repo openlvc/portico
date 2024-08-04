@@ -84,6 +84,10 @@ public class CreateFederationHandler extends LRCMessageHandler
 		// merge the modules together
 		ObjectModel combinedFOM = ModelMerger.merge( foms );
 		
+		// if this is HLA 1.3, we expect the MOM to be present - fail if it is not
+		if( lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 )
+			verifyHla13MomPresent( combinedFOM );
+
 		// dump out the MIM if it is present and then re-insert with specific handles
 //		ObjectModel.mommify( combinedFOM );
 
@@ -101,6 +105,16 @@ public class CreateFederationHandler extends LRCMessageHandler
 		logger.info( "SUCCESS Created federation execution [" + request.getFederationName() + "]" );
 	}
 
+	private void verifyHla13MomPresent( ObjectModel fom ) throws JRTIinternalError
+	{
+		if( fom.getObjectClass("Manager.Federation") == null )
+			throw new JRTIinternalError( "MOM Error: Object Class Manager.Federation missing from FOM" );
+		else if( fom.getObjectClass("Manager.Federate") == null )
+			throw new JRTIinternalError( "MOM Error: Object Class Manager.Federate missing from FOM" );
+		else if( fom.getInteractionClass("Manager.Federate") == null )
+			throw new JRTIinternalError( "MOM Error: Interaction Class Manager.Federate missing from FOM" );
+	}
+	
 	private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
 	{
 		boolean found = false;
