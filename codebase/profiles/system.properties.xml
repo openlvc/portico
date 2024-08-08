@@ -83,7 +83,11 @@
 	     is used by the compilation targets to determine whether or not to compile
 	     for a particular profile.
 	-->
-	<generateCppCompilerVariables compilers="gcc4,gcc8,vc10,vc14,vc14_1,vc14_2"
+	<!-- Compiler defaults - override from build.properties -->
+	<property name="cpp.compilers.linux"   value="gcc11"/>
+	<property name="cpp.compilers.windows" value="vc10,vc14,vc14_1,vc14_2"/>
+	<!-- Generate the properties the build system will key off -->
+	<generateCppCompilerVariables compilers="${cpp.compilers.windows},${cpp.compilers.linux}"
 	                              architectures="x86,amd64"
 	                              builds="debug,release"/>
 

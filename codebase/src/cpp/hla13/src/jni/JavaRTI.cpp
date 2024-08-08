@@ -240,13 +240,13 @@ jintArray JavaRTI::convertFHS( const HLA::FederateHandleSet& fhs )
 HVPS JavaRTI::convertAHVPS( const HLA::AttributeHandleValuePairSet& attributes )
 	throw( HLA::RTIinternalError )
 {
-	// FIX: Null values for AttributeHandleValuePairSet trip out the serialisation
-	//      process. So we'll check for null values first and throw exceptions before
-	//      any work is done on them.
-	if( &attributes == NULL )
-	{
-		throw HLA::RTIinternalError( "AttributeHandleValuePairSet was NULL" );
-	}
+	// // FIX: Null values for AttributeHandleValuePairSet trip out the serialisation
+	// //      process. So we'll check for null values first and throw exceptions before
+	// //      any work is done on them.
+	// if( &attributes == NULL )
+	// {
+	// 	throw HLA::RTIinternalError( "AttributeHandleValuePairSet was NULL" );
+	// }
 
 	// create the struct to hold the values
 	JNIEnv *jnienv = this->attachToJVM();
@@ -291,13 +291,13 @@ HVPS JavaRTI::convertAHVPS( const HLA::AttributeHandleValuePairSet& attributes )
 HVPS JavaRTI::convertPHVPS( const HLA::ParameterHandleValuePairSet& parameters )
 	throw( HLA::RTIinternalError )
 {
-	// FIX: Null values for ParameterHandleValuePairSet trip out the serialisation
-	//      process. So we'll check for null values first and throw exceptions before
-	//      any work is done on them.
-	if( &parameters == NULL )
-	{
-		throw HLA::RTIinternalError( "ParameterHandleValuePairSet was NULL" );
-	}
+	// // FIX: Null values for ParameterHandleValuePairSet trip out the serialisation
+	// //      process. So we'll check for null values first and throw exceptions before
+	// //      any work is done on them.
+	// if( &parameters == NULL )
+	// {
+	// 	throw HLA::RTIinternalError( "ParameterHandleValuePairSet was NULL" );
+	// }
 
 	// create the struct to hold the values
 	JNIEnv *jnienv = this->attachToJVM();

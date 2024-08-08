@@ -3,7 +3,8 @@
 int main( int argc, char *argv[] )
 {
 	// check to see if we have a federate name
-	char* federateName = "exampleFederate";
+	std::string defaultName = "exampleFederate";
+	const char* federateName = defaultName.c_str();
 	if( argc > 1 )
 		federateName = argv[1];
 

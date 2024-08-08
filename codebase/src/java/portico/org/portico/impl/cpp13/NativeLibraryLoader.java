@@ -65,6 +65,7 @@ public class NativeLibraryLoader
 	{
 		try
 		{
+			logger.debug( "ATTEMPT (loadback) Load "+libraryDescription );
 			System.loadLibrary( libraryName );
 			logger.debug( "SUCCESS (loadback) Loaded "+libraryDescription );
 			return true;
