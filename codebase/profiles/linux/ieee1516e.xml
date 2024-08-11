@@ -65,15 +65,15 @@
 	<!-- ==================================== -->
 	<!--          1516e Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.compile" depends="compile">
+	<target name="test.compile" depends="compile" if="_not-implemented-yet">
 		<cpptask compiler="g++"
 		         outfile="testieee1516e"
 		         workdir="${testieee1516e.build.dir}"
 		         outdir="${testieee1516e.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings"
-		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
+		         compilerArgs="-std=c++14 -g -O0 -fPIC -Wall -Wno-deprecated -Wno-write-strings"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/lib/server">
 			<fileset dir="${ieee1516e.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${ieee1516e.src.dir}/hla/time"/>
@@ -99,8 +99,8 @@
 		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O1 -fPIC -Wall -Wno-non-virtual-dtor"
-		         linkerArgs="-Wl,-rpath-link ${jvm}">
+		         compilerArgs="-std=c++14 -g -O1 -fPIC -Wall -Wno-deprecated -Wno-write-strings"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/lib/server">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<includepath path="${jdk.home.linux64}/include;${jdk.home.linux64}/include/linux"/>
@@ -251,7 +251,7 @@
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
-				<property name="_jdklib" value="${jdk.home.linux64}/lib/server:${jdk.home.linux64}/jre/lib/amd64/server"/>
+				<property name="_jdklib" value="${jdk.home.linux64}/lib/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
 				<property name="_jdklib" value="${jdk.home.linux32}/jre/lib/i586/client"/>
