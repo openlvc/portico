@@ -1418,7 +1418,7 @@ double Test13FederateAmbassador::convertTime( const RTI::FedTime& time )
 	{
 		timePorticoImpl = dynamic_cast<const RTIfedTime&>( time );
 	}
-	catch( std::bad_cast )
+	catch( std::bad_cast& )
 	{
 		CPPUNIT_FAIL( "convertTime() was not provided with a portico time implementation" );
 	}

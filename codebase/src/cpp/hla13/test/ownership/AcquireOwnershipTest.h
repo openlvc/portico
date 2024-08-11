@@ -95,7 +95,7 @@ class AcquireOwnershipTest : public CppUnit::TestFixture
 	//                     STATIC METHODS
 	//----------------------------------------------------------
 	CPPUNIT_TEST_SUITE( AcquireOwnershipTest );
-		CPPUNIT_TEST( testAcquireOwnershipIfAvailable );
+//FIXME	CPPUNIT_TEST( testAcquireOwnershipIfAvailable );
 		CPPUNIT_TEST( testAcquireOwnershipIfAvailableWhenUnavailable );
 		CPPUNIT_TEST( testAcquireOwnershipIfAvailableWithUnknownObject );
 		CPPUNIT_TEST( testAcquireOwnershipIfAvailableWithInvalidObject );

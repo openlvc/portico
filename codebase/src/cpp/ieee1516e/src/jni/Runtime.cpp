@@ -469,7 +469,7 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
 	          << string(systemPath) << ":"
-	          << rtihome << "/lib/gcc4:"
+	          << rtihome << "/lib/gcc11:"
 	          << jrelocation << "/lib/server:"
 	          << jrelocation << "/lib/i386/client:"
 	          << jrelocation << "/lib/amd64/server";
