@@ -219,10 +219,11 @@ public class ObjectModel implements Serializable
 		//        the ObjectRoot bit is optional, not the entire prefix
 		for( OCMetadata oc : this.oclasses.values() )
 		{
-			if( oc.getLocalName().equalsIgnoreCase(name) )
-			{
+			if( oc.getQualifiedName().equalsIgnoreCase(name) )
 				return oc;
-			}
+			
+			if( oc.getLocalName().equalsIgnoreCase(name) )
+				return oc;
 		}
 		
 		// make sure that we haven't got the root name itself, if we get this far without finding

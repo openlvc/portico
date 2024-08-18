@@ -510,19 +510,22 @@ public class OCMetadata implements Serializable, Comparable<OCMetadata>
 		}
 		else
 		{
+			// make sure we have a version safe copy or _our_ name
+			String localName = name.startsWith("HLA") ? name.substring(3) : name;
+
 			// we have a parent, get its name
 			String parentQualified = parent.getVersionSafeQualifiedName();
 			if( parentQualified.equals("") )
 			{
 				// our parent is object root, don't prefix it with "."
-				this.vsafeQualifiedName = name;
-				return name;
+				this.vsafeQualifiedName = localName;
 			}
 			else
 			{
-				this.vsafeQualifiedName = parentQualified + "." + name;
-				return parentQualified + "." + name;
+				this.vsafeQualifiedName = parentQualified + "." + localName;
 			}
+
+			return this.vsafeQualifiedName;
 		}
 	}
 	
