@@ -67,7 +67,8 @@ public class PorticoTestListener implements ITestListener
 		}
 		else
 		{
-			System.out.println( "FAIL " + result.getName() );
+			System.out.println( "FAIL " + result.getName() +
+			                    " ("+result.getTestClass().getRealClass().getSimpleName()+")" );
 		}
 	}
 
