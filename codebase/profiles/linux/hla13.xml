@@ -146,7 +146,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,cpp.hla13.compile">
+	<target name="sandbox" extensionOf="cpp.sandbox" depends="java.sandbox,compile">
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
