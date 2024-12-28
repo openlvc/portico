@@ -21,7 +21,6 @@
 
 	<!-- ==== Basic Properties ==== -->
 	<!-- Verify that we have an appropriate JDK to build against -->
-	<verifyJdk location="${jdk.home.win32}" arch="x86"/>
 	<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
 
 	<!-- ================================================ -->
