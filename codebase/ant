@@ -1,6 +1,6 @@
 #!/bin/sh
 DEVELOPMENT_HOME=$PWD
-ANT_HOME=$DEVELOPMENT_HOME/system/ant/apache-ant-1.10.9
+ANT_HOME=$DEVELOPMENT_HOME/system/ant/apache-ant-1.10.16git-patched
 ANT_LIB=$ANT_HOME/lib/:$DEVELOPMENT_HOME/system/ant-optional/
 
 export DEVELOPMENT_HOME ANT_HOME ANT_LIB
