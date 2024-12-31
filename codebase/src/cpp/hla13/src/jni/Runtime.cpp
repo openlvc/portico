@@ -229,7 +229,7 @@ pair<string,string> Runtime::generatePaths() throw( HLA::RTIinternalError )
 	}
 
 	// Get the class and library paths depending on the platform in use
-	#ifdef _WIN32
+	#ifdef OS_WINDOWS
 		return generateWinPath( string(rtihome) );
 	#else
 		return generateUnixPath( string(rtihome) );
@@ -241,14 +241,14 @@ pair<string,string> Runtime::generatePaths() throw( HLA::RTIinternalError )
  * *nix based systems. This method will construct two strings with the following:
  * 
  * (Classpath)
- *   * System classpath
- *   * $RTI_HOME\lib\portico.jar
+ *   - System classpath
+ *   - $RTI_HOME\lib\portico.jar
  *   
  * (Library Path)
- *   * System path
- *   * $RTI_HOME\bin
- *   * $JAVA_HOME\jre\lib\i386\client  (32-bit JRE)
- *   * $JAVA_HOME\jre\lib\amd64\server (64-bit JRE)
+ *   - System path
+ *   - $RTI_HOME\bin
+ *   - $JAVA_HOME\bin\client  (32-bit JRE)
+ *   - $JAVA_HOME\bin\server  (64-bit JRE)
  * 
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
@@ -280,14 +280,14 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	////////////////////////////////
 	// For the RTI to operate properly, the following must be on the path used to start the JVM:
 	//  * DLLs for the Portico C++ interface   - $RTI_HOME/bin/[compiler_ver]
-	//  * DLLs for the JVM                     - $RTI_HOME/jre/lib/amd64/server
+	//  * DLLs for the JVM                     - $RTI_HOME/jre/bin/server
 	
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
+	string jrelocation(".");
 	char *javaHome = getenv( "JAVA_HOME" );
-	string jrelocation;
 	if( javaHome )
-		string jrelocation( javaHome );
+		jrelocation = string( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -299,10 +299,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	}
 	else
 	{
-		if( getenv("JAVA_HOME") != NULL )
-			jrelocation = string( getenv("JAVA_HOME") );
-
-		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME% or %CD%: [%s]",
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on JAVA_HOME or PWD: [%s]",
 		              jrelocation.c_str() );
 	}
 
@@ -315,25 +312,16 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
-	            << rtihome << "\\bin\\"
-#ifdef VC11
-	            << "vc11"
-#endif
-#ifdef VC10
-	            << "vc10"
-#endif
-#ifdef VC9
-	            << "vc9"
-#endif
-#ifdef VC8
-	            << "vc8"
-#endif
-
-#ifdef _WIN32
-	            << jrelocation << "\\lib\\i386\\client";
+#ifdef OS_WINDOWS // Need OS_WINDOWS here because otherwise VC_VERSION won't be declared
+#ifdef _WIN64
+	            << rtihome << "\\bin\\" << VC_VERSION << ";"
+	            << jrelocation << "\\bin\\server"
 #else
-	            << jrelocation << "\\lib\\amd64\\server";
-#endif	
+	            << rtihome << "\\bin\\" << VC_VERSION << ";"
+	            << jrelocation << "\\bin\\client"
+#endif // _WIN64
+#endif // OS_WINDOWS
+				<< "";
 
 	paths.second = libraryPath.str();
 	return paths;
