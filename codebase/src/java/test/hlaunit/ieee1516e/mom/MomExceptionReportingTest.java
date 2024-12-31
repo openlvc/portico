@@ -38,7 +38,7 @@ import hlaunit.ieee1516e.common.Abstract1516eTest;
 import hlaunit.ieee1516e.common.TestFederate;
 import hlaunit.ieee1516e.common.TestInteraction;
 
-@Test(sequential=true, groups={"MomExceptionReportingTest","mom"})
+@Test(singleThreaded=true, groups={"MomExceptionReportingTest","mom"})
 public class MomExceptionReportingTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

@@ -47,11 +47,15 @@
 // Compiler
 //   VC8        : Set if we are compiling with VC8
 //   VC9        : Set if we are compiling with VC9
-//   VC10       : Set if we are compiling with VC10
-//   VC11       : Set if we are compiling with VC11
+//   VC10       : Set if we are compiling with Visual Studio 2010 (VC10)
+//   VC11       : Set if we are compiling with Visual Studio 2012 (VC11)
+//   VC12       : Set if we are compiling with Visual Studio 2013 (VC12)
+//   VC14       : Set if we are compiling with Visual Studio 2015 (VC14)
+//   VC14_1     : Set if we are compiling with Visual Studio 2017 (VC14_1)
+//   VC14_2     : Set if we are compiling with Visual Studio 2019 (VC14_2)
+//   VC14_3     : Set if we are compiling with Visual Studio 2022 (VC14_3)
 #if _WIN32 || _WIN64
 	#define OS_WINDOWS
-    #define WIN32_LEAN_AND_MEAN
 
 	// determine the platform
 	#if _WIN64
@@ -61,23 +65,34 @@
 	#endif
 
 	// windows platform, determine the compiler version
-	#if _MSC_VER >= 1900
-		#define VC_VERSION vc14
+	// See https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
+	// See https://learn.microsoft.com/en-us/cpp/overview/compiler-versions
+	#if _MSC_VER >= 1930 // Visual Studio 2022 (vc14_3)
+		#define VC_VERSION "vc14_3"
+		#define VC14_3
+	#elif _MSC_VER >= 1920 // Visual Studio 2019 (vc14_2)
+		#define VC_VERSION "vc14_2"
+		#define VC14_2
+	#elif _MSC_VER >= 1910 // Visual Studio 2017 (vc14_1)
+		#define VC_VERSION "vc14_1"
+		#define VC14_1
+	#elif _MSC_VER >= 1900 // Visual Studio 2015 (vc14)
+		#define VC_VERSION "vc14"
 		#define VC14
-	#elif _MSC_VER >= 1800
-		#define VC_VERSION vc12
+	#elif _MSC_VER >= 1800 // Visual Studio 2013 (vc12)
+		#define VC_VERSION "vc12"
 		#define VC12
-	#elif _MSC_VER >= 1700
-		#define VC_VERSION vc11
+	#elif _MSC_VER >= 1700 // Visual Studio 2012 (vc11)
+		#define VC_VERSION "vc11"
 		#define VC11
-	#elif _MSC_VER >= 1600
-		#define VC_VERSION vc10
+	#elif _MSC_VER >= 1600 // Visual Studio 2010 (vc10)
+		#define VC_VERSION "vc10"
 		#define VC10
 	#elif _MSC_VER >= 1500
-		#define VC_VERSION vc9
+		#define VC_VERSION "vc9"
 		#define VC9
 	#elif _MSC_VER >= 1400
-		#define VC_VERSION vc8
+		#define VC_VERSION "vc8"
 		#define VC8
 	#endif
 #elif __GNUC__

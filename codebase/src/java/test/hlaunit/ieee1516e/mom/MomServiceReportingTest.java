@@ -41,7 +41,7 @@ import hlaunit.ieee1516e.common.Abstract1516eTest;
 import hlaunit.ieee1516e.common.TestFederate;
 import hlaunit.ieee1516e.common.TestInteraction;
 
-@Test(sequential=true, groups={"MomServiceReportingTest","mom"})
+@Test(singleThreaded=true, groups={"MomServiceReportingTest","mom"})
 public class MomServiceReportingTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

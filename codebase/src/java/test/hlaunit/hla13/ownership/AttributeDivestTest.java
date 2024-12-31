@@ -36,7 +36,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"AttributeDivestTest", "divestOwnership", "ownershipManagement"})
+@Test(singleThreaded=true, groups={"AttributeDivestTest", "divestOwnership", "ownershipManagement"})
 public class AttributeDivestTest extends Abstract13Test
 {
 	//----------------------------------------------------------

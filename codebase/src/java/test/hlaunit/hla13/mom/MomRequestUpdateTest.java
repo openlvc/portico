@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  * These requests, when made, should not be delivered to the user, rather, the LRC should intercept
  * them and provide the right information.
  */
-@Test(sequential=true, groups={"MomRequestUpdateTest", "mom"})
+@Test(singleThreaded=true, groups={"MomRequestUpdateTest", "mom"})
 public class MomRequestUpdateTest extends Abstract13Test
 {
 	//----------------------------------------------------------

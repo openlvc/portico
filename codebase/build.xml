@@ -25,6 +25,7 @@
 	<!--               System Properties and Utilities               -->
 	<!-- =========================================================== -->
 	<import file="profiles/system.properties.xml"/>    <!-- standard set of common properties -->
+	<import file="profiles/system.libraries.xml"/>     <!-- standard set of common libraries -->
 	<import file="profiles/system.macros.xml"/>        <!-- standard set of common macros -->
 
 	<!-- =========================================================== -->

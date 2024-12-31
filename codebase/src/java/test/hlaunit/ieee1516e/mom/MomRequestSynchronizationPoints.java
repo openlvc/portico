@@ -40,7 +40,7 @@ import hlaunit.ieee1516e.common.Abstract1516eTest;
 import hlaunit.ieee1516e.common.TestFederate;
 import hlaunit.ieee1516e.common.TestInteraction;
 
-@Test(sequential=true, groups={"MomRequestSynchronizationPoints","mom"})
+@Test(singleThreaded=true, groups={"MomRequestSynchronizationPoints","mom"})
 public class MomRequestSynchronizationPoints extends Abstract1516eTest
 {
 	//----------------------------------------------------------

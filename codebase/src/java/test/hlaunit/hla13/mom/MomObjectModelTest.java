@@ -27,7 +27,7 @@ import hlaunit.hla13.common.Abstract13Test;
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.model.Mom;
 
-@Test(sequential=true, groups={"MomObjectModelTest", "mom"})
+@Test(singleThreaded=true, groups={"MomObjectModelTest", "mom"})
 public class MomObjectModelTest extends Abstract13Test
 {
 	//----------------------------------------------------------

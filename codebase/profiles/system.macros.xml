@@ -77,9 +77,6 @@
 	<!-- ================================================================================= -->
 	<!--                                 Macro: java-test                                  -->
 	<!-- ================================================================================= -->
-	<!-- bring in the testng task -->
-	<taskdef resource="testngtasks" classpath="${lib.dir}/testng/testng-7.0.0/testng-7.0.0.jar"/>
-	
 	<!-- Define a default value for the TestNG groups that will control what test groups
 	     are and are not executed. By default, we provide "", which will run all tests. If
 	     this property is provided on the command line, this declaration will NOT override it -->
@@ -221,11 +218,8 @@
 			<local name="_jdkpath"/>
 			<if><equals arg1="@{jredir}" arg2=""/><then>
 				<echo>No JRE specified -- falling back to platform default for ${platform}</echo>
-				<if>    <isset property="platform.win32"/>  <then><property name="_jdkpath" value="${jdk.home.win32}"/></then>
-				<elseif><isset property="platform.win64"/>  <then><property name="_jdkpath" value="${jdk.home.win64}"/></then></elseif>
-				<elseif><isset property="platform.linux32"/><then><property name="_jdkpath" value="${jdk.home.linux32}"/></then></elseif>
+				<if>    <isset property="platform.win64"/>  <then><property name="_jdkpath" value="${jdk.home.win64}"/></then>
 				<elseif><isset property="platform.linux64"/><then><property name="_jdkpath" value="${jdk.home.linux64}"/></then></elseif>
-				<elseif><isset property="platform.macosx"/> <then><property name="_jdkpath" value="${jdk.home.macosx}"/></then></elseif>
 				<else><fail message="Unknown platform; cannot copy JRE for it: ${platform}"/></else></if>
 
 				<echo>Master JDK directory is: ${_jdkpath}</echo>

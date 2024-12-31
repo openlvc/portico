@@ -27,7 +27,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"JoinFederationTest", "basic", "join", "federationManagement"})
+@Test(singleThreaded=true, groups={"JoinFederationTest", "basic", "join", "federationManagement"})
 public class JoinFederationTest extends Abstract1516Test
 {
 	//----------------------------------------------------------

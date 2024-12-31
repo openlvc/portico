@@ -32,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"QueryOwnershipTest", "queryOwnership", "ownershipManagement"})
+@Test(singleThreaded=true, groups={"QueryOwnershipTest", "queryOwnership", "ownershipManagement"})
 public class QueryOwnershipTest extends Abstract13Test
 {
 	//----------------------------------------------------------

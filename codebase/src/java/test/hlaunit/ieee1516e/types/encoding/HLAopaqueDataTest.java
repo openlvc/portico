@@ -31,7 +31,7 @@ import hla.rti1516e.encoding.HLAopaqueData;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test(sequential=true, groups={"HLAopaqueDataTest","datatype","encoding"})
+@Test(singleThreaded=true, groups={"HLAopaqueDataTest","datatype","encoding"})
 public class HLAopaqueDataTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

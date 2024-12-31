@@ -42,7 +42,7 @@
 	<!--                                     -->
 	<!-- Windows 32-bit Installer Generation -->
 	<!--                                     -->
-	<target name="nsis.win32" extensionOf="installer" depends="prep">
+	<target name="nsis.win32" extensionOf="installer" depends="prep" if="_disabled">
 		<!-- Verify we have a JRE we can bundle -->
 		<verifyJdk location="${jdk.home.win32}" arch="x86"/>
 

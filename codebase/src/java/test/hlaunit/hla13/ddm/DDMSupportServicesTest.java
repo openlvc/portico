@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
  * These tests are used to validate the DDM-related support service methods in the RTIambassador
  * API.
  */
-@Test(sequential=true,groups={"DDMSupportServicesTest", "ddm","supportServices"})
+@Test(singleThreaded=true,groups={"DDMSupportServicesTest", "ddm","supportServices"})
 public class DDMSupportServicesTest extends Abstract13Test
 {
 	//----------------------------------------------------------

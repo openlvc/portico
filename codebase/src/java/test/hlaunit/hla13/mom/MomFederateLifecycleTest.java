@@ -30,7 +30,7 @@ import hlaunit.hla13.common.Test13Federate;
 import hlaunit.hla13.common.Test13Instance;
 import hlaunit.hla13.common.TimeoutException;
 
-@Test(sequential=true, groups={"MomFederateLifecycleTest", "mom"})
+@Test(singleThreaded=true, groups={"MomFederateLifecycleTest", "mom"})
 public class MomFederateLifecycleTest extends Abstract13Test
 {
 	//----------------------------------------------------------

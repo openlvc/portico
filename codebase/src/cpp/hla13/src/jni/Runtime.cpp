@@ -229,7 +229,7 @@ pair<string,string> Runtime::generatePaths() throw( HLA::RTIinternalError )
 	}
 
 	// Get the class and library paths depending on the platform in use
-	#ifdef _WIN32
+	#ifdef OS_WINDOWS
 		return generateWinPath( string(rtihome) );
 	#else
 		return generateUnixPath( string(rtihome) );
@@ -241,14 +241,14 @@ pair<string,string> Runtime::generatePaths() throw( HLA::RTIinternalError )
  * *nix based systems. This method will construct two strings with the following:
  * 
  * (Classpath)
- *   * System classpath
- *   * $RTI_HOME\lib\portico.jar
+ *   - System classpath
+ *   - $RTI_HOME\lib\portico.jar
  *   
  * (Library Path)
- *   * System path
- *   * $RTI_HOME\bin
- *   * $JAVA_HOME\jre\lib\i386\client  (32-bit JRE)
- *   * $JAVA_HOME\jre\lib\amd64\server (64-bit JRE)
+ *   - System path
+ *   - $RTI_HOME\bin
+ *   - $JAVA_HOME\bin\client  (32-bit JRE)
+ *   - $JAVA_HOME\bin\server  (64-bit JRE)
  * 
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
@@ -280,12 +280,14 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	////////////////////////////////
 	// For the RTI to operate properly, the following must be on the path used to start the JVM:
 	//  * DLLs for the Portico C++ interface   - $RTI_HOME/bin/[compiler_ver]
-	//  * DLLs for the JVM                     - $RTI_HOME/jre/lib/amd64/server
+	//  * DLLs for the JVM                     - $RTI_HOME/jre/bin/server
 	
-	// Assume a default JRE location of the current directory. We'll look inside RTI_HOME to try
-	// and find a JRE. If we don't, we'll use %JAVA_HOME% as a fallback if it exists. If it also
-	// does not exist, we'll fall back to what is set below.
-	string jrelocation( "." );
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	string jrelocation(".");
+	char *javaHome = getenv( "JAVA_HOME" );
+	if( javaHome )
+		jrelocation = string( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -297,10 +299,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	}
 	else
 	{
-		if( getenv("JAVA_HOME") != NULL )
-			jrelocation = string( getenv("JAVA_HOME") );
-
-		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME% or %CD%: [%s]",
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on JAVA_HOME or PWD: [%s]",
 		              jrelocation.c_str() );
 	}
 
@@ -313,25 +312,11 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
-	            << rtihome << "\\bin\\"
-#ifdef VC11
-	            << "vc11"
-#endif
-#ifdef VC11
-	            << "vc10"
-#endif
-#ifdef VC9
-	            << "vc9"
-#endif
-#ifdef VC8
-	            << "vc8"
-#endif
-
-#ifdef _WIN32
-	            << jrelocation << "\\lib\\i386\\client";
-#else
-	            << jrelocation << "\\lib\\amd64\\server";
-#endif	
+#ifdef _WIN64
+	            << rtihome << "\\bin\\" << VC_VERSION << ";"
+	            << jrelocation << "\\bin\\server"
+#endif // _WIN64
+				<< "";
 
 	paths.second = libraryPath.str();
 	return paths;
@@ -442,7 +427,17 @@ string Runtime::getMode() throw( HLA::RTIinternalError )
  */
 string Runtime::getCompiler() throw( HLA::RTIinternalError )
 {
-#ifdef VC11
+#if defined(VC14_3)
+	return string( "-Dportico.cpp.compiler=vc14_3" );
+#elif defined(VC14_2)
+	return string( "-Dportico.cpp.compiler=vc14_2" );
+#elif defined(VC14_1)
+	return string( "-Dportico.cpp.compiler=vc14_1" );
+#elif defined(VC14)
+	return string( "-Dportico.cpp.compiler=vc14" );
+#elif defined(VC12)
+	return string( "-Dportico.cpp.compiler=vc12" );
+#elif defined(VC11)
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );
@@ -451,7 +446,7 @@ string Runtime::getCompiler() throw( HLA::RTIinternalError )
 #elif defined(VC8)
 	return string( "-Dportico.cpp.compiler=vc8" );
 #else
-	return string( "-Dportico.cpp.compiler=gcc4" );
+	return string( "-Dportico.cpp.compiler=gcc11" );
 #endif
 }
 

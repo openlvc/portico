@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="system.libraries">
+
+	<!-- =========================================================== -->
+	<!--                      General Settings                       -->
+	<!-- =========================================================== -->
+	<description>
+		System-wide library settings. This file is brought directly into the main build file
+	</description>
+
+	<!-- =========================================================== -->
+      <!--                    Common Java Libraries                    -->
+	<!-- =========================================================== -->
+	<!-- ==== Library Path Definitions ==== -->
+	<!-- These properties are set so that any information relating to a specific path
+	     for a library can be changed in a single spot. The properties should be used
+	     when defining paths and the like later in the build file -->
+	<property name="testng-ant.dir"        location="${lib.dir}/testng-ant/1.0.0"/>
+	<property name="testng.dir"            location="${lib.dir}/testng/testng-7.10.2"/>
+
+	<!-- Classpaths for individual libraries -->
+	<path id="sys.testng.classpath">
+		<fileset dir="${testng-ant.dir}" includes="**/*.jar"/>
+		<fileset dir="${testng.dir}" includes="**/*.jar"/>
+	</path>
+
+	<!-- Load up the Ant task for TestNG -->
+	<taskdef resource="testngtasks" classpathref="sys.testng.classpath"/>
+
+	
+	<!-- ========================== -->
+	<!-- Classpath Set Declarations -->
+	<!-- ========================== -->
+	<path id="testng.classpath">
+		<path refid="sys.testng.classpath"/>
+	</path>
+
+      <!-- =========================================================== -->
+      <!--                     Common C++ Libraries                    -->
+      <!-- =========================================================== -->
+      <!-- CppUnit -->
+      <!-- Note that when updating this library, the expected directory structure
+           is ${lib.dir}/cppunit/[version]/[platform]/[vcver] (vcver is only relevant)
+           for windows and should be the Visual Studio version (e.g. vc10) -->
+      <property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+      <property name="cppunit.include"       location="${cppunit.dir}/include"/>
+      <property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
+</project>

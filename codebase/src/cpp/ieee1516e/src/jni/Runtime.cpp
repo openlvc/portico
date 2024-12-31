@@ -294,16 +294,14 @@ pair<string,string> Runtime::generatePaths() throw( RTIinternalError )
  * *nix based systems. This method will construct two strings with the following:
  * 
  * (Classpath)
- *   * System classpath
- *   * $RTI_HOME\lib\portico.jar
+ *   - System classpath
+ *   - $RTI_HOME\lib\portico.jar
  *   
  * (Library Path)
- *   * System path
- *   * $RTI_HOME\bin
- *   * $JAVA_HOME\jre\bin\client  (32-bit JRE)
- *   * $JAVA_HOME\jre\bin\server (64-bit JRE)
- *   * $JAVA_HOME\jre\lib\i386\client  (Pre-Java8 32-bit JRE)
- *   * $JAVA_HOME\jre\lib\amd64\server (Pre Java8 64-bit JRE)
+ *   - System path
+ *   - $RTI_HOME\bin
+ *   - $RTI_HOME\jre\bin\server
+ *   - $JAVA_HOME\bin\server
  * 
  * If JAVA_HOME isn't set on the computer, RTI_HOME is used to link in with any JRE
  * that Portico has shipped with.  
@@ -320,35 +318,42 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	if( !systemClasspath )
 	{
 		logger->debug( "CLASSPATH not set, using ." );
-		systemClasspath = "./";
+		systemClasspath = ".";
 	}
 
 	// create out classpath
 	stringstream classpath;
 	classpath << "-Djava.class.path=.;"
-	          << rtihome << "\\lib\\portico.jar;"    // %RTI_HOME%\lib\portico.jar
-	          << string(systemClasspath);            // system classpath
+	          << string(systemClasspath) << ";"      // system classpath
+	          << rtihome << "\\lib\\portico.jar;";   // %RTI_HOME%\lib\portico.jar
 	paths.first = classpath.str();
 
 	////////////////////////////////
 	// 2. Set up the library path //
 	////////////////////////////////
-	// For the RTI to operate properly, the following must be on the path used to star the JVM:
-	//  * DLLs for the Portico C++ interface
-	//  * DLLs for the JVM
+	// For the RTI to operate properly, the following must be on the path used to start the JVM:
+	//  * DLLs for the Portico C++ interface   - $RTI_HOME/bin/[compiler_ver]
+	//  * DLLs for the JVM                     - $RTI_HOME/jre/bin/server
 	
-	// Portico ships a JRE with it, make sure it is there
-	string jrelocation = string(rtihome).append( "\\jre" );
-	string temp = string(jrelocation).append( "\\bin\\java.exe" );
-	if( pathExists(temp) == false )
+	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
+	// Any distribution should have a bundled JRE
+	string jrelocation(".");
+	char *javaHome = getenv( "JAVA_HOME" );
+	if( javaHome )
+		jrelocation = string( javaHome );
+	
+	// Portico ships a JRE with it, but we might be building in a development environment
+	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
+	string temp = string(rtihome).append( "\\jre\\bin\\java.exe" );
+	if( pathExists(temp) )
 	{
-		logger->debug( "No JRE found at RTI_HOME, falling back to JAVA_HOME" );
-		const char* javahome = getenv( "JAVA_HOME" );
-		jrelocation = string(javahome).append( "\\jre" );
-		temp = string(jrelocation).append( "\\bin\\java.exe" );
-		
-		if( pathExists(temp) == false )
-			throw RTIinternalError( L"RTI_HOME does not contain a JRE. You must not have a complete build" );
+		jrelocation = string(rtihome).append("\\jre");
+		logger->debug( "Found bundled JRE in [%s]", jrelocation.c_str() );
+	}
+	else
+	{
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on JAVA_HOME or PWD: [%s]",
+		              jrelocation.c_str() );
 	}
 
 	// Get the system path so we can ensure it is on our library path
@@ -360,33 +365,11 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
-	            << rtihome << "\\bin\\"
-#ifdef VC14
-				<< "vc14"
-#endif
-#ifdef VC12
-				<< "vc12"
-#endif
-#ifdef VC11
-	            << "vc11"
-#endif
-#ifdef VC10
-	            << "vc10"
-#endif
-#ifdef VC9
-	            << "vc9"
-#endif
-#ifdef VC8
-	            << "vc8"
-#endif
-
-#ifdef _WIN32
-	            << jrelocation << "\\bin\\client;"
-	            << jrelocation << "\\lib\\i386\\client";
-#else
-	            << jrelocation << "\\bin\\server;"
-	            << jrelocation << "\\lib\\amd64\\server";
-#endif	
+#ifdef _WIN64
+	            << rtihome << "\\bin\\" << VC_VERSION << ";"
+	            << jrelocation << "\\bin\\server"
+#endif // _WIN64
+				<< "";
 
 	paths.second = libraryPath.str();
 	return paths;
@@ -491,7 +474,13 @@ string Runtime::getMode() throw( RTIinternalError )
  */
 string Runtime::getCompiler() throw( RTIinternalError )
 {
-#ifdef VC14
+#if defined(VC14_3)
+	return string( "-Dportico.cpp.compiler=vc14_3" );
+#elif defined(VC14_2)
+	return string( "-Dportico.cpp.compiler=vc14_2" );
+#elif defined(VC14_1)
+	return string( "-Dportico.cpp.compiler=vc14_1" );
+#elif defined(VC14)
 	return string( "-Dportico.cpp.compiler=vc14" );
 #elif defined(VC12)
 	return string( "-Dportico.cpp.compiler=vc12" );
@@ -504,7 +493,7 @@ string Runtime::getCompiler() throw( RTIinternalError )
 #elif defined(VC8)
 	return string( "-Dportico.cpp.compiler=vc8" );
 #else
-	return string( "-Dportico.cpp.compiler=gcc4" );
+	return string( "-Dportico.cpp.compiler=gcc11" );
 #endif
 }
 

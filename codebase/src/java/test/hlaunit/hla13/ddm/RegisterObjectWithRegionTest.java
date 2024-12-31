@@ -36,7 +36,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"RegisterObjectWithRegionTest", "registerObjectWithRegion","ddm"})
+@Test(singleThreaded=true, groups={"RegisterObjectWithRegionTest", "registerObjectWithRegion","ddm"})
 public class RegisterObjectWithRegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

@@ -36,7 +36,7 @@ import hlaunit.ieee1516e.common.Abstract1516eTest;
 import hlaunit.ieee1516e.common.TestFederate;
 import hlaunit.ieee1516e.common.TestInteraction;
 
-@Test(sequential=true, groups={"MomRequestInteractionMetricsTest","mom"})
+@Test(singleThreaded=true, groups={"MomRequestInteractionMetricsTest","mom"})
 public class MomRequestInteractionMetricsTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

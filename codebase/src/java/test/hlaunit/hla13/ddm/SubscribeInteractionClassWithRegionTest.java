@@ -31,11 +31,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"SubscribeInteractionClassWithRegionTest",
-                               "subscribeInteractionWithRegion",
-                               "subscribe",
-                               "pubsub",
-                               "ddm"})
+@Test(singleThreaded=true, groups={"SubscribeInteractionClassWithRegionTest",
+                                   "subscribeInteractionWithRegion",
+                                   "subscribe",
+                                   "pubsub",
+                                   "ddm"})
 public class SubscribeInteractionClassWithRegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

@@ -35,7 +35,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"RequestUpdateWithRegionTest", "requestUpdate", "ddm"})
+@Test(singleThreaded=true, groups={"RequestUpdateWithRegionTest", "requestUpdate", "ddm"})
 public class RequestUpdateWithRegionTest extends Abstract13Test
 {
 	//----------------------------------------------------------

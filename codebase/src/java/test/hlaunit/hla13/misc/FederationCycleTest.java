@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
 import hlaunit.hla13.common.Abstract13Test;
 import hlaunit.hla13.common.Test13Federate;
 
-@Test(sequential=true,groups={"cycleFederation","misc","FederationCycleTest"})
+@Test(singleThreaded=true,groups={"cycleFederation","misc","FederationCycleTest"})
 public class FederationCycleTest extends Abstract13Test
 {
 	//----------------------------------------------------------

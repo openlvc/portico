@@ -29,7 +29,7 @@ import hla.rti1516e.encoding.HLAbyte;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test(sequential=true, groups={"HLAbyteTest","datatype","encoding"})
+@Test(singleThreaded=true, groups={"HLAbyteTest","datatype","encoding"})
 public class HLAbyteTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

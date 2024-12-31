@@ -26,7 +26,7 @@ import hlaunit.ieee1516e.common.Abstract1516eTest;
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.model.Mom;
 
-@Test(sequential=true, groups={"MomObjectModelTest", "mom"})
+@Test(singleThreaded=true, groups={"MomObjectModelTest", "mom"})
 public class MomObjectModelTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

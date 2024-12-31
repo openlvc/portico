@@ -31,7 +31,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"DeleteObjectTest", "deleteObject", "objectManagement"})
+@Test(singleThreaded=true, groups={"DeleteObjectTest", "deleteObject", "objectManagement"})
 public class DeleteObjectTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

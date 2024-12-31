@@ -32,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"CreateFederationTest", "basic", "create", "federationManagement"})
+@Test(singleThreaded=true, groups={"CreateFederationTest", "basic", "create", "federationManagement"})
 public class CreateFederationTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

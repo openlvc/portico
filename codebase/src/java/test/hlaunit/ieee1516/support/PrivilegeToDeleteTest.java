@@ -23,7 +23,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"PrivilegeToDeleteTest", "model"})
+@Test(singleThreaded=true, groups={"PrivilegeToDeleteTest", "model"})
 public class PrivilegeToDeleteTest extends Abstract1516Test
 {
 	//----------------------------------------------------------

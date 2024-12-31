@@ -32,7 +32,7 @@ import hlaunit.ieee1516e.common.TestObject;
  * These tests look at the `Federate` and `Federation` MOM classes and ensure that the data
  * returned through reflections for their objects can be deserlialized as expected.
  */
-@Test(sequential=true, groups={"MomFederationTest", "mom"})
+@Test(singleThreaded=true, groups={"MomFederationTest", "mom"})
 public class MomFederationTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

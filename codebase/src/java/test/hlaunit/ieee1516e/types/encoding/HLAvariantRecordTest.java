@@ -25,7 +25,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"HLAvariantRecordTest","datatype","encoding"})
+@Test(singleThreaded=true, groups={"HLAvariantRecordTest","datatype","encoding"})
 public class HLAvariantRecordTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------
