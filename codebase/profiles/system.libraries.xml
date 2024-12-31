@@ -53,7 +53,7 @@
       <!-- Note that when updating this library, the expected directory structure
            is ${lib.dir}/cppunit/[version]/[platform]/[vcver] (vcver is only relevant)
            for windows and should be the Visual Studio version (e.g. vc10) -->
-      <property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.15"/>
+      <property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
       <property name="cppunit.include"       location="${cppunit.dir}/include"/>
       <property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
 </project>

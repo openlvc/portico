@@ -41,10 +41,14 @@ goto finish
 :compile
 echo Compiling example federate
 
-rem comment out this line or edit if using different visual studio command prompt 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\VsDevCmd" %-arch=amd64
+rem Comment out these lines if you are running from the Visual Studio command prompt
+rem We assume you are running from a vanilla prompt and you have the VS 2022 Build Tools installed (seem to install into the x86 directory)
+rem The commented out options are for if you have Visual Studio Professional or Community installed
+rem call "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\Tools\VsDevCmd" %-arch=amd64
+rem call "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd" %-arch=amd64
+call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd" %-arch=amd64
 
-cl /I"%RTI_HOME%\include\hla13" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc14_1\libRTI-NG64.lib" "%RTI_HOME%\lib\vc14_1\libFedTime64.lib"
+cl /I"%RTI_HOME%\include\hla13" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc14_3\libRTI-NG_64.lib" "%RTI_HOME%\lib\vc14_3\libFedTime_64.lib"
 goto finish
 
 ############################################
@@ -52,7 +56,7 @@ goto finish
 ############################################
 :execute
 SHIFT
-set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\bin\vc14_1;%PATH%
+set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\bin\vc14_3;%PATH%
 main %1 %2 %3 %4 %5 %6 %7 %8 %9
 goto finish
 
