@@ -29,8 +29,8 @@
   VIProductVersion "${VERSION}.${BUILD_NUMBER}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Portico"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "The Portico Open Source RTI"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Calytrix Technologies"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Calytrix Technologies"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "The OpenLVC Project"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "The OpenLVC Project"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Portico Installer"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}.${BUILD_NUMBER}"
 

@@ -300,11 +300,11 @@
 			<!-- MANIFEST -->
 			<manifest>
 				<attribute name="Main-Class" value="org.portico.Main"/>
-				<attribute name="Built-By" value="Calytrix Technologies"/>
+				<attribute name="Built-By" value="The OpenLVC Group"/>
 				<section name="org/portico">
 					<attribute name="Implementation-Title" value="portico"/>
 					<attribute name="Implementation-Version" value="${build.version} (build ${build.number}) ${TODAY}"/>
-					<attribute name="Implementation-Vendor" value="Calytrix Technologies"/>
+					<attribute name="Implementation-Vendor" value="The OpenLVC Group"/>
 				</section>
 			</manifest>
 		</jar>

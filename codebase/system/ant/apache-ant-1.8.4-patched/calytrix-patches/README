@@ -1,4 +1,4 @@
-The Calytrix Ant profile-based build system is built on Apache Ant v1.8.0.
+The OpenLVC Ant profile-based build system is built on Apache Ant v1.8.0.
 To do a lot of the things we wanted to requires some subtle modifications
 to the standard Ant v1.8.4 distribution. Some to "fix" bugs in Ant, others
 to add small new features.
