@@ -18,12 +18,10 @@
 #include "common.h"
 #include "jni/Runtime.h"
 #include "jni/JavaRTI.h"
-#include "portico/DatatypeRetrieval.h"
-#include "portico/RTIambassadorEx.h"
 
 PORTICO1516E_NS_START
 
-class PorticoRtiAmbassador : public RTIambassadorEx 
+class PorticoRtiAmbassador : public rti1516e::RTIambassador
 {
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
@@ -35,7 +33,6 @@ class PorticoRtiAmbassador : public RTIambassadorEx
 	private:
 		JavaRTI *javarti;
 		Logger *logger; 
-		DatatypeRetrieval *datatypeRetriever; 
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -1581,25 +1578,6 @@ class PorticoRtiAmbassador : public RTIambassadorEx
 		           FederateNotExecutionMember,
 		           NotConnected,
 		           RTIinternalError );
-
-		IDatatype* getAttributeDatatype( ObjectClassHandle whichClass,
-										 AttributeHandle theHandle)
-			throw ( AttributeNotDefined,
-					InvalidAttributeHandle,
-					InvalidObjectClassHandle,
-					FederateNotExecutionMember,
-					NotConnected,
-					RTIinternalError);
-
-
-		IDatatype* getParameterDatatype( InteractionClassHandle whichClass,
-										 ParameterHandle theHandle)
-			throw ( InteractionParameterNotDefined,
-				    InvalidParameterHandle,
-				    InvalidInteractionClassHandle,
-				    FederateNotExecutionMember,
-				    NotConnected,
-				    RTIinternalError);
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS

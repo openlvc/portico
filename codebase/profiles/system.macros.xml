@@ -136,7 +136,7 @@
 			<testng classpathref="@{classpath}"
 			        outputDir="@{outdir}/@{suite}"
 			        failureProperty="java.test.failed"
-			        listener="PorticoTestListener"
+			        listeners="PorticoTestListener"
 			        haltonfailure="false"
 			        haltonskipped="false"
 			        groups="@{groups}">

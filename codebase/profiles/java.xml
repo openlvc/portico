@@ -67,17 +67,12 @@
 	<!-- These properties are set so that any information relating to a specific path
 	     for a library can be changed in a single spot. The properties should be used
 	     when defining paths and the like later in the build file -->
-	<property name="testng.dir"            location="${lib.dir}/testng/testng-7.0.0"/> <!-- update taskdef in macros -->
 	<property name="jgroups.dir"           location="${lib.dir}/jgroups/jgroups-git"/>
 	<property name="log4j.dir"             location="${lib.dir}/log4j/apache-log4j-2.10.0"/>
 	<property name="asm.dir"               location="${lib.dir}/asm/asm-3.1"/>
 	<property name="bouncycastle.dir"      location="${lib.dir}/bouncycastle/fips/1.0.1"/>
 
 	<!-- Classpaths for individual libraries -->
-	<path id="lib.testng.classpath">
-		<fileset dir="${testng.dir}" includes="**/*.jar"/>
-	</path>
-	
 	<path id="lib.jgroups.classpath">
 		<fileset dir="${jgroups.dir}" includes="**/*.jar"/>
 	</path>
@@ -106,7 +101,7 @@
 	
 	<path id="test.classpath">
 		<path refid="compile.classpath"/>
-		<path refid="lib.testng.classpath"/>
+		<path refid="sys.testng.classpath"/>
 		<pathelement path="${portico.classes.dir}"/>
 		<pathelement path="${test.classes.dir}"/>
 		<pathelement path="${resources.dir}/jars/portico.jar"/>

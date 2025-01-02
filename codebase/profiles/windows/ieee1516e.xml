@@ -344,17 +344,14 @@
 			<local name="_largs"/>       <!-- linker arguments -->
 			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
 			<local name="_jdkhome"/>     <!-- path to either 32 or 64-bit JDK -->
-			<local name="_pugixmlhome"/>     <!-- path to either 32 or 64-bit pugixml -->
 
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="64"/>
 				<property name="_jdkhome" value="${jdk.home.win64}"/>
-				<property name="_pugixmlhome" value="${pugixml.dir}/win64"/>
 			</then><else>
 				<property name="_bitness" value=""/>
 				<property name="_jdkhome" value="${jdk.home.win32}"/>
-				<property name="_pugixmlhome" value="${pugixml.dir}/win32"/>
 			</else></if>
 
 			<!-- Is this a Debug or Release build? -->
@@ -394,7 +391,6 @@
 				<includepath path="${ieee1516e.include.dir}"/>
 				<includepath path="${ieee1516e.src.dir}"/>
 				<includepath path="${_jdkhome}/include;${_jdkhome}/include/win32"/>
-				<includepath path="${pugixml.include}"/>
 				<define name="BUILDING_RTI"/>
 				<define name="RTI_DISABLE_WARNINGS"/>
 				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->

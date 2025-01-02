@@ -18,7 +18,7 @@
 
 // Company
 #ifndef PRODUCT_COMPANY
-	#define PRODUCT_COMPANY Calytrix Technologies
+	#define PRODUCT_COMPANY The OpenLVC Group
 #endif
 
 // Comments
@@ -33,7 +33,7 @@
 
 // Legal Copyright
 #ifndef PRODUCT_COPYRIGHT
-	#define PRODUCT_COPYRIGHT Copyright (C) 2013
+	#define PRODUCT_COPYRIGHT Copyright (C) 2014
 #endif
 
 // Legal Trademarks

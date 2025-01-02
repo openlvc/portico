@@ -20,12 +20,11 @@
 	</description>
 
 	<!-- =========================================================== -->
-      <!--                    Common Java Libraries                    -->
+	<!--                    Common Java Libraries                  -->
 	<!-- =========================================================== -->
-	<!-- ==== Library Path Definitions ==== -->
-	<!-- These properties are set so that any information relating to a specific path
-	     for a library can be changed in a single spot. The properties should be used
-	     when defining paths and the like later in the build file -->
+	<!-- :::::: -->
+	<!-- TestNG -->
+	<!-- :::::: -->
 	<property name="testng-ant.dir"        location="${lib.dir}/testng-ant/1.0.0"/>
 	<property name="testng.dir"            location="${lib.dir}/testng/testng-7.10.2"/>
 
@@ -38,22 +37,17 @@
 	<!-- Load up the Ant task for TestNG -->
 	<taskdef resource="testngtasks" classpathref="sys.testng.classpath"/>
 
-	
-	<!-- ========================== -->
-	<!-- Classpath Set Declarations -->
-	<!-- ========================== -->
-	<path id="testng.classpath">
-		<path refid="sys.testng.classpath"/>
-	</path>
+	<!-- =========================================================== -->
+	<!--                     Common C++ Libraries                    -->
+	<!-- =========================================================== -->
+	<!-- ::::::: -->
+	<!-- CppUnit -->
+	<!-- ::::::: -->
+	<!-- Note that when updating this library, the expected directory structure
+	       is ${lib.dir}/cppunit/[version]/[platform]/[vcver] (vcver is only relevant)
+	       for windows and should be the Visual Studio version (e.g. vc10) -->
+	<property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
+	<property name="cppunit.include"       location="${cppunit.dir}/include"/>
+	<property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
 
-      <!-- =========================================================== -->
-      <!--                     Common C++ Libraries                    -->
-      <!-- =========================================================== -->
-      <!-- CppUnit -->
-      <!-- Note that when updating this library, the expected directory structure
-           is ${lib.dir}/cppunit/[version]/[platform]/[vcver] (vcver is only relevant)
-           for windows and should be the Visual Studio version (e.g. vc10) -->
-      <property name="cppunit.dir"           location="${lib.dir}/cppunit/cppunit-1.12.1"/>
-      <property name="cppunit.include"       location="${cppunit.dir}/include"/>
-      <property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
 </project>
