@@ -9,7 +9,7 @@
 ;!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
 
 ; Details for the uninstaller
-!define PUBLISHER "Calytrix Technologies"
+!define PUBLISHER "The OpenLVC Group"
 !define WEBSITE "http://porticoproject.org"
 !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PUBLISHER} portico-${VERSION}-win64"
 !define UNINST_ROOT_KEY "HKLM"
@@ -38,7 +38,7 @@
   VIProductVersion "${VERSION}.${BUILD_NUMBER}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Portico"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "The Portico Open Source RTI"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Calytrix Technologies"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "The OpenLVC Group"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "The Portico Project"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Portico Installer"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}.${BUILD_NUMBER}"
