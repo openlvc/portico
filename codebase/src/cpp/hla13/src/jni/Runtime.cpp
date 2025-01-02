@@ -377,16 +377,12 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 		systemPath = string( getenv("LD_LIBRARY_PATH") );
 	#endif
 
-	// make sure we have a system path
-	if( systemPath.empty() )
-		systemPath = "";
-
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
 	char *javaHome = getenv( "JAVA_HOME" );
-	string jrelocation;
+	string jrelocation(".");
 	if( javaHome )
-		string jrelocation( javaHome );
+		jrelocation = string( javaHome );
 	
 	// Portico ships a JRE with it, but we might be building in a development environment
 	// so check to see if RTI_HOME/jre is packaged first, then fallback on JAVA_HOME from above
@@ -398,9 +394,6 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	}
 	else
 	{
-		if( getenv("JAVA_HOME") != NULL )
-			jrelocation = string( getenv("JAVA_HOME") );
-
 		logger->warn( "WARNING Could not locate bundled JRE, falling back on $JAVA_HOME or $PWD: [%s]",
 		              jrelocation.c_str() );
 	}
@@ -409,10 +402,10 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
 	          << systemPath << ":"
-	          << rtihome << "/lib/gcc4:"
-	          << jrelocation << "/jre/lib/server:"
-	          << jrelocation << "/jre/lib/i386/client:"
-	          << jrelocation << "/jre/lib/amd64/server";
+	          << rtihome << "/lib/gcc11:"
+	          << jrelocation << "/lib:"
+	          << jrelocation << "/lib/server:"
+	          << jrelocation << "/lib/client";
 	paths.second = libraryPath.str();
 	
 	return paths;
@@ -425,6 +418,8 @@ string Runtime::getMode() throw( HLA::RTIinternalError )
 {
 #ifdef DEBUG
 	return string("-Dportico.cpp.mode=debug");
+#elif _DEBUG
+	return string("-Dportico.cpp.mode=debug");
 #else
 	return string("-Dportico.cpp.mode=release");
 #endif
@@ -435,7 +430,17 @@ string Runtime::getMode() throw( HLA::RTIinternalError )
  */
 string Runtime::getCompiler() throw( HLA::RTIinternalError )
 {
-#ifdef VC11
+#if defined(VC14_3)
+	return string( "-Dportico.cpp.compiler=vc14_3" );
+#elif defined(VC14_2)
+	return string( "-Dportico.cpp.compiler=vc14_2" );
+#elif defined(VC14_1)
+	return string( "-Dportico.cpp.compiler=vc14_1" );
+#elif defined(VC14)
+	return string( "-Dportico.cpp.compiler=vc14" );
+#elif defined(VC12)
+	return string( "-Dportico.cpp.compiler=vc12" );
+#elif defined(VC11)
 	return string( "-Dportico.cpp.compiler=vc11" );
 #elif defined(VC10)
 	return string( "-Dportico.cpp.compiler=vc10" );
@@ -444,7 +449,7 @@ string Runtime::getCompiler() throw( HLA::RTIinternalError )
 #elif defined(VC8)
 	return string( "-Dportico.cpp.compiler=vc8" );
 #else
-	return string( "-Dportico.cpp.compiler=gcc4" );
+	return string( "-Dportico.cpp.compiler=gcc11" );
 #endif
 }
 
