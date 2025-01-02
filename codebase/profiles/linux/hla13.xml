@@ -71,22 +71,22 @@
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
-	<target name="test.compile" depends="compile">
+	<target name="test.compile">
 		<cpptask compiler="g++"
 		         outfile="test13"
 		         workdir="${test13.build.dir}"
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings"
-		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/jre/lib/amd64/server">
+		         compilerArgs="-std=c++14 -g -O0 -fPIC -Wall -Wno-deprecated -Wno-write-strings"
+		         linkerArgs="-Wl,-rpath-link ${jdk.home.linux64}/lib/server">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
 			<includepath path="${hla13.src.dir}/hla/time"/>
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/gcc4" libs="RTI-NG_64d,FedTime_64d"/>
+			<library path="${hla13.complete.dir}/gcc11" libs="RTI-NG_64d,FedTime_64d"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpptask>
 	</target>
@@ -119,11 +119,11 @@
 		      failifexecutionfails="false"
 		      resultproperty="test13.result">
 			<arg line="${test13.complete.dir}/test-results.xml"/>
-			<env key="RTI_HOME" path="."/><!-- required, but we set the env up properly anyway -->
-			<env key="LD_LIBRARY_PATH" path="${jdk.home.linux64}/jre/lib/amd64/server;${hla13.complete.dir}/gcc4;${cppunit.lib}"/>
+			<env key="LD_LIBRARY_PATH" path="${jdk.home.linux64}/lib/server;${hla13.complete.dir}/gcc11;${cppunit.lib}"/>
 			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
+			<env key="RTI_HOME" value="${sandbox.dir}"/>
 		</exec>
 		
 		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
@@ -162,7 +162,7 @@
 			<fileset dir="${hla13.complete.dir}" includes="**/*.so"/>
 		</copy>
 
-		<chmod dir="${sandbox.lib.dir}/gcc4" perm="755" includes="**/*.so"/>
+		<chmod dir="${sandbox.lib.dir}/gcc11" perm="755" includes="**/*.so"/>
 
 		<!-- ================================= -->
 		<!-- Copy across the example federates -->
@@ -201,8 +201,8 @@
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
-		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="compiler" description="gcc11" default="gcc11"/>
+		<attribute name="arch"     description="x86 or amd64" default="amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
 		<sequential>
@@ -252,7 +252,7 @@
 	-->	 
 	<macrodef name="gcc-hla13" description="(HLA 1.3) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="gcc4" default="gcc4"/>
+		<attribute name="compiler" description="gcc11" default="gcc11"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -268,7 +268,7 @@
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
 				<property name="_bitness" value="_64"/>
-				<property name="_jdklib" value="${jdk.home.linux64}/jre/lib/amd64/server"/>
+				<property name="_jdklib" value="${jdk.home.linux64}/lib/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
 				<property name="_jdklib" value="${jdk.home.linux32}/jre/lib/i586/client"/>
@@ -278,13 +278,13 @@
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall -Wno-write-strings"/>
+				<property name="_cargs"       value="-std=c++14 -g -O0 -fPIC -Wall -Wno-deprecated -Wno-write-strings"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wno-deprecated -Wall -Wno-write-string"/>
+				<property name="_cargs"       value="-std=c++14 -O0 -fPIC -Wall -Wno-deprecated -Wno-write-strings"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
