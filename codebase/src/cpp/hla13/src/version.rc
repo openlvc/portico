@@ -18,7 +18,7 @@
 
 // Company
 #ifndef PRODUCT_COMPANY
-	#define PRODUCT_COMPANY Calytrix Technologies
+	#define PRODUCT_COMPANY The OpenLVC Group
 #endif
 
 // Comments
