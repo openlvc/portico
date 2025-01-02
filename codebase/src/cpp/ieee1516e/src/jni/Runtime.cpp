@@ -428,14 +428,14 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 		systemPath = string( getenv("LD_LIBRARY_PATH") );
 	#endif
 
-	// Portico ships with a JRE - ake sure it is there
+	// Portico ships with a JRE - make sure it is there
 	string jrelocation = string(rtihome).append( "/jre" );
 	string temp = string(jrelocation).append( "/bin/java" );
 	if( pathExists(temp) == false )
 	{
 		logger->debug( "No JRE found at RTI_HOME, falling back to JAVA_HOME" );
 		const char* javahome = getenv( "JAVA_HOME" );
-		jrelocation = string(javahome).append( "/jre" );
+		jrelocation = string(javahome);
 		temp = string(jrelocation).append( "/bin/java" );
 		
 		if( pathExists(temp) == false )
@@ -446,10 +446,8 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
 	          << string(systemPath) << ":"
-	          << rtihome << "/lib/gcc4:"
-	          << jrelocation << "/lib/server:"
-	          << jrelocation << "/lib/i386/client:"
-	          << jrelocation << "/lib/amd64/server";
+	          << rtihome << "/lib/gcc11:"
+	          << jrelocation << "/lib/server";
 	paths.second = libraryPath.str();
 	
 	return paths;

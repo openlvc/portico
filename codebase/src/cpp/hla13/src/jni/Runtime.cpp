@@ -312,10 +312,10 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.;"
 	            << string(systemPath) << ";"
-#ifdef _WIN64
+#ifdef _WIN64 // just to make sure the code still compiles under linux
 	            << rtihome << "\\bin\\" << VC_VERSION << ";"
 	            << jrelocation << "\\bin\\server"
-#endif // _WIN64
+#endif
 				<< "";
 
 	paths.second = libraryPath.str();
@@ -401,10 +401,8 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 	stringstream libraryPath;
 	libraryPath << "-Djava.library.path=.:"
 	          << systemPath << ":"
-	          << rtihome << "/lib/gcc4:"
-	          << jrelocation << "/jre/lib/server:"
-	          << jrelocation << "/jre/lib/i386/client:"
-	          << jrelocation << "/jre/lib/amd64/server";
+	          << rtihome << "/lib/gcc11:"
+	          << jrelocation << "/lib/server";
 	paths.second = libraryPath.str();
 	
 	return paths;
@@ -416,6 +414,8 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( HLA::RTIi
 string Runtime::getMode() throw( HLA::RTIinternalError )
 {
 #ifdef DEBUG
+	return string("-Dportico.cpp.mode=debug");
+#elif _DEBUG
 	return string("-Dportico.cpp.mode=debug");
 #else
 	return string("-Dportico.cpp.mode=release");
