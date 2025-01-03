@@ -59,6 +59,31 @@
 	<property name="cppunit.lib"           location="${cppunit.dir}/${platform}"/>
 
 	<!-- ================================================= -->
+	<!--                target: cpp.init                   -->
+	<!-- ================================================= -->
+	<target name="init">
+		<if><isset property="cpp.compilers.override"/>
+		<then>
+			<echo>Automatic enabling of all C++ builds/compilers has been DISABLED</echo>
+		</then>
+		<else>
+			<echo>Generating list of enabled C++ compilers/builds (ENABLING ALL)</echo>
+			<!-- Determine and set build profile properties -->
+			<!-- To specify a particular profile, users include -Dprofile="..." on the
+				command line. This task looks at that property and sets a bunch of other
+				properties depending on its value. Properties are only set if a particular
+				profile matches that requested. The presence (of absence) of these props
+				is used by the compilation targets to determine whether or not to compile
+				for a particular profile.
+			-->
+			<generateCppCompilerVariables compilers="gcc11,vc14_1,vc14_2,vc14_3"
+			                              architectures="amd64"
+			                              builds="debug,release"/>
+		</else>
+		</if>
+	</target>
+
+	<!-- ================================================= -->
 	<!--                task: cpp.strict                   -->
 	<!-- ================================================= -->
 	<!-- Tasks to enable the strict or relaxed build style -->

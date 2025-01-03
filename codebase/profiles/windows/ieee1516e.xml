@@ -78,7 +78,7 @@
 	     We have one of these for each supported platform architecture so
 		 that we can compile all the targets for each arch as a group.
 	-->
-	<target name="compile.vc14_3" extensionOf="compile">
+	<target name="compile.vc14_3" depends="cpp.init" extensionOf="compile">
 		<compile-ieee1516e compiler="vc14_3" arch="amd64" build="debug"/>
 		<compile-ieee1516e compiler="vc14_3" arch="amd64" build="release"/>
 	</target>
@@ -90,7 +90,7 @@
 	     We have one of these for each supported platform architecture so
 		 that we can compile all the targets for each arch as a group.
 	-->
-	<target name="compile.vc14_2" extensionOf="compile">
+	<target name="compile.vc14_2" depends="cpp.init" extensionOf="compile">
 		<compile-ieee1516e compiler="vc14_2" arch="amd64" build="debug"/>
 		<compile-ieee1516e compiler="vc14_2" arch="amd64" build="release"/>
 	</target>
@@ -102,7 +102,7 @@
 	     We have one of these for each supported platform architecture so
 		 that we can compile all the targets for each arch as a group.
 	-->
-	<target name="compile.vc14_1" extensionOf="compile">
+	<target name="compile.vc14_1" depends="cpp.init" extensionOf="compile">
 		<compile-ieee1516e compiler="vc14_1" arch="amd64" build="debug"/>
 		<compile-ieee1516e compiler="vc14_1" arch="amd64" build="release"/>
 	</target>

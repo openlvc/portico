@@ -85,6 +85,7 @@
 	<include file="profiles/java.xml" as="java"/>
 
 	<!-- Parent C++ build scaffolding to attach to -->
+	<import file="profiles/cpp.compilers.xml"/>
 	<include file="profiles/cpp.xml" as="cpp"/>
 
 	<!-- Linux C++ and Installer profiles -->

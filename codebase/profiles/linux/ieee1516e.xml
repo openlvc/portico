@@ -59,10 +59,15 @@
 	<!-- ================================================================================= -->
 	<!--                                  Compile Targets                                  -->
 	<!-- ================================================================================= -->
+	<!-- extends on the main cpp compiling extension point declared externally -->
+	<extension-point name="compile"
+	                 extensionOf="cpp.compile"
+					 description="Compile the full IEEE-1516e interface"/>
+	
 	<!-- ==================================== -->
 	<!--       Main IEEE-1516e Interface      -->
 	<!-- ==================================== -->
-	<target name="compile">
+	<target name="compile" depends="cpp.init" extensionOf="compile">
 		<compile-ieee1516e arch="amd64" build="debug"/>
 		<compile-ieee1516e arch="amd64" build="release"/>
 	</target>
@@ -95,7 +100,7 @@
 	<!-- ==================================== -->
 	<!-- Compiles the 1516e example federate. Doesn't do much except
 	     assure that we can actually compile and link it to Portico -->
-	<target name="compile.example" depends="compile">
+	<target name="compile.example" depends="compile.gcc11" extensionOf="compile" if="gcc11.amd64.release">
 		<condition property="jvm" value="${jdk.home.linux64}/jre/lib/amd64/server" else="${jdk.home.linux64}/lib/server">
 			<contains substring="${java.compiler.target}" string="1.7,1.8"/>
 		</condition>
