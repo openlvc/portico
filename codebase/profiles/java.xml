@@ -334,7 +334,7 @@
 	        extensionOf="master.sandbox"
 	        description="Copy JRE into place in sandbox">
 		<!-- copy across the jre into our sandbox -->
-		<copy-jre todir="${sandbox.dir}"/>
+		<copy-jre outdir="${sandbox.dir}"/>
 	</target>
 
 	<!-- ================================================================================= -->
