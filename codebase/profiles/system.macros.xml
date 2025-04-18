@@ -225,20 +225,6 @@
 			<elseif><isset property="platform.macosx"/> <then><property name="_jdkpath" value="${jdk.home.macosx}"/></then></elseif>
 			<else><fail message="Unknown platform; cannot copy JDK for it: ${platform}"/></else></if>
 
-				<echo>Master JDK directory is: ${_jdkpath}</echo>
-				<echo>Master JDK directory is: ${_jdkpath}</echo>
-			</then>
-			<else>
-				<property name="_jdkpath" value="@{jredir}"/>
-			</else>
-			</if>
-			<echo>Master JDK directory is: ${_jdkpath}</echo>
-			</then>
-			<else>
-				<property name="_jdkpath" value="@{jredir}"/>
-			</else>
-			</if>
-
 			<!-- copy the jdk into place -->
 			<echo>Copy JDK into place</echo>
 			<echo>     From: ${_jdkpath}</echo>
