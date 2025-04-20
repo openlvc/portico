@@ -82,7 +82,7 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings"
+		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings -Wno-deprecated"
 		         linkerArgs="-Wl,-rpath-link ${jvm}">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
@@ -128,6 +128,7 @@
 			<env key="CLASSPATH" path="${sandbox.lib.dir}/portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
+			<env key="RTI_HOME" value="."/>
 		</exec>
 		
 		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
@@ -282,13 +283,13 @@
 			<if><equals arg1="@{build}" arg2="debug"/><then>
 				<!-- Debug Build -->
 				<property name="_d"           value="d"/>
-				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall -Wno-write-strings"/>
+				<property name="_cargs"       value="-g -O0 -fPIC -Wno-deprecated -Wall -Wno-write-strings -Wno-address -Wno-nonnull-compare"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="DEBUG"/>
 			</then><else>
 				<!-- Release Build -->
 				<property name="_d"           value=""/>
-				<property name="_cargs"       value="-O0 -fPIC -Wno-deprecated -Wall -Wno-write-strings"/>
+				<property name="_cargs"       value="-fPIC -Wno-deprecated -Wall -Wno-write-strings -Wno-address -Wno-nonnull-compare"/>
 				<property name="_largs"       value=""/>
 				<property name="_buildsymbol" value="RELEASE"/>
 			</else></if>
