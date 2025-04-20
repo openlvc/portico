@@ -38,6 +38,7 @@ if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
 	g++ -g -O1 -fPIC -I$RTI_HOME/include/hla13 \
+	    -Wall -Wno-write-strings -Wno-deprecated \
 	    -DRTI_USES_STD_FSTREAM \
 		main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate \
 		-L$RTI_HOME/lib/gcc8 -lRTI-NG_64 -lFedTime_64 \
