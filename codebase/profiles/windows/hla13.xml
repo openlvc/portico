@@ -72,6 +72,18 @@
 	                 description="Compile the full HLA v1.3 interface"/>
 	
 	<!-- ================================================================= -->
+	<!--             Visual Studio 2019 (vc14_3) Compile Targets           -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2019 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_3" extensionOf="hla13.compile">
+		<compile-hla13 compiler="vc14_3" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc14_3" arch="amd64" build="release"/>
+	</target>
+	
+	<!-- ================================================================= -->
 	<!--             Visual Studio 2019 (vc14_2) Compile Targets           -->
 	<!-- ================================================================= -->
 	<!-- The Visual Studio 2019 related extension points.
@@ -79,15 +91,8 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc14_2" extensionOf="hla13.compile">
-		<trycatch>
-		<try>
-			<compile-hla13 compiler="vc14_2" arch="amd64" build="debug"/>
-			<compile-hla13 compiler="vc14_2" arch="amd64" build="release"/>
-		</try>
-		<catch>
-			<echo>Skipping VC14_2, it may not be installed</echo>
-		</catch>
-		</trycatch>
+		<compile-hla13 compiler="vc14_2" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc14_2" arch="amd64" build="release"/>
 	</target>
 	
 	<!-- ================================================================= -->
@@ -98,15 +103,8 @@
 		 that we can compile all the targets for each arch as a group.
 	-->
 	<target name="compile.vc14_1" extensionOf="hla13.compile">
-		<trycatch>
-		<try>
-			<compile-hla13 compiler="vc14_1" arch="amd64" build="debug"/>
-			<compile-hla13 compiler="vc14_1" arch="amd64" build="release"/>
-		</try>
-		<catch>
-			<echo>Skipping VC14_1, it may not be installed</echo>
-		</catch>
-		</trycatch>
+		<compile-hla13 compiler="vc14_1" arch="amd64" build="debug"/>
+		<compile-hla13 compiler="vc14_1" arch="amd64" build="release"/>
 	</target>
 	
 	<!-- ==================================== -->
@@ -127,7 +125,7 @@
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/vc14_1" libs="RTI-NG64d,FedTime64d"/>
+			<library path="${hla13.complete.dir}/vc14_1" libs="RTI-NG_64d,FedTime_64d"/>
 			<library path="${cppunit.dir}/win64/vc14_1" libs="cppunit"/>
 		</cpptask>
 	</target>
@@ -157,10 +155,11 @@
 			<arg value="${test13.complete.dir}\test-results.xml"/>
 			<!-- PATH needs both jdk/bin and jdk/bin/server for compatibility with java 8 and java 11+ -->
 			<env key="PATH" path="${hla13.complete.dir}\vc14_1;${jdk.home.win64}\bin\server;${jdk.home.win64}\jre\bin\server"/>
-			<env key="PORTICO_DEBUG" value="OFF"/>
+			<env key="PORTICO_DEBUG" value="TRACE"/>
 			<env key="CLASSPATH" path="${sandbox.lib.dir}\portico.jar"/>
 			<env key="PORTICO_JNICHECK" value="true"/>
 			<env key="TEST.GROUP" value="${test.group}"/>
+			<env key="RTI_HOME" value="."/> <!-- this isn't correct, but it gets us past the checks -->
 		</exec>
 
 		<!-- 3. Generate the report. This will fail the build if any of the tests failed -->
@@ -239,7 +238,7 @@
 	-->
 	<macrodef name="compile-hla13">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc14_2, vc14_1, vc14, vc10"/>
+		<attribute name="compiler" description="vc14_2, vc14_1, vc14"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
@@ -308,7 +307,7 @@
 	-->	 
 	<macrodef name="msvc-hla13" description="(HLA 1.3) Compile the RTI libraries">
 		<!-- Attributes -->
-		<attribute name="compiler" description="vc14_2, vc14_1, vc14, vc10"/>
+		<attribute name="compiler" description="vc14_2, vc14_1, vc14"/>
 		<attribute name="arch"     description="x86 or amd64"/>
 		<attribute name="build"    description="release or debug"/>
 
