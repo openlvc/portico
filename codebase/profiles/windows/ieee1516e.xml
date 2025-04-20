@@ -66,10 +66,6 @@
 	                 extensionOf="cpp.compile"
 	                 description="Compile the full IEEE-1516e interface"/>
 	
-	<extension-point name="ieee1516e.32.compile"
-	                 extensionOf="cpp.32.installer"
-	                 description="Compile the full IEEE-1516e interface"/>
-	
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2019 (vc14_2) Compile Targets             -->
 	<!-- ================================================================= -->
@@ -89,18 +85,6 @@
 		</trycatch>
 	</target>
 	
-	<target name="32.compile.vc14_2" extensionOf="ieee1516e.32.compile">
-		<trycatch>
-		<try>
-			<compile-ieee1516e compiler="vc14_2" arch="x86" build="debug"/>
-			<compile-ieee1516e compiler="vc14_2" arch="x86" build="release"/>
-		</try>
-		<catch>
-			<echo>Skipping VC14_2, it may not be installed</echo>
-		</catch>
-		</trycatch>
-	</target>
-
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2017 (vc14_1) Compile Targets             -->
 	<!-- ================================================================= -->
@@ -120,17 +104,6 @@
 		</trycatch>
 	</target>
 
-	<target name="32.compile.vc14_1" extensionOf="ieee1516e.32.compile">
-		<trycatch>
-		<try>
-			<compile-ieee1516e compiler="vc14_1" arch="x86" build="debug"/>
-			<compile-ieee1516e compiler="vc14_1" arch="x86" build="release"/>
-		</try>
-		<catch>
-			<echo>Skipping VC14_1, it may not be installed</echo>
-		</catch>
-		</trycatch>
-	</target>
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2010 (vc10) Compile Targets             -->
 	<!-- ================================================================= -->
@@ -143,10 +116,6 @@
 		<compile-ieee1516e compiler="vc10" arch="amd64" build="release"/>
 	</target>
 
-	<target name="32.compile.vc10" extensionOf="ieee1516e.32.compile">
-		<compile-ieee1516e compiler="vc10" arch="x86" build="debug"/>
-		<compile-ieee1516e compiler="vc10" arch="x86" build="release"/>
-	</target>
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2008 (vc9) Compile Targets              -->
 	<!-- ================================================================= -->
@@ -159,10 +128,6 @@
 		<compile-ieee1516e compiler="vc9" arch="amd64" build="release"/>
 	</target>
 
-	<target name="32.compile.vc9" extensionOf="ieee1516e.32.compile">
-		<compile-ieee1516e compiler="vc9" arch="x86" build="debug"/>
-		<compile-ieee1516e compiler="vc9" arch="x86" build="release"/>
-	</target>
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2005 (vc8) Compile Targets              -->
 	<!-- ================================================================= -->
@@ -175,10 +140,6 @@
 		<compile-ieee1516e compiler="vc8" arch="amd64" build="release"/>
 	</target>
 
-	<target name="32.compile.vc8" extensionOf="ieee1516e.32.compile">
-		<compile-ieee1516e compiler="vc8" arch="x86" build="debug"/>
-		<compile-ieee1516e compiler="vc8" arch="x86" build="release"/>
-	</target>
 	<!-- ==================================== -->
 	<!--      IEEE-1516e Example Federate     -->
 	<!-- ==================================== -->
@@ -201,7 +162,6 @@
 	<!-- ================================================================================= -->
 	<!--                                  Testing Targets                                  -->
 	<!-- ================================================================================= -->
-
 	<!-- Not implemented for IEEE-1516e Inteface -->
 	<target name="test" extensionOf="cpp.test" depends="example.compile.amd64" unless="build.release">
 		<echo>No unit test suite for the C++ IEEE-1516e Interface</echo>
@@ -247,46 +207,6 @@
 		</copy>
 	</target>
 	
-	<target name="ieee15516e.32.sandbox" depends="java.sandbox,ieee1516e.32.compile">
-		<!-- ======================= -->
-		<!-- Copy across the Headers -->
-		<!-- ======================= -->
-		<mkdir dir="${sandbox.dir}/include/ieee1516e"/>
-		<copy todir="${sandbox.dir}/include/ieee1516e">
-			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
-		</copy>
-
-		<!-- ========================= -->
-		<!-- Copy across the libraries -->
-		<!-- ========================= -->
-		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${sandbox.lib.dir}"/>
-		<copy todir="${sandbox.lib.dir}">
-			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
-		</copy>
-		<!-- Copy across the C++ dlls -->
-		<mkdir dir="${sandbox.bin.dir}"/>
-		<copy todir="${sandbox.bin.dir}">
-			<fileset dir="${ieee1516e.complete.dir}" includes="**/*.dll"/>
-		</copy>
-
-		<!-- ================================= -->
-		<!-- Copy across the example federates -->
-		<!-- ================================= -->
-		<mkdir dir="${sandbox.examples.dir}/cpp/ieee1516e"/>
-		<copy todir="${sandbox.examples.dir}/cpp/ieee1516e">
-			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
-		</copy>
-	</target>
-
-	<!-- ================================================================================= -->
-	<!--                                 Installer Targets                                 -->
-	<!-- ================================================================================= -->
-	<!-- Not required for an interface build -->
-
-	<target name="ieee1516e.32.installer"
-	        extensionOf="cpp.32.installer"
-	        depends="ieee15516e.32.sandbox"/>
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->

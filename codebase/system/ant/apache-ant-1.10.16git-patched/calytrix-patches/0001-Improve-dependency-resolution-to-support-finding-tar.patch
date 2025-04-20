@@ -1,0 +1,305 @@
+From d8616b01599e60774d23156ef6d39f1f02a3e7a8 Mon Sep 17 00:00:00 2001
+From: Tim Pokorny <tim@openlvc.org>
+Date: Sat, 28 Dec 2024 17:35:46 +0800
+Subject: [PATCH 1/1] Improve dependency resolution to support finding targets
+ in other imported files. Add support for if/unless on import.
+
+---
+ src/main/org/apache/tools/ant/Main.java       | 85 +++++++++++++++++++
+ src/main/org/apache/tools/ant/Project.java    | 27 ++++++
+ src/main/org/apache/tools/ant/Target.java     | 14 +++
+ .../apache/tools/ant/taskdefs/ImportTask.java | 70 +++++++++++++++
+ 4 files changed, 196 insertions(+)
+
+diff --git a/src/main/org/apache/tools/ant/Main.java b/src/main/org/apache/tools/ant/Main.java
+index bb07cabac..8d90f6ffc 100644
+--- a/src/main/org/apache/tools/ant/Main.java
++++ b/src/main/org/apache/tools/ant/Main.java
+@@ -30,6 +30,7 @@ import java.util.Collections;
+ import java.util.Enumeration;
+ import java.util.HashMap;
+ import java.util.HashSet;
++import java.util.Hashtable;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+@@ -815,6 +816,22 @@ public class Main implements AntMain {
+                     }
+                 }
+ 
++                // Added by Tim
++                // Tim - When including files, target names inside the included file are
++                //       automatically prefixed with some name, usually specified in an "as="
++                //       property. All _dependency_ declarations for targets inside the file are
++                //       also prefixed. While this works fine for dependencies inside the same
++                //       file (as they all get the same prefix and so are essentially still
++                //       accessible by the same name), if you want to include targets from
++                //       another file, the dependencies will no longer be resolvable because
++                //       they were prefixed.
++                //       To solve this, we first store any prefixes used when including files in
++                //       a project. Then, here we look for missing dependencies, and if we find
++                //       any, we attempt to resolve them using prefixes from other files that
++                //       we noted down earlier. If we find a match, we rewrite the name of the
++                //       target or dependency.
++                resolvePrefixedDependencies( project );
++
+                 project.executeTargets(targets);
+             } finally {
+                 System.setOut(savedOut);
+@@ -847,6 +864,74 @@ public class Main implements AntMain {
+         }
+     }
+ 
++    /**
++     * Spin through all targets and check their dependency list to look for missing dependencies
++     * accidentally created by prefixing them on import. This happens when one file mentions
++     * targets from another file. The dependency gets prefixed with the prefix used for the file
++     * that is being imported, so it is no longer findable.
++     * 
++     * For example: Assume we have all Java compilation targets in a file called "java.xml"
++     *              imported with the prefix "java". Secondly, assume we have installer targets
++     *              in a file called "installer.xml" imported with the prefix "installer". If
++     *              a target inside "installer.xml" refers to "java.compile" as a depedency,
++     *              Ant will change this to "installer.java.compile", which won't be resolvable.
++     * 
++     * This task looks for missing dependencies, and if it finds any that can't be resolved, it
++     * goes through and replaces the prefix with those from all imported files in an attempt to
++     * resolve the target under it's "global" name. If we we find a match, we replace the existing
++     * target with the matched name.
++     *
++     * @param project The project we are working in
++     *
++     * @since Ant 1.8.4-patched (Addedy by Tim)
++     */
++    private void resolvePrefixedDependencies(Project project) {
++        Hashtable allTargets = project.getTargets();
++        Enumeration targetsEnumeration = allTargets.elements();
++        while( targetsEnumeration.hasMoreElements() )
++        {
++            // for each of the targets in the project, check all their depdendencies to
++            // ensure they can't be found, attempting to find with prefixes removed if not
++            Target target = (Target)targetsEnumeration.nextElement();
++            Enumeration dependencies = target.getDependencies();
++            while( dependencies.hasMoreElements() ) {
++                String dependency = (String)dependencies.nextElement();
++                if( project.getTargets().containsKey(dependency) )
++                    continue;
++
++                // this target has a dependency that we can't find in the
++                // project, try removing any of the loaded prefixes from it
++                // name to see if we can, and should we be able to, replace
++                // the dependency
++                Set prefixes = project.getDeclaredPrefixes();
++                Iterator iterator = prefixes.iterator();
++                Target resolved = null;
++                while( iterator.hasNext() ) {
++                    String prefix = (String)iterator.next();
++                    // check the start of the target name, don't want to replace middle pieces
++                    // of the target name and find a match! (wouldn't be a prefix then)
++                    if( dependency.startsWith(prefix) == false )
++                        continue;
++
++                    String alternative = dependency.replace( prefix+".", "" );
++                    if( project.getTargets().containsKey(alternative) ) {
++                        // Found it!
++                        resolved = (Target)allTargets.get( alternative );
++                        project.log( "  >> Target ["+target.getName()+"] has dependency ["+
++                                     dependency+"]: NOT FOUND >> REWRITTEN AS ["+resolved+"]",
++                                     Project.MSG_VERBOSE );
++                        break;
++                    }
++                }
++                
++                // replace the target with the proper name if required
++                if( resolved != null ) {
++                    target.replaceDependency( dependency, resolved.getName() );
++                }
++            }
++        }
++    }
++
+     private void setProperties(final Project project) {
+ 
+         project.init();
+diff --git a/src/main/org/apache/tools/ant/Project.java b/src/main/org/apache/tools/ant/Project.java
+index 2cd2ba9c5..c231f7fb7 100644
+--- a/src/main/org/apache/tools/ant/Project.java
++++ b/src/main/org/apache/tools/ant/Project.java
+@@ -153,6 +153,9 @@ public class Project implements ResourceFactory {
+     /** Name of the project's default target. */
+     private String defaultTarget;
+ 
++    /** Set of prefixes that have been used by imported or included files */
++    private Set declaredPrefixes = new HashSet(); // Added by Tim
++
+     /** Map from target names to targets (String to Target). */
+     private final Hashtable<String, Target> targets = new Hashtable<>();
+ 
+@@ -791,6 +794,30 @@ public class Project implements ResourceFactory {
+         return description;
+     }
+ 
++    /**
++     * Gets a set of all the prefixes used in this project by imported or included files
++     *
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    public Set getDeclaredPrefixes() {
++        return this.declaredPrefixes;
++    }
++
++    /**
++     * Add a prefix to the set that we are tracking so that it can be used in resolving
++     * target references later on in Main.resolvePrefixedDependencies().
++     * 
++     * @param targetPrefix The prefix to track
++     * @since Ant 1.8.4-patched
++     */
++    public void addDeclaredPrefix( String targetPrefix ) {
++    	// skip the one that we never use
++    	if( targetPrefix == ProjectHelper.USE_PROJECT_NAME_AS_TARGET_PREFIX )
++    		return;
++
++    	this.declaredPrefixes.add( targetPrefix );
++    }
++
+     /**
+      * Add a filter to the set of global filters.
+      *
+diff --git a/src/main/org/apache/tools/ant/Target.java b/src/main/org/apache/tools/ant/Target.java
+index af8bfad34..a06200dc9 100644
+--- a/src/main/org/apache/tools/ant/Target.java
++++ b/src/main/org/apache/tools/ant/Target.java
+@@ -258,6 +258,20 @@ public class Target implements TaskContainer {
+             : Collections.enumeration(dependencies);
+     }
+ 
++    /**
++     * Replaces the identified existing target dependency with the provided new one.
++     * If the given dependency does not exist in the list of dependencies that we have,
++     * no replace shall take place.
++     *
++     * @since Ant 1.8.4-patched (added by Tim)
++     */
++    public void replaceDependency( String previousDependency, String newDependency ) {
++        int index = dependencies.indexOf( previousDependency );
++        if( index >= 0 ) {
++            dependencies.set( index, newDependency );
++        }
++    }
++
+     /**
+      * Does this target depend on the named target?
+      * @param other the other named target.
+diff --git a/src/main/org/apache/tools/ant/taskdefs/ImportTask.java b/src/main/org/apache/tools/ant/taskdefs/ImportTask.java
+index 79685cef0..276659206 100644
+--- a/src/main/org/apache/tools/ant/taskdefs/ImportTask.java
++++ b/src/main/org/apache/tools/ant/taskdefs/ImportTask.java
+@@ -28,6 +28,7 @@ import org.apache.tools.ant.MagicNames;
+ import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.ProjectHelper;
+ import org.apache.tools.ant.ProjectHelperRepository;
++import org.apache.tools.ant.PropertyHelper;
+ import org.apache.tools.ant.Task;
+ import org.apache.tools.ant.types.Resource;
+ import org.apache.tools.ant.types.ResourceCollection;
+@@ -72,6 +73,10 @@ public class ImportTask extends Task {
+     private String prefixSeparator = ".";
+     private final Union resources = new Union();
+ 
++    // added by Tim
++    private String ifCondition = null;
++    private String unlessCondition = null;
++
+     public ImportTask() {
+         resources.setCache(true);
+     }
+@@ -118,6 +123,26 @@ public class ImportTask extends Task {
+         prefixSeparator = s;
+     }
+ 
++    /**
++     * Only import the project if the property identified in this value
++     * evaludates to true.
++     *
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    public void setIf(String property) {
++        ifCondition = property == null ? "" : property;
++    }
++
++    /**
++     * Import the file specified *unless* the value of the identified
++     * property evaluates to false.
++     *
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    public void setUnless(String property) {
++        unlessCondition = property == null ? "" : property;
++    }
++
+     /**
+      * The resource to import.
+      *
+@@ -130,6 +155,19 @@ public class ImportTask extends Task {
+ 
+     @Override
+     public void execute() {
++    	project.addDeclaredPrefix( targetPrefix );
++        // Added by Tim: test the if and allows conditions
++        if (!testIfAllows()) {
++            project.log(this, "Skipped because property '" + project.replaceProperties(ifCondition)
++                    + "' not set.", Project.MSG_VERBOSE);
++            return;
++        }
++        if (!testUnlessAllows()) {
++            project.log(this, "Skipped because property '"
++                    + project.replaceProperties(unlessCondition) + "' set.", Project.MSG_VERBOSE);
++            return;
++        }
++
+         if (file == null && resources.isEmpty()) {
+             throw new BuildException(
+                 "import requires file attribute or at least one nested resource");
+@@ -322,6 +360,38 @@ public class ImportTask extends Task {
+         return "include".equals(getTaskType());
+     }
+ 
++    /**
++     * Tests whether or not the "if" condition allows the execution of this target.
++     *
++     * @return whether or not the "if" condition is satisfied. If no
++     *         condition (or an empty condition) has been set,
++     *         <code>true</code> is returned.
++     *
++     * @see #setIf(String)
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    private boolean testIfAllows() {
++        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(getProject());
++        Object o = propertyHelper.parseProperties(ifCondition);
++        return propertyHelper.testIfCondition(o);
++    }
++
++    /**
++     * Tests whether or not the "unless" condition allows the execution of this target.
++     *
++     * @return whether or not the "unless" condition is satisfied. If no
++     *         condition (or an empty condition) has been set,
++     *         <code>true</code> is returned.
++     *
++     * @see #setUnless(String)
++     * @since Ant 1.8.4-patched (Added by Tim)
++     */
++    private boolean testUnlessAllows() {
++        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(getProject());
++        Object o = propertyHelper.parseProperties(unlessCondition);
++        return propertyHelper.testUnlessCondition(o);
++    }
++
+     /**
+      * Sets a bunch of Thread-local ProjectHelper properties.
+      *
+-- 
+2.44.0.windows.1
+

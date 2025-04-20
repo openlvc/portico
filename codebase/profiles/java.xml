@@ -10,7 +10,7 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="java" xmlns:if="ant:if">
+<project name="java">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->
@@ -25,8 +25,8 @@
 	<property name="resources.jars.dir"       location="${resources.dir}/jars"/>
 
 	<!-- java compiler properties -->
-	<property name="java.compiler.source" value="11"/>
-	<property name="java.compiler.target" value="11"/>
+	<property name="java.compiler.source"     value="11"/>
+	<property name="java.compiler.target"     value="11"/>
 
 	<!-- ==== Source Related Properties ==== -->
 	<property name="portico.src.dir"          location="${java.src.dir}/portico"/>
@@ -126,7 +126,7 @@
 	     Local compilation extension point for all Java targets. Each Java compilation target
 	     should declare itself an extension of this point to link into the main build.
 	-->
-	<extension-point name="java.compile"
+	<extension-point name="compile"
 	                 extensionOf="master.compile"
 	                 description="Compile the core RTI, HLA interfaces, Java test suite and examples"/>
 
@@ -232,7 +232,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" extensionOf="master.sandbox" depends="java.compile,jars">
+	<target name="sandbox" extensionOf="master.sandbox" depends="compile,jars">
 		<!-- create the required directories -->
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${sandbox.dir}"/>
@@ -279,7 +279,7 @@
 	<extension-point name="jars"/>
 
 	<!-- build the main portico jar file -->
-	<target name="jar.portico" extensionOf="jars" depends="java.compile,onejar">
+	<target name="jar.portico" extensionOf="jars" depends="compile,onejar">
 		<!-- construct the main portico jar file -->
 		<jar destfile="${sandbox.dir}/lib/portico.jar">
 			<!-- portico code -->
@@ -314,7 +314,7 @@
 	<target name="onejar">
 		<mkdir dir="${onejar.dir}"/>
 
-		<!-- Need to delete this to prevent the modules in lib jars being mistaken for portico's (non-existent) module-->
+		<!-- Need to delete this to prevent the modules in lib jars being mistaken for portico's (non-existent) module -->
 		<delete file="module-info.java"/>
 		<!-- Check to see if we need to extract things again due to dependency changes
 		     or new dependencies being added. Otherwise we skip this step. -->
@@ -342,32 +342,10 @@
 	<!-- No special installation tasks to do for the Java build -->
 	<!--<target name="installer" extensionOf="master.installer"/>-->
 
-	<target name="sandbox.jre" depends="java.sandbox" description="Create JRE in sandbox">
-		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
-		<then>
-			<!-- For java 8 or lower can copy jre from the jdk location -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</then>
-		<else>
-			<!-- For java 9+ we just copy the whole jdk -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</else>
-		</if>
+	<target name="sandbox.jre" depends="sandbox" description="Copy the JRE into the sandbox">
+		<copy-jre outdir="${sandbox.dir}"/>
 	</target>
 	
-	<target name="32.sandbox.jre" depends="java.sandbox">
-		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
-		<then>
-			<!-- For java 8 or lower can copy jre from the jdk location -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</then>
-		<else>
-			<!-- For java 9+ we just copy the whole jdk -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</else>
-		</if>
-	</target>
-
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->

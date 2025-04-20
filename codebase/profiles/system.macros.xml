@@ -209,44 +209,53 @@
 	</macrodef>
 
 	<!-- ================================================================================= -->
-	<!--                               Macro: copy-jdk                                     -->
+	<!--                               Macro: copy-jre                                     -->
 	<!-- ================================================================================= -->
-	<macrodef name="copy-jdk" description="Copy a JDK into the provided location (Java 9+)">
-		<attribute name="todir"    description="Directory to copy JDK to (without /jre)"/>
+	<macrodef name="copy-jre" description="Copy a JRE from given JDK folder and into a location">
+		<attribute name="jredir"   default=""/>
+		<attribute name="outdir"   description="Directory to copy JRE to (without /jre)"/>
 
 		<sequential>
-			<!-- Figure out the JDK path -->
-			<local name="_jdkpath"/>
-			<echo>Determine the location of the JDK based on platform: ${platform}</echo>
-			<if>    <isset property="platform.win32"/>  <then><property name="_jdkpath" value="${jdk.home.win32}"/></then>
-			<elseif><isset property="platform.win64"/>  <then><property name="_jdkpath" value="${jdk.home.win64}"/></then></elseif>
-			<elseif><isset property="platform.linux32"/><then><property name="_jdkpath" value="${jdk.home.linux32}"/></then></elseif>
-			<elseif><isset property="platform.linux64"/><then><property name="_jdkpath" value="${jdk.home.linux64}"/></then></elseif>
-			<elseif><isset property="platform.macosx"/> <then><property name="_jdkpath" value="${jdk.home.macosx}"/></then></elseif>
-			<else><fail message="Unknown platform; cannot copy JDK for it: ${platform}"/></else></if>
+			<!-- Figure out the JRE path -->
+			<local name="_jdkdir"/>
+			<if><equals arg1="@{jredir}" arg2=""/><then>
+				<echo>No JRE specified -- falling back to platform default for ${platform}</echo>
+				<if>    <isset property="platform.win64"/>  <then><property name="_jdkdir" value="${jdk.home.win64}"/></then>
+				<elseif><isset property="platform.linux64"/><then><property name="_jdkdir" value="${jdk.home.linux64}"/></then></elseif>
+				<else><fail message="Unknown platform; cannot copy JRE for it: ${platform}"/></else></if>
 
-			<!-- copy the jdk into place -->
-			<echo>Copy JDK into place</echo>
-			<echo>     From: ${_jdkpath}</echo>
-			<echo>       To: @{todir}/jre</echo>
-
-			<if><os family="windows"/>
-			<then>
-				<!-- == Windows == -->
-				<mkdir dir="@{todir}/jre"/>
-				<copy todir="@{todir}/jre">
-					<fileset dir="${_jdkpath}">
-						<exclude name="**/jmods/**"/>
-						<exclude name="**/src.zip"/>
-					</fileset>
-				</copy>
+				<echo>Master JDK directory is: ${_jdkdir}</echo>
 			</then>
 			<else>
-				<mkdir dir="@{todir}/jre"/>
-				<exec executable="rsync" failonerror="true">
-					<arg line="-a --exclude='jmods' --exclude='src.zip' ${_jdkpath} @{todir}/jre"/>
-				</exec>
-			</else></if>
+				<property name="_jdkdir" value="@{jredir}"/>
+			</else>
+			</if>
+
+			<!-- copy the jre into place -->
+			<echo>Copying key parts of JDK:</echo>
+			<echo>    From: ${_jdkdir}</echo>
+			<echo>      To: @{outdir}/jre</echo>
+
+			<!-- NOTE TO SELF: Update this to be platform sensitive so that we can
+			                   ensure we preserve permissions on Linux -->
+			<mkdir dir="@{outdir}/jre"/>
+
+			<!-- Copy the JDK into place, omitting major pieces that we don't need -->
+			<copy todir="@{outdir}/jre">
+				<fileset dir="${_jdkdir}">
+					<exclude name="jmods/*"/>
+					<exclude name="lib/src.zip"/>
+				</fileset>
+			</copy>
+
+			<!-- Change permissions so Linux is happy (this is safe to run on win as well)-->
+			<chmod perm="755">
+				<fileset dir="@{outdir}/jre">
+					<include name="bin/**/*"/>
+					<include name="lib/jexec"/>
+					<include name="lib/jspawnhelper"/>
+				</fileset>
+			</chmod>
 		</sequential>
 	</macrodef>
 

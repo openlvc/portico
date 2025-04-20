@@ -10,24 +10,23 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="win32.installer">
+<project name="installer">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->
 	<!-- ================================================================================= -->
 	<description>
-		Windows 32/64-bit installer generation.
+		Windows installer generation.
 	</description>
 
 	<!-- NSIS Installer Properties -->
 	<property name="nsis.resources.dir"    location="${resources.dir}/installers/windows/nsis"/>
-	<property name="nsis.script.win32"     location="${nsis.resources.dir}/portico-installer.nsi"/>
 
 	<!-- ================================================================================= -->
 	<!--                           Installer Preparation Targets                           -->
 	<!-- ================================================================================= -->
 	<!-- Prepare the build directory -->
-	<target name="prep">
+	<target name="prep" depends="java.sandbox.jre">
 		<!-- copy the installer resources into the sandbox -->
 		<copy todir="${sandbox.dir}">
 			<fileset dir="${nsis.resources.dir}" includes="*.url"/> 
@@ -39,39 +38,21 @@
 	<!-- ================================================================================= -->
 
 	<!--                                     -->
-	<!-- Windows 32-bit Installer Generation -->
-	<!--                                     -->
-	<target name="nsis.win32" extensionOf="master.32.installer" depends="cpp.32.installer,java.sandbox,java.32.sandbox.jre,prep">
-		<!-- Verify we have a JRE we can bundle -->
-		<verifyJdk location="${jdk.home.win32}" arch="x86" requiredVersion="${java.compiler.target}"/>
-
-		<!-- run the NSIS script for the installer -->
-		<echo>Creating Windows 32-bit Installer</echo>
-		<nsis-installer script="${nsis.resources.dir}/installer-win32.nsi">
-			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put the installer here   -->
-			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
-			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
-			<define name="LICENSE"      value="${license}"/>       <!-- presented during install -->
-			<define name="SANDBOX"      value="${sandbox.dir}"/>   <!-- contents of the app      -->
-			<define name="JREPATH"      value="${sandbox.dir}\jre32"/> <!-- jre to bundle  -->
-		</nsis-installer>
-	</target>
-
-	<!--                                     -->
 	<!-- Windows 64-bit Installer Generation -->
 	<!--                                     -->
-	<target name="nsis.win64" extensionOf="master.installer" depends="sandbox,prep,java.sandbox.jre">
+	<target name="nsis.win64" extensionOf="master.installer" depends="prep">
 		<!-- Verify we have a JRE we can bundle -->
 		<verifyJdk location="${jdk.home.win64}" arch="amd64" requiredVersion="${java.compiler.target}"/>
 
 		<!-- run the NSIS script for the installer -->
 		<echo>Creating Windows 64-bit Installer</echo>
 		<nsis-installer script="${nsis.resources.dir}/installer-win64.nsi">
-			<define name="OUTDIR"       value="${dist.dir}"/>      <!-- put installer here       -->
-			<define name="VERSION"      value="${build.version}"/> <!-- e.g. "2.0.0"             -->
-			<define name="BUILD_NUMBER" value="${build.number}"/>  <!-- shown in file details    -->
-			<define name="LICENSE"      value="${license}"/>       <!-- presented during install -->
-			<define name="SANDBOX"      value="${sandbox.dir}"/>   <!-- contents of the app      -->
+			<define name="DIST_NAME"    value="${build.shortname}"/> <!-- start of file name     -->
+			<define name="OUTDIR"       value="${dist.dir}"/>        <!-- put installer here     -->
+			<define name="VERSION"      value="${build.version}"/>   <!-- e.g. "2.0.0"           -->
+			<define name="BUILD_NUMBER" value="${build.number}"/>    <!-- shown in file details  -->
+			<define name="LICENSE"      value="${license}"/>         <!-- shown during install   -->
+			<define name="SANDBOX"      value="${sandbox.dir}"/>     <!-- contents of the app    -->
 			<define name="JREPATH"      value="${sandbox.dir}\jre"/> <!-- jre to bundle -->
 		</nsis-installer>
 	</target>
@@ -82,28 +63,9 @@
 	<!-- These are only run on command - they're not tied into the broader build system -->
 
 	<!--                                    -->
-	<!-- Windows 32-bit Zip FIle Generation -->
-	<!--                                    -->
-	<target name="zip.win32">
-		<!-- Verify we have a JRE we can bundle -->
-		<!-- <verifyJdk location="${jdk.home.win32}" arch="x86"/> -->
-
-		<!-- generate the tarball with the sandbox and the JRE in it -->
-		<zip destfile="${dist.dir}/${dist.name}-win32.zip">
-			<zipfileset dir="${sandbox.dir}"
-			            includes="**/*"
-			            excludes="lib/**/*64*,bin/**/*64*"
-			            prefix="${dist.name}"/>
-			<zipfileset dir="${jdk.home.win32}/jre"
-			            includes="**/*"
-			            prefix="${dist.name}/jre"/>
-		</zip>
-	</target>
-
-	<!--                                    -->
 	<!-- Windows 64-bit Zip File Generation -->
 	<!--                                    -->
-	<target name="zip.win64">
+	<target name="zip.win64" depends="prep">
 		<!-- Verify we have a JRE we can bundle -->
 		<verifyJdk location="jdk.home.win64" arch="amd64" requiredVersion="${java.compiler.target}"/>
 

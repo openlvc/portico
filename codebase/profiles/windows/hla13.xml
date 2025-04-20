@@ -71,10 +71,6 @@
 	                 extensionOf="cpp.compile"
 	                 description="Compile the full HLA v1.3 interface"/>
 	
-	<extension-point name="hla13.32.compile"
-	                 extensionOf="cpp.32.installer"
-	                 description="Compile the full 32 bit HLA v1.3 interface"/>
-
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2019 (vc14_2) Compile Targets           -->
 	<!-- ================================================================= -->
@@ -94,19 +90,6 @@
 		</trycatch>
 	</target>
 	
-	<target name="32.compile.vc14_2" extensionOf="hla13.32.compile">
-		<trycatch>
-		<try>
-			<compile-hla13 compiler="vc14_2" arch="x86" build="debug"/>
-			<compile-hla13 compiler="vc14_2" arch="x86" build="release"/>
-		</try>
-		<catch>
-			<echo>Skipping VC14_2, it may not be installed</echo>
-		</catch>
-		</trycatch>
-	</target>
-	
-
 	<!-- ================================================================= -->
 	<!--             Visual Studio 2017 (vc14_1) Compile Targets           -->
 	<!-- ================================================================= -->
@@ -126,66 +109,6 @@
 		</trycatch>
 	</target>
 	
-	<target name="32.compile.vc14_1" extensionOf="hla13.32.compile">
-		<trycatch>
-		<try>
-			<compile-hla13 compiler="vc14_1" arch="x86" build="debug"/>
-			<compile-hla13 compiler="vc14_1" arch="x86" build="release"/>
-		</try>
-		<catch>
-			<echo>Skipping VC14_1, it may not be installed</echo>
-		</catch>
-		</trycatch>
-	</target>
-
-	<!-- ================================================================= -->
-	<!--             Visual Studio 2010 (vc10) Compile Targets             -->
-	<!-- ================================================================= -->
-	<!-- The Visual Studio 2010 related extension points.
-	     We have one of these for each supported platform architecture so
-		 that we can compile all the targets for each arch as a group.
-	-->
-	<target name="compile.vc10" extensionOf="hla13.compile">
-		<compile-hla13 compiler="vc10" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc10" arch="amd64" build="release"/>
-	</target>
-
-	<target name="32.compile.vc10" extensionOf="hla13.32.compile">
-		<compile-hla13 compiler="vc10" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc10" arch="x86" build="release"/>
-	</target>
-	<!-- ================================================================= -->
-	<!--             Visual Studio 2008 (vc9) Compile Targets              -->
-	<!-- ================================================================= -->
-	<!-- The Visual Studio 2008 related extension points.
-	     We have one of these for each supported platform architecture so
-		 that we can compile all the targets for each arch as a group.
-	-->
-	<target name="compile.vc9" extensionOf="hla13.compile">
-		<compile-hla13 compiler="vc9" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc9" arch="amd64" build="release"/>
-	</target>
-
-	<target name="32.compile.vc9" extensionOf="hla13.32.compile">
-		<compile-hla13 compiler="vc9" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc9" arch="x86" build="release"/>
-	</target>
-	<!-- ================================================================= -->
-	<!--             Visual Studio 2005 (vc8) Compile Targets              -->
-	<!-- ================================================================= -->
-	<!-- The Visual Studio 2005 related extension points.
-	     We have one of these for each supported platform architecture so
-		 that we can compile all the targets for each arch as a group.
-	-->
-	<target name="compile.vc8" extensionOf="hla13.compile">
-		<compile-hla13 compiler="vc8" arch="amd64" build="debug"/>
-		<compile-hla13 compiler="vc8" arch="amd64" build="release"/>
-	</target>
-	
-	<target name="32.compile.vc8" extensionOf="hla13.32.compile">
-		<compile-hla13 compiler="vc8" arch="x86" build="debug"/>
-		<compile-hla13 compiler="vc8" arch="x86" build="release"/>
-	</target>
 	<!-- ==================================== -->
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
@@ -287,47 +210,6 @@
 			<fileset dir="${hla13.example.dir}" includes="**/*"/>
 		</copy>
 	</target>
-	
-	<target name="hla13.32.sandbox" depends="java.sandbox,hla13.32.compile">
-		<!-- ======================= -->
-		<!-- Copy across the Headers -->
-		<!-- ======================= -->
-		<mkdir dir="${sandbox.dir}/include/hla13"/>
-		<copy todir="${sandbox.dir}/include/hla13">
-			<fileset dir="${hla13.include.dir}" includes="**/*"/>
-		</copy>
-
-		<!-- ========================= -->
-		<!-- Copy across the libraries -->
-		<!-- ========================= -->
-		<!-- Copy across the C++ libraries -->
-		<mkdir dir="${sandbox.lib.dir}"/>
-		<copy todir="${sandbox.lib.dir}">
-			<fileset dir="${hla13.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
-		</copy>
-		<!-- Copy across the C++ dlls -->
-		<mkdir dir="${sandbox.bin.dir}"/>
-		<copy todir="${sandbox.bin.dir}">
-			<fileset dir="${hla13.complete.dir}" includes="**/*.dll"/>
-		</copy>
-
-		<!-- ================================= -->
-		<!-- Copy across the example federates -->
-		<!-- ================================= -->
-		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
-		<copy todir="${sandbox.examples.dir}/cpp/hla13">
-			<fileset dir="${hla13.example.dir}" includes="**/*"/>
-		</copy>
-	</target>
-
-	<!-- ================================================================================= -->
-	<!--                                 Installer Targets                                 -->
-	<!-- ================================================================================= -->
-	<!-- Not required for an interface build -->
-	
-	<target name="hla13.32.installer"
-	        extensionOf="cpp.32.installer"
-	        depends="hla13.32.sandbox"/>
 	
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
