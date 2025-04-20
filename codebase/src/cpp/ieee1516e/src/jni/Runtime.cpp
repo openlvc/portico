@@ -444,10 +444,6 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 		systemPath = string( getenv("LD_LIBRARY_PATH") );
 	#endif
 
-	// make sure we have a system path
-	if( !systemPath )
-		systemPath = "";
-
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
 	char *javaHome = getenv( "JAVA_HOME" );
