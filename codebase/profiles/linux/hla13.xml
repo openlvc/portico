@@ -90,7 +90,7 @@
 			<includepath path="${cppunit.include}"/>
 			<define name="RTI_USES_STD_FSTREAM"/>
 			<define name="DEBUG"/>
-			<library path="${hla13.complete.dir}/gcc8" libs="RTI-NG64d,FedTime64d"/>
+			<library path="${hla13.complete.dir}/gcc8" libs="RTI-NG_64d,FedTime_64d"/>
 			<library path="${cppunit.lib}" libs="cppunit"/>
 		</cpptask>
 	</target>
@@ -271,7 +271,7 @@
 
 			<!-- Are we building for 32-bit or 64-bit? -->
 			<if><equals arg1="@{arch}" arg2="amd64"/><then>
-				<property name="_bitness" value="64"/>
+				<property name="_bitness" value="_64"/>
 				<property name="_jdklib" value="${jdk.home.linux64}/lib/server;${jdk.home.linux64}/jre/lib/amd64/server"/>
 			</then><else>
 				<property name="_bitness" value=""/>
