@@ -38,7 +38,7 @@ import hla.rti1516e.encoding.HLAinteger32BE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAvariableArrayTest", "types", "encoding"} )
+@Test(singleThreaded=true,groups={"HLAvariableArrayTest","types","encoding"} )
 public class HLAvariableArrayTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

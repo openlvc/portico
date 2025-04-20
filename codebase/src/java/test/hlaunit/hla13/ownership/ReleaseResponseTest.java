@@ -33,7 +33,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"ReleaseResponseTest", "releaseOwnership", "ownershipManagement"})
+@Test(singleThreaded=true, groups={"ReleaseResponseTest", "releaseOwnership", "ownershipManagement"})
 public class ReleaseResponseTest extends Abstract13Test
 {
 	//----------------------------------------------------------

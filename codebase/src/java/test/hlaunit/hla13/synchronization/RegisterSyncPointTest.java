@@ -30,7 +30,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"RegisterSyncPointTest",
+@Test(singleThreaded=true, groups={"RegisterSyncPointTest",
                                "registerSyncPoint",
                                "synchronization",
                                "federationManagement"})

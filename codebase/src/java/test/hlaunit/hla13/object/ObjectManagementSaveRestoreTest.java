@@ -23,7 +23,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"ObjectManagementSaveRestoreTest", "objectManagement", "SaveRestore"})
+@Test(singleThreaded=true, groups={"ObjectManagementSaveRestoreTest", "objectManagement", "SaveRestore"})
 public class ObjectManagementSaveRestoreTest extends Abstract13Test
 {
 	//----------------------------------------------------------

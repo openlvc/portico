@@ -31,7 +31,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"SubscribeInteractionClassWithRegionTest",
+@Test(singleThreaded=true, groups={"SubscribeInteractionClassWithRegionTest",
                                "subscribeInteractionWithRegion",
                                "subscribe",
                                "pubsub",

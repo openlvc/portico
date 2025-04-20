@@ -34,7 +34,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"PublishObjectClassTest",
+@Test(singleThreaded=true, groups={"PublishObjectClassTest",
                                "publishObject",
                                "publish",
                                "pubsub",

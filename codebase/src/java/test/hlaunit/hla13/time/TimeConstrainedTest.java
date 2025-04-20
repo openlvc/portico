@@ -30,7 +30,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"TimeConstrainedTest", "timeConstrained", "timeManagement"})
+@Test(singleThreaded=true, groups={"TimeConstrainedTest", "timeConstrained", "timeManagement"})
 public class TimeConstrainedTest extends Abstract13Test
 {
 	//----------------------------------------------------------

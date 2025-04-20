@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 import hlaunit.hla13.common.Abstract13Test;
 import hlaunit.hla13.common.Test13Federate;
 
-@Test(sequential=true,groups= {"profileReflections","misc","ProfilerTest"})
+@Test(singleThreaded=true,groups= {"profileReflections","misc","ProfilerTest"})
 public class ProfilerTest extends Abstract13Test
 {
 	//----------------------------------------------------------

@@ -29,7 +29,7 @@ import hla.rti1516e.encoding.HLAoctet;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAoctetTest", "types", "encoding"} )
+@Test(singleThreaded=true,groups={"HLAoctetTest","types","encoding"} )
 public class HLAoctetTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

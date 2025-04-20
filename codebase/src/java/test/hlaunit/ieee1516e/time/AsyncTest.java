@@ -24,7 +24,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"AsyncTest", "async"})
+@Test(singleThreaded=true, groups={"AsyncTest", "async"})
 public class AsyncTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

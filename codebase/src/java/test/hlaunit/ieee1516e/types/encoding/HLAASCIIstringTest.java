@@ -33,7 +33,7 @@ import hla.rti1516e.encoding.HLAASCIIstring;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAASCIIstringTest", "types", "encoding"} )
+@Test(singleThreaded=true,groups={"HLAASCIIstringTest","types","encoding"} )
 public class HLAASCIIstringTest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

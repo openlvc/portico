@@ -33,7 +33,7 @@ import hla.rti1516e.encoding.HLAfloat32BE;
 import hla.rti1516e.exceptions.RTIinternalError;
 import hlaunit.ieee1516e.common.Abstract1516eTest;
 
-@Test( sequential = true,groups = {"HLAfloat32BETest", "types", "encoding"} )
+@Test(singleThreaded=true,groups={"HLAfloat32BETest","types","encoding"} )
 public class HLAfloat32BETest extends Abstract1516eTest
 {
 	//----------------------------------------------------------

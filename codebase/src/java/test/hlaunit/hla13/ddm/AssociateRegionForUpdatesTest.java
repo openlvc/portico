@@ -39,7 +39,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(sequential=true, groups={"associateRegion", "AssociateRegionForUpdatesTest", "ddm"})
+@Test(singleThreaded=true, groups={"associateRegion", "AssociateRegionForUpdatesTest", "ddm"})
 public class AssociateRegionForUpdatesTest extends Abstract13Test
 {
 	//----------------------------------------------------------
