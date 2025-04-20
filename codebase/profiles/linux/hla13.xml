@@ -82,7 +82,7 @@
 		         outdir="${test13.complete.dir}"
 		         type="executable"
 		         arch="amd64"
-		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings -Wno-deprecated"
+		         compilerArgs="-g -O0 -fPIC -Wall -Wno-write-strings -Wno-deprecated -std=c++11"
 		         linkerArgs="-Wl,-rpath-link ${jvm}">
 			<fileset dir="${hla13.test.src.dir}" includes="**/*.cpp"/>
 			<includepath path="${hla13.include.dir}"/>
