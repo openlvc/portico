@@ -1,5 +1,9 @@
 @echo off
 
+rem # Paths to the VS initialization batch files
+set VS_IDE_FILE="C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvarsall.bat"
+set VS_BUILDTOOLS_FILE="C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+
 rem ##########################################################################
 rem Please consult the README file to learn more about this example federate #
 rem ##########################################################################
@@ -40,7 +44,26 @@ goto finish
 ############################################
 :compile
 echo Compiling example federate
-cl /I"%RTI_HOME%\include\ieee1516e" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc10\librti1516e64.lib" "%RTI_HOME%\lib\vc10\libfedtime1516e64.lib"
+
+rem Check for Visual Studio IDE
+if exist %VS_IDE_FILE% (
+    echo Found Visual Studio 2017 Professional
+    call %VS_IDE_FILE% amd64
+    goto runcompiler
+)
+
+rem Check for Visual Studio Build Tools
+if exist %VS_BUILDTOOLS_FILE% (
+    echo Found Visual Studio 2017 Build Tools
+    call %VS_BUILDTOOLS_FILE% amd64
+    goto runcompiler
+)
+
+echo Visual Studio compiler not found. Need either Visual Studio, or the Build Tools installed
+goto finish
+
+:runcompiler
+cl /I"%RTI_HOME%\include\ieee1516e" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc14_1\librti1516e64.lib" "%RTI_HOME%\lib\vc14_1\libfedtime1516e64.lib"
 goto finish
 
 ############################################
@@ -48,7 +71,7 @@ goto finish
 ############################################
 :execute
 SHIFT
-set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\bin\vc10;%PATH%
+set PATH=%RTI_HOME%\jre\bin\server;%RTI_HOME%\bin\vc14_1;%PATH%
 main %1 %2 %3 %4 %5 %6 %7 %8 %9
 goto finish
 

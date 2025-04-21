@@ -1,5 +1,9 @@
 @echo off
 
+rem # Paths to the VS initialization batch files
+set VS_IDE_FILE="C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Auxiliary\Build\vcvarsall.bat"
+set VS_BUILDTOOLS_FILE="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+
 rem ##########################################################################
 rem Please consult the README file to learn more about this example federate #
 rem ##########################################################################
@@ -16,7 +20,7 @@ rem ###################
 :rtihome
 cd ..\..\..
 set RTI_HOME=%CD%
-cd examples\cpp\hla13
+cd examples\cpp\ieee1516e
 echo RTI_HOME environment variable is set to %RTI_HOME%
 goto run
 
@@ -41,10 +45,25 @@ goto finish
 :compile
 echo Compiling example federate
 
-rem comment out this line or edit if using different visual studio command prompt 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\Tools\VsDevCmd" %-arch=amd64
+rem Check for Visual Studio IDE
+if exist %VS_IDE_FILE% (
+    echo Found Visual Studio 2019 Professional
+    call %VS_IDE_FILE% amd64
+    goto runcompiler
+)
 
-cl /I"%RTI_HOME%\include\hla13" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc14_1\libRTI-NG64.lib" "%RTI_HOME%\lib\vc14_1\libFedTime64.lib"
+rem Check for Visual Studio Build Tools
+if exist %VS_BUILDTOOLS_FILE% (
+    echo Found Visual Studio 2019 Build Tools
+    call %VS_BUILDTOOLS_FILE% amd64
+    goto runcompiler
+)
+
+echo Visual Studio compiler not found. Need either Visual Studio, or the Build Tools installed
+goto finish
+
+:runcompiler
+cl /I"%RTI_HOME%\include\ieee1516e" /DRTI_USES_STD_FSTREAM /EHsc main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp "%RTI_HOME%\lib\vc14_1\librti1516e64.lib" "%RTI_HOME%\lib\vc14_1\libfedtime1516e64.lib"
 goto finish
 
 ############################################
