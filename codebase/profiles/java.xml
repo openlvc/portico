@@ -10,7 +10,7 @@
        
        http://porticoproject.org/index.php?title=Building_Portico
 -->
-<project name="java" xmlns:if="ant:if">
+<project name="java">
 
 	<!-- ================================================================================= -->
 	<!--                                 General Settings                                  -->
@@ -338,31 +338,9 @@
 	<!--<target name="installer" extensionOf="master.installer"/>-->
 
 	<target name="sandbox.jre" depends="java.sandbox" description="Create JRE in sandbox">
-		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
-		<then>
-			<!-- For java 8 or lower can copy jre from the jdk location -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</then>
-		<else>
-			<!-- For java 9+ we just copy the whole jdk -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</else>
-		</if>
+		<copy-jre outdir="${sandbox.dir}"/>
 	</target>
 	
-	<target name="32.sandbox.jre" depends="java.sandbox">
-		<if><contains substring="${java.compiler.target}" string="1.7,1.8"/>
-		<then>
-			<!-- For java 8 or lower can copy jre from the jdk location -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</then>
-		<else>
-			<!-- For java 9+ we just copy the whole jdk -->
-			<copy-jdk todir="${sandbox.dir}"/>
-		</else>
-		</if>
-	</target>
-
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
