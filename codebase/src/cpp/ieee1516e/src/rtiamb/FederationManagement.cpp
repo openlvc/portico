@@ -40,11 +40,8 @@ void PorticoRtiAmbassador::connect( FederateAmbassador& federateAmbassador,
 	// get java versions of the parameters
 	jstring jmodel = JniUtils::fromCallbackModel( jnienv, theCallbackModel );
 
-	// check the federate ambassador and associate the reference with our RTI
-	if( &federateAmbassador != NULL )
-		javarti->fedamb = &federateAmbassador;
-	else
-		throw RTIinternalError( L"Null FederateAmbassador given to connect()" );
+	// save the fedamb reference
+	javarti->fedamb = &federateAmbassador;
 	
 	// call the method
 	jnienv->CallVoidMethod( javarti->jproxy, javarti->CONNECT, jmodel );

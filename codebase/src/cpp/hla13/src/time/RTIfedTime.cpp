@@ -254,7 +254,7 @@ HLA::Boolean RTIfedTime::operator!= (const HLA::FedTime& newTime) const
 	{
 		newImpl = dynamic_cast<const RTIfedTime&>(newTime);
 	}
-	catch( std::bad_cast )
+	catch( std::bad_cast& )
 	{
 		throw HLA::InvalidFederationTime("!= operator called with non RTIfedTime class");
 	}
