@@ -19,6 +19,8 @@
 	<!-- =========================================================== -->
 	<description>
         Open source, extensible HLA Run Time Infrastructure implementation.
+
+		Target format: lang.spec.task[.extra]
 	</description>
 
 	<!-- =========================================================== -->

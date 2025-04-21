@@ -426,7 +426,7 @@ string Runtime::getMode() throw( HLA::RTIinternalError )
 }
 
 /*
- * Return "-Dportico.cpp.compiler=" vc8, vc9, vc10, vc11, gcc4, ...
+ * Return "-Dportico.cpp.compiler="vc14_3, vc14_2, vc14_1, gcc11, ...
  */
 string Runtime::getCompiler() throw( HLA::RTIinternalError )
 {

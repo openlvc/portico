@@ -64,9 +64,9 @@ Table of Contents:
 
  The Portico Java example federate is officially supported on:
 
-  * Java JDK 11
-  * Ubuntu 22.04 LTS
-  * Windows 10/11
+  * Java JDK 21
+  * Ubuntu 24.04 LTS
+  * Windows 11
 
  --- JDK Requirements ---
  Please note that you need to have a JDK installed on your system and have
@@ -75,7 +75,7 @@ Table of Contents:
  running Java applications, not compiling them.
 
  --- JDK Version ---
- Portico has been built against Java 11. The source compatibility level has
+ Portico has been built against Java 21. The source compatibility level has
  been set to match this. The federate may work happily with earlier versions
  of Java, but these are not officially supported. If you are targeting earlier
  platforms you may need to recompile Portico from source.
@@ -88,7 +88,7 @@ Table of Contents:
  of helper scripts have been provided:
  
    * windows.bat    // Compile and run on Windows
-   * linux.sh       // Compile and run on Ubuntu 22.04 LTS
+   * linux.sh       // Compile and run on Ubuntu/Rocky Linux
 
  Each of the scripts takes the same basic commands:
    
@@ -142,9 +142,3 @@ Table of Contents:
  the RTI, see the various execution helper scripts. You can also consult the
  documentation online at http://www.porticoproject.org.
  
- Visual Studio Compiler Support
- -------------------------------
- If you want to use a different version of the Visual Studio compiler, you can.
- You should try to match the version of the RTI libraries with the version of
- Visual Studio you use. Libraries for VC10 (2022) are provided. See the appropriate
- subdirectories of [RTI_HOME]\bin and lib.

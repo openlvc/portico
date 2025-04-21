@@ -65,9 +65,8 @@ Table of Contents:
 
  The Portico C++ example federate is supported on:
 
-  * Ubuntu 12.04 LTS for 32 and 64-bit
-  * Mac OS X Mountain Lion (10.8)+ for 64-bit
-  * Windows 7 32/64-bit with Visual Studio 10
+  * Windows 11 with Visual Studio 2022
+  * Ubuntu 24.04 LTS or Rocky Linux 9.5 with at least GCC 11.5
 
 -------------------------------------------------------------------------------
  3. Compiling and Running the Example Federate
@@ -76,11 +75,8 @@ Table of Contents:
  To help with the process of compilng and running the federate, a number
  of helper scripts have been provided:
  
-   * win32-vc10.bat    // Compile and run on Windows 32-bit
-   * win64-vc10.bat    // Compile and run on Windows 64-bit
-   * linux32.sh        // Compile and run on Ubuntu 12.04 LTS x86
-   * linux64.sh        // Compile and run on Ubuntu 12.04 LTS amd64
-   * macos.sh          // Compile and run on Mac OS X 10.8+
+   * win64-vc14_3.bat    // Compile and run on Windows 64-bit (Visual Studio 2022)
+   * linux64.sh          // Compile and run on Linux 64-bit
 
  Each of the scripts takes the same basic commands:
    
@@ -96,28 +92,19 @@ Table of Contents:
  Once the prompt is open, change into the example directory and you can run the
  helper script: 
  
-   * [Open Visual Studio 2010 Command Prompt]
+   * [Open Command Prompt]
    * cd %RTI_HOME%\examples\cpp\hla13
-   * winXX-vc10 compile                        // win32-vc10 or win64-vc10
-   * winXX-vc10 execute                        // win32-vc10 or win64-vc10                  
+   * win64-vcXX compile                        // win64-vc14_3, win64-vc14_2
+   * win64-vcXX execute                        // win64-vc14_3, win64-vc14_2                
 
- Running on Unbuntu 12.04 LTS
- -----------------------------
- To run on Ubuntu, ensure you have g++ installed and then open a command prompt,
+ Running on Unbuntu or Rocky Linux
+ ----------------------------------
+ To run on Linux, ensure you have g++ installed and then open a command prompt,
  change into the directory, compile and run using the script:
 
    * cd $RTI_HOME/examples/cpp/hla13
    * ./linux64.sh compile
    * ./linux64.sh execute
-
- Running on Mac OS X 10.8+
- --------------------------
- To run on Mac OS X, ensure you have the XCode tools (gcc) installed, open a
- termincal and then run the helper script:
-
-   * cd $RTI_HOME/examples/cpp/hla13
-   * ./macos.sh compile
-   * ./macos.sh execute
 
  Running more than one Federate
  -------------------------------
@@ -126,9 +113,8 @@ Table of Contents:
  
    * Start the first example federate (don't hit enter when it says so)
    * Start a second example federate
-      * winXX-vc10 execute secondFederate
+      * win64-vcXX execute secondFederate
       * ./linux64.sh execute secondFederate
-      * ./macos.sh execute secondFederate
    * Wait until the second federate is ready, then hit enter in both screens.
  
  Each example federate will wait until you hit enter to tell the RTI that the
@@ -148,8 +134,8 @@ Table of Contents:
  -------------------------------
  If you want to use a different version of the Visual Studio compiler, you can.
  You should try to match the version of the RTI libraries with the version of
- Visual Studio you use. Libraries for VC10 (2010), VC9 (2008) and VC8 (2005)
- are provided. See the appropriate subdirectories of [RTI_HOME]\bin and lib.
+ Visual Studio you use. Libraries for VC14_3 (2022) are provided.
+ See the appropriate subdirectories of [RTI_HOME]\bin and lib.
 
  Resources to get you started
  -----------------------------
