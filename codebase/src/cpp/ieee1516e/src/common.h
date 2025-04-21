@@ -43,7 +43,6 @@
 // Operating System
 //   OS_WINDOWS : Set if we are running on a Windows system
 //   OS_LINUX   : Set if we are running on a Linux system
-//   OS_MACOSX  : Set if we are running on a MacOS X system
 // Compiler
 //   VC8        : Set if we are compiling with VC8
 //   VC9        : Set if we are compiling with VC9
@@ -75,12 +74,7 @@
 		#define VC8
 	#endif
 #elif __GNUC__
-	// operating system
-	#if defined(__APPLE__)
-		#define OS_MACOSX
-	#else
-		#define OS_LINUX
-	#endif
+	#define OS_LINUX
 
 	// architecture
 	#if __x86_64__
@@ -101,11 +95,6 @@
 	#else
 		#include <stdint.h>
 	#endif
-#elif defined(OS_MACOSX)
-    #include <stdarg.h>
-    #include <ctype.h>
-	#include <float.h>
-	#include <string.h>
 #else
     #include <stdarg.h>
     #include <ctype.h>

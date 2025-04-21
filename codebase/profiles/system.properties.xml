@@ -66,8 +66,7 @@
 	<!-- These tasks will initialize a bunch of properties based
 	     on the system that the build is currently running on. The
 	     various properties and values set are:
-	       * ${platform}         : One of "macosx, win32, win64, linux32, linux64"
-	       * ${platform.macosx}  : "true" if we are running on Mac OS X
+	       * ${platform}         : One of "win32, win64, linux32, linux64"
 	       * ${platform.win32}   : "true" if we are running on 32-bit Windows
 	       * ${platform.win64}   : "true" if we are running on 64-bit Windows
 	       * ${platform.linux32} : "true" if we are running on 32-bit Linux
@@ -92,7 +91,6 @@
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
 	<!-- NOTE these properties should be overridden in build.properties -->
-	<property name="jdk.home.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home"/>
 	<property name="jdk.home.win32"   location="c:\Program Files (x86)\Java\jdk1.8.0_144"/>
 	<property name="jdk.home.win64"   location="c:\Program Files\Java\jdk1.8.0_144"/>
 	<property name="jdk.home.linux32" location="${env.JAVA_HOME}"/>

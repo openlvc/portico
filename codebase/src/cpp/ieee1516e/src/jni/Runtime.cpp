@@ -436,13 +436,8 @@ pair<string,string> Runtime::generateUnixPath( string rtihome ) throw( RTIintern
 	////////////////////////////////
 	// Get the system path
 	string systemPath( "" );
-	#ifdef OS_MACOSX
-	if( getenv("DYLD_LIBRARY_PATH") != NULL )
-		systemPath = string( getenv("DYLD_LIBRARY_PATH") );
-	#else
 	if( getenv("LD_LIBRARY_PATH") != NULL )
 		systemPath = string( getenv("LD_LIBRARY_PATH") );
-	#endif
 
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
