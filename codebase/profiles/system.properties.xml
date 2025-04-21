@@ -67,7 +67,6 @@
 	     on the system that the build is currently running on. The
 	     various properties and values set are:
 	       * ${platform}         : One of "macosx, win32, win64, linux32, linux64"
-	       * ${platform.macosx}  : "true" if we are running on Mac OS X
 	       * ${platform.win32}   : "true" if we are running on 32-bit Windows
 	       * ${platform.win64}   : "true" if we are running on 64-bit Windows
 	       * ${platform.linux32} : "true" if we are running on 32-bit Linux
@@ -85,10 +84,10 @@
 	-->
 	<!-- Compiler defaults - override from build.properties -->
 	<property name="cpp.compilers.linux"   value="gcc11"/>
-	<property name="cpp.compilers.windows" value="vc10,vc14,vc14_1,vc14_2"/>
+	<property name="cpp.compilers.windows" value="vc14_3,vc14_2,vc14_1"/>
 	<!-- Generate the properties the build system will key off -->
 	<generateCppCompilerVariables compilers="${cpp.compilers.windows},${cpp.compilers.linux}"
-	                              architectures="x86,amd64"
+	                              architectures="amd64"
 	                              builds="debug,release"/>
 
 	<!-- =========================================================== -->
@@ -96,7 +95,6 @@
 	<!-- =========================================================== -->
 	<!-- ==== JDK Related Properties ==== -->
 	<!-- NOTE these properties should be overridden in build.properties -->
-	<property name="jdk.home.macosx"  location="/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home"/>
 	<property name="jdk.home.win32"   location="c:\Program Files (x86)\Java\jdk1.8.0_144"/>
 	<property name="jdk.home.win64"   location="c:\Program Files\Java\jdk1.8.0_144"/>
 	<property name="jdk.home.linux32" location="${env.JAVA_HOME}"/>

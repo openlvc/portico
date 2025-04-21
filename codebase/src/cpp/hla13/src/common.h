@@ -43,7 +43,6 @@
 // Operating System
 //   OS_WINDOWS : Set if we are running on a Windows system
 //   OS_LINUX   : Set if we are running on a Linux system
-//   OS_MACOSX  : Set if we are running on a MacOS X system
 // Compiler
 //   VC8        : Set if we are compiling with VC8
 //   VC9        : Set if we are compiling with VC9
@@ -121,13 +120,6 @@
 	#else
 		#include <stdint.h>
 	#endif
-#elif defined(OS_MACOSX)
-    #include <malloc/malloc.h>
-    #include <stdarg.h>
-    #include <ctype.h>
-//	#include <float.h>
-    #include <ext/hash_map>
-	#include <sys/time.h>
 #else
     #include <malloc.h>
     #include <stdarg.h>

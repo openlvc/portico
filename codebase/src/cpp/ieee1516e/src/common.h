@@ -122,11 +122,6 @@
 	#else
 		#include <stdint.h>
 	#endif
-#elif defined(OS_MACOSX)
-    #include <stdarg.h>
-    #include <ctype.h>
-	#include <float.h>
-	#include <string.h>
 #else
     #include <stdarg.h>
     #include <ctype.h>
