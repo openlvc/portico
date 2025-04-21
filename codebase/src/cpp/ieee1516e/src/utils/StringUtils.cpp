@@ -14,6 +14,7 @@
  */
 #include "utils/StringUtils.h"
 #include <string>
+#pragma warning(disable:4244) // possible loss of data in string conversion - yup, we know
 
 PORTICO1516E_NS_START
 
