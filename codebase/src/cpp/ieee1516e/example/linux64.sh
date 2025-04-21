@@ -37,8 +37,9 @@ fi
 if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
-	g++ -O1 -fPIC -I$RTI_HOME/include/ieee1516e \
+	g++ -O1 -I$RTI_HOME/include/ieee1516e \
 	    -DRTI_USES_STD_FSTREAM \
+		-Wno-deprecated \
 	    main.cpp ExampleCPPFederate.cpp ExampleFedAmb.cpp -o example-federate \
 	    -L$RTI_HOME/lib/gcc8 -lrti1516e64 -lfedtime1516e64 \
 	    -L$JAVA_HOME/lib/server -ljvm -ljsig
