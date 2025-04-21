@@ -40,8 +40,8 @@ public class RtiFactoryFactory
 	{
 		try
 		{
-			Class cls = Class.forName( factoryClassName );
-			return (RtiFactory)cls.getConstructor().newInstance();
+			Class<?> clazz = Class.forName( factoryClassName );
+			return (RtiFactory)clazz.getConstructor().newInstance();
 		}
 		catch( ClassNotFoundException e )
 		{

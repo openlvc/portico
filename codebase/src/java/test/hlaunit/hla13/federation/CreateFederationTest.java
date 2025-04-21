@@ -14,6 +14,7 @@
  */
 package hlaunit.hla13.federation;
 
+import java.net.URI;
 import java.net.URL;
 
 import hla.rti.CouldNotOpenFED;
@@ -115,7 +116,7 @@ public class CreateFederationTest
 		// attempt to create with invalid fom URL //
 		try
 		{
-			URL url = new URL( "http://localhost/dummyURL" );
+			URL url = new URI("http://localhost/dummyURL").toURL();
 			this.rtiamb.createFederationExecution( fedname, url );
 			Assert.fail( "No exception while creating federation with invalid FOM (invalid URL)" );
 		}

@@ -15,6 +15,7 @@
 package hlaunit.ieee1516e.common;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -171,7 +172,7 @@ public abstract class Abstract1516eTest
     		{
     			if( path.startsWith("file:") )
     			{
-    				list.add( new URL(path) );
+    				list.add( new URI(path).toURL() );
     			}
     			else
     			{

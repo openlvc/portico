@@ -16,6 +16,8 @@ package hlaunit.ieee1516e.common;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -281,14 +283,14 @@ public class TestFederate
     		for( String name : modules )
     		{
     			if( name.startsWith("file:") )
-    				moduleUrls.add( new URL(name) );
+    				moduleUrls.add( new URI(name).toURL() );
     			else
     				moduleUrls.add( new File(name).toURI().toURL() );
     		}
 		}
-		catch( MalformedURLException mue )
+		catch( MalformedURLException | URISyntaxException e )
 		{
-			Assert.fail( "Error turning module path into a URL: "+mue.getMessage(), mue );
+			Assert.fail( "Error turning module path into a URL: "+e.getMessage(), e );
 		}
 		
 		// connect if we haven't yet

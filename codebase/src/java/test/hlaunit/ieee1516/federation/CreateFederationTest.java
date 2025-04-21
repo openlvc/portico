@@ -14,6 +14,7 @@
  */
 package hlaunit.ieee1516.federation;
 
+import java.net.URI;
 import java.net.URL;
 
 import hla.rti1516.CouldNotOpenFDD;
@@ -116,7 +117,7 @@ public class CreateFederationTest extends Abstract1516Test
 		// attempt to create with invalid fom URL //
 		try
 		{
-			URL url = new URL( "http://localhost/dummyURL" );
+			URL url = new URI("http://localhost/dummyURL").toURL();
 			defaultFederate.rtiamb.createFederationExecution( defaultFederate.simpleName, url );
 			Assert.fail( "No exception while creating federation with invalid FOM (invalid URL)" );
 		}
