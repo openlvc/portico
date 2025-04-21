@@ -39,7 +39,7 @@ void ExampleCPPFederate::runFederate( char* federateName )
 		rtiamb->createFederationExecution( "ExampleFederation", "testfom.fed" );
 		cout << "Created Federation" << endl;
 	}
-	catch( RTI::FederationExecutionAlreadyExists exists )
+	catch( RTI::FederationExecutionAlreadyExists& exists )
 	{
 		cout << "Didn't create federation, it already existed" << endl;
 	}
@@ -149,11 +149,11 @@ void ExampleCPPFederate::runFederate( char* federateName )
 		rtiamb->destroyFederationExecution( "ExampleFederation" );
 		cout << "Destroyed Federation" << endl;
 	}
-	catch( RTI::FederationExecutionDoesNotExist dne )
+	catch( RTI::FederationExecutionDoesNotExist& dne )
 	{
 		cout << "No need to destroy federation, it doesn't exist" << endl;
 	}
-	catch( RTI::FederatesCurrentlyJoined fcj )
+	catch( RTI::FederatesCurrentlyJoined& fcj )
 	{
 		cout << "Didn't destroy federation, federates still joined" << endl;
 	}
