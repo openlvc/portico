@@ -279,7 +279,7 @@ void RegisterObjectDDMTest::testRegisterNamedObjectDDMWithNullName()
 	sprintf( expectedName, "HLA%lo", theObject );
 	federateA->fedamb->waitForDiscoveryAsWithName( theObject, bHandle, expectedName );
 	federateB->fedamb->waitForDiscoveryAsWithName( theObject, bHandle, expectedName );
-	delete expectedName; // the waitForDiscoveryAsWithName() will delete if the test fails
+	delete[] expectedName; // the waitForDiscoveryAsWithName() will delete if the test fails
 }
 
 ///////////////////////////////////////////////////////////////
@@ -302,7 +302,7 @@ void RegisterObjectDDMTest::testRegisterNamedObjectDDMWithWhitespaceName()
 	sprintf( expectedName, "   " );
 	federateA->fedamb->waitForDiscoveryAsWithName( theObject, bHandle, expectedName );
 	federateB->fedamb->waitForDiscoveryAsWithName( theObject, bHandle, expectedName );
-	delete expectedName;
+	delete[] expectedName;
 }
 
 ///////////////////////////////////////////////////////////

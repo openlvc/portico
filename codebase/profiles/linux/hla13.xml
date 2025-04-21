@@ -72,7 +72,7 @@
 	<!--          HLA 1.3 Test Suite          -->
 	<!-- ==================================== -->
 
-	<target name="test.compile">
+	<target name="test.compile" depends="compile">
 		<cpptask compiler="g++"
 		         outfile="test13"
 		         workdir="${test13.build.dir}"
