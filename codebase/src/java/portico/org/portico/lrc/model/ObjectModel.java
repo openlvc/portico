@@ -200,15 +200,23 @@ public class ObjectModel implements Serializable
 		//////////////////////////////////////////////////////////////////////////////
 
 		// cut off any HLA-version specific notations on the front
-		if( name.startsWith("objectroot.") )
-			name = name.substring(11);
-		else if( name.startsWith("hlaobjectroot.") )
-			name = name.substring(14);
+		String vsName = name;
+		if( vsName.startsWith("objectroot.") )
+			vsName = vsName.substring(11);
+		else if( vsName.startsWith("hlaobjectroot.") )
+			vsName = vsName.substring(14);
+		
+		// If this is a MOM class, getVersionSafeQualifiedName() will break in 1516e federations
+		// because the "HLA" prefix runs deep through the MOM hierarchy. As such, we need to
+		// adapt the name we're looking for to strip any HLA prefixes on all classes as well
+		if( vsName.startsWith("hla") )
+			vsName = vsName.substring(3);
+		vsName = vsName.replace( ".hla", "." );
 		
 		// check for the qualified version of the name first, but using version-safe qualified
 		for( OCMetadata oc : this.oclasses.values() )
 		{
-			if( oc.getVersionSafeQualifiedName().equalsIgnoreCase(name) )
+			if( oc.getVersionSafeQualifiedName().equalsIgnoreCase(vsName) )
 			{
 				return oc;
 			}
@@ -219,9 +227,16 @@ public class ObjectModel implements Serializable
 		//        the ObjectRoot bit is optional, not the entire prefix
 		for( OCMetadata oc : this.oclasses.values() )
 		{
+			// check the fully qualified name
 			if( oc.getQualifiedName().equalsIgnoreCase(name) )
 				return oc;
 			
+			// check the qualified name, but prefix the object root in case the user didn't
+			String prefix = version == HLAVersion.HLA13 ? "objectroot." : "hlaobjectroot.";
+			if( oc.getQualifiedName().equalsIgnoreCase(prefix+name) )
+				return oc;
+
+			// check the straight local name as a last resort
 			if( oc.getLocalName().equalsIgnoreCase(name) )
 				return oc;
 		}
@@ -448,10 +463,18 @@ public class ObjectModel implements Serializable
 		else if( name.startsWith("hlainteractionroot.") )
 			name = name.substring(19);
 		
+		// If this is a MOM class, getVersionSafeQualifiedName() will break in 1516e federations
+		// because the "HLA" prefix runs deep through the MOM hierarchy. As such, we need to
+		// adapt the name we're looking for to strip any HLA prefixes on all classes as well
+		String vsName = name;
+		if( vsName.startsWith("hla") )
+			vsName = vsName.substring(3);
+		vsName = vsName.replace( ".hla", "." );
+
 		// check for the qualified version of the name first, but using version-safe qualified
 		for( ICMetadata ic : this.iclasses.values() )
 		{
-			if( ic.getVersionSafeQualifiedName().equalsIgnoreCase(name) )
+			if( ic.getVersionSafeQualifiedName().equalsIgnoreCase(vsName) )
 			{
 				return ic;
 			}
@@ -462,10 +485,17 @@ public class ObjectModel implements Serializable
 		//        the ObjectRoot bit is optional, not the entire prefix
 		for( ICMetadata ic : this.iclasses.values() )
 		{
-			if( ic.getLocalName().equalsIgnoreCase(name) )
-			{
+			// check the fully qualified name
+			if( ic.getQualifiedName().equalsIgnoreCase(name) )
 				return ic;
-			}
+			
+			// check the qualified name, but prefix the object root in case the user didn't
+			String prefix = version == HLAVersion.HLA13 ? "interactionroot." : "hlainteractionroot.";
+			if( ic.getQualifiedName().equalsIgnoreCase(prefix+name) )
+				return ic;
+
+			if( ic.getLocalName().equalsIgnoreCase(name) )
+				return ic;
 		}
 		
 		// make sure that we haven't got the root name itself, if we get this far without finding
