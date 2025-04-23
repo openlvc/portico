@@ -110,9 +110,10 @@
 		 Only validates this with the latest supported compiler. -->
 	<target name="example.compile.amd64" depends="compile.vc14_1" if="vc14_1.amd64.debug">
 		<cpptask outfile="ieee1516e-example"
-		      workdir="${ieee1516e.build.dir}/ieee1516e-example"
-		      type="executable"
-		      compilerArgs="/Zi /Od /EHsc /GR /MTd">
+		         workdir="${ieee1516e.build.dir}/ieee1516e-example"
+		         type="executable"
+				 compiler="vc14_1"
+		         compilerArgs="/Zi /Od /EHsc /GR /MTd">
 			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
 			<includepath path="${ieee1516e.include.dir}"/>
 			<define name="DEBUG"/>
