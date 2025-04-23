@@ -70,7 +70,7 @@ public class QueryOwnershipTest extends Abstract13Test
 		this.aaHandle = defaultFederate.quickACHandle( "ObjectRoot.A", "aa" );
 		this.abHandle = defaultFederate.quickACHandle( "ObjectRoot.A", "ab" );
 		this.acHandle = defaultFederate.quickACHandle( "ObjectRoot.A", "ac" );
-		this.baHandle = defaultFederate.quickACHandle( "ObjectRoot.B", "ba" );
+		this.baHandle = defaultFederate.quickACHandle( "ObjectRoot.A.B", "ba" );
 		
 		// do publish and subscribe
 		// only half the atts are published so some are unowned from the start
