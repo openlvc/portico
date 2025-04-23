@@ -337,11 +337,13 @@ public class ObjectModel implements Serializable
 	 */
 	public void addObjectClass( OCMetadata oc )
 	{
+		if( oc == null )
+			throw new NullPointerException( "Tried to add null Object Class to model" );
+		
 		// make sure we're not locked
-		if( oc == null || this.locked )
-		{
-			return;
-		}
+		if( this.locked )
+			throw new RuntimeException( "Model is Locked: Cannot add Object Class ["+
+			                            oc.getLocalName()+"]" );
 		
 		// add it
 		this.oclasses.put( oc.getHandle(), oc );

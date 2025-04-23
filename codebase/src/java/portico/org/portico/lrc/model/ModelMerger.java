@@ -95,16 +95,27 @@ public class ModelMerger
 	 */
 	private ObjectModel merge( ObjectModel base, ObjectModel extension ) throws JInconsistentFDD
 	{
-		// merge objects, starting at the object root
-		if( extension.getObjectRoot() != null )
-			mergeObjectClass( base.getObjectRoot(), extension.getObjectRoot() );
-		
-		// merge interactions, starting at the root
-		if( extension.getInteractionRoot() != null )
-			mergeInteractionClass( base.getInteractionRoot(), extension.getInteractionRoot() );
-		
-		// return the merges model
-		return base;
+		try
+		{
+			// first, we must unlock the base model so we can adjust it
+			base.unlock();
+			
+    		// merge objects, starting at the object root
+    		if( extension.getObjectRoot() != null )
+    			mergeObjectClass( base.getObjectRoot(), extension.getObjectRoot() );
+    		
+    		// merge interactions, starting at the root
+    		if( extension.getInteractionRoot() != null )
+    			mergeInteractionClass( base.getInteractionRoot(), extension.getInteractionRoot() );
+    		
+    		// return the merges model
+    		return base;
+		}
+		finally
+		{
+			// re-lock the base model at the end
+			base.lock();
+		}
 	}
 
 	/**

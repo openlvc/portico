@@ -21,6 +21,9 @@ import java.util.Map;
 
 import org.portico.impl.HLAVersion;
 import org.portico.lrc.LRCMessageHandler;
+import org.portico.lrc.compat.JCouldNotOpenFED;
+import org.portico.lrc.compat.JErrorReadingFED;
+import org.portico.lrc.compat.JInconsistentFDD;
 import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.model.ModelMerger;
 import org.portico.lrc.model.ObjectModel;
@@ -38,7 +41,8 @@ public class CreateFederationHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final String MIM_PATH = "etc/ieee1516e/HLAstandardMIM.xml";
+	private static final String MIM_PATH_1516e = "etc/ieee1516e/HLAstandardMIM.xml";
+	private static final String MIM_PATH_13 = "etc/hla13/HLAstandardMIM.fed";
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -70,7 +74,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
 		// For 1516e, we always add the MIM first
 		if( lrc.getSpecHelper().getHlaVersion() != HLAVersion.HLA13 )
-			foms.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH)) );
+			foms.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH_1516e)) );
 		
 		// Load all the provided modules
 		for( URL module : request.getFomModules() )
@@ -83,6 +87,9 @@ public class CreateFederationHandler extends LRCMessageHandler
 
 		// merge the modules together
 		ObjectModel combinedFOM = ModelMerger.merge( foms );
+		
+		if( lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 )
+			verifyHla13MomPresent( combinedFOM );
 		
 		// dump out the MIM if it is present and then re-insert with specific handles
 //		ObjectModel.mommify( combinedFOM );
@@ -99,6 +106,45 @@ public class CreateFederationHandler extends LRCMessageHandler
 		connection.createFederation( request );
 		context.success();
 		logger.info( "SUCCESS Created federation execution [" + request.getFederationName() + "]" );
+	}
+
+	private void verifyHla13MomPresent( ObjectModel fom ) throws JRTIinternalError,
+	                                                             JErrorReadingFED,
+	                                                             JCouldNotOpenFED,
+	                                                             JInconsistentFDD
+	{
+		// Check to see if the major parts of the MOM are present
+		boolean ocFederationFound = fom.getObjectClass( "Manager.Federation" ) != null;
+		boolean ocFederateFound = fom.getObjectClass( "Manager.Federate" ) != null;
+		boolean icFederateFound = fom.getInteractionClass( "Manager.Federate" ) != null;
+
+		// If some, but not all of these are found, it means the MOM is partially present.
+		// That's just too half-assed and we can't allow it.
+		boolean momFound = ocFederationFound && ocFederateFound && icFederateFound;
+		if( (ocFederationFound && !momFound) ||
+			(ocFederateFound && !momFound)   ||
+		    (icFederateFound && !momFound) )
+		{
+			throw new JRTIinternalError( "MOM Error: Partial MOM found - omit it, or include all" );
+		}
+
+		// If we can't find the MOM, add it
+		if( momFound == false )
+		{
+			List<ObjectModel> mim = new ArrayList<>();
+			String mimPath = lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 ? MIM_PATH_13 :
+			                                                                           MIM_PATH_1516e;
+			mim.add( FomParser.parse( ClassLoader.getSystemResource(mimPath) ) );
+			ModelMerger.merge( fom, mim );
+		}
+
+		// Check again...
+		if( fom.getObjectClass( "Manager.Federation" ) == null )
+			throw new JRTIinternalError( "MOM Error: Object Class Manager.Federation missing from FOM" );
+		else if( fom.getObjectClass( "Manager.Federate" ) == null )
+			throw new JRTIinternalError( "MOM Error: Object Class Manager.Federate missing from FOM" );
+		else if( fom.getInteractionClass( "Manager.Federate" ) == null )
+			throw new JRTIinternalError( "MOM Error: Interaction Class Manager.Federate missing from FOM" );
 	}
 
 	private void validateStandardMimPresent( List<ObjectModel> foms ) throws Exception
