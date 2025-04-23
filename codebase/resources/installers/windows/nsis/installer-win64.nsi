@@ -80,7 +80,7 @@ Section "Portico" SecPORTICO
   File /r "${SANDBOX}\*64*.*"     ;copy back only the 64-bit libs and dlls
   File /r "${SANDBOX}\wan*.*"     ;copy back the WAN launcher scripts
   File /r "${SANDBOX}\*.jar"      ;copy back all the jar files
-  File /r "${JREPATH}"            ;copy the jre in
+  ;File /r "${JREPATH}"           ;copy the jre in -- no longer done, jre should be in sandbox
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"

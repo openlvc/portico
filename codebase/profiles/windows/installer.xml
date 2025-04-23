@@ -28,7 +28,7 @@
 	<!--                                     -->
 	<!-- Windows 64-bit Installer Generation -->
 	<!--                                     -->
-	<target name="nsis.win64" extensionOf="master.installer">
+	<target name="nsis.win64" extensionOf="master.installer" depends="java.sandbox.jre">
 		<!-- Verify we have a JRE we can bundle -->
 		<verifyJdk location="${jdk.home.win64}" arch="amd64"/>
 
@@ -46,7 +46,6 @@
 			<define name="BUILD_NUMBER" value="${build.number}"/>    <!-- shown in file details    -->
 			<define name="LICENSE"      value="${license}"/>         <!-- presented during install -->
 			<define name="SANDBOX"      value="${sandbox.dir}"/>     <!-- contents of the app      -->
-			<define name="JREPATH"      value="${jdk.home.win64}\jre"/> <!-- jre to bundle -->
 		</nsis-installer>
 	</target>
 
