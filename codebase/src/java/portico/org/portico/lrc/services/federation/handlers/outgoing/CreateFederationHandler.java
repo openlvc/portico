@@ -41,7 +41,8 @@ public class CreateFederationHandler extends LRCMessageHandler
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	private static final String MIM_PATH = "etc/ieee1516e/HLAstandardMIM.xml";
+	private static final String MIM_PATH_1516e = "etc/ieee1516e/HLAstandardMIM.xml";
+	private static final String MIM_PATH_13 = "etc/hla13/HLAstandardMIM.fed";
 	
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
@@ -73,7 +74,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
 		// For 1516e, we always add the MIM first
 		if( lrc.getSpecHelper().getHlaVersion() != HLAVersion.HLA13 )
-			foms.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH)) );
+			foms.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH_1516e)) );
 		
 		// Load all the provided modules
 		for( URL module : request.getFomModules() )
@@ -90,10 +91,7 @@ public class CreateFederationHandler extends LRCMessageHandler
 		// if this is HLA 1.3, we expect the MOM to be present - fail if it is not
 		if( lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 )
 			verifyHla13MomPresent( combinedFOM );
-
-		// dump out the MIM if it is present and then re-insert with specific handles
-//		ObjectModel.mommify( combinedFOM );
-
+		
 		// we have our grand unified FOM!
 		request.setModel( combinedFOM );
 		
@@ -132,7 +130,9 @@ public class CreateFederationHandler extends LRCMessageHandler
 		if( momFound == false )
 		{
 			List<ObjectModel> mim = new ArrayList<>();
-			mim.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH)) );
+			String mimPath = lrc.getSpecHelper().getHlaVersion() == HLAVersion.HLA13 ? MIM_PATH_13 :
+			                                                                           MIM_PATH_1516e;
+			mim.add( FomParser.parse( ClassLoader.getSystemResource(mimPath) ) );
 			ModelMerger.merge( fom, mim );
 		}
 
