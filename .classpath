@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="codebase/src/java/examples/ieee1516e/src"/>
 	<classpathentry kind="src" path="codebase/src/java/examples/hla13/src"/>
 	<classpathentry kind="src" path="codebase/src/java/test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
