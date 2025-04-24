@@ -36,15 +36,20 @@ gauge the level of community interest in the project. You can sign up from the U
 
   **For Java**
   Portico ships with a JRE, but you will need a JDK if you are writing federates.
-  Portico support a minimum of Java v1.8.0+.
+  Portico support a minimum of Java v21.
 
   **For C++**
-  Portico provides cross-platform support in 32 and 64-bit. The following libraries are
-  pre-packaged depending on the operating system you download for:
+  Portico provides cross-platform support for 64-bit operating systems only.
+  Portico libraries are build with the following compilers and supported on
+  the listed distributions:
 
-    - Windows: VC8, VC9, VC10, 32/64-bit
-    - Linux: GCC4, 64-bit
-    - Mac OS X: Apple LLVM 6, 7
+    - Windows
+        - Windows 11
+        - Visual Studio 2022
+    - Linux
+        - GCC v11.5
+        - Rocky Linux 9.5+
+        - Ubuntu 22.04 LTS+
 
   When you have installed Portico, you will get a directory structure like so:
 
@@ -67,15 +72,11 @@ gauge the level of community interest in the project. You can sign up from the U
         `-- ieee1516e        (IEEE-1516e headers)
     |-- lib
         |-- portico.jar      (The main Portico jar file)
-        `-- gcc4             (GCC libraries for C++ interfaces)  [*nix only]
-        `-- vc8              (VC8 libraries for C++ interfaces)  [windows only]
-        `-- vc9              (VC9 libraries for C++ interfaces)  [windows only]
-        `-- vc10             (VC10 libraries for C++ interfaces) [windows only]
+        `-- gcc11            (GCC libraries for C++ interfaces)  [*nix only]
+        `-- vc14_3           (VS22 libraries for C++ interfaces) [windows only]
     |-- bin
         |-- wanrounter       (Launchers for WAN Router bat/sh)
-        `-- vc8              (VC8 DLLs)                          [windows only]
-        `-- vc9              (VC9 DLLs)                          [windows only]
-        `-- vc10             (VC10 DLLs)                         [windows only]
+        `-- vc14_3           (VS22 DLLs)                         [windows only]
   ```
 
 2. Running Federates with Portico
@@ -91,11 +92,8 @@ gauge the level of community interest in the project. You can sign up from the U
   ```
   *   (all) RTI_HOME          : This should point to the same directory that this file is in
   *  (java) CLASSPATH         : Add RTI_HOME/lib/portico.jar
-  * (win32) PATH              : Add %RTI_HOME%\bin\[compiler] and %RTI_HOME%\jre\bin\client
-  * (win64) PATH              : Add %RTI_HOME%\bin\[compiler] and %RTI_HOME%\jre\bin\server
-  * (mac64) DYLD_LIBRARY_PATH : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/server
-  * (lin32) LD_LIBRARY_PATH   : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/client
-  * (lin64) LD_LIBRARY_PATH   : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/server
+  * (win11) PATH              : Add %RTI_HOME%\bin\[compiler] and %RTI_HOME%\jre\bin\server
+  * (linux) LD_LIBRARY_PATH   : Add $RTI_HOME/lib/[compiler] and $RTI_HOME/jre/lib/server
   ```
 
 ### The JVM Libraries
@@ -127,8 +125,9 @@ gauge the level of community interest in the project. You can sign up from the U
 
 #### Compiling on Windows
   When compiling C++ federates on Windows, you will need to have an appropriate version of
-  Visual Studio installed. You can compile through the VS interface, or if you prefer the
-  command line, it is simplest to execute inside a Visual Studio Command Prompt.
+  Visual Studio installed or the Visual Studio Build Tools. It is simplest to compile your
+  federate inside Visual Studio, but if you use a command prompt, make sure it has the 
+  appropriate environment set up.
 
 #### 64-bit Libraries
   Portico provides 64-bit libraries for HLA v1.3 and 1516e. These libraries follow the
@@ -152,10 +151,14 @@ gauge the level of community interest in the project. You can sign up from the U
   Documentation and open source projects... so how about that ANY OTHER TOPIC.
 
 ### Documentation
-  Luckily, Portico has been around for some time, so we're building up some devent docs.
-  The main website website contains all documentation for the project. This includes
-  guides on deploying Portico with common LVC tools, writing federates with Portico,
-  how to build Portico for yourself, API references, support information and much more.
+  Portico is open source, which means it's a labour of love - and everyone knows that
+  documentation doesn't get much love. The website has been long overdue for an update,
+  and it will come. But for now, if you want access to the documentation for the old
+  defunct site, you can find a mirror of it on Github:
+
+  <https://github.com/openlvc/portico-oldwebsite>
+
+  Keey an eye out on the main site for updates in the future:
 
   <http://porticoproject.org>
 
@@ -166,18 +169,13 @@ gauge the level of community interest in the project. You can sign up from the U
   <http://github.com/openlvc/portico>
 
 ### Support
-  Developer support, provided by living, breathing, full-time job having people is provided.
-  This is split into a two tier system: Community Support and Commercial Support.
+  Developer support, provided by living, breathing, full-time job having people is provided
+  as best we can. If you need help, you can open a Github Issue, or email us here:
 
   `email: support@openlvc.org`
 
   - **Community Support** is provided on a best-effort basis. We make no guarantees, but we also
   want as many people to using Portico and solving their simulation problems, so we do try.
-
-  - **Commercial Support** is available and you should contact Calytrix Technologies if you wish
-  to obtain a quote. Commercial Support comes with response SLAs and can be accessed via the
-  same email address, or through the dedicated lines provided in your sign-up information pack.
-
 
 So there you go, we hope you enjoy using Portico :)
 
