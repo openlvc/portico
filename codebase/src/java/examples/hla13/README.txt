@@ -64,10 +64,10 @@ Table of Contents:
 
  The Portico Java example federate is officially supported on:
 
-  * Java JDK 7 (version 7u17+)
-  * Ubuntu 12.04 LTS for 32 and 64-bit
-  * Mac OS X Mountain Lion (10.8)+ for 64-bit
-  * Windows 7 32/64-bit
+  * Java JDK 11+
+  * Rocky Linux 8.10
+  * Ubuntu 16.04, 18.04, 20.04 LTS
+  * Windows 10/11
 
  --- JDK Requirements ---
  Please note that you need to have a JDK installed on your system and have
@@ -76,11 +76,11 @@ Table of Contents:
  running Java applications, not compiling them.
 
  --- JDK Version ---
- Portico has been built against Java 7 and requires a Java 7 JDK to compile
+ Portico has been built against Java 11 and requires a Java 11 JDK to compile
  federates for. If you are deploying against a Java 6 environment
  The federate may work happily with earlier versions of Java, but these are
- not officially supported, and if you are targeting a Java v6 platform, may
- require a recompile of the RTI from source.
+ not officially supported, and if you are targeting a Java v8 platform, you
+ will need to use an older version of Portico.
 
 -------------------------------------------------------------------------------
  3. Compiling and Running the Example Federate
@@ -90,8 +90,7 @@ Table of Contents:
  of helper scripts have been provided:
  
    * windows.bat    // Compile and run on Windows
-   * linux.sh       // Compile and run on Ubuntu 12.04 LTS
-   * macos.sh       // Compile and run on Mac OS X 10.8+
+   * linux.sh       // Compile and run on Ubuntu/Rocky
 
  Each of the scripts takes the same basic commands:
    
@@ -111,8 +110,8 @@ Table of Contents:
    * windows compile
    * windows execute
 
- Running on Unbuntu 12.04 LTS
- -----------------------------
+ Running on Unbuntu/Rocky Linux
+ -------------------------------
  To run on Ubuntu, ensure you an appropriate JDK installed and have the
  environment variable JAVA_HOME set up to point at it. From a prompt,
  change into the directory, compile and run using the script:
@@ -120,16 +119,6 @@ Table of Contents:
    * cd $RTI_HOME/examples/java/hla13
    * ./linux.sh compile
    * ./linux.sh execute
-
- Running on Mac OS X 10.8+
- --------------------------
- To run on Mac OS X, ensure you an appropriate JDK installed and have the
- environment variable JAVA_HOME set up to point at it. From a prompt,
- change into the directory, compile and run using the script:
-
-   * cd $RTI_HOME/examples/java/hla13
-   * ./macos.sh compile
-   * ./macos.sh execute
 
  Running more than one Federate
  -------------------------------
@@ -140,7 +129,6 @@ Table of Contents:
    * Start a second example federate
       * windows execute secondFederate
       * ./linux.sh execute secondFederate
-      * ./macos.sh execute secondFederate
    * Wait until the second federate is ready, then hit enter in both screens.
  
  Each example federate will wait until you hit enter to tell the RTI that the
