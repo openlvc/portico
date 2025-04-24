@@ -36,7 +36,7 @@ gauge the level of community interest in the project. You can sign up from the U
 
   **For Java**
   Portico ships with a JRE, but you will need a JDK if you are writing federates.
-  Portico support a minimum of Java v21.
+  Portico support a minimum of Java v11.
 
   **For C++**
   Portico provides cross-platform support for 64-bit operating systems only.
@@ -45,11 +45,11 @@ gauge the level of community interest in the project. You can sign up from the U
 
     - Windows
         - Windows 11
-        - Visual Studio 2022
+        - Visual Studio 2017, 2019, 2022
     - Linux
-        - GCC v11.5
-        - Rocky Linux 9.5+
-        - Ubuntu 22.04 LTS+
+        - GCC v8.5+
+        - Rocky Linux 8
+        - Ubuntu 16.04, 18.04, 20.04
 
   When you have installed Portico, you will get a directory structure like so:
 
@@ -72,7 +72,7 @@ gauge the level of community interest in the project. You can sign up from the U
         `-- ieee1516e        (IEEE-1516e headers)
     |-- lib
         |-- portico.jar      (The main Portico jar file)
-        `-- gcc11            (GCC libraries for C++ interfaces)  [*nix only]
+        `-- gcc8             (GCC libraries for C++ interfaces)  [*nix only]
         `-- vc14_3           (VS22 libraries for C++ interfaces) [windows only]
     |-- bin
         |-- wanrounter       (Launchers for WAN Router bat/sh)
