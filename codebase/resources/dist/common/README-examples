@@ -94,8 +94,8 @@ Portico Example Federates
   ```
   -- Open Visual Studio Command Prompt --
   $ cd %RTI_HOME\examples\cpp\ieee1516e
-  $ win64-vc10 compile
-  $ win64-vc10 execute
+  $ win64-vcXX compile
+  $ win64-vcXX execute
   ```
 
 ### Linux C++ Example
@@ -103,13 +103,6 @@ Portico Example Federates
   $ cd $RTI_HOME/examples/cpp/ieee1516e
   $ ./linux64.sh compile
   $ ./linux64.sh execute federateTwo
-  ```
-
-### Mac OS X C++ Example
-  ```
-  $ cd $RTI_HOME/examples/cpp/ieee1516e
-  $ ./macos.sh compile
-  $ ./macos.sh execute federateTwo
   ```
 
 ### Debugging C++ Federates
@@ -120,12 +113,11 @@ Portico Example Federates
   for this. Take a look at the batch files to see what compiler options and symbols are set so
   that you can then set up your project correctly.
 
-  For Linux / Mac OS X, a GDB env file is provided. This means you can fire up GDB and get debugging
+  For Linux, a GDB env file is provided. This means you can fire up GDB and get debugging
   like it's 1985!
 
   ```
    Linux: gdb -x gdb-linux.env ./example-federate
-  Mac OS: sudo ggdb -x gdb-macos.env ./example-federate
   ```
 
 
@@ -149,7 +141,7 @@ Portico Example Federates
   see output something like the following:
 
   ```
-  RTI_HOME environment variable is set to /opt/portico-2.1.0
+  RTI_HOME environment variable is set to /opt/portico-x.x.x
 
   -------------------------------------------------------------------
   GMS: address=zapp-48803, cluster=ExampleFederation, physical address=192.168.0.10:63529

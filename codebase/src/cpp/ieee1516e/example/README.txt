@@ -88,11 +88,11 @@ Table of Contents:
 
  Running on Windows
  -------------------
- To run on Windows, you must have Visual Studio 2010 installed. To properly use
- the helper scripts you MUST open a "Visual Studio 2010 Command Prompt" (ensure
- you open the correct one for 32/64-bit depending on what you hope to compile).
- Once the prompt is open, change into the example directory and you can run the
- helper script: 
+ To build the example federate on Windows you must have either Visual Studio,
+ or the Visual Studio Build Tools installed. The helper scripts will attempt to
+ find one of these distributions and invoke the necessary setup batch files so
+ that you don't have to run them from the Visual Studio Command Prompt, but if
+ you have any issues, running them from the prompt can't hurt.
  
    * [Open Command Prompt]
    * cd %RTI_HOME%\examples\cpp\hla13

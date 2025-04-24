@@ -108,8 +108,8 @@ Table of Contents:
    * windows compile
    * windows execute
 
- Running on Unbuntu Linux
- --------------------------
+ Running on Unbuntu or Rocky Linux
+ ----------------------------------
  To run on Ubuntu, ensure you an appropriate JDK installed and have the
  environment variable JAVA_HOME set up to point at it. From a prompt,
  change into the directory, compile and run using the script:
