@@ -339,8 +339,8 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	
 	// Set to JAVA_HOME as a fallback -- only used when we're in development environments really.
 	// Any distribution should have a bundled JRE
+	string jrelocation(".");
 	char *javaHome = getenv( "JAVA_HOME" );
-	string jrelocation;
 	if( javaHome )
 		string jrelocation( javaHome );
 	

@@ -342,7 +342,8 @@
 	<!-- No special installation tasks to do for the Java build -->
 	<!--<target name="installer" extensionOf="master.installer"/>-->
 
-	<target name="sandbox.jre" depends="sandbox" description="Copy the JRE into the sandbox">
+	<target name="sandbox.jre" description="Copy the JRE into the sandbox">
+		<mkdir dir="${sandbox.dir}"/>
 		<copy-jre outdir="${sandbox.dir}"/>
 	</target>
 	
