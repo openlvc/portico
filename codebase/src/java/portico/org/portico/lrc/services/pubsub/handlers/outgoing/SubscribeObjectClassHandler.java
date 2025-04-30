@@ -133,7 +133,7 @@ public class SubscribeObjectClassHandler extends LRCMessageHandler
 		{
 			// generate a discover object callback
 			OCMetadata discoveredType = discoverable.get( instance );
-			instance.setDiscoveredType( discoveredType );
+			//instance.setDiscoveredType( discoveredType ); -- this is done on the incoming handle
 			DiscoverObject discover = new DiscoverObject( instance );
 			discover.setClassHandle( discoveredType.getHandle() );
 			discover.setSourceFederate( instance.getOwner() );

@@ -55,15 +55,6 @@ public class OCInstance implements Serializable
 		this.attributes = new HashMap<Integer,ACInstance>();
 	}
 	
-	public OCInstance( int handle, String name, OCMetadata registeredAs, OCMetadata discoveredAs )
-	{
-		this();
-		this.handle = handle;
-		this.name = name;
-		this.registeredType = registeredAs;
-		//this.discoveredType = discoveredAs;
-	}
-	
 	//----------------------------------------------------------
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
