@@ -83,11 +83,33 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 			}
 		}
 		
-		// check the subscription data to see if we are actually interested
+		// let's get some metadata that we'll need shortly
 		// in this object class or not
 		OCMetadata registeredType = getObjectClass( classHandle );
 		OCMetadata discoveryType = interests.getDiscoveryType( lrcState.getFederateHandle(),
 		                                                       classHandle );
+
+		// Check to see whether we know about this object already
+		OCInstance instance = repository.getDiscoveredOrUndiscovered( objectHandle );
+		if( instance == null )
+		{
+			// we haven't head about the object before at all, so create an instance for it
+			instance = repository.newInstance( federate,
+			                                   registeredType,
+			                                   null,            // discovered type
+			                                   objectHandle,
+			                                   notice.getObjectName(),
+			                                   ownedAttributes,
+			                                   regionTokens );
+		}
+		else if( instance.isDiscovered() )
+		{
+			// we've already discovered this - bail out
+			logger.debug( "DISCARD Discovery of object (already discovered): object="+
+			              objectMoniker(objectHandle) );
+			
+			veto();
+		}
 		
 		// do we have a discovery interest?
 		if( discoveryType == null )
@@ -95,65 +117,28 @@ public class DiscoverObjectHandler extends LRCMessageHandler
 			logger.debug( "DISCARD Discovery of object (not subscribed): object="+
 			              objectMoniker(objectHandle) );
 			// still store the object, we may need the data later if we subscribe,
-			// create the object with its registered type and store it in a special location
-			OCInstance newInstance = fetchOrCreateInstance( federate,
-			                                                registeredType,
-			                                                registeredType,
-			                                                objectHandle,
-			                                                notice.getObjectName(),
-			                                                ownedAttributes,
-			                                                regionTokens );
+			// create the object with its registered type and store it in the undiscovered store
+			repository.addUndiscoveredInstance( instance );
 
-			// if this is a rediscovery check, this object will already be in the undiscovered
-			// store, so this call will have no effect
-			repository.addUndiscoveredInstance( newInstance );
+			// we're done for now
 			veto();
 		}
-
-		// create the OCInstance using the discovered type and store locally, just get the
-		// object if it already exists (this could be a rediscovery check
-		OCInstance newInstance = fetchOrCreateInstance( federate,
-		                                                registeredType,
-		                                                discoveryType,
-		                                                objectHandle,
-		                                                notice.getObjectName(),
-		                                                ownedAttributes,
-		                                                regionTokens );
-
-		repository.discoverInstance( newInstance, discoveryType );
-		// replace the class that the object is of in the notice with the class we discovered it as
-		notice.setClassHandle( discoveryType.getHandle() );
-		context.success();
-		
-		if( logger.isInfoEnabled() )
+		else
 		{
-			logger.info( "DISCOVER object ["+objectMoniker(objectHandle)+"] registeredAs=" +
-			             ocMoniker(classHandle)+", discoveredAs="+ocMoniker(discoveryType) );
+			// we do care about this object, so let's process it
+			repository.discoverInstance( instance, discoveryType );
+			// replace the class that the object is of in the notice with the class we discovered it as
+			notice.setClassHandle( discoveryType.getHandle() );
+			context.success();
+
+			if( logger.isInfoEnabled() )
+			{
+				logger.info( "DISCOVER object ["+objectMoniker(objectHandle)+"] registeredAs=" +
+				             ocMoniker(classHandle)+", discoveredAs="+ocMoniker(discoveryType) );
+			}
 		}
 	}
-	
-	private OCInstance fetchOrCreateInstance( int        federateHandle,
-	                                          OCMetadata registeredType,
-	                                          OCMetadata discoveryType,
-	                                          int        objectHandle,
-	                                          String     objectName,
-	                                          int[]      ownedAttributes,
-	                                          int[][]    regionTokens )
-	{
-		// check to see if we already know about this object in undiscovered form
-		OCInstance theInstance = repository.getUndiscoveredInstance( objectHandle );
-		if( theInstance != null )
-			return theInstance;
-		
-		// we don't already know about it, create and return it
-		return repository.newInstance( federateHandle,
-		                               registeredType,
-		                               discoveryType,
-		                               objectHandle,
-		                               objectName,
-		                               ownedAttributes,
-		                               regionTokens );
-	}
+
 
 	//----------------------------------------------------------
 	//                     STATIC METHODS
