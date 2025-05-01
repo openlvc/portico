@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.IConnection;
 import org.portico.lrc.compat.JConfigurationException;
 import org.portico.lrc.compat.JObjectClassNotDefined;

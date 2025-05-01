@@ -23,7 +23,7 @@ import java.util.Set;
 import hla.rti1516e.*;
 import hla.rti1516e.exceptions.*;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleFactory;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSetFactory;

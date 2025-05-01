@@ -24,7 +24,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.jgroups.Configuration;
 import org.portico.bindings.jgroups.wan.global.Header;
 import org.portico.utils.StringUtils;
@@ -97,7 +98,7 @@ public class Bundler
 	 */
 	protected Bundler()
 	{
-		this.logger = Logger.getLogger( "portico.lrc.wan" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.wan" );
 
 		// message queuing
 		this.bundleMessages = true;

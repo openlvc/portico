@@ -14,7 +14,7 @@
  */
 package org.portico.impl.hla1516;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.impl.ISpecHelper;
 import org.portico.lrc.LRC;

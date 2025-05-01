@@ -14,7 +14,6 @@
  */
 package org.portico.bindings.jgroups;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -22,9 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.FileAppender;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.Version;
 import org.portico.lrc.LRC;
 import org.portico.lrc.LRCState;
@@ -37,6 +35,7 @@ import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.lrc.services.object.msg.DiscoverObject;
 import org.portico.lrc.services.object.msg.SendInteraction;
 import org.portico.lrc.services.object.msg.UpdateAttributes;
+import org.portico.utils.logging.Log4jConfigurator;
 import org.portico.utils.messaging.PorticoMessage;
 
 /**
@@ -63,7 +62,6 @@ public class Auditor
 	private boolean recording;
 	private boolean summaryOnlyMode;
 	private Logger logger;
-	private FileAppender appender; // keep a ref so we can close out safely
 	private String receivedFormat;
 	private String sentFormat;
 	
@@ -532,18 +530,13 @@ public class Auditor
 			String logdir = System.getProperty( PorticoConstants.PROPERTY_LOG_DIR, "logs" );
 			String logfile = logdir +"/audit-"+this.federateName+".log";
 
-    		// create the appender for the logger
-			String pattern = new String( "%m%n" );
-    		PatternLayout layout = new PatternLayout( pattern );
-    		this.appender = new FileAppender( layout, logfile, false );
-    		
-    		// attach the appender
-    		this.logger = Logger.getLogger( "auditor" );
-    		this.logger.addAppender( appender );
+			// create the auditor logger so that it has a logger config we can extend
+			this.logger = LogManager.getFormatterLogger( "auditor" );
+			Log4jConfigurator.addLogFileForLogger( "auditor-id", logfile, "%m%n", "auditor" );
 		}
-		catch( IOException ioex )
+		catch( Exception ex )
 		{
-			throw new JConfigurationException( "error configuring auditor log: "+ioex.getMessage(), ioex );
+			throw new JConfigurationException( "error configuring auditor log: "+ex.getMessage(), ex );
 		}
 	}
 
@@ -565,8 +558,7 @@ public class Auditor
 		logSummary();
 		
 		// turn the logger off
-		this.logger.removeAppender( appender );
-		this.appender.close();
+		Log4jConfigurator.removeLogFileForLogger( "auditor-id", "auditor" );
 		
 		// clear the filter lists
 		this.directionFilters.clear();

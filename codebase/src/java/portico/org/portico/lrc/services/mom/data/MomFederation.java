@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.impl.hla1516e.types.encoding.HLA1516eUnicodeString;
 import org.portico.lrc.PorticoConstants;

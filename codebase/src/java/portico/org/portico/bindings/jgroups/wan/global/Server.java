@@ -18,7 +18,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.utils.SystemInformation;
 
 /**
@@ -58,7 +59,7 @@ public class Server
 	//----------------------------------------------------------
 	public Server( Configuration configuration )
 	{
-		this.logger = Logger.getLogger( "portico.wan" );
+		this.logger = LogManager.getFormatterLogger( "portico.wan" );
 
 		// Configuration Options
 		this.configuration = configuration;

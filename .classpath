@@ -10,11 +10,12 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="codebase/resources/test-data"/>
-	<classpathentry kind="lib" path="codebase/lib/asm/asm-9.1/asm-9.1.jar"/>
-	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-1.2.15/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/jgroups/JGroups-2.8.0.GA.bin/commons-logging.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/jgroups/jgroups-3.2.0-beta1/jgroups-3.2.0.Beta1.jar" sourcepath="/Users/tim/Developer/workspace/external/JGroups/src"/>
 	<classpathentry kind="lib" path="codebase/resources/jars/portico.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/testng/testng-7.10.2/testng-7.10.2.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/asm/asm-9.1/asm-9.1.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-2.24.3/log4j-api-2.24.3.jar"/>
+	<classpathentry kind="lib" path="codebase/lib/log4j/apache-log4j-2.24.3/log4j-core-2.24.3.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>

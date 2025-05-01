@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.bindings.IConnection;
 import org.portico.bindings.jgroups.JGroupsConnection;
 import org.portico.bindings.jvm.JVMConnection;
@@ -33,6 +33,7 @@ import org.portico.lrc.compat.JRTIinternalError;
 import org.portico.lrc.notifications.NotificationManager;
 import org.portico.lrc.notifications.Priority;
 import org.portico.utils.ObjectFactory;
+import org.portico.utils.logging.Log4jConfigurator;
 import org.portico.utils.messaging.AbstractMessageHandler;
 import org.portico.utils.messaging.ErrorResponse;
 import org.portico.utils.messaging.MessageContext;
@@ -156,7 +157,7 @@ public class LRC
 	{
 		// set up whatever else we need to before the handlers are created and initialized
 		this.specHelper = specHelper;
-		this.logger = Logger.getLogger( "portico.lrc" );
+		this.logger = Log4jConfigurator.newLogger( "portico.lrc" );
 		this.logger.debug( "Creating new LRC" );
 		this.logger.debug( "Portico version: "+PorticoConstants.RTI_VERSION );
 		this.logger.debug( "Interface: "+specHelper.getHlaVersion() );

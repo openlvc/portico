@@ -28,7 +28,7 @@ import hla.rti1516e.exceptions.RestoreInProgress;
 import hla.rti1516e.exceptions.SaveInProgress;
 import hla.rti1516e.exceptions.SynchronizationPointLabelNotAnnounced;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.HLAVersion;
 import org.portico.impl.ISpecHelper;
 import org.portico.lrc.LRC;

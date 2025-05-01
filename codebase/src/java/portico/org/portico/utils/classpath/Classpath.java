@@ -21,7 +21,8 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class contains a bunch of utility methods for querying and managing the system classpath.
@@ -54,7 +55,7 @@ public class Classpath
 	 */
 	public Classpath() throws ClasspathException
 	{
-		this.logger = Logger.getLogger( "portico.container" );
+		this.logger = LogManager.getFormatterLogger( "portico.container" );
 
 		systemLoader = new URLSystemClassLoader( new URL[0], ClassLoader.getSystemClassLoader() );
 

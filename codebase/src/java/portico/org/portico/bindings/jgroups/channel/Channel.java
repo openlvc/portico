@@ -16,7 +16,8 @@ package org.portico.bindings.jgroups.channel;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
@@ -65,7 +66,7 @@ public class Channel
 	//----------------------------------------------------------
 	public Channel( Federation federation )
 	{
-		this.logger = Logger.getLogger( "portico.lrc.jgroups" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.jgroups" );
 		this.federation = federation;
 		this.channelName = federation.getFederationName();
 

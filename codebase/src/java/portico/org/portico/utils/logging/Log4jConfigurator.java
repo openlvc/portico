@@ -14,16 +14,20 @@
  */
 package org.portico.utils.logging;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashSet;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JConfigurationException;
 
@@ -32,14 +36,11 @@ public class Log4jConfigurator
 	//----------------------------------------------------------
 	//                    STATIC VARIABLES
 	//----------------------------------------------------------
-	public static boolean LOGGING_CONFIGURED = false;
+	private static boolean LOGGING_CONFIGURED = false;
 	
 	/** The default pattern to use in layouts */
-	public static String DEFAULT_PATTERN = "%-5p [%t] %c: %x%m%n";
-	
-	/** Flag to tell setConsoleLevel() methods to create color console appenders */
-	//public static boolean USE_COLOR_CONSOLE = false;
-	
+	public static String DEFAULT_PATTERN = "%d{ABSOLUTE} %-5p [%t] %c: %m%n";
+
 	//----------------------------------------------------------
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
@@ -55,6 +56,22 @@ public class Log4jConfigurator
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------
+	
+	public static Logger newLogger( String name )
+	{
+		Logger logger = LogManager.getFormatterLogger( name );
+		if( name.startsWith("portico") )
+		{
+			String property = System.getProperty( PorticoConstants.PROPERTY_PORTICO_LOG_LEVEL,
+                 		                          PorticoConstants.PORTICO_LOG_LEVEL );
+			validateLevel( property );
+			setLevel( property, name );
+		}
+		
+		return logger;
+	}
+	
+	
 	/**
 	 * Convenience method that takes the given level as a string, validates that it is actually
 	 * a Log4j level, and sets it on all the loggers.
@@ -64,77 +81,100 @@ public class Log4jConfigurator
 		Level log4jLevel = validateLevel( level );
 		for( String loggerName : loggers )
 		{
-			// get the logger, thus instantiating it if it doesn't already exist
-			Logger logger = Logger.getLogger( loggerName );
-			
-			// check to see if it has any appenders anywhere in the hierarchy. If not, we'll
-			// want to add one, otherwise there will be no logging output!
-			boolean appenderFound = false;
-			Logger temp = logger;
-			while( temp != null )
-			{
-				if( temp.getAllAppenders().hasMoreElements() )
-				{
-					appenderFound = true;
-					break;
-				}
-				
-				temp = (Logger)temp.getParent();
-			}
-			
-			if( appenderFound == false )
-				attachConsoleAppender( logger );
-			
-			logger.setLevel( log4jLevel );
+			Configurator.setLevel( loggerName, log4jLevel );
 		}
 	}
 	
 	/**
 	 * Redirects portico's log file output to a file at the given location.
 	 */
+	@SuppressWarnings("deprecation")
 	public static void redirectFileOutput( String logfile, boolean append )
 		throws JConfigurationException
 	{
-		// remove any existing file appenders from the portico logger
-		removeFileAppenders();
-		
-		try
-		{
-    		// create the appender
-    		PatternLayout layout = new PatternLayout( DEFAULT_PATTERN );
-    		FileAppender appender = new FileAppender( layout, logfile, false );
-    		
-    		// attach the appender
-    		Logger porticoLogger = Logger.getLogger( "portico" );
-    		porticoLogger.addAppender( appender );
-    		
-    		// attach the same appender to the jgroups logger
-    		Logger jgroupsLogger = Logger.getLogger( "org.jgroups" );
-    		jgroupsLogger.addAppender( appender );
-		}
-		catch( IOException ioex )
-		{
-			throw new JConfigurationException( ioex );
-		}
-	}
-	
-	private static void removeFileAppenders()
-	{
-		Logger logger = Logger.getLogger( "portico" );
-		Enumeration<?> appenders = logger.getAllAppenders();
-		HashSet<Appender> toRemove = new HashSet<Appender>();
-		while( appenders.hasMoreElements() )
-		{
-			Appender appender = (Appender)appenders.nextElement();
-			if( appender instanceof FileAppender )
-				toRemove.add( appender );
-		}
+		// remove the existing file appender from the root logger
+		LoggerContext context = (LoggerContext)LogManager.getContext( false );
+		Configuration configuration = context.getConfiguration();
+		configuration.getRootLogger().removeAppender( "file" );
 
-		for( Appender appender : toRemove )
+		// create the new file appender
+		PatternLayout layout = PatternLayout.newBuilder().withPattern( DEFAULT_PATTERN ).build();
+		FileAppender appender = FileAppender.newBuilder().withName( "file" )
+		                                                 .withFileName( logfile )
+		                                                 .withLayout( layout )
+		                                                 .withAppend( append )
+		                                                 .setConfiguration( configuration )
+		                                                 .build();
+		
+		// start the new appender and add it to the root logger
+		appender.start();
+		configuration.getRootLogger().addAppender( appender, Level.TRACE, null );
+		
+		// update all loggers in the context, not sure if this is needed but can't hurt
+		context.updateLoggers();
+	}
+
+	/**
+	 * Creates a new FileAppender with the given <code>id</code>, log file and logging pattern and
+	 * adds it to all of the given loggers
+	 * 
+	 * @param id The unique ID for the appender so we can identy and remove it later
+	 * @param logfile The file to log to
+	 * @param pattern The pattern to log with
+	 * @param loggers The names of all the loggers to attach the file appender to
+	 */
+	@SuppressWarnings("deprecation")
+	public static void addLogFileForLogger( String id, String logfile, String pattern, String... loggers )
+	{
+		// create the appender for the logger
+		LoggerContext context = (LoggerContext)LogManager.getContext( false );
+		Configuration configuration = context.getConfiguration();
+
+		PatternLayout layout = PatternLayout.newBuilder().withPattern( pattern ).build();
+		FileAppender appender = FileAppender.newBuilder().withName( id )
+		                                                 .withFileName( logfile )
+		                                                 .withLayout( layout )
+		                                                 .withAppend( false )
+		                                                 .setConfiguration( configuration )
+		                                                 .build();
+
+		// start the appender; needs to happen before we add it
+		appender.start();
+		
+		// attach the appender to all loggers
+		for( String loggerName : loggers )
 		{
-			logger.removeAppender( appender );
-			appender.close();
+			// create the new logger so that is has a configuration
+			Logger temp = LogManager.getFormatterLogger( loggerName );
+			configuration.getLoggerConfig(loggerName).addAppender( appender, Level.TRACE, null );
 		}
+		
+		// update all loggers in the context, not sure if this is needed but can't hurt
+		context.updateLoggers();
+	}
+
+	/**
+	 * Remove the FileAppender with the given <code>id</code> from all the loggers specified
+	 * in the given list.
+	 * 
+	 * @param id The ID of the appender to remove
+	 * @param loggers The loggers to remove the appender from
+	 */
+	public static void removeLogFileForLogger( String id, String... loggers )
+	{
+		// remove the existing file appender from the root logger
+		LoggerContext context = (LoggerContext)LogManager.getContext( false );
+		Configuration configuration = context.getConfiguration();
+		
+		for( String loggerName : loggers )
+		{
+			LoggerConfig loggerConfig = configuration.getLoggerConfig( loggerName );
+			if( loggerConfig != null && loggerConfig != configuration.getRootLogger() )
+				loggerConfig.removeAppender( id );
+		}
+		
+		// update all loggers in the context, not sure if this is needed but can't hurt
+		context.updateLoggers();		
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +183,7 @@ public class Log4jConfigurator
 	/**
 	 * Set up the Log4j Logging environment for Portico
 	 */
-	public static void bootstrapLogging() throws JConfigurationException
+	public static void bootstrapLogging()
 	{
 		// only run our configuration once
 		if( LOGGING_CONFIGURED )
@@ -161,43 +201,80 @@ public class Log4jConfigurator
 		if( porticoLevel == Level.OFF && containerLevel == Level.OFF )
 			return;
 		
-		// set up the console and file loggers
-		enableConsole();
-		enableFile();
+		// build the configuration
+		ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+		builder.setStatusLevel( Level.WARN );
+		builder.setConfigurationName( "portico" );
 
-		// set the level on the loggers as appropritate to the configuration
-		Logger.getLogger("portico").setLevel( porticoLevel );
-		Logger.getLogger("portico.container").setLevel( containerLevel );
-	}
+		// create the root logger and attach appenders
+		RootLoggerComponentBuilder rootBuilder = builder.newRootLogger( /*level*/ porticoLevel );
+		builder.add( rootBuilder );
+		
+		// initialize the logger context and we're ready to go!
+		LoggerContext context = Configurator.initialize( builder.build() );
 	
-	private static final void enableConsole()
-	{
-		attachConsoleAppender( Logger.getLogger("portico") );
-		attachConsoleAppender( Logger.getLogger("org.jgroups") );
+		// remove the stupid default console logger
+		LoggerConfig rootConfig = context.getConfiguration().getRootLogger();
+		String defaultName = rootConfig.getAppenders().keySet().iterator().next();
+		rootConfig.removeAppender( defaultName );
+		context.updateLoggers();
+
+		// turn the console appender on
+		turnConsoleOn();
+		turnFileOn();
+		
+		// set the levels for the default loggers that we want 
+		setLevel( porticoLevel.toString(), "portico" );
+		setLevel( containerLevel.toString(), "portico.container" );
+
+		LOGGING_CONFIGURED = true;
 	}
-	
-	private static final void attachConsoleAppender( Logger logger )
+
+	@SuppressWarnings("deprecation")
+	private static void turnConsoleOn()
 	{
-		attachConsoleAppender( logger, DEFAULT_PATTERN );
-	}
-	
-	private static final void attachConsoleAppender( Logger logger, String pattern )
-	{
+		// get a reference to the logger context and configuration
+		LoggerContext context = (LoggerContext)LogManager.getContext( false );
+		Configuration configuration = context.getConfiguration();
+
 		// create the appender
-		PatternLayout layout = new PatternLayout( pattern );
-		ConsoleAppender appender = new ConsoleAppender( layout, ConsoleAppender.SYSTEM_OUT );
-		appender.setThreshold( Level.TRACE ); // output restricted at logger level, not appender
+		PatternLayout layout = PatternLayout.newBuilder().withPattern( DEFAULT_PATTERN ).build();
+		ConsoleAppender appender = ConsoleAppender.newBuilder().withName( "stdout" )
+		                                                       .withLayout( layout )
+		                                                       .setConfiguration( configuration )
+		                                                       .build();
+		
+		// attach the appender
+		appender.start();
+		configuration.getRootLogger().addAppender( appender, Level.TRACE, null );
+		
+		// update all loggers in the context, not sure if this is needed but can't hurt
+		context.updateLoggers();
+	}
+
+	@SuppressWarnings("deprecation")
+	private static void turnFileOn()
+	{
+		// create the appender for the logger
+		LoggerContext context = (LoggerContext)LogManager.getContext( false );
+		Configuration configuration = context.getConfiguration();
+
+		// create the appender
+		String logfile = System.getProperty(PorticoConstants.PROPERTY_LOG_DIR,"logs")+"/portico.log";
+		PatternLayout layout = PatternLayout.newBuilder().withPattern( DEFAULT_PATTERN ).build();
+		FileAppender appender = FileAppender.newBuilder().withName( "file" )
+		                                                 .withFileName( logfile )
+		                                                 .withLayout( layout )
+		                                                 .withAppend( false )
+		                                                 .setConfiguration( configuration )
+		                                                 .build();
 
 		// attach the appender
-		logger.addAppender( appender );
-	}
-	
-	private static final void enableFile() throws JConfigurationException
-	{
-		// get the log file location
-		String logfile = System.getProperty(PorticoConstants.PROPERTY_LOG_DIR,"logs")+"/portico.log";
+		appender.start();
+		configuration.getRootLogger().addAppender( appender, Level.TRACE, null );
 		
-		redirectFileOutput( logfile, true );
+		// update all loggers in the context, not sure if this is needed but can't hurt
+		context.updateLoggers();
 	}
 	
 	/**
