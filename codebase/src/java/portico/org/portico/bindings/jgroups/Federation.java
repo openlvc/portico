@@ -17,7 +17,8 @@ package org.portico.bindings.jgroups;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgroups.util.Util;
 import org.portico.bindings.jgroups.channel.Channel;
 import org.portico.bindings.jgroups.channel.Manifest;
@@ -85,7 +86,7 @@ public class Federation
 	//----------------------------------------------------------
 	public Federation( String name )
 	{
-		this.logger = Logger.getLogger( "portico.lrc.jgroups" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.jgroups" );
 		
 		// Connection State
 		this.fedname = name;

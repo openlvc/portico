@@ -33,7 +33,8 @@ import hla.rti1516e.ResignAction;
 import hla.rti1516e.TimeQueryReturn;
 import hla.rti1516e.exceptions.AlreadyConnected;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516e.Rti1516eAmbassador;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eAttributeHandleValueMap;
@@ -105,7 +106,7 @@ public class ProxyRtiAmbassador
 		this.rtiamb = new Rti1516eAmbassador();
 
 		// fetch the LRC logger so that we have somewhere to notify of our events
-		this.logger = Logger.getLogger( "portico.lrc.cpp1516e" );
+		this.logger = LogManager.getFormatterLogger( "portico.lrc.cpp1516e" );
 		this.logger.debug( "C++ ProxyRtiAmbassador.class created (java-side)" );
 
 		// load the C++ libraries

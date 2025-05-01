@@ -14,7 +14,7 @@
  */
 package org.portico.impl.hla1516;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.portico.impl.hla1516.types.*;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAsynchronousDeliveryAlreadyDisabled;
