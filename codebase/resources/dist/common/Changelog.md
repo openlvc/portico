@@ -68,6 +68,8 @@ please contact the development team and we will see what we can do to point you 
 
 #### Improvements
 
+ - `improve` Reduced the default message bundlers wait timeout from 30ms to 5ms to increase
+             latency in out-of-the-box configurations (`#348`)
  - `improve` The version of Log4j in the Portico jar has been updated to `2.24.3` (`#343`)
 
 #### Bugs

@@ -13,7 +13,7 @@
          
          enable_bundling="${portico.jgroups.bundling:true}"
          max_bundle_size="${portico.jgroups.bundling.maxSize:64K}"
-         max_bundle_timeout="${portico.jgroups.bundling.maxTime:30}"
+         max_bundle_timeout="${portico.jgroups.bundling.maxTime:5}"
 
          timer_type="new"
          timer.min_threads="4"

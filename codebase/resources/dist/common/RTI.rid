@@ -201,7 +201,7 @@
 #
 # portico.jgroups.bundling = true
 # portico.jgroups.bundling.maxSize = 64K
-# portico.jgroups.bundling.maxTime = 30
+# portico.jgroups.bundling.maxTime = 5
 
 
 # (4.6) JGroups Flow Control
