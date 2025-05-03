@@ -1,7 +1,7 @@
 Changelog
 ====================
 
-Portico is an open source, cross platform, fully support HLA RTI.
+Portico is an open source, cross platform, freely redistributable HLA RTI.
 This file records the changes made to Portico over successive releases.
 For each release we also prepare release notes that are hosted on the 
 website:
@@ -18,9 +18,72 @@ In this document, changes are broken down by their type:
 At the end of each note is the JIRA ticket number relating to the item,
 or the GitHub pull-request number for community-sourced updates.
 
- * (`PORT-XYZ`) -- JIRA ticket number, see `http://jira.openlvc.org`
- * (`#XYZ`)     -- GitHub pull request number, see `https://github.com/openlvc/portico/pull`
+ * (`PORT-XYZ`) -- JIRA ticket number (no longer used)
+ * (`#XYZ`)     -- GitHub issue number, see `https://github.com/openlvc/portico/issues`
 
+
+v2.1.3 / 2025-05-04
+--------------------
+
+#### Special Note: Compiler and Operating System Support
+It has been a long time between releases! 
+
+The goal of this release is two fold:
+ - Update compiler and operating system support to focus on middle-life or recent EOL versions 
+ - Fix a number of small open bugs logged against the earlier releases
+
+From here, support for new compilers and operating systems will not be added. Bug fixes are
+also expected to be minimal, and only where critically necessary. The hope is that this 
+baseline will give users with established systems version of the RTI that they can use without
+having to jump to new compilers/operating systems.
+
+The compilers targeted and test with for this release are:
+
+ - Java 11
+ - Visual Studio 2017, 2019 and 2022
+ - GCC 5.4
+
+The Operating Systems tested on are:
+
+ - Windows 10 and 11
+ - Ubuntu 16.04, 18.04 and 20.04
+ - Rocky Linux 8.10 and 9.5
+
+All binary packages are now 64-bit only. If you require 32-bit support for a specific platform,
+please contact the development team and we will see what we can do to point you compile one up.
+
+#### Notes
+
+- `note` The bundled Java version is `11.0.21`
+- `note` Support for Visual Studio 10, 12, 13 and 15 has been deprecated. Libraries are no longer
+         shipped with the installer packages.
+- `note` Only 64-bit versions of libraries and installers are shipped.
+
+#### New Features
+
+ - `feature` C++ libraries now shipped for Visual Studio 2017 (`vc14_1`), 2019 (`vc14_2`) and 2022 (`vc14_3`)
+ - `feature` Java libraries now compiled against Java 11. The bundled JRE is Java 11.
+ - `feature` Builds are now tested (unit tests and example tests) on Rocky Linux as a replacement
+             for CentOS, and to validate RHEL compatiblity. Rocky Linux 8.10 and 9.5 have been used.
+
+#### Improvements
+
+ - `improve` The version of Log4j in the Portico jar has been updated to `2.24.3` (`#343`)
+
+#### Bugs
+
+ - `bugfix` Fixed 64-bit C++ library naming convention for HLA v1.3. Convetion below. (`#342`)
+    - **HLA v1.3**: libRTI-NG_64.xyz (use _64)
+    - **IEEE 1516 (2000)**: librti1516_64.xyz (use _64)
+    - **IEEE 1516 (2010)**: librti1516e64.xyz (use 64 with no _)
+ - `bugfix` Fixed MOM elements not being added to HLA v1.3 federations that didn't include it in FOM (`#327`)
+ - `bugfix` Fixed `ErrorReadingFDD` exception when parsing Variant Records in 1516e FOMs (`#214`)
+ - `bugfix` Fixed crash in 1516e C++ interface when reading some tag values (`#202`)
+ - `bugfix` Fixed NPE when merging 1516e FOM modules (`#181`)
+ - `bugfix` Fixed encoding/decoding errors for 1516e Variant Records (`#179`)
+ - `bugfix` Fixed crash in C++ federates if `JAVA_HOME` env var not set (`#137`)
+ - `bugfix` Fixed possible double-discovery of objects by late joining federates when they pubsub (`#116`)
+ - `bugfix` Fixed NPE when Portico attempts callback for failed sync point registration (`#83`)
 
 
 v2.1.0 / 2016-05-04
