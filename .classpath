@@ -10,7 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="codebase/resources/test-data"/>
-	<classpathentry kind="lib" path="codebase/lib/jgroups/JGroups-2.8.0.GA.bin/commons-logging.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/jgroups/jgroups-3.2.0-beta1/jgroups-3.2.0.Beta1.jar" sourcepath="/Users/tim/Developer/workspace/external/JGroups/src"/>
 	<classpathentry kind="lib" path="codebase/resources/jars/portico.jar"/>
 	<classpathentry kind="lib" path="codebase/lib/testng/testng-7.10.2/testng-7.10.2.jar"/>
