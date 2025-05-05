@@ -59,7 +59,7 @@ rem ############################################
 :compile
 echo "compiling example federate"
 cd src
-%JAVAC% -cp ".;%RTI_HOME%\lib\portico.jar" ieee1516e\*.java
+%JAVAC% -proc:full -cp ".;%RTI_HOME%\lib\portico.jar" ieee1516e\*.java
 %JAR% -cf ..\java-ieee1516e.jar ieee1516e\*.class
 cd ..
 goto finish

@@ -54,7 +54,7 @@ if [ $1 = "compile" ]
 then
 	echo "compiling example federate"
 	cd src
-	javac -cp ./:$RTI_HOME/lib/portico.jar *.java
+	javac -proc:full -cp ./:$RTI_HOME/lib/portico.jar *.java
 	jar -cf ../event-logger.jar *.class
 	cd ../
 	exit;
