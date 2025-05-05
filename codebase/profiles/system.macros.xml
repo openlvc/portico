@@ -69,6 +69,8 @@
 			       target="${java.compiler.target}"
 			       includeAntRuntime="false">
 				<body/>
+				<compilerarg value="-proc:full"/>
+				<!--<compilerarg value="-Xlint:unchecked"/>-->
 			</javac>
 		</sequential>
 	</macrodef>
