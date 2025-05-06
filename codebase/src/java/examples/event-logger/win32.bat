@@ -59,7 +59,7 @@ rem ############################################
 :compile
 echo "compiling example federate"
 cd src
-%JAVAC% -cp ".;%RTI_HOME%\lib\portico.jar" *.java
+%JAVAC%  -proc:full -cp ".;%RTI_HOME%\lib\portico.jar" *.java
 %JAR% -cf ..\event-logger.jar *.class
 cd ..
 goto finish
