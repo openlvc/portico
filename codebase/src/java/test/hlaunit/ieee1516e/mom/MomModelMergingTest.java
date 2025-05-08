@@ -109,7 +109,7 @@ public class MomModelMergingTest extends Abstract1516eTest
 		
 		// Create and join
 		defaultFederate.quickCreateWithModules( createModules );
-		defaultFederate.quickJoinWithModules();
+		defaultFederate.quickJoin();
 		//defaultFederate.quickJoin();
 		int handleA = defaultFederate.quickICHandle( "HLAmanager.HLAfederate.HLAadjust.HLAsetSwitches" );
 		
