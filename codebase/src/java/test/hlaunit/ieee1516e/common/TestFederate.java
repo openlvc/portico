@@ -420,6 +420,39 @@ public class TestFederate
 		}
 	}
 	
+	/**
+	 * Joins this federate to the default federation using the provided FOM modules. If there is
+	 * an error Assert.fail() will be used.
+	 * 
+	 * Will first resolve the string paths to URLs. This method will connect to the RTI if that
+	 * hasn't already happened.
+	 * 
+	 * @param modules Set of paths to modules to use when joining. If these are file urls, they will
+	 *                be used as is. If they are not we will try to turn them into files, and then
+	 *                into URLs from there.
+	 */
+	public int quickJoinWithModules( String... modules )
+	{
+		// try to resolve the module names to a list of URLs
+		List<URL> moduleUrls = new ArrayList<>();
+		try
+		{
+			for( String name : modules )
+			{
+				if( name.startsWith("file:") )
+					moduleUrls.add( new URL(name) );
+				else
+					moduleUrls.add( new File(name).toURI().toURL() );
+			}
+		}
+		catch( MalformedURLException mue )
+		{
+			Assert.fail( "Error turning module path into a URL: "+mue.getMessage(), mue );
+		}
+		
+		return quickJoinWithModules( moduleUrls.toArray(new URL[]{}) );
+	}
+	
 	////////////////////////////////////////////////////////////
 	////////////////////// Resign Methods //////////////////////
 	////////////////////////////////////////////////////////////
