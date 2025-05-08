@@ -261,6 +261,7 @@
 		<chmod dir="${sandbox.examples.dir}" perm="777" includes="**/*.sh"/>
 		
 		<!-- Run platform specific fixes such as fixing crlf for Windows bound files! -->
+		<fixcrlf srcdir="${sandbox.dir}" includes="Changelog.md"/>
 	</target>
 
 	<!-- ==================================== -->
