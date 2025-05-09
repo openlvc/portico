@@ -496,7 +496,8 @@ public class Federation
 		}
 	}
 
-	public void receiveSetManifest( UUID sender, byte[] payload )
+	@SuppressWarnings("deprecation")
+	public synchronized void receiveSetManifest( UUID sender, byte[] payload )
 	{
 		// if we already have a manifest, AND we are the coordinator, ignore as we sent this out
 		// otherwise, take the updated manifest
@@ -534,6 +535,11 @@ public class Federation
 			// Update our local manifest
 			manifest.setLocalUUID( this.uuid );
 			this.manifest = manifest;
+			
+			// Push the updated FOM into our LRC State
+			if( joinedLRC != null )
+				joinedLRC.getState().remoteJGroupsManifestReceivedHack( this.manifest.getFom() );
+			
 			logger.debug( "Installed new manifest (follows)" );
 			logger.debug( manifest );
 		}
