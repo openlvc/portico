@@ -45,6 +45,7 @@ public class FederationConsistencyTest extends Abstract1516eTest
 	//                   INSTANCE VARIABLES
 	//----------------------------------------------------------
 	private TestFederate secondFederate;
+	private TestFederate thirdFederate;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -59,6 +60,9 @@ public class FederationConsistencyTest extends Abstract1516eTest
 		super.beforeClass();
 		this.secondFederate = new TestFederate( "secondFederate", this );
 		this.secondFederate.quickConnect();
+		
+		this.thirdFederate = new TestFederate( "thirdFederate", this );
+		this.thirdFederate.quickConnect();
 	}
 
 	@BeforeMethod(alwaysRun=true)
@@ -73,6 +77,7 @@ public class FederationConsistencyTest extends Abstract1516eTest
 	{
 		defaultFederate.quickResignTolerant();
 		secondFederate.quickResignTolerant();
+		thirdFederate.quickResignTolerant();
 		defaultFederate.quickDestroy();
 	}
 
@@ -80,6 +85,7 @@ public class FederationConsistencyTest extends Abstract1516eTest
 	public void afterClass()
 	{
 		secondFederate.quickDisconnect();
+		thirdFederate.quickDisconnect();
 		super.afterClass();
 	}
 
@@ -102,6 +108,9 @@ public class FederationConsistencyTest extends Abstract1516eTest
 
 		// 3. Join federation in second federate with same modules as default, but in different order
 		secondFederate.quickJoinWithModules( moduleSoup, moduleDrink );
+		
+		// 4. Repeat for a third federate - different module order again
+		thirdFederate.quickJoinWithModules( moduleDrink );
 
 		// 4. Compare handles from each federate to make sure they are the same
 		// Object Classes and Attributes
@@ -111,15 +120,36 @@ public class FederationConsistencyTest extends Abstract1516eTest
 			// check the class handle
 			Assert.assertEquals( secondFederate.quickOCHandle(objectClass),
 			                     defaultFederate.quickOCHandle(objectClass),
-			                     "Handles for object class "+objectClass+" don't match" );
+			                     "(first/second) Handles for object class "+objectClass+
+			                     " don't match" );
+
+			Assert.assertEquals( thirdFederate.quickOCHandle(objectClass),
+			                     defaultFederate.quickOCHandle(objectClass),
+			                     "(first/third) Handles for object class "+objectClass+
+			                     " don't match" );
+			
+			Assert.assertEquals( secondFederate.quickOCHandle(objectClass),
+			                     thirdFederate.quickOCHandle(objectClass),
+			                     "(second/third) Handles for object class "+objectClass+
+			                     " don't match" );
 
 			// for each attribute, check the attribute handle
 			for( String attribute : objects.get(objectClass) )
 			{
 				Assert.assertEquals( secondFederate.quickACHandle(objectClass,attribute),
 				                     defaultFederate.quickACHandle(objectClass,attribute),
-				                     "Handles for attribute "+attribute+" in class "+objectClass+
-				                     " don't match" );
+				                     "(first/second) Handles for attribute "+attribute+" in class "+
+				                     objectClass+" don't match" );
+
+				Assert.assertEquals( thirdFederate.quickACHandle(objectClass,attribute),
+				                     defaultFederate.quickACHandle(objectClass,attribute),
+				                     "(first/third) Handles for attribute "+attribute+" in class "+
+				                     objectClass+" don't match" );
+
+				Assert.assertEquals( secondFederate.quickACHandle(objectClass,attribute),
+				                     thirdFederate.quickACHandle(objectClass,attribute),
+				                     "(second/third) Handles for attribute "+attribute+" in class "+
+				                     objectClass+" don't match" );
 			}
 		}
 
@@ -130,14 +160,35 @@ public class FederationConsistencyTest extends Abstract1516eTest
 			// check the class handle
 			Assert.assertEquals( secondFederate.quickICHandle(interactionClass),
 			                     defaultFederate.quickICHandle(interactionClass),
-			                     "Handles for interaction class "+interactionClass+" don't match" );
+			                     "(first/second) Handles for interaction class "+interactionClass+
+			                     " don't match" );
+
+			Assert.assertEquals( thirdFederate.quickICHandle(interactionClass),
+			                     defaultFederate.quickICHandle(interactionClass),
+			                     "(first/third) Handles for interaction class "+interactionClass+
+			                     " don't match" );
+
+			Assert.assertEquals( secondFederate.quickICHandle(interactionClass),
+			                     thirdFederate.quickICHandle(interactionClass),
+			                     "(second/third) Handles for interaction class "+interactionClass+
+			                     " don't match" );
 
 			// for each parameter, check the parameter handle
 			for( String parameter : interactions.get(interactionClass) )
 			{
 				Assert.assertEquals( secondFederate.quickPCHandle(interactionClass,parameter),
 				                     defaultFederate.quickPCHandle(interactionClass,parameter),
-				                     "Handles for parameter "+parameter+" in class "+
+				                     "(first/second) Handles for parameter "+parameter+" in class "+
+				                     interactionClass+" don't match" );
+
+				Assert.assertEquals( thirdFederate.quickPCHandle(interactionClass,parameter),
+				                     defaultFederate.quickPCHandle(interactionClass,parameter),
+				                     "(first/third) Handles for parameter "+parameter+" in class "+
+				                     interactionClass+" don't match" );
+
+				Assert.assertEquals( secondFederate.quickPCHandle(interactionClass,parameter),
+				                     thirdFederate.quickPCHandle(interactionClass,parameter),
+				                     "(second,third) Handles for parameter "+parameter+" in class "+
 				                     interactionClass+" don't match" );
 			}
 		}
