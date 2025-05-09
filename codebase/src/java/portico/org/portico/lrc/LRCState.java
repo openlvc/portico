@@ -262,6 +262,21 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		federation.addFederate( federate );
 		momManager.federateJoinedFederation( federate );
 	}
+
+	/**
+	 * This is an UGLY, UGLY hack that I'm marking as deprecated right from the outset!
+	 * This should never be called by any code except JGroups. It allows us to push into
+	 * the state an updated FOM that we have received due to a remote federate joining
+	 * the federation (which may have added some modules). This is specific to JGroups.
+	 * 
+	 * @param updated The updated object model that came as part of the manifest update
+	 */
+	@Deprecated
+	public void remoteJGroupsManifestReceivedHack( ObjectModel updated )
+	{
+		if( updated != null )
+			this.fom = updated;
+	}
 	
 	/**
 	 * This notification is invoked when a remote federate joins the federation the local federate

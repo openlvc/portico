@@ -104,10 +104,10 @@ public class FederationConsistencyTest extends Abstract1516eTest
 		defaultFederate.quickCreateWithModules( moduleMain );
 
 		// 2. Join federation with additional modules in default federate
-		defaultFederate.quickJoinWithModules( moduleMain, moduleFood, moduleDrink, moduleSoup );
+		defaultFederate.quickJoinWithModules( moduleMain, moduleFood );
 
 		// 3. Join federation in second federate with same modules as default, but in different order
-		secondFederate.quickJoinWithModules( moduleSoup, moduleDrink );
+		secondFederate.quickJoinWithModules( moduleSoup );
 		
 		// 4. Repeat for a third federate - different module order again
 		thirdFederate.quickJoinWithModules( moduleDrink );
