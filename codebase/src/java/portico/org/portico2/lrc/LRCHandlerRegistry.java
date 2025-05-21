@@ -71,6 +71,7 @@ import org.portico2.lrc.services.pubsub.outgoing.UnsubscribeInteractionClassHand
 import org.portico2.lrc.services.pubsub.outgoing.UnsubscribeObjectClassHandler;
 import org.portico2.lrc.services.sync.outgoing.AchieveSyncPointHandler;
 import org.portico2.lrc.services.sync.outgoing.RegisterSyncPointHandler;
+import org.portico2.lrc.services.time.incoming.FederationLBTSHandler;
 import org.portico2.lrc.services.time.incoming.TimeAdvanceGrantHandler;
 import org.portico2.lrc.services.time.outgoing.DisableAsyncDeliveryHandler;
 import org.portico2.lrc.services.time.outgoing.DisableTimeConstrainedHandler;
@@ -204,6 +205,7 @@ public class LRCHandlerRegistry
 		in.register( MessageType.EnableTimeRegulation,    new TimeRegulationEnabledCallbackHandler() );
 		in.register( MessageType.TimeAdvanceGrant,        new TimeAdvanceGrantHandler() );
 		in.register( MessageType.TimeAdvanceGrant,        new TimeAdvanceGrantCallbackHandler() );
+		in.register( MessageType.FederationLBTS,          new FederationLBTSHandler());
 
 		// Ownership Management
 		in.register( MessageType.AttributeAcquire,        new AttributeReleaseRequestIncomingHandler() );

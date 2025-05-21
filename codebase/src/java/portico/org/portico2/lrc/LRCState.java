@@ -57,6 +57,7 @@ public class LRCState
 	
 	// Time related settings //
 	private TimeStatus timeStatus;
+	private double federationLbts;
 	private boolean ticking;
 	private boolean callbacksEnabled;
 	private boolean immediateCallbacks;
@@ -421,6 +422,14 @@ public class LRCState
 		}
 		
 		this.ticking = ticking;
+	}
+
+	public double getFederationLbts() {
+		return federationLbts;
+	}
+
+	public void setFederationLbts(double federationLbts) {
+		this.federationLbts = federationLbts;
 	}
 
 	public double getCurrentTime()
