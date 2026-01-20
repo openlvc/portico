@@ -74,7 +74,13 @@ public class CreateFederationHandler extends LRCMessageHandler
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
 		// For 1516e, we always add the MIM first
 		if( lrc.getSpecHelper().getHlaVersion() != HLAVersion.HLA13 )
-			foms.add( FomParser.parse(ClassLoader.getSystemResource(MIM_PATH_1516e)) );
+		{
+			URL mimPath = Thread.currentThread().getContextClassLoader().getResource( MIM_PATH_1516e );
+			if( mimPath == null )
+				throw new JRTIinternalError("Cannot load MIM from resource path: "+MIM_PATH_1516e);
+			else
+				foms.add( FomParser.parse(mimPath) );
+		}
 		
 		// Load all the provided modules
 		for( URL module : request.getFomModules() )
