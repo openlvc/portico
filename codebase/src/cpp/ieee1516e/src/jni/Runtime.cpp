@@ -354,7 +354,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( RTIinterna
 	}
 	else
 	{
-		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME%: [%s]",
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on JAVA_HOME: [%s]",
 		              jrelocation.c_str() );
 	}
 
