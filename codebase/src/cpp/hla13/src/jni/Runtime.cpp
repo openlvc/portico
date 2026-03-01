@@ -302,7 +302,7 @@ pair<string,string> Runtime::generateWinPath( string rtihome ) throw( HLA::RTIin
 		if( getenv("JAVA_HOME") != NULL )
 			jrelocation = string( getenv("JAVA_HOME") );
 
-		logger->warn( "WARNING Could not locate bundled JRE, falling back on %JAVA_HOME% or %CD%: [%s]",
+		logger->warn( "WARNING Could not locate bundled JRE, falling back on JAVA_HOME or PWD: [%s]",
 		              jrelocation.c_str() );
 	}
 
