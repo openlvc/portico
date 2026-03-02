@@ -59,6 +59,10 @@
 	        description="Generate a standard release package, but skip the tests"
 	        depends="clean,build.release,sandbox,installer,java.sandbox.jre"/>
 	
+	<target name="release.32"
+	        description="Clean, run all test sand generate a standard release package"
+	        depends="clean,build.release.32,java.sandbox,cpp.hla13-32.sandbox,cpp.ieee1516e-32.sandbox,installer-32.nsis.win32"/>
+
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
 	<!-- =========================================================== -->
@@ -101,6 +105,10 @@
 	<import file="profiles/windows/ieee1516e.xml"   as="cpp.ieee1516e" if="platform.windows"/>
 	<import file="profiles/windows/installer.xml"   as="installer"     if="platform.windows"/>
 
+	<import file="profiles/windows/hla13-32.xml"     as="cpp.hla13-32"     if="platform.windows"/>
+	<import file="profiles/windows/ieee1516e-32.xml" as="cpp.ieee1516e-32" if="platform.windows"/>
+	<import file="profiles/windows/installer-32.xml" as="installer-32"     if="platform.windows"/>
+
 	<!-- Deployment Tasks -->
 	<!--<include file="profiles/deploy.xml"              as="deploy"/>-->
 
@@ -122,6 +130,11 @@
 	<target name="build.release">
 		<echo>Build flagged as a release build. Setting build.release property to true</echo>
 		<property name="build.release" value="true"/>
+	</target>
+
+	<!-- Flag to control whether the 32-bit targets will run or not -->
+	<target name="build.release.32" depends="build.release">
+		<property name="build.release.32" value="true"/>
 	</target>
 
 </project>

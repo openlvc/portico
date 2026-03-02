@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="hla13-32">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Windows C++ build profile for HLA v1.3 Interface (32-bit)
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<!-- Get a reference to the JDK we want to use, falling back on the given default -->
+	<verifyJdk location="${jdk.home.win32}" arch="x86" requiredVersion="${java.compiler.target}"/>
+
+	<!--                                       -->
+	<!--                WARNING                -->
+	<!--                                       -->
+	<!--   This file uses properties declared  -->
+	<!--   in hla13.xml. Import it after that  -->
+	<!--   File has been imported.             -->
+
+	<!-- ==================================== -->
+	<!-- ==== HLA13 Interface Properties ==== -->
+	<!-- ==================================== -->
+	<!-- compiler properties -->
+	<!--<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>-->
+	<!--<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>-->
+	<!-- Sets property to value safe for visual studio build numbers: 1,1,1,1 -->
+	<!--<visualStudioBuildNumber property="product.version" value="${build.version}.${build.number}"/>-->
+
+	<!-- source -->
+	<!--<property name="hla13.src.dir"             location="${cpp.src.dir}/hla13/src"/>-->
+	<!--<property name="hla13.include.dir"         location="${cpp.src.dir}/hla13/include/hla13"/>-->
+	<!--<property name="hla13.test.src.dir"        location="${cpp.src.dir}/hla13/test"/>-->
+	<!--<property name="hla13.example.dir"         location="${cpp.src.dir}/hla13/example"/>-->
+
+	<!-- build -->
+	<property name="hla13-32.build.dir"           location="${build.dir}/cpp/win32/hla13"/>
+	<property name="hla13-32.complete.dir"        location="${hla13.build.dir}/complete"/>
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean">
+		<delete dir="${hla13-32.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                 Compile Targets                                   -->
+	<!-- ================================================================================= -->
+	<!-- extends on the main cpp compiling extension point declared externally -->
+	<extension-point name="hla13-32.compile"
+	                 extensionOf="cpp.compile"
+	                 description="Compile the full HLA v1.3 interface (32-bit)"/>
+
+	<!-- ================================================================= -->
+	<!--             Visual Studio 2017 (vc14_1) Compile Targets           -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2017 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_1" extensionOf="hla13-32.compile">
+		<compile-hla13-32 compiler="vc14_1" arch="x86" build="debug"/>
+		<compile-hla13-32 compiler="vc14_1" arch="x86" build="release"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" depends="java.sandbox,cpp.hla13-32.compile">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${sandbox.dir}/include/hla13"/>
+		<copy todir="${sandbox.dir}/include/hla13">
+			<fileset dir="${hla13.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
+			<fileset dir="${hla13-32.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
+		</copy>
+		<!-- Copy across the C++ dlls -->
+		<mkdir dir="${sandbox.bin.dir}"/>
+		<copy todir="${sandbox.bin.dir}">
+			<fileset dir="${hla13-32.complete.dir}" includes="**/*.dll"/>
+		</copy>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<mkdir dir="${sandbox.examples.dir}/cpp/hla13"/>
+		<copy todir="${sandbox.examples.dir}/cpp/hla13">
+			<fileset dir="${hla13.example.dir}" includes="**/*"/>
+		</copy>
+	</target>
+	
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts in with it as
+		 preparation for release.
+	-->
+	<target name="hla13-32.release"
+	        depends="cpp.hla13-32.clean,cpp.hla13-32.sandbox"/>
+
+	<!-- ================================================================================= -->
+	<!--                            HLA v1.3 Helper Macros                                 -->
+	<!-- ================================================================================= -->
+	<!-- ================================================ -->
+	<!--               Macro: compile-hla13               -->
+	<!-- ================================================ -->
+	<!--
+		 This macro is a simple wrapper for msvc-hla13. It performs two main tasks:
+		   1. Checks to see whether the requested compiler/arch/build setting was requested
+		      in the cpp.profile and skips the build if it wasn't
+		   2. If it was requested, makes sure that the appropriate version of Visual Studio
+		      is installed. If it isn't, the compile  is skipped, unless this is a strict
+			  build, in which case the build will be failed
+	-->
+	<macrodef name="compile-hla13-32">
+		<!-- Attributes -->
+		<attribute name="compiler" description="vc14_2, vc14_1, vc14"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- ========================== -->
+			<!-- 1. Check the build profile -->
+			<!-- ========================== -->
+			<!-- Only run this if it's in the requested build profile -->
+			<if><isset property="@{compiler}.@{arch}.@{build}"/>
+			<then>
+				<!-- ========================== -->
+				<!-- 2. Check for Visual Studio -->
+				<!-- ========================== -->
+				<!-- Make sure the requested version of Visual Studio is present on the system -->
+				<if><isVisualStudioPresent version="@{compiler}"/>
+					<then>
+						<echo message="[Compile] (HLA v1.3) @{compiler}.@{arch}.@{build}"/>
+						<msvc-hla13-32 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+					</then>
+				<elseif><istrue value="${cpp.strict}"/>
+					<then>
+						<!-- Visual Studio NOT installed - strict build, fail out -->
+						<fail message="[Error] (HLA v1.3) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
+					</then>
+				</elseif>
+				<else>
+					<!-- This is not a strict build, just skip this compile -->
+					<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- @{compiler} is not installed"/>
+				</else>
+				</if>
+			</then>
+			<else>
+				<echo message="[Skip] (HLA v1.3) @{compiler}.@{arch}.@{build} -- not requested"/>
+			</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================ -->
+	<!--                Macro: msvc-hla13                 -->
+	<!-- ================================================ -->
+	<!-- 
+	     The various C++ compiling commands have a lot in common. They share the same
+		 source and include base, the same preprocessor definitions, very similar library
+		 names and similar library dependencies. Despite being *very* similar, each of the
+		 builds requires something just a little bit different.
+		 
+		 This macro hides all the little details and give a target compiler, architecture
+		 and build type, generates the appropriate libraries (adusting library names,
+		 working directories, preprocessor definitions, compiler args, etc...)
+		 
+		 The output from running this macro will be the libRTI-NG and libFedTime
+		 libraries (names updated approrpiate for debug/release and 32/64-bit)
+		 dropped into ${hla13.complete.dir}.
+		 
+		 NOTE: This macro should always be wrapped in a <compile-hl13> task to ensure it
+		       only runs when it needs to.
+		 
+		 Usage:
+			* <msvc-hla13 compiler="vc10" arch="x86" build="debug"/>
+			
+		 Arguments:
+			* compiler: The compiler to use (vc14_2, vc14_1, vc10, vc9 or vc8)
+			* arch:     The platform architecture (x86 or amd64)
+			* build:    The build type (debug or release)
+	-->	 
+	<macrodef name="msvc-hla13-32" description="(HLA 1.3) Compile the RTI libraries">
+		<!-- Attributes -->
+		<attribute name="compiler" description="vc14_2, vc14_1, vc14"/>
+		<attribute name="arch"     description="x86 or amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- Local properties used in the macro -->
+			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
+			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
+			<local name="_cargs"/>       <!-- compiler arguments -->
+			<local name="_largs"/>       <!-- linker arguments -->
+			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
+			<local name="_jdkhome"/>     <!-- path to either 32 or 64-bit JDK -->
+
+			<!-- Are we building for 32-bit or 64-bit? -->
+			<if><equals arg1="@{arch}" arg2="amd64"/><then>
+				<property name="_bitness" value="_64"/>
+				<property name="_jdkhome" value="${jdk.home.win64}"/>
+			</then><else>
+				<property name="_bitness" value=""/>
+				<property name="_jdkhome" value="${jdk.home.win32}"/>
+			</else></if>
+
+			<!-- Is this a Debug or Release build? -->
+			<if><equals arg1="@{build}" arg2="debug"/><then>
+				<!-- Debug Build -->
+				<property name="_d"           value="d"/>
+				<property name="_cargs"       value="${compiler.args.debug}"/>
+				<property name="_largs"       value="/DEBUG"/>
+				<property name="_buildsymbol" value="DEBUG"/>
+			</then><else>
+				<!-- Release Build -->
+				<property name="_d"           value=""/>
+				<property name="_cargs"       value="${compiler.args.release}"/>
+				<property name="_largs"       value=""/>
+				<property name="_buildsymbol" value="RELEASE"/>
+			</else></if>
+
+			<!-- ========================== -->
+			<!-- Do the library compilation -->
+			<!-- ========================== -->
+			<!-- library: libFedTime -->
+			<echo message="(HLA v1.3) Building libFedTime${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libFedTime${_bitness}${_d}"
+					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${hla13.complete.dir}/@{compiler}"
+					 type="shared"
+					 arch="@{arch}"
+					 compiler="@{compiler}"
+					 compilerArgs="${_cargs}"
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
+				<fileset dir="${hla13.src.dir}">
+					<include name="**/*.rc"/>
+					<include name="time/RTIfedTime.cpp"/>
+					<include name="time/FedTime.cpp"/>
+					<include name="time/FedTimeFactory.cpp"/>
+					<include name="types/Exception.cpp"/>
+				</fileset>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="BUILDING_RTI"/>
+				<define name="BUILDING_FEDTIME"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>       <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=libFedTime${_bitness}${_d}"/>  <!-- for DLL -->
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+			</cpptask>
+
+			<echo message="(HLA v1.3) Building libRTI-NG${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libRTI-NG${_bitness}${_d}"
+					 workdir="${hla13.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${hla13.complete.dir}/@{compiler}"
+					 type="shared"
+					 arch="@{arch}"
+					 compiler="@{compiler}"
+					 compilerArgs="${_cargs}"
+					 linkerArgs="${_largs}"
+					 threadCount="auto">
+				<fileset dir="${hla13.src.dir}">
+					<include name="**/*.cpp"/>
+					<include name="**/*.rc"/>
+					<exclude name="time/RTIfedTime.cpp"/>
+					<exclude name="time/FedTime.cpp"/>
+					<exclude name="time/FedTimeFactory.cpp"/>
+				</fileset>
+				<includepath path="${hla13.include.dir}"/>
+				<includepath path="${hla13.src.dir}"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<define name="RTI_USES_STD_FSTREAM"/>
+				<define name="BUILDING_RTI"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>              <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=libRTI-NG${_bitness}${_d}"/> <!-- for DLL -->
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+				<library path="${hla13.complete.dir}/@{compiler}"
+						 libs="libFedTime${_bitness}${_d}"/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+</project>
