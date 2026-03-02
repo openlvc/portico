@@ -1,0 +1,329 @@
+<?xml version="1.0"?>
+<!--
+                  Welcome to the Portico Build System
+
+       The Portico build system is an artefact-driven, modular, Ant
+       based system. The base framework is split up over a number of
+       different build files (base structure, macros, etc...) and is
+       designed to be extended rather than modified. The full system
+       is introduced and described in the online documentation:
+       
+       http://porticoproject.org/index.php?title=Building_Portico
+-->
+<project name="ieee1516e-32">
+
+	<!-- ================================================================================= -->
+	<!--                                 General Settings                                  -->
+	<!-- ================================================================================= -->
+	<description>
+		Windows C++ build profile for IEEE-1516 (2010) Interface [HLA Evolved] (32-bit)
+	</description>
+
+	<!-- ==== Basic Properties ==== -->
+	<!-- Verify that we have an appropriate JDK to build against -->
+	<verifyJdk location="${jdk.home.win32}" arch="x86" requiredVersion="${java.compiler.target}"/>
+
+	<!-- ================================================ -->
+	<!-- ==== IEEE-1516e (2010) Interface Properties ==== -->
+	<!-- ================================================ -->
+	<!-- compiler properties -->
+	<!--<property name="compiler.args.debug"       value="/Zi /MDd /Od /EHsc /GR /W0"/>-->
+	<!--<property name="compiler.args.release"     value="/MD /Od /EHsc /GR /W0"/>-->
+	<!-- Sets property to value safe for visual studio build numbers: 1,1,1,1 -->
+
+	<visualStudioBuildNumber property="product.version" value="${build.version}.${build.number}"/>
+
+	<!-- source -->
+	<!--<property name="ieee1516e.src.dir"         location="${cpp.src.dir}/ieee1516e/src"/>-->
+	<!--<property name="ieee1516e.include.dir"     location="${cpp.src.dir}/ieee1516e/include"/>-->
+	<!--<property name="ieee1516e.example.dir"     location="${cpp.src.dir}/ieee1516e/example"/>-->
+
+	<!-- build -->
+	<property name="ieee1516e-32.build.dir"       location="${build.dir}/cpp/win32/ieee1516e"/>
+	<property name="ieee1516e-32.complete.dir"    location="${ieee1516e.build.dir}/complete"/>
+
+	<!-- ================================================================================= -->
+	<!--                                   Clean Targets                                   -->
+	<!-- ================================================================================= -->
+	<target name="clean" extensionOf="cpp.clean">
+		<delete dir="${ieee1516e-32.build.dir}"/>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                 Compile Targets                                   -->
+	<!-- ================================================================================= -->
+	<!-- extends on the main cpp compiling extension point declared externally -->
+	<extension-point name="ieee1516e-32.compile"
+	                 extensionOf="cpp.compile"
+	                 description="Compile the full IEEE-1516e interface (32-bit)"/>
+	
+	<!-- ================================================================= -->
+	<!--            Visual Studio 2017 (vc14_1) Compile Targets            -->
+	<!-- ================================================================= -->
+	<!-- The Visual Studio 2017 related extension points.
+	     We have one of these for each supported platform architecture so
+		 that we can compile all the targets for each arch as a group.
+	-->
+	<target name="compile.vc14_1" extensionOf="ieee1516e-32.compile">
+		<compile-ieee1516e-32 compiler="vc14_1" arch="x86" build="debug"/>
+		<compile-ieee1516e-32 compiler="vc14_1" arch="x86" build="release"/>
+	</target>
+
+	<!-- ==================================== -->
+	<!--      IEEE-1516e Example Federate     -->
+	<!-- ==================================== -->
+	<!-- Compiles the 1516e example federate. Doesn't do much except
+	     assure that we can actually compile and link it to Portico.
+		 Only validates this with the latest supported compiler. -->
+	<target name="example.compile.amd64" depends="compile.vc14_1" if="vc14_1.x86.debug">
+		<cpptask outfile="ieee1516e-example"
+		         workdir="${ieee1516e-32.build.dir}/ieee1516e-example"
+		         type="executable"
+				 compiler="vc14_1"
+		         compilerArgs="/Zi /Od /EHsc /GR /MTd">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*.cpp"/>
+			<includepath path="${ieee1516e.include.dir}"/>
+			<define name="DEBUG"/>
+			<library path="${ieee1516e-32.complete.dir}/vc14_1" libs="rti1516ed,fedtime1516ed"/>
+			<library path="${jdk.home.win32}/lib" libs="jvm"/>
+		</cpptask>
+	</target>
+
+	<!-- ================================================================================= -->
+	<!--                                  Sandbox Targets                                  -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The main sandbox preparation target. This will aggregate together all the various
+	     required artefacts scattered around the build environment into the structure that
+	     should be present when installed on a users system (relative to the sandbox dir).
+	-->
+	<target name="sandbox" depends="java.sandbox,cpp.ieee1516e-32.compile" if="build.release.32">
+		<!-- ======================= -->
+		<!-- Copy across the Headers -->
+		<!-- ======================= -->
+		<mkdir dir="${sandbox.dir}/include/ieee1516e"/>
+		<copy todir="${sandbox.dir}/include/ieee1516e">
+			<fileset dir="${ieee1516e.include.dir}" includes="**/*"/>
+		</copy>
+
+		<!-- ========================= -->
+		<!-- Copy across the libraries -->
+		<!-- ========================= -->
+		<!-- Copy across the C++ libraries -->
+		<mkdir dir="${sandbox.lib.dir}"/>
+		<copy todir="${sandbox.lib.dir}">
+			<fileset dir="${ieee1516e-32.complete.dir}" includes="**/*.lib,**/*.exp,**/*.pdb"/>
+		</copy>
+		<!-- Copy across the C++ dlls -->
+		<mkdir dir="${sandbox.bin.dir}"/>
+		<copy todir="${sandbox.bin.dir}">
+			<fileset dir="${ieee1516e-32.complete.dir}" includes="**/*.dll"/>
+		</copy>
+
+		<!-- ================================= -->
+		<!-- Copy across the example federates -->
+		<!-- ================================= -->
+		<mkdir dir="${sandbox.examples.dir}/cpp/ieee1516e"/>
+		<copy todir="${sandbox.examples.dir}/cpp/ieee1516e">
+			<fileset dir="${ieee1516e.example.dir}" includes="**/*"/>
+		</copy>
+	</target>
+	
+	<!-- ================================================================================= -->
+	<!--                             Release Generation Targets                            -->
+	<!-- ================================================================================= -->
+	<!-- 
+	     The parent release target. This will run a clean and then compile all code, run all
+	     tests, generate a sandbox and place all additional release artefacts in with it as
+		 preparation for release.
+	-->
+	<target name="release"
+	        depends="clean,sandbox"/>
+
+	<!-- ================================================================================= -->
+	<!--                           IEEE-1516e Helper Macros                                -->
+	<!-- ================================================================================= -->
+	<!-- ================================================ -->
+	<!--               Macro: compile-hla13               -->
+	<!-- ================================================ -->
+	<!--
+		 This macro is a simple wrapper for msvc-ieee1516. It performs two main tasks:
+		   1. Checks to see whether the requested compiler/arch/build setting was requested
+		      in the cpp.profile and skips the build if it wasn't
+		   2. If it was requested, makes sure that the appropriate version of Visual Studio
+		      is installed. If it isn't, the compile  is skipped, unless this is a strict
+			  build, in which case the build will be failed
+	-->
+	<macrodef name="compile-ieee1516e-32">
+		<!-- Attributes -->
+		<attribute name="compiler" description="vc14_3, vc14_2, vc14_1"/>
+		<attribute name="arch"     description="amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- ========================== -->
+			<!-- 1. Check the build profile -->
+			<!-- ========================== -->
+			<!-- Only run this if it's in the requested build profile -->
+			<if><isset property="@{compiler}.@{arch}.@{build}"/>
+			<then>
+				<!-- ========================== -->
+				<!-- 2. Check for Visual Studio -->
+				<!-- ========================== -->
+				<!-- Make sure the requested version of Visual Studio is present on the system -->
+				<if><isVisualStudioPresent version="@{compiler}"/>
+					<then>
+						<echo message="[Compile] (IEEE-1516e) @{compiler}.@{arch}.@{build}"/>
+						<msvc-ieee1516e-32 compiler="@{compiler}" arch="@{arch}" build="@{build}"/>
+					</then>
+				<elseif><istrue value="${cpp.strict}"/>
+					<then>
+						<!-- Visual Studio NOT installed - strict build, fail out -->
+						<fail message="[Error] (IEEE-1516e) @{compiler}.@{arch}.@{build}: @{compiler} is not installed"/>
+					</then>
+				</elseif>
+				<else>
+					<!-- This is not a strict build, just skip this compile -->
+					<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- @{compiler} is not installed"/>
+				</else>
+				</if>
+			</then>
+			<else>
+				<echo message="[Skip] (IEEE-1516e) @{compiler}.@{arch}.@{build} -- not requested"/>
+			</else>
+			</if>
+		</sequential>
+	</macrodef>
+
+	<!-- ================================================ -->
+	<!--               Macro: msvc-ieee1516               -->
+	<!-- ================================================ -->
+	<!-- 
+	     The various C++ compiling commands have a lot in common. They share the same
+		 source and include base, the same preprocessor definitions, very similar library
+		 names and similar library dependencies. Despite being *very* similar, each of the
+		 builds requires something just a little bit different.
+		 
+		 This macro hides all the little details and give a target compiler, architecture
+		 and build type, generates the appropriate libraries (adusting library names,
+		 working directories, preprocessor definitions, compiler args, etc...)
+		 
+		 The output from running this macro will be the libRTI-NG and libFedTime
+		 libraries (names updated approrpiate for debug/release and 32/64-bit)
+		 dropped into ${ieee1516e.complete.dir}.
+		 
+		 NOTE: This macro should always be wrapped in a <compile-ieee1516e> task to ensure it
+		       only runs when it needs to.
+		 
+		 Usage:
+			* <msvc-ieee1516 compiler="vc10" arch="x86" build="debug"/>
+			
+		 Arguments:
+			* compiler: The compiler to use (vc14_3, vc14_2, vc14_1)
+			* arch:     The platform architecture (amd64)
+			* build:    The build type (debug or release)
+	-->	 
+	<macrodef name="msvc-ieee1516e-32" description="(IEEE-1516e) Compile the RTI libraries">
+		<!-- Attributes -->
+		<attribute name="compiler" description="vc14_3, vc14_2, vc14_1"/>
+		<attribute name="arch"     description="amd64"/>
+		<attribute name="build"    description="release or debug"/>
+
+		<sequential>
+			<!-- Local properties used in the macro -->
+			<local name="_bitness"/>     <!-- appends "64" or "" to end of library name -->
+			<local name="_d"/>           <!-- appends "d" or "" to end of library name -->
+			<local name="_cargs"/>       <!-- compiler arguments -->
+			<local name="_largs"/>       <!-- linker arguments -->
+			<local name="_buildsymbol"/> <!-- adds "DEBUG" or "RELEASE" symbol definition -->
+			<local name="_jdkhome"/>     <!-- path to either 32 or 64-bit JDK -->
+
+			<!-- Are we building for 32-bit or 64-bit? -->
+			<if><equals arg1="@{arch}" arg2="amd64"/><then>
+				<property name="_bitness" value="64"/>
+				<property name="_jdkhome" value="${jdk.home.win64}"/>
+			</then><else>
+				<property name="_bitness" value=""/>
+				<property name="_jdkhome" value="${jdk.home.win32}"/>
+			</else></if>
+
+			<!-- Is this a Debug or Release build? -->
+			<if><equals arg1="@{build}" arg2="debug"/><then>
+				<!-- Debug Build -->
+				<property name="_d"           value="d"/>
+				<property name="_cargs"       value="${compiler.args.debug}"/>
+				<property name="_largs"       value="/DEBUG"/>
+				<property name="_buildsymbol" value="DEBUG"/>
+			</then><else>
+				<!-- Release Build -->
+				<property name="_d"           value=""/>
+				<property name="_cargs"       value="${compiler.args.release}"/>
+				<property name="_largs"       value=""/>
+				<property name="_buildsymbol" value="RELEASE"/>
+			</else></if>
+
+			<!-- ========================== -->
+			<!-- Do the library compilation -->
+			<!-- ========================== -->
+			<!-- Build the main DLL -->
+			<echo message="(IEEE-1516e) Building librti1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="librti1516e${_bitness}${_d}"
+			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${ieee1516e.complete.dir}/@{compiler}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="@{compiler}"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}"
+			         threadCount="auto">
+				<fileset dir="${ieee1516e.src.dir}">
+					<include name="**/*.cpp"/>
+					<include name="**/*.rc"/>
+					<exclude name="types/time/LogicalTimeFactoryFactory.cpp"/>
+				</fileset>
+				<includepath path="${ieee1516e.include.dir}"/>
+				<includepath path="${ieee1516e.src.dir}"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<define name="BUILDING_RTI"/>
+				<define name="RTI_DISABLE_WARNINGS"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>                <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=librti1516e${_bitness}${_d}"/> <!-- for DLL -->
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+			</cpptask>			
+
+			<!-- library: libfedtime -->
+			<echo message="(IEEE-1516e) Building libfedtime1516e${_bitness}${_d} (@{compiler}-@{build} @{arch})"/>
+			<cpptask outfile="libfedtime1516e${_bitness}${_d}"
+			         workdir="${ieee1516e.build.dir}/@{compiler}/@{arch}/@{build}"
+					 outdir="${ieee1516e.complete.dir}/@{compiler}"
+			         type="shared"
+			         arch="@{arch}"
+			         compiler="@{compiler}"
+			         compilerArgs="${_cargs}"
+			         linkerArgs="${_largs}"
+			         threadCount="auto">
+				<fileset dir="${ieee1516e.src.dir}">
+					<include name="types/time/LogicalTimeFactoryFactory.cpp"/>
+					<include name="**/*.rc"/>
+				</fileset>
+				<includepath path="${ieee1516e.include.dir}"/>
+				<includepath path="${ieee1516e.src.dir}"/>
+				<includepath path="${jdk.home.win32}/include;${jdk.home.win32}/include/win32"/>
+				<define name="BUILDING_FEDTIME"/>
+				<define name="RTI_DISABLE_WARNINGS"/>
+				<define name="${_buildsymbol}"/> <!-- DEBUG or RELEASE -->
+				<define name="PORTICO_VERSION=${build.version}"/>
+				<define name="PORTICO_BUILD_NUMBER=${build.number}"/>
+				<define name="PRODUCT_VERSION=${product.version}"/>                    <!-- for DLL -->
+				<define name="PRODUCT_INTERNAL_NAME=libfedtime1516e${_bitness}${_d}"/> <!-- for DLL -->
+				<library path="${_jdkhome}/lib" libs="jvm"/>
+				<library path="${ieee1516e.complete.dir}/@{compiler}"
+				         libs="rti1516e${_bitness}${_d}"/>
+			</cpptask>
+		</sequential>
+	</macrodef>
+
+</project>

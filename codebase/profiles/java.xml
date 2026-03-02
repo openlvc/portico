@@ -347,6 +347,11 @@
 		<copy-jre outdir="${sandbox.dir}"/>
 	</target>
 	
+	<target name="sandbox.jre32" description="Copy the JRE into the sandbox">
+		<mkdir dir="${sandbox.dir}"/>
+		<copy-jre jredir="${jdk.home.win32}" outdir="${sandbox.dir}"/>
+	</target>
+
 	<!-- ================================================================================= -->
 	<!--                             Release Generation Targets                            -->
 	<!-- ================================================================================= -->
