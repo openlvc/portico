@@ -59,10 +59,6 @@
 	        description="Generate a standard release package, but skip the tests"
 	        depends="clean,build.release,sandbox,installer,java.sandbox.jre"/>
 	
-	<target name="release.32"
-	        description="Clean, run all test sand generate a standard release package"
-	        depends="clean,build.release.32,java.sandbox,cpp.hla13-32.sandbox,cpp.ieee1516e-32.sandbox,installer-32.nsis.win32"/>
-
 	<!-- =========================================================== -->
 	<!--                      Extension Points                       -->
 	<!-- =========================================================== -->
@@ -130,11 +126,6 @@
 	<target name="build.release">
 		<echo>Build flagged as a release build. Setting build.release property to true</echo>
 		<property name="build.release" value="true"/>
-	</target>
-
-	<!-- Flag to control whether the 32-bit targets will run or not -->
-	<target name="build.release.32" depends="build.release">
-		<property name="build.release.32" value="true"/>
 	</target>
 
 </project>

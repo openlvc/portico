@@ -25,8 +25,13 @@
 	<!-- ================================================================================= -->
 	<!--                           Installer Preparation Targets                           -->
 	<!-- ================================================================================= -->
+	<target name="init.32">
+		<!-- remove any existing jre that has been put in place, as it might not be 32-bit -->
+		<delete dir="${sandbox.dir}/jre"/>
+	</target>
+	
 	<!-- Prepare the build directory -->
-	<target name="prep-32" depends="java.sandbox.jre32">
+	<target name="prep-32" depends="init.32,java.sandbox.jre32">
 		<!-- copy the installer resources into the sandbox -->
 		<copy todir="${sandbox.dir}">
 			<fileset dir="${nsis.resources.dir}" includes="*.url"/> 
@@ -40,7 +45,7 @@
 	<!--                                     -->
 	<!-- Windows 64-bit Installer Generation -->
 	<!--                                     -->
-	<target name="nsis.win32" depends="prep-32">
+	<target name="nsis.win32" extensionOf="master.installer" depends="prep-32">
 		<!-- Verify we have a JRE we can bundle -->
 		<verifyJdk location="${jdk.home.win32}" arch="x86" requiredVersion="${java.compiler.target}"/>
 

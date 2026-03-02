@@ -97,7 +97,7 @@
 	     required artefacts scattered around the build environment into the structure that
 	     should be present when installed on a users system (relative to the sandbox dir).
 	-->
-	<target name="sandbox" depends="java.sandbox,cpp.ieee1516e-32.compile" if="build.release.32">
+	<target name="sandbox" depends="java.sandbox,cpp.ieee1516e-32.compile">
 		<!-- ======================= -->
 		<!-- Copy across the Headers -->
 		<!-- ======================= -->
