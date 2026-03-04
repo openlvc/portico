@@ -253,7 +253,7 @@ public class LRCMessageQueue //implements SaveRestoreTarget
 					// it is! release it - we also need to remove it, so we'll poll
 					return this.tsoQueue.poll();
 				}
-				else if( message.getTimestamp() <= timeStatus.getRequestedTime() )
+				else if( message.getTimestamp() <= state.getFederationLbts() )
 				{
 					// it is! release it - we also need to remove it, so we'll poll
 					return this.tsoQueue.poll();
