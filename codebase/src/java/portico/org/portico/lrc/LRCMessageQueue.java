@@ -89,10 +89,6 @@ public class LRCMessageQueue implements SaveRestoreTarget
 		this.lock = new ReentrantLock();
 		this.condition = this.lock.newCondition();
 		
-		// this will be lazy-loaded
-		// when a federate first joins a federation, the time status will be created and
-		// put into the LRCState. All access to this variable should be through the local
-		// private timeStatus() method which will lazy load this if it is null
 		this.timeStatus = null;
 	}
 	
@@ -100,16 +96,12 @@ public class LRCMessageQueue implements SaveRestoreTarget
 	//                    INSTANCE METHODS
 	//----------------------------------------------------------
 	/**
-	 * <b>NOTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</b>
-	 * <p/>
-	 * *ANY* access to the local federates {@link TimeStatus} from inside the message queue
-	 * should be through this method. The time status is lazy-loaded from the {@link LRCState}
-	 * by this method, so it is the only way to absolutely avoid NullPointerExceptions.
+	 * Retrieve the current {@link TimeStatus}, as joining a federation replaces it in
+	 * {@link LRCState}.
 	 */
 	private TimeStatus timeStatus()
 	{
-		if( this.timeStatus == null )
-			this.timeStatus = state.getTimeStatus();
+		this.timeStatus = state.getTimeStatus();
 		
 		return this.timeStatus;
 	}
