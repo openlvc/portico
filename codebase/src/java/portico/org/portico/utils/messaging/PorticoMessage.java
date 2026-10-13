@@ -67,6 +67,10 @@ public class PorticoMessage implements Serializable, Cloneable
 	protected int targetFederate;
 	protected double timestamp;
 	protected boolean immediate; // does this message require immediate processing?
+	// The timestamp the message was sent with, when the receiving LRC cleared it to deliver the message in receive
+	// order to a federate that is not time constrained (LRCMessageQueue). Local to that LRC: never sent.
+	protected transient boolean hasSentTimestamp;
+	protected transient double sentTimestamp;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
@@ -137,6 +141,36 @@ public class PorticoMessage implements Serializable, Cloneable
 	public boolean isTimestamped()
 	{
 		return this.timestamp != PorticoConstants.NULL_TIME;
+	}
+
+	/**
+	 * Delivers the message in receive order while keeping the timestamp it was sent with: the
+	 * timestamp is cleared, and {@link #getSentTimestamp()} gives it back. IEEE 1516.1-2010 delivers
+	 * a timestamp order message to a federate that is not time constrained in receive order, with
+	 * its timestamp. Nothing is done when the message has no timestamp.
+	 */
+	public void clearTimestampKeepingSentTimestamp()
+	{
+		if( isTimestamped() )
+		{
+			this.sentTimestamp = this.timestamp;
+			this.hasSentTimestamp = true;
+			this.timestamp = PorticoConstants.NULL_TIME;
+		}
+	}
+
+	/**
+	 * Returns <code>true</code> if the message was sent with a timestamp that was cleared to deliver
+	 * it in receive order (see {@link #clearTimestampKeepingSentTimestamp()}).
+	 */
+	public boolean hasSentTimestamp()
+	{
+		return this.hasSentTimestamp;
+	}
+
+	public double getSentTimestamp()
+	{
+		return this.sentTimestamp;
 	}
 
 	public boolean isTimeAdvance()

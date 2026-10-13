@@ -80,6 +80,24 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			                               OrderType.TIMESTAMP,        // received order
 			                               supplement );               // supplemental remove info
 		}
+		else if( request.hasSentTimestamp() )
+		{
+			// sent in timestamp order to a federate that is not time constrained: received in
+			// receive order, with the timestamp it was sent with
+			double sentTimestamp = request.getSentTimestamp();
+			if( logger.isTraceEnabled() )
+			{
+				logger.trace( "CALLBACK removeObjectInstance(object="+objectHandle+
+				              ",time="+sentTimestamp+") (TSO sent, RO received)" );
+			}
+
+			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
+			                               request.getTag(),           // tag
+			                               OrderType.TIMESTAMP,        // sent order
+			                               TimeUtils.makeTime(sentTimestamp,lrcState.getTimeImplementationName()),  // time
+			                               OrderType.RECEIVE,          // received order
+			                               supplement );               // supplemental remove info
+		}
 		else
 		{
 			if( logger.isTraceEnabled() )

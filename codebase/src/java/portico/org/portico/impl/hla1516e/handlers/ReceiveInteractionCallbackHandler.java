@@ -92,6 +92,27 @@ public class ReceiveInteractionCallbackHandler extends HLA1516eCallbackHandler
 			                             OrderType.TIMESTAMP,       // received order
 			                             supplement );              // supplemental receive info
 		}
+		else if( request.hasSentTimestamp() )
+		{
+			// sent in timestamp order to a federate that is not time constrained: received in
+			// receive order, with the timestamp it was sent with
+			double sentTimestamp = request.getSentTimestamp();
+			if( logger.isTraceEnabled() )
+			{
+				logger.trace( "CALLBACK receiveInteraction(class="+classHandle+",parameters="+
+				              PorticoConstants.mapToStringWithSizes(parameters)+",time="+
+				              sentTimestamp+") (TSO sent, RO received)" );
+			}
+
+			fedamb().receiveInteraction( new HLA1516eHandle(classHandle),
+			                             received,                  // map
+			                             request.getTag(),          // tag
+			                             OrderType.TIMESTAMP,       // sent order
+			                             RELIABLE,                  // transport
+			                             TimeUtils.makeTime(sentTimestamp,lrcState.getTimeImplementationName()), // time
+			                             OrderType.RECEIVE,         // received order
+			                             supplement );              // supplemental receive info
+		}
 		else
 		{
 			if( logger.isTraceEnabled() )

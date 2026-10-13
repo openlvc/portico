@@ -164,10 +164,12 @@ public class LRCMessageQueue implements SaveRestoreTarget
 				}
 			}
 			
-			// FIX: PORT-103: If not constrained, store the message RO and remove the timestamp
+			// FIX: PORT-103: If not constrained, store the message RO and remove the timestamp. The
+			// timestamp it was sent with is kept for the callback (IEEE 1516.1-2010: delivered in
+			// receive order, with its timestamp)
 			if( timeStatus().isConstrained() == false )
 			{
-				message.setTimestamp( PorticoConstants.NULL_TIME );
+				message.clearTimestampKeepingSentTimestamp();
 				return this.roQueue.offer( message );
 			}
 			
@@ -534,7 +536,7 @@ public class LRCMessageQueue implements SaveRestoreTarget
 		{
 			for( PorticoMessage message : this.tsoQueue )
 			{
-				message.setTimestamp( PorticoConstants.NULL_TIME );
+				message.clearTimestampKeepingSentTimestamp();
 				roQueue.offer( message );
 			}
 
