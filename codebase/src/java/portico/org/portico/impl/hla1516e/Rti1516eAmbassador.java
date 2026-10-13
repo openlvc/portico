@@ -4171,9 +4171,12 @@ public class Rti1516eAmbassador implements RTIambassador
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
-			// request was fine
-			LogicalTime time = toTime( (Integer)response.getResult() );
-			return new TimeQueryReturn( true, time );
+			// request was fine: no GALT (null) when no other federate is regulating
+			Double galt = (Double)response.getResult();
+			if( galt == null )
+				return new TimeQueryReturn( false, toTime(helper.getState().getCurrentTime()) );
+			else
+				return new TimeQueryReturn( true, toTime(galt) );
 		}
 		else
 		{
