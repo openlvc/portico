@@ -37,7 +37,7 @@ HLAfloat64Interval::HLAfloat64Interval( const LogicalTimeInterval& rhs )
 	: LogicalTimeInterval( rhs )
 {
 	this->_impl = new HLAfloat64IntervalImpl();
-	this->_impl->time = ((HLAfloat64Interval)rhs)._impl->time;
+	this->_impl->time = (dynamic_cast<const HLAfloat64Interval&>(rhs))._impl->time;
 }
 
 HLAfloat64Interval::HLAfloat64Interval( const HLAfloat64Interval& rhs )
@@ -161,52 +161,52 @@ std::wstring HLAfloat64Interval::implementationName() const
 LogicalTimeInterval& HLAfloat64Interval::operator= ( const LogicalTimeInterval& value )
 	throw( InvalidLogicalTimeInterval )
 {
-	this->_impl->time = ((HLAfloat64Interval)value)._impl->time;
+	this->_impl->time = (dynamic_cast<const HLAfloat64Interval&>(value))._impl->time;
 	return *this;
 }
 
 LogicalTimeInterval& HLAfloat64Interval::operator+= ( const LogicalTimeInterval& addend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	this->_impl->time += ((HLAfloat64Interval)addend).getInterval();
+	this->_impl->time += (dynamic_cast<const HLAfloat64Interval&>(addend)).getInterval();
 	return *this;
 }
 
 LogicalTimeInterval& HLAfloat64Interval::operator-= ( const LogicalTimeInterval& subtrahend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	this->_impl->time -= ((HLAfloat64Interval)subtrahend).getInterval();
+	this->_impl->time -= (dynamic_cast<const HLAfloat64Interval&>(subtrahend)).getInterval();
 	return *this;
 }
 
 bool HLAfloat64Interval::operator> ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->time > ((HLAfloat64Interval)value)._impl->time;
+	return _impl->time > (dynamic_cast<const HLAfloat64Interval&>(value))._impl->time;
 }
 
 bool HLAfloat64Interval::operator< ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->time < ((HLAfloat64Interval)value)._impl->time;
+	return _impl->time < (dynamic_cast<const HLAfloat64Interval&>(value))._impl->time;
 }
 
 bool HLAfloat64Interval::operator== ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->time == ((HLAfloat64Interval)value)._impl->time;
+	return _impl->time == (dynamic_cast<const HLAfloat64Interval&>(value))._impl->time;
 }
 
 bool HLAfloat64Interval::operator>= ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->time >= ((HLAfloat64Interval)value)._impl->time;
+	return _impl->time >= (dynamic_cast<const HLAfloat64Interval&>(value))._impl->time;
 }
 
 bool HLAfloat64Interval::operator<= ( const LogicalTimeInterval& value ) const
 	throw( InvalidLogicalTimeInterval )
 {
-	return _impl->time <= ((HLAfloat64Interval)value)._impl->time;
+	return _impl->time <= (dynamic_cast<const HLAfloat64Interval&>(value))._impl->time;
 }
 
 // Set self to the difference between two LogicalTimes
@@ -214,8 +214,8 @@ void HLAfloat64Interval::setToDifference( const LogicalTime& minuend,
                                           const LogicalTime& subtrahend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTime )
 {
-	Float64 one = ((HLAfloat64Time)minuend)._impl->time;
-	Float64 two = ((HLAfloat64Time)subtrahend)._impl->time;
+	Float64 one = (dynamic_cast<const HLAfloat64Time&>(minuend))._impl->time;
+	Float64 two = (dynamic_cast<const HLAfloat64Time&>(subtrahend))._impl->time;
 	this->_impl->time = (two - one);
 }
 
