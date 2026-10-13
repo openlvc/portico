@@ -78,7 +78,14 @@ public class CreateFederationHandler extends LRCMessageHandler
 		{
 			URL mimModule = request.getMimModule();
 			if( mimModule == null )
-				mimModule = Thread.currentThread().getContextClassLoader().getResource( MIM_PATH_1516e );
+			{
+				// A thread a C++ federate attached to the JVM has no context class loader: Portico's
+				// own loader has the bundled MIM
+				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if( loader == null )
+					loader = CreateFederationHandler.class.getClassLoader();
+				mimModule = loader.getResource( MIM_PATH_1516e );
+			}
 
 			if( mimModule == null )
 				throw new JRTIinternalError("Cannot load MIM from resource path: "+MIM_PATH_1516e);
