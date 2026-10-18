@@ -1336,7 +1336,11 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		int objectHandle = TypeFactory.getObjectHandle( theObject );
    		TestObject instance = this.instances.remove( objectHandle );
    		this.discovered.remove( instance ); // in case it is still hanging around
-   		this.tsoRemoved.add( objectHandle );
+   		if( this.constrained )
+   			this.tsoRemoved.add( objectHandle );
+   		else
+   			this.roRemoved.add( objectHandle );
+
 		notifyEventListeners();
 	}
 
@@ -1422,7 +1426,11 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		}
 		
 		// mark the instance as recently updated //
-		this.tsoUpdated.add( TypeFactory.getObjectHandle(theObject) );
+		if( this.constrained )
+			this.tsoUpdated.add( TypeFactory.getObjectHandle(theObject) );
+		else
+			this.roUpdated.add( TypeFactory.getObjectHandle(theObject) );
+
 		notifyEventListeners();
 	}
 
@@ -1476,7 +1484,11 @@ public class TestFederateAmbassador extends NullFederateAmbassador
 		{
     		double time = TypeFactory.fromTime( theTime );
     		int classHandle = TypeFactory.getInteractionHandle( interactionClass );
-    		tsoInteractions.add( new TestInteraction(classHandle,theParameters,tag,time) );
+    		if( this.constrained )
+    			tsoInteractions.add( new TestInteraction(classHandle,theParameters,tag,time) );
+    		else
+    			roInteractions.add( new TestInteraction(classHandle,theParameters,tag) );
+
     		notifyEventListeners();
 		}
 		catch( Exception e )
