@@ -890,8 +890,7 @@ VariableLengthData JniUtils::toTag( JNIEnv *jnienv, jbyteArray jtag )
 	// convert the tag
 	//   we assume that there is no null terminator
 	jsize size = jnienv->GetArrayLength( jtag );
-	jbyte *buffer = new jbyte[size];
-	jnienv->GetByteArrayElements( jtag, NULL );
+	jbyte *buffer = jnienv->GetByteArrayElements( jtag, NULL );
 	VariableLengthData data( (void*)buffer, size );
 	jnienv->ReleaseByteArrayElements( jtag, buffer, JNI_ABORT );
 	return data;
