@@ -144,7 +144,8 @@ public class JVMConnection implements IConnection
 			throw new JFederationExecutionAlreadyExists( createMessage.getFederationName() );
 		
 		FEDERATIONS.put( createMessage.getFederationName(),
-		                 new Broadcaster(createMessage.getModel()) );
+		                 new Broadcaster(createMessage.getModel(),
+		                                 createMessage.getTimeImplementationName()) );
 		logger.debug( "Created new federation [" + createMessage.getFederationName() + "]" );
 	}
 
@@ -196,7 +197,8 @@ public class JVMConnection implements IConnection
 		logger.debug( "Joined federate [" + federate + "] to federation [" + federation + "]" );
 		ConnectedRoster roster = new Roster( localHandle,
 		                                     broadcaster.getFederateHandles(),
-		                                     broadcaster.getFOM() );
+		                                     broadcaster.getFOM(),
+		                                     broadcaster.getTimeImplementationName() );
 		return roster;
 	}
 	

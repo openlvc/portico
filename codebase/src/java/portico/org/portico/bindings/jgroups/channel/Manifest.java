@@ -49,6 +49,10 @@ public class Manifest implements Serializable
 	
 	// federation information
 	private ObjectModel fom;
+	// The logical time implementation the federation was created with. Every federate that joins
+	// has to work with this one. Null when the federation was created by a peer that predates
+	// this field, in which case the default implementation is assumed.
+	private String timeImplementationName;
 	private Map<UUID,FederateInfo> federates;
 
 	//----------------------------------------------------------
@@ -160,6 +164,20 @@ public class Manifest implements Serializable
 		this.fom = model;
 	}
 
+	/**
+	 * The logical time implementation the active federation was created with, or null when it was
+	 * created by a peer that does not record one. Callers should treat null as the default.
+	 */
+	public String getTimeImplementationName()
+	{
+		return this.timeImplementationName;
+	}
+
+	public void setTimeImplementationName( String timeImplementationName )
+	{
+		this.timeImplementationName = timeImplementationName;
+	}
+
 	/** Return true if there is an active federation in this channel */
 	public boolean containsFederation()
 	{
@@ -193,7 +211,13 @@ public class Manifest implements Serializable
 
 	public synchronized void federationCreated( ObjectModel fom )
 	{
+		federationCreated( fom, null );
+	}
+
+	public synchronized void federationCreated( ObjectModel fom, String timeImplementationName )
+	{
 		this.fom = fom;
+		this.timeImplementationName = timeImplementationName;
 		++this.manifestVersion;
 	}
 	
@@ -219,6 +243,7 @@ public class Manifest implements Serializable
 	public synchronized void federationDestroyed()
 	{
 		this.fom = null;
+		this.timeImplementationName = null;
 		++manifestVersion;
 	}
 

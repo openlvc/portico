@@ -44,6 +44,8 @@ public interface ConnectedRoster
 
 	public void setFOM( ObjectModel fom );
 	
+	public String getTimeImplementationName();
+	
 	//----------------------------------------------------------
 	//                     STATIC METHODS
 	//----------------------------------------------------------

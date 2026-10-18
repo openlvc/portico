@@ -91,6 +91,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	private int     federateHandle;
 	private String  federationName;
 	private volatile boolean joined;
+	private String  timeImplementationName;
 
 	// Object Model //
 	private ObjectModel fom;
@@ -164,6 +165,7 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 		setFederateHandle( PorticoConstants.NULL_HANDLE );
 		this.federationName = null;
 		this.joined = false;
+		this.timeImplementationName = null;
 		this.fom = null;
 		this.momManager = new MomManager( this,
 		                                  theLRC.getSpecHelper().getHlaVersion(),
@@ -495,6 +497,21 @@ public class LRCState extends NullNotificationListener implements SaveRestoreTar
 	public void setFederationName( String federationName )
 	{
 		this.federationName = federationName;
+	}
+
+	/**
+	 * The name of the logical time implementation the federation we are joined to was created
+	 * with, or null when it is not known. Callers that need a definite answer should treat null
+	 * as {@link PorticoConstants#DEFAULT_TIME_IMPLEMENTATION}.
+	 */
+	public String getTimeImplementationName()
+	{
+		return timeImplementationName;
+	}
+
+	public void setTimeImplementationName( String timeImplementationName )
+	{
+		this.timeImplementationName = timeImplementationName;
 	}
 
 	////////////////////////////////////////////////////////////

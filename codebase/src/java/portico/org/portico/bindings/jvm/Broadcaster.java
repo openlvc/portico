@@ -47,6 +47,7 @@ public class Broadcaster
 	//----------------------------------------------------------
 	private Map<FederateInfo,JVMConnection> joinedConnections;
 	private ObjectModel fom;
+	private String timeImplementationName;
 	private volatile int FEDERATE_HANDLES = 0;
 
 	//----------------------------------------------------------
@@ -55,8 +56,23 @@ public class Broadcaster
 
 	public Broadcaster( ObjectModel fom )
 	{
+		this( fom, null );
+	}
+
+	public Broadcaster( ObjectModel fom, String timeImplementationName )
+	{
 		this.fom = fom;
+		this.timeImplementationName = timeImplementationName;
 		this.joinedConnections = new HashMap<FederateInfo,JVMConnection>();
+	}
+
+	/**
+	 * The logical time implementation the federation was created with. Every federate joining it
+	 * has to work with this one.
+	 */
+	public String getTimeImplementationName()
+	{
+		return this.timeImplementationName;
 	}
 
 	//----------------------------------------------------------

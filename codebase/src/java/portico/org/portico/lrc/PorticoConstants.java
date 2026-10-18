@@ -39,6 +39,31 @@ public class PorticoConstants
 	
 	/** Consistent form for identifying an invalid time */
 	public static final double NULL_TIME = -1.0;
+
+	/** The logical time implementation a federation gets when it is created without asking
+	    for one. A federation keeps the implementation it was created with for its lifetime. */
+	public static final String DEFAULT_TIME_IMPLEMENTATION = "HLAfloat64Time";
+
+	/** The other logical time implementation the 1516e standard defines */
+	public static final String INTEGER_TIME_IMPLEMENTATION = "HLAinteger64Time";
+
+	/**
+	 * Returns the logical time implementation to work with for the given name, falling back to
+	 * the default for a name that is missing or that we do not provide. A missing name is the
+	 * normal case for a federation created by a peer that does not record one.
+	 */
+	public static String resolveTimeImplementation( String implementationName )
+	{
+		if( DEFAULT_TIME_IMPLEMENTATION.equals(implementationName) ||
+			INTEGER_TIME_IMPLEMENTATION.equals(implementationName) )
+		{
+			return implementationName;
+		}
+		else
+		{
+			return DEFAULT_TIME_IMPLEMENTATION;
+		}
+	}
 	
 	/** Consistent value for an invalid handle */
 	public static final int NULL_HANDLE = -1;

@@ -181,8 +181,8 @@ public class ModelMerger
 		// Check to see if both classes are equivalent, issuing a warning if they are not.
 		// This is mainly just for information purposes. They can't be merged if they're not
 		// equivalent, and if they are equivalent there is nothing to merge.
-		if( baseAttributes > 0 && extensionAttributes > 0 )
-			validateOCMetadataEquivalent( base, extension );
+		//if( baseAttributes > 0 && extensionAttributes > 0 )
+		//	validateOCMetadataEquivalent( base, extension );
 
 		// Base has no attributes, but Extension does
 		// The existing base structure is scaffolding we want to graft attributes on to. We

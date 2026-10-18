@@ -16,7 +16,8 @@ package org.portico.impl.hla1516e.handlers;
 
 import java.util.Map;
 
-import org.portico.impl.hla1516e.types.time.DoubleTime;
+import hla.rti1516e.LogicalTime;
+import org.portico.impl.hla1516e.types.time.TimeUtils;
 import org.portico.lrc.services.time.msg.EnableTimeConstrained;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
@@ -50,7 +51,8 @@ public class TimeConstrainedEnabledCallbackHandler extends HLA1516eCallbackHandl
 	
 	public void process( MessageContext context ) throws Exception
 	{
-		DoubleTime currentTime = new DoubleTime( lrcState.getCurrentTime() );
+		LogicalTime currentTime = TimeUtils.makeTime( lrcState.getCurrentTime(),
+		                                             lrcState.getTimeImplementationName() );
 		logger.trace( "CALLBACK timeConstrainedEnabled(time="+currentTime+")" );
 		fedamb().timeConstrainedEnabled( currentTime );
 		logger.trace( "         timeConstrainedEnabled() callback complete" );

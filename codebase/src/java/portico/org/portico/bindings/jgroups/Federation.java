@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgroups.util.Util;
 import org.portico.bindings.jgroups.channel.Channel;
+import org.portico.bindings.jgroups.channel.FederationCreation;
 import org.portico.bindings.jgroups.channel.Manifest;
 import org.portico.bindings.jgroups.wan.local.Gateway;
 import org.portico.lrc.LRC;
@@ -224,7 +225,20 @@ public class Federation
 	public void sendCreateFederation( ObjectModel fom ) throws JFederationExecutionAlreadyExists,
 	                                                           Exception
 	{
-		logger.debug( "REQUEST createFederation: name="+fedname );
+		sendCreateFederation( fom, null );
+	}
+
+	/**
+	 * As above, for a federation that was created with a specific logical time implementation.
+	 *
+	 * @param timeImplementationName The implementation the federation is created with, or null for
+	 *                               the default one
+	 */
+	public void sendCreateFederation( ObjectModel fom, String timeImplementationName )
+		throws JFederationExecutionAlreadyExists, Exception
+	{
+		logger.debug( "REQUEST createFederation: name="+fedname+
+		              ", time="+describeTime(timeImplementationName) );
 
 		// make sure we're not already connected to an active federation
 		if( manifest.containsFederation() )
@@ -232,14 +246,40 @@ public class Federation
 			logger.error( "FAILURE createFederation: already exists, name="+fedname );
 			throw new JFederationExecutionAlreadyExists( "federation exists: "+fedname );
 		}
-		
-		// send out create federation call and get an ack from everyone
-		byte[] buffer = Util.objectToByteBuffer( fom );
+
+		// Send out create federation call and get an ack from everyone.
+		//
+		// A federation on the default time implementation sends the bare FOM, exactly as every
+		// version of Portico has, so that a channel shared with an older peer is unaffected. Only
+		// a federation on another implementation - which an older peer could not have honoured
+		// anyway - sends the payload that carries the implementation name alongside the FOM.
+		Object payload = fom;
+		if( isDefaultTime(timeImplementationName) == false )
+			payload = new FederationCreation( fom, timeImplementationName );
+
+		byte[] buffer = Util.objectToByteBuffer( payload );
 		channel.sendCreateFederation( buffer );
-		
+
 		// TODO: Add check/wait here to see that it actually turns up
-		
-		logger.info( "SUCCESS createFederation: name=" + fedname );
+
+		logger.info( "SUCCESS createFederation: name=" + fedname +
+		             ", time="+describeTime(timeImplementationName) );
+	}
+
+	/** Is this the implementation a federation gets when it does not ask for one? */
+	private boolean isDefaultTime( String timeImplementationName )
+	{
+		return timeImplementationName == null ||
+		       timeImplementationName.equals( PorticoConstants.DEFAULT_TIME_IMPLEMENTATION );
+	}
+
+	/** The implementation name for a log line, naming the default when none was requested. */
+	private String describeTime( String timeImplementationName )
+	{
+		if( timeImplementationName == null )
+			return PorticoConstants.DEFAULT_TIME_IMPLEMENTATION+" (default)";
+		else
+			return timeImplementationName;
 	}
 
 	/**
@@ -563,9 +603,28 @@ public class Federation
 		
 		try
 		{
-			// turn the buffer into a FOM and store it on the federation manifest
-			manifest.federationCreated( (ObjectModel)Util.objectFromByteBuffer(payload) );
-			logger.info( "Federation ["+fedname+"] has been created" );
+			// turn the buffer into a FOM and store it on the federation manifest. The payload is
+			// the bare FOM for a federation on the default time implementation, and carries the
+			// implementation name alongside the FOM for any other one.
+			Object contents = Util.objectFromByteBuffer( payload );
+			ObjectModel fom = null;
+			String timeImplementationName = null;
+
+			if( contents instanceof FederationCreation )
+			{
+				FederationCreation creation = (FederationCreation)contents;
+				fom = creation.getFom();
+				timeImplementationName = creation.getTimeImplementationName();
+			}
+			else
+			{
+				fom = (ObjectModel)contents;
+				timeImplementationName = PorticoConstants.DEFAULT_TIME_IMPLEMENTATION;
+			}
+
+			manifest.federationCreated( fom, timeImplementationName );
+			logger.info( "Federation ["+fedname+"] has been created with the "+
+			             timeImplementationName+" logical time implementation" );
 		}
 		catch( Exception e )
 		{

@@ -16,7 +16,8 @@ package org.portico.impl.hla1516e.handlers;
 
 import java.util.Map;
 
-import org.portico.impl.hla1516e.types.time.DoubleTime;
+import hla.rti1516e.LogicalTime;
+import org.portico.impl.hla1516e.types.time.TimeUtils;
 import org.portico.lrc.services.time.msg.TimeAdvanceGrant;
 import org.portico.utils.messaging.MessageContext;
 import org.portico.utils.messaging.MessageHandler;
@@ -53,7 +54,7 @@ public class TimeAdvanceGrantCallbackHandler extends HLA1516eCallbackHandler
 		TimeAdvanceGrant grant = context.getRequest( TimeAdvanceGrant.class, this );
 		if( logger.isTraceEnabled() )
 			logger.trace( "CALLBACK timeAdvanceGrant(time="+grant.getTime()+")" );
-		fedamb().timeAdvanceGrant( new DoubleTime(grant.getTime()) );
+		fedamb().timeAdvanceGrant( TimeUtils.makeTime(grant.getTime(),lrcState.getTimeImplementationName()) );
 		context.success();
 
 		if( logger.isTraceEnabled() )

@@ -714,7 +714,7 @@ Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II
  * Signature: (II[I[[B[BIIDII[I)V
  */
 JNIEXPORT void JNICALL
-Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIDJII_3I
+Java_org_portico_impl_cpp1516e_FederateAmbassadorLink_reflectAttributeValues__II_3I_3_3B_3BIIDII_3I
 	( JNIEnv *jnienv,
 	  jobject jfedamb,
 	  jint fedid,

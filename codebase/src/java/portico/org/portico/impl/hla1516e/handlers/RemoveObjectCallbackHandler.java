@@ -18,7 +18,8 @@ import hla.rti1516e.OrderType;
 
 import java.util.Map;
 
-import org.portico.impl.hla1516e.types.time.DoubleTime;
+import hla.rti1516e.LogicalTime;
+import org.portico.impl.hla1516e.types.time.TimeUtils;
 import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.lrc.services.object.msg.DeleteObject;
 import org.portico.utils.messaging.MessageContext;
@@ -75,8 +76,26 @@ public class RemoveObjectCallbackHandler extends HLA1516eCallbackHandler
 			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
 			                               request.getTag(),           // tag
 			                               OrderType.TIMESTAMP,        // sent order
-			                               new DoubleTime(timestamp),  // time
+			                               TimeUtils.makeTime(timestamp,lrcState.getTimeImplementationName()),  // time
 			                               OrderType.TIMESTAMP,        // received order
+			                               supplement );               // supplemental remove info
+		}
+		else if( request.hasSentTimestamp() )
+		{
+			// sent in timestamp order to a federate that is not time constrained: received in
+			// receive order, with the timestamp it was sent with
+			double sentTimestamp = request.getSentTimestamp();
+			if( logger.isTraceEnabled() )
+			{
+				logger.trace( "CALLBACK removeObjectInstance(object="+objectHandle+
+				              ",time="+sentTimestamp+") (TSO sent, RO received)" );
+			}
+
+			fedamb().removeObjectInstance( new HLA1516eHandle(objectHandle),
+			                               request.getTag(),           // tag
+			                               OrderType.TIMESTAMP,        // sent order
+			                               TimeUtils.makeTime(sentTimestamp,lrcState.getTimeImplementationName()),  // time
+			                               OrderType.RECEIVE,          // received order
 			                               supplement );               // supplemental remove info
 		}
 		else

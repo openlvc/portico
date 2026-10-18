@@ -15,7 +15,6 @@
 package org.portico.impl.hla1516e;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,9 +44,7 @@ import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMapFactory;
 import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSetFactory;
 import org.portico.impl.hla1516e.types.HLA1516eResignAction;
 import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
-import org.portico.impl.hla1516e.types.time.DoubleTime;
-import org.portico.impl.hla1516e.types.time.DoubleTimeFactory;
-import org.portico.impl.hla1516e.types.time.DoubleTimeInterval;
+import org.portico.impl.hla1516e.types.time.TimeUtils;
 import org.portico.lrc.PorticoConstants;
 import org.portico.lrc.compat.JAsynchronousDeliveryAlreadyDisabled;
 import org.portico.lrc.compat.JAsynchronousDeliveryAlreadyEnabled;
@@ -252,51 +249,8 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		///////////////////////////////////////////////////////
-		// 1. create the message and pass it to the LRC sink //
-		///////////////////////////////////////////////////////
 		CreateFederation request = new CreateFederation( executionName, fomModule );
-		ResponseMessage response = processMessage( request );
-
-		////////////////////////////
-		// 2. process the results //
-		////////////////////////////
-		// check to see if we got an error or a success
-		if( response.isError() == false )
-		{
-			// everything went fine!
-			return;
-		}
-		else
-		{
-			// an exception was caused :(
-			Throwable theException = ((ErrorResponse)response).getCause();
-			
-			if( theException instanceof JRTIinternalError )
-			{
-				throw new RTIinternalError( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JFederationExecutionAlreadyExists )
-			{
-				throw new FederationExecutionAlreadyExists( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JInconsistentFDD )
-			{
-				throw new InconsistentFDD( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JCouldNotOpenFED )
-			{
-				throw new CouldNotOpenFDD( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JErrorReadingFED )
-			{
-				throw new ErrorReadingFDD( theException.getMessage(), theException );
-			}
-			else
-			{
-				logException( "createFederationExecution", theException );
-			}
-		}
+		processCreateFederation( request );
 	}
 
 	// 4.5
@@ -308,51 +262,8 @@ public class Rti1516eAmbassador implements RTIambassador
 		       NotConnected,
 		       RTIinternalError
 	{
-		///////////////////////////////////////////////////////
-		// 1. create the message and pass it to the LRC sink //
-		///////////////////////////////////////////////////////
 		CreateFederation request = new CreateFederation( federationName, fomModules );
-		ResponseMessage response = processMessage( request );
-
-		////////////////////////////
-		// 2. process the results //
-		////////////////////////////
-		// check to see if we got an error or a success
-		if( response.isError() == false )
-		{
-			// everything went fine!
-			return;
-		}
-		else
-		{
-			// an exception was caused :(
-			Throwable theException = ((ErrorResponse)response).getCause();
-			
-			if( theException instanceof JRTIinternalError )
-			{
-				throw new RTIinternalError( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JFederationExecutionAlreadyExists )
-			{
-				throw new FederationExecutionAlreadyExists( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JInconsistentFDD )
-			{
-				throw new InconsistentFDD( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JCouldNotOpenFED )
-			{
-				throw new CouldNotOpenFDD( theException.getMessage(), theException );
-			}
-			else if( theException instanceof JErrorReadingFED )
-			{
-				throw new ErrorReadingFDD( theException.getMessage(), theException );
-			}
-			else
-			{
-				logException( "createFederationExecution", theException );
-			}
-		}
+		processCreateFederation( request );
 	}
 
 	// 4.5
@@ -367,16 +278,28 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		///////////////////////////////////////////////////////
-		// 1. create the message and pass it to the LRC sink //
-		///////////////////////////////////////////////////////
-		// jam the MIM in at the front of the list of modules
-		ArrayList<URL> moduleList = new ArrayList<URL>();
-		moduleList.add( mimModule );
-		for( URL module : fomModules )
-			moduleList.add( module );
+		CreateFederation request = new CreateFederation( federationName, fomModules );
+		request.setMimModule( mimModule );
+		processCreateFederation( request );
+	}
 
-		CreateFederation request = new CreateFederation( federationName, moduleList );
+	/**
+	 * Hands a create request to the LRC sink and translates whatever comes back. Every
+	 * createFederationExecution overload routes through here, so that the properties they set on
+	 * the request - the MIM module, the logical time implementation - cannot be lost by one
+	 * overload building its own copy of this logic.
+	 */
+	private void processCreateFederation( CreateFederation request )
+	    throws InconsistentFDD,
+	           ErrorReadingFDD,
+	           CouldNotOpenFDD,
+	           FederationExecutionAlreadyExists,
+	           NotConnected,
+	           RTIinternalError
+	{
+		///////////////////////////////////////////////////////
+		// 1. pass the message to the LRC sink               //
+		///////////////////////////////////////////////////////
 		ResponseMessage response = processMessage( request );
 
 		////////////////////////////
@@ -392,7 +315,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		{
 			// an exception was caused :(
 			Throwable theException = ((ErrorResponse)response).getCause();
-			
+
 			if( theException instanceof JRTIinternalError )
 			{
 				throw new RTIinternalError( theException.getMessage(), theException );
@@ -430,20 +353,12 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		// validate the time type, ensuring it is one of the standard ones
-		if( timeName != null && (timeName.trim().equals("") == false) )
-		{
-			timeName = timeName.trim();
-			if( timeName.equals("HLAfloat64Time") == false &&
-				timeName.equals("HLAinteger64Time") == false )
-			{
-				throw new CouldNotCreateLogicalTimeFactory( "Invalid time implementation: Must be "+
-				                                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
-			}
-		}
-
-		// validate the time type and hand off to the (String,URL[]) overload
-		createFederationExecution( federationName, fomModules );
+		// validate the time type, ensuring it is one of the standard ones, and create the
+		// federation with it - a federation keeps the implementation it was created with, and
+		// every federate that joins it has to use that one
+		CreateFederation request = new CreateFederation( federationName, fomModules );
+		request.setTimeImplementationName( TimeUtils.resolve(timeName) );
+		processCreateFederation( request );
 	}
 
 	// 4.5
@@ -462,20 +377,13 @@ public class Rti1516eAmbassador implements RTIambassador
 	           NotConnected,
 	           RTIinternalError
 	{
-		// validate the time type, ensuring it is one of the standard ones
-		if( timeName != null )
-		{
-			timeName = timeName.trim();
-			if( timeName.equals("HLAfloat64Time") == false &&
-				timeName.equals("HLAinteger64Time") == false )
-			{
-				throw new CouldNotCreateLogicalTimeFactory( "Invalid time implementation: Must be "+
-				                                            "\"HLAfloat64Time\" or \"HLAinteger64Time\"" );
-			}
-		}
-
-		// validate the time parameter and hand off to the (String,URL[],URL) overload
-		createFederationExecution( federationName, fomModules, mimModule );
+		// validate the time type, ensuring it is one of the standard ones, and create the
+		// federation with it - a federation keeps the implementation it was created with, and
+		// every federate that joins it has to use that one
+		CreateFederation request = new CreateFederation( federationName, fomModules );
+		request.setMimModule( mimModule );
+		request.setTimeImplementationName( TimeUtils.resolve(timeName) );
+		processCreateFederation( request );
 	}
 
 	// 4.6
@@ -2135,7 +2043,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		double doubleTime = PorticoConstants.NULL_TIME;
 		if( theTime != null )
-			doubleTime = DoubleTime.fromTime( theTime );
+			doubleTime = fromTime( theTime );
 
 		HashMap<Integer,byte[]> map = HLA1516eAttributeHandleValueMap.toJavaMap( theAttributes );
 		int oHandle = HLA1516eHandle.fromHandle( theObject );
@@ -2290,7 +2198,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		double doubleTime = PorticoConstants.NULL_TIME;
 		if( theTime != null )
-			doubleTime = DoubleTime.fromTime( theTime );
+			doubleTime = fromTime( theTime );
 		HashMap<Integer,byte[]> map = HLA1516eParameterHandleValueMap.toJavaMap( theParameters );
 		int iHandle = HLA1516eHandle.fromHandle( theInteraction );
 
@@ -2434,7 +2342,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		double time = PorticoConstants.NULL_TIME;
 		if( theTime != null )
-			time = DoubleTime.fromTime( theTime );
+			time = fromTime( theTime );
 		int oHandle = HLA1516eHandle.fromHandle( objectHandle );
 		
 		///////////////////////////////////////////////////////
@@ -3479,7 +3387,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		// 0. check that we have the right logical time class //
 		////////////////////////////////////////////////////////
-		double la = DoubleTimeInterval.fromLookahead( theLookahead );
+		double la = fromLookahead( theLookahead );
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -3738,7 +3646,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		// 0. check that we have the right logical time class //
 		////////////////////////////////////////////////////////
-		double time = DoubleTime.fromTime( theTime ); // also checks for null
+		double time = fromTime( theTime ); // also checks for null
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -3821,7 +3729,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		// 0. check that we have the right logical time class //
 		////////////////////////////////////////////////////////
-		double time = DoubleTime.fromTime( theTime ); // also checks for null
+		double time = fromTime( theTime ); // also checks for null
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -3903,7 +3811,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		// 0. check that we have the right logical time class //
 		////////////////////////////////////////////////////////
-		double time = DoubleTime.fromTime( theTime );
+		double time = fromTime( theTime );
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -3985,7 +3893,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		// 0. check that we have the right logical time class //
 		////////////////////////////////////////////////////////
-		double time = DoubleTime.fromTime( theTime );
+		double time = fromTime( theTime );
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -4067,7 +3975,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		////////////////////////////////////////////////////////
 		// 0. check that we have the right logical time class //
 		////////////////////////////////////////////////////////
-		double time = DoubleTime.fromTime( theTime );
+		double time = fromTime( theTime );
 		
 		///////////////////////////////////////////////////////
 		// 1. create the message and pass it to the LRC sink //
@@ -4263,9 +4171,12 @@ public class Rti1516eAmbassador implements RTIambassador
 		// check to see if we got an error or a success
 		if( response.isError() == false )
 		{
-			// request was fine
-			DoubleTime time = new DoubleTime( (Integer)response.getResult() );
-			return new TimeQueryReturn( true, time );
+			// request was fine: no GALT (null) when no other federate is regulating
+			Double galt = (Double)response.getResult();
+			if( galt == null )
+				return new TimeQueryReturn( false, toTime(helper.getState().getCurrentTime()) );
+			else
+				return new TimeQueryReturn( true, toTime(galt) );
 		}
 		else
 		{
@@ -4308,7 +4219,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		return new DoubleTime( helper.getState().getCurrentTime() );
+		return toTime( helper.getState().getCurrentTime() );
 	}
 
 	// 8.18
@@ -4323,7 +4234,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		DoubleTime time = new DoubleTime( helper.getState().getCurrentTime() );
+		LogicalTime time = toTime( helper.getState().getCurrentTime() );
 		return new TimeQueryReturn( true, time );
 	}
 
@@ -4344,7 +4255,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		double time = 0.0;
 		try
 		{
-			time = DoubleTimeInterval.fromInterval( theLookahead );
+			time = fromInterval( theLookahead );
 		}
 		catch( Exception e )
 		{
@@ -4419,7 +4330,7 @@ public class Rti1516eAmbassador implements RTIambassador
 		helper.checkSave();
 		helper.checkRestore();
 		
-		return new DoubleTimeInterval( helper.getState().getLookahead() );
+		return toInterval( helper.getState().getLookahead() );
 	}
 
 	// 8.21
@@ -5525,12 +5436,59 @@ public class Rti1516eAmbassador implements RTIambassador
 
 	public LogicalTimeFactory getTimeFactory() throws FederateNotExecutionMember, NotConnected
 	{
-		return new DoubleTimeFactory();
+		// The factory is the one of the federation we are joined to, not the one this federate
+		// would have picked: a federation keeps the implementation it was created with, and every
+		// federate in it exchanges its logical times in that implementation.
+		return TimeUtils.createFactory( helper.getState().getTimeImplementationName() );
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// Private Utility Methods ////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// Logical Time Conversion ////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// Portico keeps every logical time internally as a double, whichever implementation the
+	// federation was created with. These four methods are the only places the API layer crosses
+	// between the two, so that a federate can never hand in, or be handed back, a time of an
+	// implementation the federation does not work with.
+
+	/** The implementation the federation we are joined to works with. */
+	private String timeImplementation()
+	{
+		return helper.getState().getTimeImplementationName();
+	}
+
+	/** Converts a time from the federate, refusing one that is not the federation's. */
+	private double fromTime( LogicalTime theTime ) throws InvalidLogicalTime
+	{
+		return TimeUtils.fromTime( theTime, timeImplementation() );
+	}
+
+	/** Converts an interval from the federate, refusing one that is not the federation's. */
+	private double fromInterval( LogicalTimeInterval theInterval ) throws InvalidLogicalTime
+	{
+		return TimeUtils.fromInterval( theInterval, timeImplementation() );
+	}
+
+	/** As {@link #fromInterval(LogicalTimeInterval)}, reporting a bad value as InvalidLookahead. */
+	private double fromLookahead( LogicalTimeInterval theInterval ) throws InvalidLookahead
+	{
+		return TimeUtils.fromLookahead( theInterval, timeImplementation() );
+	}
+
+	/** Builds a time of the federation's implementation to hand back to the federate. */
+	private LogicalTime toTime( double value )
+	{
+		return TimeUtils.makeTime( value, timeImplementation() );
+	}
+
+	/** Builds an interval of the federation's implementation to hand back to the federate. */
+	private LogicalTimeInterval toInterval( double value )
+	{
+		return TimeUtils.makeInterval( value, timeImplementation() );
+	}
+
 	private ResponseMessage processMessage( PorticoMessage request ) throws NotConnected
 	{
 		// make sure we're connected

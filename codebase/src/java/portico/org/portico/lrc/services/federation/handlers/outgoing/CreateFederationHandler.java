@@ -72,14 +72,25 @@ public class CreateFederationHandler extends LRCMessageHandler
 		// 1. Try and parse each of the fed files that we have
 		//
 		List<ObjectModel> foms = new ArrayList<ObjectModel>();
-		// For 1516e, we always add the MIM first
+		// For 1516e, we always add one MIM first. Use the caller-provided MIM when present;
+		// otherwise fall back to Portico's bundled standard MIM.
 		if( lrc.getSpecHelper().getHlaVersion() != HLAVersion.HLA13 )
 		{
-			URL mimPath = Thread.currentThread().getContextClassLoader().getResource( MIM_PATH_1516e );
-			if( mimPath == null )
+			URL mimModule = request.getMimModule();
+			if( mimModule == null )
+			{
+				// A thread a C++ federate attached to the JVM has no context class loader: Portico's
+				// own loader has the bundled MIM
+				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				if( loader == null )
+					loader = CreateFederationHandler.class.getClassLoader();
+				mimModule = loader.getResource( MIM_PATH_1516e );
+			}
+
+			if( mimModule == null )
 				throw new JRTIinternalError("Cannot load MIM from resource path: "+MIM_PATH_1516e);
 			else
-				foms.add( FomParser.parse(mimPath) );
+				foms.add( FomParser.parse(mimModule) );
 		}
 		
 		// Load all the provided modules

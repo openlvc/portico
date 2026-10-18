@@ -1522,6 +1522,15 @@ class PorticoRtiAmbassador : public RTIambassador
 		           NotConnected,
 		           RTIinternalError );
 
+		// The name of the logical time implementation the federation we are joined to works with.
+		// Asked of the Java side, which is where a federation records the implementation it was
+		// created with. Falls back to the default implementation when we are not joined, or when
+		// the Java side cannot tell us.
+		std::wstring getTimeImplementationName() const;
+
+		// True when the federation works with HLAinteger64Time rather than HLAfloat64Time
+		bool isIntegerTimeFederation() const;
+
 		// Decode handles
 		FederateHandle decodeFederateHandle( const VariableLengthData& encodedValue ) const
 		    throw( CouldNotDecode,

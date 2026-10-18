@@ -253,6 +253,30 @@ void JavaRTI::cacheMethod( JNIEnv *jnienv, jmethodID *handle, jclass clazz, stri
 }
 
 /*
+ * The same as cacheMethod, for a method that the Java side may not have. The C++ binding and the
+ * portico.jar it loads are separate artifacts and are not always upgraded together, so a method
+ * added to the Java side after this binding shipped, or looked for by a binding newer than the
+ * jar next to it, has to be survivable: the id is left NULL and the caller falls back to whatever
+ * it did before the method existed, rather than the whole runtime refusing to start.
+ */
+void JavaRTI::cacheOptionalMethod( JNIEnv *jnienv, jmethodID *handle, string method, string signature )
+{
+	logger->noisy( "Caching optional %s [%s]", method.c_str(), signature.c_str() );
+
+	*handle = jnienv->GetMethodID( jproxyClass, method.c_str(), signature.c_str() );
+	if( *handle == NULL )
+	{
+		// GetMethodID leaves a NoSuchMethodError pending, which would surface at the next JNI
+		// call as something unrelated and baffling, so clear it here
+		jnienv->ExceptionClear();
+
+		logger->info( "(jni) Method %s[%s] is not provided by this portico.jar, carrying on without it",
+		              method.c_str(),
+		              signature.c_str() );
+	}
+}
+
+/*
  * This method will go through all of the methods that we will use and cache up their IDs.
  * These are needed when we actually call the methods, so rather than get them on the fly,
  * we cache up all the values before hand.
@@ -357,6 +381,10 @@ void JavaRTI::cacheMethodIds() throw( RTIinternalError )
 	cacheMethod( jnienv, &QUERY_LITS, "queryLITS", "()D" );
 	cacheMethod( jnienv, &MODIFY_LOOKAHEAD, "modifyLookahead", "(D)V" );
 	cacheMethod( jnienv, &QUERY_LOOKAHEAD, "queryLookahead", "()D" );
+	// Optional: a portico.jar older than this binding does not have it, and a federation there
+	// always works with the default logical time implementation anyway.
+	cacheOptionalMethod( jnienv, &GET_TIME_IMPLEMENTATION,
+	                     "getTimeImplementationName", "()Ljava/lang/String;" );
 	cacheMethod( jnienv, &RETRACT, "retract", "(I)V" );
 	cacheMethod( jnienv, &CHANGE_ATTRIBUTE_ORDER_TYPE, "changeAttributeOrderType", "(I[ILjava/lang/String;)V" );
 	cacheMethod( jnienv, &CHANGE_INTERACTION_ORDER_TYPE, "changeInteractionOrderType", "(ILjava/lang/String;)V" );

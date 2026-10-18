@@ -351,7 +351,11 @@ bool PorticoRtiAmbassador::queryGALT( LogicalTime& theTime )
 	else
 	{
 		logger->trace( "[Finished] queryGALT()" );
-		theTime = HLAfloat64Time( jtime );
+		// hand the time back in the implementation the federation works with
+		if( isIntegerTimeFederation() )
+			theTime = HLAinteger64Time( (Integer64)jtime );
+		else
+			theTime = HLAfloat64Time( jtime );
 		return true;
 	}
 }
@@ -374,7 +378,11 @@ void PorticoRtiAmbassador::queryLogicalTime( LogicalTime& theTime )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 
-	theTime = HLAfloat64Time( jtime );
+	// hand the time back in the implementation the federation works with
+	if( isIntegerTimeFederation() )
+		theTime = HLAinteger64Time( (Integer64)jtime );
+	else
+		theTime = HLAfloat64Time( jtime );
 	logger->trace( "[Finished] queryLogicalTime()" );
 }
 
@@ -404,7 +412,11 @@ bool PorticoRtiAmbassador::queryLITS( LogicalTime& theTime )
 	else
 	{
 		logger->trace( "[Finished] queryLITS()" );
-		theTime = HLAfloat64Time( jtime );
+		// hand the time back in the implementation the federation works with
+		if( isIntegerTimeFederation() )
+			theTime = HLAinteger64Time( (Integer64)jtime );
+		else
+			theTime = HLAfloat64Time( jtime );
 		return true;
 	}
 }
@@ -458,7 +470,11 @@ void PorticoRtiAmbassador::queryLookahead( LogicalTimeInterval& interval )
 	// clean up and run the exception check
 	javarti->exceptionCheck();
 
-	interval = HLAfloat64Interval( jtime );
+	// hand the lookahead back in the implementation the federation works with
+	if( isIntegerTimeFederation() )
+		interval = HLAinteger64Interval( (Integer64)jtime );
+	else
+		interval = HLAfloat64Interval( jtime );
 	logger->trace( "[Finished] queryLookahead()" );
 }
 

@@ -109,6 +109,15 @@ public class JoinFederationHandler extends LRCMessageHandler
 		///////////////////////////////
 		ConnectedRoster roster = connection.joinFederation( request );
 		int federateHandle = roster.getLocalHandle();
+
+		// Record the logical time implementation of the federation we just joined. We have to work
+		// with the one the federation was created with, whatever this federate asked for, and the
+		// API layer reports it through getTimeFactory and validates every time against it.
+		lrcState.setTimeImplementationName( roster.getTimeImplementationName() );
+		logger.debug( "Federation ["+federation+"] works with the ["+
+		              PorticoConstants.resolveTimeImplementation(roster.getTimeImplementationName())+
+		              "] logical time implementation" );
+
 		// send the local notification
 		notificationManager.localFederateJoinedFederation( federateHandle,
 		                                                   federate,

@@ -133,6 +133,7 @@ import org.portico.lrc.services.time.handlers.outgoing.EnableTimeRegulationHandl
 import org.portico.lrc.services.time.handlers.outgoing.FlushQueueRequestHandler;
 import org.portico.lrc.services.time.handlers.outgoing.ModifyLookaheadHandler;
 import org.portico.lrc.services.time.handlers.outgoing.NextEventRequestHandler;
+import org.portico.lrc.services.time.handlers.outgoing.QueryGaltHandler;
 import org.portico.lrc.services.time.handlers.outgoing.TimeAdvanceRequestHandler;
 
 /**
@@ -252,6 +253,7 @@ public class HandlerRegistry
 		register( FlushQueueRequestHandler.class );
 		register( ModifyLookaheadHandler.class );
 		register( NextEventRequestHandler.class );
+		register( QueryGaltHandler.class );
 		register( TimeAdvanceRequestHandler.class );
 		
 		// Incoming

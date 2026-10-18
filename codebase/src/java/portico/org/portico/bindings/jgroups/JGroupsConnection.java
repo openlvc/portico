@@ -215,7 +215,8 @@ public class JGroupsConnection implements IConnection
 	public void createFederation( CreateFederation createMessage ) throws Exception
 	{
 		Federation federation = findFederation( createMessage.getFederationName() );
-		federation.sendCreateFederation( createMessage.getModel() );
+		federation.sendCreateFederation( createMessage.getModel(),
+		                                 createMessage.getTimeImplementationName() );
 	}
 
 	/**
@@ -262,7 +263,8 @@ public class JGroupsConnection implements IConnection
 		// create and return the roster
 		return new Roster( federation.getManifest().getLocalFederateHandle(),
 		                   federation.getManifest().getFederateHandles(),
-		                   federation.getManifest().getFom() );
+		                   federation.getManifest().getFom(),
+		                   federation.getManifest().getTimeImplementationName() );
 	}
 
 	/**

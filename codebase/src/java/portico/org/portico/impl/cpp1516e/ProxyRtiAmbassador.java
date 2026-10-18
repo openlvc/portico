@@ -25,6 +25,8 @@ import java.util.Properties;
 
 import hla.rti1516e.CallbackModel;
 import hla.rti1516e.FederateHandle;
+import hla.rti1516e.LogicalTime;
+import hla.rti1516e.LogicalTimeInterval;
 import hla.rti1516e.MessageRetractionReturn;
 import hla.rti1516e.ObjectClassHandle;
 import hla.rti1516e.ObjectInstanceHandle;
@@ -44,8 +46,8 @@ import org.portico.impl.hla1516e.types.HLA1516eHandle;
 import org.portico.impl.hla1516e.types.HLA1516eParameterHandleValueMap;
 import org.portico.impl.hla1516e.types.HLA1516eRegionHandleSet;
 import org.portico.impl.hla1516e.types.HLA1516eTransportationTypeHandleFactory;
-import org.portico.impl.hla1516e.types.time.DoubleTime;
-import org.portico.impl.hla1516e.types.time.DoubleTimeInterval;
+import org.portico.impl.hla1516e.types.time.TimeUtils;
+import org.portico.lrc.PorticoConstants;
 
 /**
  * This class is provided as the simplified JNI link to C++ code in the interface binding.
@@ -212,8 +214,11 @@ public class ProxyRtiAmbassador
 		try
 		{
 			logger.trace( "createFederationExecution() called" );
-			//URL[] modules = new URL[]{ fom.toURI().toURL() };
-			rtiamb.createFederationExecution( federationName, getURL(fomModule) );
+			// the time implementation has to be passed on, or the federation is created with the
+			// default one whatever the federate asked for
+			rtiamb.createFederationExecution( federationName,
+			                                  new URL[]{ getURL(fomModule) },
+			                                  timeName );
 		}
 		catch( Exception e )
 		{
@@ -446,7 +451,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.requestFederationSave( label, new DoubleTime(theTime) );
+			rtiamb.requestFederationSave( label, toTime(theTime) );
 		}
 		catch( Exception e )
 		{
@@ -897,7 +902,7 @@ public class ProxyRtiAmbassador
 		{
 			HLA1516eHandle objectHandle = new HLA1516eHandle( theObject );
 			HLA1516eAttributeHandleValueMap attributeValues = new HLA1516eAttributeHandleValueMap();
-			DoubleTime time = new DoubleTime( theTime );
+			LogicalTime time = toTime( theTime );
 			for( int i = 0; i < attributes.length; i++ )
 				attributeValues.put( new HLA1516eHandle(attributes[i]), values[i] );
 
@@ -945,7 +950,7 @@ public class ProxyRtiAmbassador
 		{
 			HLA1516eHandle classHandle = new HLA1516eHandle( theInteraction );
 			HLA1516eParameterHandleValueMap parameterValues = new HLA1516eParameterHandleValueMap();
-			DoubleTime time = new DoubleTime( theTime );
+			LogicalTime time = toTime( theTime );
 			for( int i = 0; i < parameters.length; i++ )
 				parameterValues.put( new HLA1516eHandle(parameters[i]), values[i] );
 
@@ -981,7 +986,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			DoubleTime time = new DoubleTime( theTime );
+			LogicalTime time = toTime( theTime );
 			HLA1516eHandle handle = new HLA1516eHandle( objectHandle );
 			MessageRetractionReturn result = rtiamb.deleteObjectInstance( handle, tag, time );
 			return HLA1516eHandle.fromHandle( result.handle );
@@ -1266,7 +1271,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.enableTimeRegulation( new DoubleTimeInterval(theLookahead) );
+			rtiamb.enableTimeRegulation( toInterval(theLookahead) );
 		}
 		catch( Exception e )
 		{
@@ -1318,7 +1323,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.timeAdvanceRequest( new DoubleTime(theTime) );
+			rtiamb.timeAdvanceRequest( toTime(theTime) );
 		}
 		catch( Exception e )
 		{
@@ -1331,7 +1336,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.timeAdvanceRequestAvailable( new DoubleTime(theTime) );
+			rtiamb.timeAdvanceRequestAvailable( toTime(theTime) );
 		}
 		catch( Exception e )
 		{
@@ -1344,7 +1349,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.nextMessageRequest( new DoubleTime(theTime) );
+			rtiamb.nextMessageRequest( toTime(theTime) );
 		}
 		catch( Exception e )
 		{
@@ -1357,7 +1362,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.nextMessageRequestAvailable( new DoubleTime(theTime) );
+			rtiamb.nextMessageRequestAvailable( toTime(theTime) );
 		}
 		catch( Exception e )
 		{
@@ -1370,7 +1375,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.flushQueueRequest( new DoubleTime(theTime) );
+			rtiamb.flushQueueRequest( toTime(theTime) );
 		}
 		catch( Exception e )
 		{
@@ -1411,7 +1416,7 @@ public class ProxyRtiAmbassador
 		{
 			TimeQueryReturn result = rtiamb.queryGALT();
 			if( result.timeIsValid )
-				return ((DoubleTime)result.time).getTime();
+				return fromTime(result.time);
 			else
 				return -1.0;
 		}
@@ -1427,7 +1432,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			return ((DoubleTime)rtiamb.queryLogicalTime()).getTime();
+			return fromTime(rtiamb.queryLogicalTime());
 		}
 		catch( Exception e )
 		{
@@ -1443,7 +1448,7 @@ public class ProxyRtiAmbassador
 		{
 			TimeQueryReturn result = rtiamb.queryLITS();
 			if( result.timeIsValid )
-				return ((DoubleTime)result.time).getTime();
+				return fromTime(result.time);
 			else
 				return -1.0;
 		}
@@ -1459,7 +1464,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			rtiamb.modifyLookahead( new DoubleTimeInterval(theLookahead) );
+			rtiamb.modifyLookahead( toInterval(theLookahead) );
 		}
 		catch( Exception e )
 		{
@@ -1472,7 +1477,7 @@ public class ProxyRtiAmbassador
 	{
 		try
 		{
-			return ((DoubleTime)rtiamb.queryLogicalTime()).getTime();
+			return fromTime(rtiamb.queryLogicalTime());
 		}
 		catch( Exception e )
 		{
@@ -2191,6 +2196,50 @@ public class ProxyRtiAmbassador
 		}
 		
 		return retUrl;
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// Logical Time Conversion ////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////
+	// The C++ binding hands every logical time across the JNI boundary as a double, whichever
+	// implementation the federation works with. These methods put the times back into the
+	// implementation of the federation before they reach the RTIambassador, and take them back
+	// out of it on the way home.
+
+	/**
+	 * The name of the logical time implementation the federation we are joined to works with.
+	 * Also called from the C++ binding, which needs it to decide what to build the times it
+	 * hands to the federate ambassador as, and what to return from getTimeFactory.
+	 */
+	public String getTimeImplementationName()
+	{
+		try
+		{
+			return rtiamb.getTimeFactory().getName();
+		}
+		catch( Exception e )
+		{
+			// not joined yet, so nothing better to say than the default
+			return PorticoConstants.DEFAULT_TIME_IMPLEMENTATION;
+		}
+	}
+
+	/** Builds a time of the federation's implementation from the double the C++ side sent. */
+	private LogicalTime toTime( double value )
+	{
+		return TimeUtils.makeTime( value, getTimeImplementationName() );
+	}
+
+	/** Builds an interval of the federation's implementation from the double the C++ side sent. */
+	private LogicalTimeInterval toInterval( double value )
+	{
+		return TimeUtils.makeInterval( value, getTimeImplementationName() );
+	}
+
+	/** Unwraps a time of the federation's implementation into a double for the C++ side. */
+	private double fromTime( LogicalTime time ) throws Exception
+	{
+		return TimeUtils.fromTime( time, getTimeImplementationName() );
 	}
 
 	//----------------------------------------------------------

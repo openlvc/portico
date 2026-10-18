@@ -37,7 +37,7 @@ HLAinteger64Time::HLAinteger64Time( const LogicalTime& value )
 	: LogicalTime(value)
 {
 	this->_impl = new HLAinteger64TimeImpl();
-	this->_impl->time = ((HLAinteger64Time)value)._impl->time;
+	this->_impl->time = (dynamic_cast<const HLAinteger64Time&>(value))._impl->time;
 }
 
 HLAinteger64Time::HLAinteger64Time( const HLAinteger64Time& value )
@@ -160,7 +160,7 @@ std::wstring HLAinteger64Time::implementationName() const
 LogicalTime& HLAinteger64Time::operator= ( const LogicalTime& value )
 	throw( InvalidLogicalTime )
 {
-	this->_impl->time = ((HLAinteger64Time)value).getTime();
+	this->_impl->time = (dynamic_cast<const HLAinteger64Time&>(value)).getTime();
 	return *this;
 }
 
@@ -168,45 +168,45 @@ LogicalTime& HLAinteger64Time::operator= ( const LogicalTime& value )
 LogicalTime& HLAinteger64Time::operator+= ( const LogicalTimeInterval& addend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	this->_impl->time += ((HLAinteger64Interval)addend).getInterval();
+	this->_impl->time += (dynamic_cast<const HLAinteger64Interval&>(addend)).getInterval();
 	return *this;
 }
 
 LogicalTime& HLAinteger64Time::operator-= ( const LogicalTimeInterval& subtrahend )
 	throw( IllegalTimeArithmetic, InvalidLogicalTimeInterval )
 {
-	this->_impl->time -= ((HLAinteger64Interval)subtrahend).getInterval();
+	this->_impl->time -= (dynamic_cast<const HLAinteger64Interval&>(subtrahend)).getInterval();
 	return *this;
 }
 
 bool HLAinteger64Time::operator> ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->time > ((HLAinteger64Time)value).getTime();
+	return _impl->time > (dynamic_cast<const HLAinteger64Time&>(value)).getTime();
 }
 
 bool HLAinteger64Time::operator< ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->time < ((HLAinteger64Time)value).getTime();
+	return _impl->time < (dynamic_cast<const HLAinteger64Time&>(value)).getTime();
 }
 
 bool HLAinteger64Time::operator== ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->time == ((HLAinteger64Time)value).getTime();
+	return _impl->time == (dynamic_cast<const HLAinteger64Time&>(value)).getTime();
 }
 
 bool HLAinteger64Time::operator>= ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->time >= ((HLAinteger64Time)value).getTime();
+	return _impl->time >= (dynamic_cast<const HLAinteger64Time&>(value)).getTime();
 }
 
 bool HLAinteger64Time::operator<= ( const LogicalTime& value ) const
 	throw( InvalidLogicalTime )
 {
-	return _impl->time <= ((HLAinteger64Time)value).getTime();
+	return _impl->time <= (dynamic_cast<const HLAinteger64Time&>(value)).getTime();
 }
 
 //------------------------------------------------------------------------------------------

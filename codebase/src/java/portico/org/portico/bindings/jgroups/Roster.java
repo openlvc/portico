@@ -39,15 +39,25 @@ public class Roster implements ConnectedRoster
 	private int localHandle;
 	private Set<Integer> remoteHandles;
 	private ObjectModel fom;
+	private String timeImplementationName;
 
 	//----------------------------------------------------------
 	//                      CONSTRUCTORS
 	//----------------------------------------------------------
 	public Roster( int localHandle, Set<Integer> remoteHandles, ObjectModel fom )
 	{
+		this( localHandle, remoteHandles, fom, null );
+	}
+
+	public Roster( int localHandle,
+	               Set<Integer> remoteHandles,
+	               ObjectModel fom,
+	               String timeImplementationName )
+	{
 		this.localHandle = localHandle;
 		this.remoteHandles = new HashSet<Integer>( remoteHandles );
 		this.fom = fom;
+		this.timeImplementationName = timeImplementationName;
 	}
 
 	//----------------------------------------------------------
@@ -82,6 +92,16 @@ public class Roster implements ConnectedRoster
 	public void setFOM( ObjectModel fom )
     {
     	this.fom = fom;
+    }
+
+	public String getTimeImplementationName()
+    {
+    	return timeImplementationName;
+    }
+
+	public void setTimeImplementationName( String timeImplementationName )
+    {
+    	this.timeImplementationName = timeImplementationName;
     }
 	
 	//----------------------------------------------------------

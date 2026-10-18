@@ -13,6 +13,7 @@
  *
  */
 #include "rtiamb/PorticoRtiAmbassador.h"
+#include "jni/JniUtils.h"
 
 PORTICO1516E_NS_START
 
@@ -25,8 +26,51 @@ std::auto_ptr<LogicalTimeFactory> PorticoRtiAmbassador::getTimeFactory() const
            NotConnected,
            RTIinternalError )
 {
-	// TODO fix this so that it returns the stored factory, not just a hard coded one
-	return std::auto_ptr<LogicalTimeFactory>( new HLAfloat64TimeFactory() );
+	// The factory is the one of the federation we are joined to, not a fixed choice of ours: a
+	// federation keeps the logical time implementation it was created with, and every federate
+	// in it exchanges its times in that implementation. Ask the Java side, which is where that
+	// is recorded.
+	if( isIntegerTimeFederation() )
+		return std::auto_ptr<LogicalTimeFactory>( new HLAinteger64TimeFactory() );
+	else
+		return std::auto_ptr<LogicalTimeFactory>( new HLAfloat64TimeFactory() );
+}
+
+/*
+ * The name of the logical time implementation the federation works with, straight from the Java
+ * side. Anything we cannot resolve - not joined yet, no answer from Java - is reported as the
+ * default implementation, which is what a federation gets when it does not ask for one.
+ */
+std::wstring PorticoRtiAmbassador::getTimeImplementationName() const
+{
+	// A portico.jar older than this binding does not report one. Every federation it can host
+	// works with the default implementation, so that is the honest answer for it.
+	if( javarti->GET_TIME_IMPLEMENTATION == NULL )
+		return std::wstring( L"HLAfloat64Time" );
+
+	// Get active environment
+	JNIEnv* jnienv = this->javarti->getJniEnvironment();
+
+	jstring jname = (jstring)jnienv->CallObjectMethod( javarti->jproxy,
+	                                                   javarti->GET_TIME_IMPLEMENTATION );
+	if( jname == NULL )
+		return std::wstring( L"HLAfloat64Time" );
+
+	std::wstring name = JniUtils::toWideString( jnienv, jname );
+	jnienv->DeleteLocalRef( jname );
+
+	if( name.empty() )
+		return std::wstring( L"HLAfloat64Time" );
+	else
+		return name;
+}
+
+/*
+ * True when the federation works with HLAinteger64Time.
+ */
+bool PorticoRtiAmbassador::isIntegerTimeFederation() const
+{
+	return getTimeImplementationName().compare( L"HLAinteger64Time" ) == 0;
 }
 
 // Decode handles

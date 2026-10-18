@@ -90,6 +90,8 @@ class JavaRTI
 			throw( RTIinternalError );
 		void cacheMethod( JNIEnv* env, jmethodID *handle, jclass clazz, string method, string signature )
 			throw( RTIinternalError );
+		// for a method the loaded portico.jar may not provide - leaves the id NULL instead of throwing
+		void cacheOptionalMethod( JNIEnv* env, jmethodID *handle, string method, string signature );
 
 		
 	//----------------------------------------------------------
@@ -195,6 +197,7 @@ class JavaRTI
 		jmethodID QUERY_LITS;
 		jmethodID MODIFY_LOOKAHEAD;
 		jmethodID QUERY_LOOKAHEAD;
+		jmethodID GET_TIME_IMPLEMENTATION;
 		jmethodID RETRACT;
 		jmethodID CHANGE_ATTRIBUTE_ORDER_TYPE;
 		jmethodID CHANGE_INTERACTION_ORDER_TYPE;
